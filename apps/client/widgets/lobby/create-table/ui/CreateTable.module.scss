@@ -1,0 +1,108 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+// --- Ставка ----------------------------------------------------------------
+
+.betSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.betHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.betLabel {
+  font-size: rem(13);
+  color: var(--muted-foreground);
+}
+
+.betValue {
+  font-size: rem(22);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--gold);
+}
+
+.slider {
+  cursor: pointer;
+  width: 100%;
+  height: rem(4);
+  border-radius: rem(2);
+  appearance: none;
+  background: var(--surface-2);
+
+  &::-webkit-slider-thumb {
+    cursor: grab;
+    width: rem(20);
+    height: rem(20);
+    border: rem(2) solid var(--felt-edge);
+    border-radius: 50%;
+    appearance: none;
+    background: var(--gold);
+  }
+
+  &::-moz-range-thumb {
+    cursor: grab;
+    width: rem(20);
+    height: rem(20);
+    border: rem(2) solid var(--felt-edge);
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
+  @include focus-ring;
+}
+
+.scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: rem(11);
+  font-variant-numeric: tabular-nums;
+  color: var(--muted-foreground);
+}
+
+// --- Раскладка секций ------------------------------------------------------
+
+.row {
+  display: flex;
+  gap: var(--space-4);
+}
+
+// --- Режимы ----------------------------------------------------------------
+
+.modes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(rem(104), 1fr));
+  gap: var(--space-2);
+}
+
+// --- Приватность -----------------------------------------------------------
+
+.privateRow {
+  cursor: pointer;
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: rem(14);
+  color: var(--foreground);
+
+  input {
+    cursor: pointer;
+    width: rem(18);
+    height: rem(18);
+    accent-color: var(--gold);
+  }
+}

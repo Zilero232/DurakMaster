@@ -1,0 +1,7 @@
+.root {
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--surface-2);
+}

@@ -1,0 +1,102 @@
+@use '@/shared/styles/mixins' as *;
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+  transition: border-color var(--duration-fast) ease;
+
+  &:hover {
+    border-color: var(--border-strong);
+  }
+
+  // Столы с премиум-игроками выделяются — как в референсе.
+  &[data-premium='true'] {
+    border-color: color-mix(in oklch, var(--gold) 42%, transparent);
+    background: color-mix(in oklch, var(--gold) 7%, var(--surface-1));
+  }
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: rem(3);
+  min-width: 0;
+}
+
+.bet {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  font-size: rem(16);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--gold);
+}
+
+.premium {
+  color: var(--gold);
+}
+
+.meta {
+  display: flex;
+  gap: rem(5);
+  align-items: center;
+  font-size: rem(12);
+  color: var(--muted-foreground);
+}
+
+.dot {
+  opacity: 0.5;
+}
+
+.cheaters {
+  color: color-mix(in oklch, var(--danger) 85%, white);
+}
+
+.right {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.players {
+  display: flex;
+  gap: rem(4);
+  align-items: center;
+  font-size: rem(13);
+  font-variant-numeric: tabular-nums;
+  color: var(--muted-foreground);
+}
+
+.empty {
+  padding: var(--space-10) var(--space-4);
+  text-align: center;
+}
+
+.emptyTitle {
+  margin: 0 0 var(--space-1);
+  font-size: rem(15);
+  color: var(--foreground);
+}
+
+.emptyHint {
+  margin: 0;
+  font-size: rem(13);
+  color: var(--muted-foreground);
+}

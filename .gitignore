@@ -1,0 +1,62 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Deps
+node_modules
+*.local
+
+# Build output
+.next
+out
+dist
+build
+generated
+
+# Rust / Tauri
+target
+apps/tauri/gen/android/app/build
+apps/tauri/gen/apple/build
+
+# TypeScript incremental build info (can appear in any package)
+*.tsbuildinfo
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Secrets — kept at root so they are caught in every package.
+# The only env file committed is the template `.env.example`.
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Tauri updater minisign keys
+*.key
+*.key.pub
+
+# Android signing
+*.keystore
+*.jks
+apps/tauri/gen/android/keystore.properties
+
+# Firebase (FCM service account / client config)
+google-services.json
+GoogleService-Info.plist
+firebase-service-account.json
+
+# Superpowers brainstorming artifacts (companion mockups, session state, specs)
+.superpowers/

@@ -1,0 +1,229 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include table-felt;
+
+  display: grid;
+
+  // Строки: соперники — стол — своя рука. Средняя тянется, крайние по контенту.
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--space-2);
+  height: 100dvh;
+  padding:
+    calc(var(--safe-top) + var(--space-3)) calc(var(--safe-right) + var(--space-3))
+    calc(var(--safe-bottom) + var(--space-3)) calc(var(--safe-left) + var(--space-3));
+
+  // Содержимое поверх виньетки из миксина.
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.opponents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: flex-start;
+
+  // Соперники прижаты к верху — центр отдан столу.
+  align-self: start;
+  justify-content: center;
+}
+
+.middleWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.middle {
+  display: flex;
+  gap: var(--space-6);
+  align-items: center;
+  justify-content: center;
+
+  // Содержимое центрируется в ограниченной колонке — на широких экранах
+  // колода и стол не разъезжаются к краям.
+  width: min(100%, rem(920));
+  min-height: 0;
+  margin: 0 auto;
+
+  // На узких экранах колода уходит вбок и вверх, освобождая центр под стол:
+  // иначе рядом с ней остаётся пустая половина экрана.
+  @include bp(md, down) {
+    gap: var(--space-3);
+    align-items: flex-start;
+    padding-top: var(--space-2);
+  }
+}
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  height: rem(22);
+}
+
+.turn {
+  font-size: rem(13);
+  color: color-mix(in oklch, var(--foreground) 62%, transparent);
+  letter-spacing: rem(0.3);
+  transition: color var(--duration-fast) ease;
+}
+
+.turnActive {
+  font-weight: 500;
+  color: var(--gold);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  margin-top: var(--space-1);
+}
+
+/** Служебные кнопки: фразы, отбой, настройки. */
+.tools {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--space-2);
+}
+
+.tool {
+  @include interactive-cursor;
+  @include focus-ring;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: rem(38);
+  height: rem(38);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--muted-foreground);
+  background: var(--surface-1);
+  transition:
+    color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease;
+
+  &:hover {
+    border-color: var(--border-gold);
+    color: var(--gold);
+  }
+}
+
+/** Счётчик отбоя — маленькой меткой в углу кнопки. */
+.toolCount {
+  position: absolute;
+  right: rem(-5);
+  bottom: rem(-5);
+  min-width: rem(17);
+  padding: 0 rem(3);
+  border-radius: var(--radius-pill);
+  font-size: rem(10);
+  font-variant-numeric: tabular-nums;
+  line-height: rem(17);
+  color: var(--primary-foreground);
+  background: var(--gold-dim);
+}
+
+/** Игровые кнопки занимают всё оставшееся место — по ним чаще всего бьют. */
+.moves {
+  display: flex;
+  flex: 1;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+// --- Дополнения онлайн-стола ------------------------------------------------
+
+.statusRow {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-height: rem(22);
+}
+
+// --- Экран ожидания ---------------------------------------------------------
+
+.waiting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: var(--space-4);
+
+  @include table-felt;
+}
+
+.waitingPanel {
+  @include glass-panel;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: rem(340);
+  padding: var(--space-6);
+}
+
+.waitingTitle {
+  margin: 0;
+  font-size: rem(19);
+  font-weight: 600;
+  color: var(--foreground);
+  text-align: center;
+}
+
+.waitingCount {
+  margin: 0;
+  font-size: rem(13);
+  color: var(--muted-foreground);
+  text-align: center;
+}
+
+.waitingList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.waitingPlayer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: rem(14);
+  color: var(--foreground);
+  background: var(--surface-1);
+}
+
+.readyMark {
+  font-size: rem(12);
+  color: var(--muted-foreground);
+}
+
+.ready {
+  color: var(--success);
+}
+
+.waitingActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}

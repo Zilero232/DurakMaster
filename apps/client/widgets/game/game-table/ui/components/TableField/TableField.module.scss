@@ -1,0 +1,56 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+
+  // Разрыв по горизонтали больше, чем нахлёст карты защиты, — пары не слипаются.
+  gap: var(--space-5) calc(var(--card-width) * 0.35);
+  place-content: center center;
+  min-height: calc(var(--card-height) * 1.35);
+  padding: var(--space-3);
+
+  // На телефоне карты кладутся от верха: центрирование по вертикали
+  // оставляло половину экрана пустой.
+  @include bp(md, down) {
+    align-content: flex-start;
+    padding-top: 0;
+  }
+}
+
+.empty {
+  width: 100%;
+  margin: 0;
+  padding-top: var(--space-6);
+  font-size: rem(13);
+  color: color-mix(in oklch, var(--foreground) 42%, transparent);
+  text-align: center;
+  letter-spacing: rem(0.3);
+}
+
+.pair {
+  position: relative;
+
+  // Пара занимает место шире карты: справа лежит карта защиты со сдвигом.
+  width: calc(var(--card-width) * 1.2);
+  height: calc(var(--card-height) * 1.2);
+}
+
+.attack {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.defense {
+  position: absolute;
+  top: calc(var(--card-height) * 0.18);
+  left: calc(var(--card-width) * 0.2);
+  transform: rotate(7deg);
+}
+
+.beatable .attack {
+  // Цель подсвечивается: по ней можно попасть выбранной картой.
+  filter: drop-shadow(var(--glow-gold));
+}

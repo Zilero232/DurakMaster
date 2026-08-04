@@ -1,0 +1,108 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include interactive-cursor;
+  @include button-focus-ring;
+
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    transform var(--duration-fast) var(--ease-panel),
+    background-color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease,
+    opacity var(--duration-fast) ease;
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    @include control-disabled;
+  }
+
+  @include reduced-motion {
+    transition: none;
+
+    &:active:not(:disabled) {
+      transform: none;
+    }
+  }
+}
+
+// --- Варианты --------------------------------------------------------------
+
+.primary {
+  border-color: color-mix(in oklch, var(--gold) 60%, transparent);
+  color: var(--primary-foreground);
+  background: var(--gold);
+
+  &:hover:not(:disabled) {
+    background: color-mix(in oklch, var(--gold) 88%, white);
+  }
+}
+
+.secondary {
+  border-color: var(--border-strong);
+  color: var(--foreground);
+  background: var(--surface-2);
+
+  &:hover:not(:disabled) {
+    border-color: var(--gold-dim);
+    background: color-mix(in oklch, var(--surface-2) 80%, var(--gold) 12%);
+  }
+}
+
+.ghost {
+  color: var(--foreground);
+  background: transparent;
+
+  &:hover:not(:disabled) {
+    background: var(--surface-1);
+  }
+}
+
+.danger {
+  border-color: color-mix(in oklch, var(--danger) 55%, transparent);
+  color: var(--foreground);
+  background: color-mix(in oklch, var(--danger) 22%, transparent);
+
+  &:hover:not(:disabled) {
+    background: color-mix(in oklch, var(--danger) 34%, transparent);
+  }
+}
+
+// --- Размеры ---------------------------------------------------------------
+
+.sizeSm {
+  height: rem(32);
+  padding: 0 var(--space-3);
+  font-size: rem(13);
+}
+
+.sizeDefault {
+  height: rem(40);
+  padding: 0 var(--space-4);
+  font-size: rem(14);
+}
+
+.sizeLg {
+  height: rem(48);
+  padding: 0 var(--space-6);
+  font-size: rem(16);
+}
+
+.sizeIcon {
+  width: rem(40);
+  height: rem(40);
+  padding: 0;
+}
+
+.fullWidth {
+  width: 100%;
+}

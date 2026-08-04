@@ -1,0 +1,139 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.header {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.identity {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: rem(2);
+  min-width: 0;
+}
+
+/** Выход прижат к краю — редкое действие, не должно спорить с именем. */
+.logout {
+  @include interactive-cursor;
+  @include focus-ring;
+
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: rem(36);
+  height: rem(36);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--muted-foreground);
+  background: transparent;
+  transition:
+    color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease;
+
+  &:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+}
+
+.nameRow {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.name {
+  @include truncate;
+  font-size: rem(17);
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.premium {
+  flex-shrink: 0;
+  color: var(--gold);
+}
+
+.league {
+  font-size: rem(13);
+  font-weight: 500;
+}
+
+.progressTrack {
+  overflow: hidden;
+  height: rem(6);
+  border-radius: rem(3);
+  background: var(--surface-2);
+}
+
+/**
+ * Заполнение растягивается через scaleX, а не width: transform
+ * композитится на GPU и не вызывает пересчёт раскладки на каждый кадр.
+ * Ширина всегда 100%, а долю задаёт `--progress` из компонента.
+ */
+.progressFill {
+  transform-origin: left center;
+  transform: scaleX(var(--progress, 0));
+  width: 100%;
+  height: 100%;
+  border-radius: rem(3);
+  transition: transform var(--duration-panel) var(--ease-panel);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2);
+}
+
+.statLabel {
+  font-size: rem(11);
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: rem(0.2);
+}
+
+.statValue {
+  margin: 0;
+  font-size: rem(17);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground);
+}
+
+.wallet {
+  display: flex;
+  gap: var(--space-4);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+  font-size: rem(13);
+  font-variant-numeric: tabular-nums;
+}
+
+.credits {
+  color: var(--success);
+}
+
+.coins {
+  color: var(--gold);
+}

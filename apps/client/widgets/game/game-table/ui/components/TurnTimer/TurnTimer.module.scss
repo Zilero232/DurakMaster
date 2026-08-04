@@ -1,0 +1,37 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: rem(26);
+  height: rem(22);
+  padding: 0 rem(7);
+  border-radius: rem(11);
+  font-size: rem(13);
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground);
+  background: var(--surface-2);
+  transition:
+    background-color var(--duration-fast) ease,
+    color var(--duration-fast) ease;
+}
+
+.warn {
+  font-weight: 600;
+  color: var(--danger);
+  background: color-mix(in oklch, var(--danger) 24%, transparent);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@include reduced-motion {
+  .warn {
+    animation: none;
+  }
+}

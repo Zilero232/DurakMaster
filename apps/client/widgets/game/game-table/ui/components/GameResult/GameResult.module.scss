@@ -1,0 +1,99 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: oklch(0.12 0.02 250 / 0.72);
+  backdrop-filter: blur(rem(6));
+  animation: fade var(--duration-panel) var(--ease-panel);
+}
+
+.panel {
+  @include glass-panel;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: rem(340);
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+  animation: rise var(--duration-panel) var(--ease-card);
+}
+
+.title {
+  margin: 0;
+  font-size: rem(30);
+  font-weight: 700;
+
+  &[data-tone='win'] {
+    color: var(--gold);
+    text-shadow: var(--glow-gold);
+  }
+
+  &[data-tone='lose'] {
+    color: var(--danger);
+  }
+
+  &[data-tone='draw'] {
+    color: var(--foreground);
+  }
+}
+
+.subtitle {
+  margin: 0 0 var(--space-2);
+  font-size: rem(14);
+  color: var(--muted-foreground);
+}
+
+.deltas {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  margin-bottom: var(--space-2);
+  font-size: rem(14);
+  font-variant-numeric: tabular-nums;
+}
+
+.delta {
+  color: var(--danger);
+
+  &[data-positive='true'] {
+    color: var(--success);
+  }
+}
+
+.rating {
+  color: var(--gold);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(rem(16)) scale(0.96);
+    opacity: 0;
+  }
+}
+
+@include reduced-motion {
+  .root,
+  .panel {
+    animation: none;
+  }
+}

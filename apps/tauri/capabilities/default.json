@@ -1,0 +1,14 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Базовые права главного окна",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "opener:default",
+    "os:default",
+    "process:default",
+    "store:default",
+    "deep-link:default"
+  ]
+}

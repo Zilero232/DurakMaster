@@ -1,0 +1,48 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.input {
+  @include visually-hidden;
+}
+
+.option {
+  @include interactive-cursor;
+
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-width: rem(40);
+  height: rem(40);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: rem(14);
+  color: var(--muted-foreground);
+  background: var(--surface-1);
+  transition:
+    border-color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease,
+    color var(--duration-fast) ease;
+
+  &:hover {
+    border-color: var(--border-strong);
+    color: var(--foreground);
+  }
+
+  // Фокус ловит скрытый input, а подсвечивать надо видимую плитку.
+  &:has(.input:focus-visible) {
+    outline: none;
+    box-shadow: 0 0 0 rem(2) color-mix(in oklch, var(--ring) 55%, transparent);
+  }
+
+  &[data-active='true'] {
+    @include gold-edge;
+    font-weight: 600;
+    color: var(--gold);
+    background: color-mix(in oklch, var(--gold) 15%, transparent);
+  }
+}

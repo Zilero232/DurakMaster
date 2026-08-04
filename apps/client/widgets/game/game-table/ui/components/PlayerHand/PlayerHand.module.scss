@@ -1,0 +1,30 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  justify-content: center;
+  min-height: calc(var(--card-height) + rem(24));
+
+  // Запас сверху — приподнятая карта при наведении не обрезается.
+  padding-top: rem(24);
+}
+
+.slot {
+  // z-index действует только на позиционированные элементы — без этого
+  // порядок слоёв игнорируется и клик попадает в соседнюю карту.
+  position: relative;
+
+  // Отрицательный отступ создаёт нахлёст карт в руке.
+  margin-right: calc(var(--card-width) * var(--card-overlap));
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  // Карта под курсором поднимается над всеми соседями.
+  // Значение заведомо больше максимального индекса руки.
+  &:hover,
+  &:focus-within {
+    z-index: 100 !important;
+  }
+}

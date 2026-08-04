@@ -1,0 +1,68 @@
+# Инфраструктура для ЛОКАЛЬНОЙ разработки: Postgres, Valkey, Mailpit.
+#
+# Сами client и server запускаются на хосте через `bun dev` — так работает
+# горячая перезагрузка. Этот файл поднимает только то, что удобнее в контейнерах.
+#
+# Запуск:    docker compose -f docker-compose.dev.yml up -d
+# Остановка: docker compose -f docker-compose.dev.yml down
+
+services:
+  postgres:
+    # API работает на хосте и подключается через опубликованный порт, поэтому
+    # DATABASE_URL/DIRECT_URL в apps/server/.env указывают на localhost:5433,
+    # а НЕ на имя сервиса compose.
+    image: postgres:17-alpine
+    container_name: durakmaster-postgres-dev
+    # env_file передаёт POSTGRES_* внутрь контейнера; entrypoint postgres читает их
+    # напрямую. Не добавлять блок `environment: ${POSTGRES_*}` — Compose раскрывает
+    # ${...} из шелла на этапе парсинга, а не из env_file, и подставит пустые значения.
+    env_file:
+      - ./apps/server/.env
+    # 5433, чтобы не конфликтовать с локально установленным Postgres на 5432.
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  valkey:
+    # Директория столов (roomId → нода), pub/sub между нодами и Streams-лог
+    # для догона сообщений при реконнекте.
+    #
+    # Valkey, а не Redis: лицензия BSD-3-Clause против трёх вариантов у Redis 8
+    # (RSALv2 / SSPLv1 / AGPLv3). Протокол совместим, клиент ioredis тот же.
+    image: valkey/valkey:9-alpine
+    container_name: durakmaster-valkey-dev
+    command: valkey-server --save 60 1 --loglevel warning
+    ports:
+      - "6379:6379"
+    volumes:
+      - valkeydata_dev:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 5
+
+  mailpit:
+    # Локальный SMTP-приёмник: перехватывает исходящую почту вместо доставки.
+    # Полезен, потому что многие провайдеры блокируют исходящие 25/465/587.
+    # Сервер подключается на localhost:1025 без TLS и авторизации.
+    # Веб-интерфейс: http://localhost:8025
+    image: axllent/mailpit:latest
+    container_name: durakmaster-mailpit-dev
+    ports:
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "true"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "true"
+
+volumes:
+  pgdata_dev:
+  valkeydata_dev:

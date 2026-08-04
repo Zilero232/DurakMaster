@@ -1,0 +1,240 @@
+'use client';
+
+import { create } from 'zustand';
+
+import { getAuthToken } from '@/shared/api/auth/auth-client';
+import { socketClient } from '@/shared/api/socket/socket-client';
+
+import type {
+  GameAction,
+  GameErrorCode,
+  LobbyTable,
+  PlayerView,
+  PublicProfile,
+  QuickPhraseId,
+  ServerMessage,
+  TablePhrase,
+  TableSettings,
+} from '@durak-master/schemas';
+
+export type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'error';
+
+export type GameOutcome = {
+  loserUserId: string | null;
+  isDraw: boolean;
+  creditsDelta: number;
+  ratingDelta: number;
+};
+
+type SessionStore = {
+  status: ConnectionStatus;
+  profile: PublicProfile | null;
+
+  tables: LobbyTable[];
+  currentTable: LobbyTable | null;
+  mySeat: number | null;
+
+  /** Состояние партии, уже отфильтрованное сервером под этого игрока. */
+  view: PlayerView | null;
+  tablePlayers: PublicProfile[];
+  outcome: GameOutcome | null;
+
+  /** Последние фразы за столом. Свободного текста нет — только набор. */
+  phrases: TablePhrase[];
+  /** Последняя реакция каждого игрока — показывается всплывающим пузырём. */
+  emojis: Record<string, { emoji: string; at: number }>;
+
+  lastError: string | null;
+  /** Код отказа сервера. Совпадает с ключом перевода в `error.*`. */
+  rejectedCode: GameErrorCode | null;
+
+  /** Выбранная карта руки — при защите сначала выбирают карту, потом цель. */
+  selectedTableCardKey: string | null;
+  selectTableCard: (key: string | null) => void;
+
+  /** Подключение к игровому шлюзу. Личность берётся из активной сессии. */
+  connect: () => void;
+  disconnect: () => void;
+
+  subscribeLobby: () => void;
+  createTable: (settings: TableSettings) => void;
+  joinTable: (tableId: string) => void;
+  leaveTable: () => void;
+  setReady: (isReady: boolean) => void;
+  /** Посадить бота на свободное место, чтобы начать партию не дожидаясь людей. */
+  addBot: () => void;
+
+  sendPhrase: (phraseId: QuickPhraseId) => void;
+  sendEmoji: (emoji: string) => void;
+
+  clearOutcome: () => void;
+  clearRejection: () => void;
+  clearError: () => void;
+};
+
+/**
+ * Сетевая сессия: соединение, лобби и текущий стол.
+ *
+ * Состояние партии сюда приходит УЖЕ отфильтрованным сервером — клиент
+ * никогда не видит чужих рук и порядка колоды, поэтому подсматривать
+ * нечего даже через DevTools.
+ */
+export const useSessionStore = create<SessionStore>((set, get) => {
+  const handleMessage = (message: ServerMessage) => {
+    switch (message.type) {
+      case 'connected':
+        set({ status: 'connected', profile: message.payload.profile });
+        break;
+
+      case 'lobby:tables':
+        set({ tables: message.payload.tables });
+        break;
+
+      case 'lobby:table-updated': {
+        const updated = message.payload.table;
+
+        set((state) => ({
+          tables: state.tables.some((table) => table.id === updated.id)
+            ? state.tables.map((table) => (table.id === updated.id ? updated : table))
+            : [updated, ...state.tables],
+          currentTable: state.currentTable?.id === updated.id ? updated : state.currentTable,
+        }));
+        break;
+      }
+
+      case 'lobby:table-removed':
+        set((state) => ({
+          tables: state.tables.filter((table) => table.id !== message.payload.tableId),
+        }));
+        break;
+
+      case 'table:joined':
+        set({
+          currentTable: message.payload.table,
+          mySeat: message.payload.seat,
+          outcome: null,
+          phrases: [],
+        });
+        break;
+
+      case 'table:left':
+        set({ currentTable: null, mySeat: null, view: null, outcome: null, phrases: [] });
+        break;
+
+      case 'game:state':
+        set({
+          view: message.payload.view,
+          tablePlayers: message.payload.players,
+          // Состояние сменилось — прежний выбор карты больше не актуален.
+          selectedTableCardKey: null,
+          rejectedCode: null,
+        });
+        break;
+
+      case 'game:rejected':
+        set({ rejectedCode: message.payload.code });
+        break;
+
+      case 'game:finished':
+        set({ outcome: message.payload });
+        break;
+
+      case 'table:phrase':
+        set((state) => ({ phrases: [...state.phrases.slice(-19), message.payload.phrase] }));
+        break;
+
+      case 'table:emoji':
+        set((state) => ({
+          emojis: {
+            ...state.emojis,
+            [message.payload.userId]: { emoji: message.payload.emoji, at: Date.now() },
+          },
+        }));
+        break;
+
+      case 'error':
+        set({ lastError: message.payload.message });
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  return {
+    status: 'idle',
+    profile: null,
+    tables: [],
+    currentTable: null,
+    mySeat: null,
+    view: null,
+    tablePlayers: [],
+    outcome: null,
+    phrases: [],
+    emojis: {},
+    lastError: null,
+    rejectedCode: null,
+    selectedTableCardKey: null,
+
+    selectTableCard: (key) => set({ selectedTableCardKey: key }),
+
+    connect: () => {
+      if (get().status !== 'idle') {
+        return;
+      }
+
+      set({ status: 'connecting' });
+
+      socketClient.subscribe(handleMessage);
+
+      const base =
+        process.env.NEXT_PUBLIC_WS_URL ??
+        (typeof window !== 'undefined'
+          ? `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.hostname}:4000/ws`
+          : 'ws://localhost:4000/ws');
+
+      // Браузерный WebSocket не позволяет задать заголовки, поэтому токен
+      // передаётся параметром. Cookie при этом уходят сами — в вебе работает
+      // и без него, а в Tauri-обёртке нужен именно токен.
+      const token = getAuthToken();
+
+      socketClient.connect(token ? `${base}?token=${encodeURIComponent(token)}` : base);
+    },
+
+    disconnect: () => {
+      socketClient.disconnect();
+      set({ status: 'idle', profile: null, currentTable: null, view: null });
+    },
+
+    subscribeLobby: () => socketClient.send({ type: 'lobby:subscribe' }),
+
+    createTable: (settings) => socketClient.send({ type: 'table:create', payload: { settings } }),
+
+    joinTable: (tableId) => socketClient.send({ type: 'table:join', payload: { tableId } }),
+
+    leaveTable: () => socketClient.send({ type: 'table:leave' }),
+
+    setReady: (isReady) => socketClient.send({ type: 'table:ready', payload: { isReady } }),
+
+    addBot: () => socketClient.send({ type: 'table:add-bot' }),
+
+    sendPhrase: (phraseId) => socketClient.send({ type: 'table:phrase', payload: { phraseId } }),
+
+    sendEmoji: (emoji) => socketClient.send({ type: 'table:emoji', payload: { emoji } }),
+
+    clearOutcome: () => set({ outcome: null }),
+    clearRejection: () => set({ rejectedCode: null }),
+    clearError: () => set({ lastError: null }),
+  };
+});
+
+/**
+ * Отправка игрового действия.
+ *
+ * `expectedVersion` — версия состояния, на которой игрок принимал решение.
+ * Сервер отвергнет действие, если состояние уже ушло вперёд: это защищает
+ * от гонок при лаге и от повторной отправки.
+ */
+export const sendGameAction = (action: GameAction, expectedVersion: number) => {
+  socketClient.send({ type: 'game:action', payload: { action, expectedVersion } });
+};

@@ -1,0 +1,89 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include card-transition;
+  cursor: default;
+  user-select: none;
+  position: relative;
+  transform-origin: center bottom;
+  transform: rotate(var(--card-rotation, 0deg));
+  width: var(--card-width);
+  height: var(--card-height);
+  padding: 0;
+  border: none;
+  border-radius: var(--card-radius);
+  background: transparent;
+
+  // Тень через filter, а не box-shadow: карта со скруглёнными углами и
+  // прозрачным фоном получила бы от box-shadow прямоугольный ореол.
+  filter: drop-shadow(var(--shadow-card));
+  -webkit-touch-callout: none;
+}
+
+.image {
+  // События обрабатывает кнопка-обёртка, изображение их не перехватывает.
+  pointer-events: none;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--card-radius);
+
+  // Оформление колоды: перекраска лицевой стороны вместо отдельного набора
+  // файлов на каждую тему. Значение задаёт стор настроек.
+  filter: var(--card-filter, none);
+}
+
+/**
+ * Играбельная карта: приподнимается и получает золотой контур.
+ * Контур рисуется псевдоэлементом поверх изображения — так он повторяет
+ * скругление карты, чего не даст outline.
+ */
+.playable {
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    transform: rotate(var(--card-rotation, 0deg)) translateY(rem(-16));
+    filter: drop-shadow(var(--shadow-card-raised));
+    outline: none;
+  }
+
+  &:focus-visible::after,
+  &:hover::after {
+    pointer-events: none;
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: rem(2) solid var(--card-accent, var(--gold));
+    border-radius: var(--card-radius);
+  }
+
+  &:active {
+    transform: rotate(var(--card-rotation, 0deg)) translateY(rem(-12)) scale(0.97);
+  }
+}
+
+.selected {
+  transform: rotate(var(--card-rotation, 0deg)) translateY(rem(-24));
+  filter: drop-shadow(var(--shadow-card-raised)) drop-shadow(var(--glow-gold-strong));
+
+  &::after {
+    pointer-events: none;
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: rem(2) solid var(--gold-bright);
+    border-radius: var(--card-radius);
+  }
+}
+
+.dimmed {
+  opacity: 0.42;
+  filter: drop-shadow(var(--shadow-card)) grayscale(0.55) brightness(0.85);
+}
+
+@include reduced-motion {
+  .root {
+    transition: none;
+  }
+}

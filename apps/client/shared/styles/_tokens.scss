@@ -1,0 +1,115 @@
+@use '@/shared/styles/functions' as *;
+
+:root {
+  // --- Сукно стола ---------------------------------------------------------
+  // Глубокий изумруд с холодным подтоном: тёплая зелень рядом с красными
+  // мастями даёт грязный контраст, холодная — чистый.
+  --felt-core: oklch(0.42 0.09 162);
+  --felt-mid: oklch(0.33 0.075 162);
+  --felt-deep: oklch(0.24 0.055 162);
+  --felt-edge: oklch(0.16 0.035 165);
+
+  // --- Поверхности ---------------------------------------------------------
+  --background: oklch(0.15 0.02 250);
+  --foreground: oklch(0.97 0.006 250);
+
+  --surface-1: oklch(0.24 0.022 245 / 0.62);
+  --surface-2: oklch(0.3 0.026 245 / 0.72);
+  --surface-3: oklch(0.36 0.03 245 / 0.8);
+  --surface-overlay: oklch(0.17 0.02 248 / 0.9);
+
+  --muted-foreground: oklch(0.73 0.022 248);
+  --subtle-foreground: oklch(0.6 0.02 248);
+
+  // --- Акценты -------------------------------------------------------------
+  // Золото — премиальность карточного стола: ход, победа, ставки.
+  --gold: oklch(0.83 0.135 86);
+  --gold-bright: oklch(0.9 0.14 90);
+  --gold-dim: oklch(0.63 0.11 84);
+  --gold-deep: oklch(0.42 0.08 82);
+
+  --danger: oklch(0.66 0.2 27);
+  --danger-dim: oklch(0.5 0.16 27);
+  --success: oklch(0.75 0.16 152);
+  --info: oklch(0.72 0.12 235);
+
+  --primary: var(--gold);
+  --primary-foreground: oklch(0.19 0.03 86);
+
+  // --- Границы и стекло ----------------------------------------------------
+  --border: oklch(1 0 0 / 9%);
+  --border-strong: oklch(1 0 0 / 17%);
+  --border-gold: oklch(0.83 0.135 86 / 45%);
+
+  --glass-border: oklch(1 0 0 / 13%);
+  --glass-highlight: oklch(1 0 0 / 8%);
+  --glass-blur: #{rem(20)};
+
+  --ring: var(--gold);
+
+  // --- Тени ----------------------------------------------------------------
+  // Карта: тонкий контур + мягкая тень. Многослойность даёт ощущение
+  // физического предмета, одиночная тень выглядит наклейкой.
+  --shadow-card:
+    0 #{rem(1)} #{rem(2)} oklch(0 0 0 / 0.3),
+    0 #{rem(3)} #{rem(8)} oklch(0 0 0 / 0.35);
+  --shadow-card-raised:
+    0 #{rem(2)} #{rem(4)} oklch(0 0 0 / 0.3),
+    0 #{rem(10)} #{rem(24)} oklch(0 0 0 / 0.45);
+  --shadow-panel:
+    0 #{rem(1)} 0 var(--glass-highlight) inset,
+    0 #{rem(20)} #{rem(48)} #{rem(-24)} oklch(0 0 0 / 0.75);
+  --shadow-button:
+    0 #{rem(1)} 0 oklch(1 0 0 / 0.14) inset,
+    0 #{rem(2)} #{rem(6)} oklch(0 0 0 / 0.35);
+
+  --glow-gold: 0 0 #{rem(12)} oklch(0.83 0.135 86 / 0.6);
+  --glow-gold-strong:
+    0 0 #{rem(6)} oklch(0.83 0.135 86 / 0.9),
+    0 0 #{rem(22)} oklch(0.83 0.135 86 / 0.5);
+  --glow-danger: 0 0 #{rem(12)} oklch(0.66 0.2 27 / 0.55);
+
+  // --- Радиусы -------------------------------------------------------------
+  --radius: #{rem(14)};
+  --radius-sm: calc(var(--radius) - #{rem(7)});
+  --radius-md: calc(var(--radius) - #{rem(3)});
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + #{rem(8)});
+  --radius-pill: #{rem(999)};
+
+  // --- Отступы -------------------------------------------------------------
+  --space-1: #{rem(4)};
+  --space-2: #{rem(8)};
+  --space-3: #{rem(12)};
+  --space-4: #{rem(16)};
+  --space-5: #{rem(20)};
+  --space-6: #{rem(24)};
+  --space-8: #{rem(32)};
+  --space-10: #{rem(40)};
+  --space-12: #{rem(48)};
+
+  // --- Карта ---------------------------------------------------------------
+  // Соотношение 2:3 совпадает с viewBox колоды (360×540). Раскладка стола
+  // считается ТОЛЬКО от этих переменных — размер меняется в одном месте.
+  --card-width: #{rem(76)};
+  --card-height: #{rem(114)};
+  --card-radius: #{rem(7)};
+  --card-overlap: -0.45; // множитель нахлёста карт в руке
+
+  // --- Тайминги ------------------------------------------------------------
+  // Карты «бросаются» с лёгким выбегом, панели — плавно.
+  --ease-card: cubic-bezier(0.22, 0.9, 0.28, 1);
+  --ease-panel: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --duration-fast: 140ms;
+  --duration-card: 220ms;
+  --duration-panel: 280ms;
+
+  // --- Безопасные зоны -----------------------------------------------------
+  // На мобильных под вырезом и системными жестами. В Tauri значения
+  // проставляет плагин safe-area-insets-css, в вебе — нативный env().
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}

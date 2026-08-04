@@ -1,0 +1,124 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100dvh;
+
+  @include table-felt;
+}
+
+/** Пока проверяется сессия — стол уже виден, но без содержимого. */
+.loading {
+  @include table-felt;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100dvh;
+  font-size: rem(15);
+  color: var(--muted-foreground);
+}
+
+.header {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  padding:
+    calc(var(--safe-top) + var(--space-3)) calc(var(--safe-right) + var(--space-4))
+    var(--space-3) calc(var(--safe-left) + var(--space-4));
+  border-bottom: 1px solid var(--border);
+}
+
+.title {
+  @include truncate;
+
+  margin: 0;
+  font-size: rem(17);
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.headerActions {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.iconButton {
+  @include interactive-cursor;
+  @include focus-ring;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: rem(34);
+  height: rem(34);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--muted-foreground);
+  background: transparent;
+  transition:
+    color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease;
+
+  &:hover {
+    border-color: var(--border-gold);
+    color: var(--gold);
+  }
+}
+
+.status {
+  flex-shrink: 0;
+  padding: rem(3) var(--space-2);
+  border-radius: rem(10);
+  font-size: rem(12);
+  color: var(--muted-foreground);
+  background: var(--surface-2);
+
+  &[data-status='error'] {
+    color: var(--danger);
+  }
+}
+
+.content {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-4) calc(var(--safe-right) + var(--space-4)) var(--space-4)
+    calc(var(--safe-left) + var(--space-4));
+}
+
+.nav {
+  display: flex;
+  padding-bottom: var(--safe-bottom);
+  border-top: 1px solid var(--border);
+  background: var(--surface-overlay);
+  backdrop-filter: blur(var(--glass-blur));
+}
+
+.navItem {
+  @include interactive-cursor;
+  @include focus-ring;
+
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: rem(3);
+  align-items: center;
+  padding: var(--space-2) var(--space-1);
+  border: none;
+  font-size: rem(11);
+  color: var(--muted-foreground);
+  background: transparent;
+  transition: color var(--duration-fast) ease;
+
+  &:hover {
+    color: var(--foreground);
+  }
+
+  &[data-active='true'] {
+    color: var(--gold);
+  }
+}
