@@ -7,10 +7,11 @@ import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { useOnlineGame, useSessionStore } from '@/entities/session';
+import { QuickPhrases } from '@/features/game/quick-phrases';
+import { DiscardPanel } from '@/features/game/view-discard';
+import { SettingsPanel } from '@/features/settings/change-settings';
 import { playSound } from '@/shared/lib/sound';
 import { Button } from '@/shared/ui';
-import { SettingsPanel } from '@/widgets/settings/settings-panel';
-import { DiscardPanel } from '../../discard-panel';
 import {
   GameResult,
   OpponentSeat,
@@ -19,7 +20,6 @@ import {
   TalonStack,
   TurnTimer,
 } from '../../game-table/ui/components';
-import { QuickPhrases } from '../../quick-phrases';
 
 import s from './OnlineTable.module.scss';
 
@@ -64,20 +64,45 @@ export const OnlineTable = () => {
   const phrases = useSessionStore((store) => store.phrases);
   const clearRejection = useSessionStore((store) => store.clearRejection);
 
-  // Звук по смене стола — срабатывает и на чужие ходы тоже.
   const prevTableSize = useRef(0);
+  const prevHandSize = useRef(0);
+  const wasMyTurn = useRef(false);
 
+  /**
+   * Озвучка событий стола.
+   *
+   * Считаем по изменению состояния, а не по своим действиям: игрок должен
+   * слышать и чужие ходы — иначе стол кажется мёртвым, пока ходят соперники.
+   */
   useEffect(() => {
     if (!view) {
       return;
     }
 
-    if (view.table.length > prevTableSize.current) {
-      playSound('play');
+    const tableSize = view.table.length;
+    const handSize = view.hand.length;
+
+    if (tableSize > prevTableSize.current) {
+      playSound(view.table.some((pair) => pair.defense) ? 'beat' : 'play');
+    } else if (tableSize === 0 && prevTableSize.current > 0) {
+      // Стол опустел: либо отбились, либо кто-то забрал карты.
+      playSound(handSize > prevHandSize.current ? 'take' : 'pass');
+    } else if (handSize > prevHandSize.current) {
+      playSound('deal');
     }
 
-    prevTableSize.current = view.table.length;
+    prevTableSize.current = tableSize;
+    prevHandSize.current = handSize;
   }, [view]);
+
+  /** Свой ход — короткий сигнал, чтобы не пропустить таймер. */
+  useEffect(() => {
+    if (isMyTurn && !wasMyTurn.current) {
+      playSound('turn');
+    }
+
+    wasMyTurn.current = isMyTurn;
+  }, [isMyTurn]);
 
   /**
    * Отказ сервера показываем тостом и озвучиваем.
@@ -177,6 +202,8 @@ export const OnlineTable = () => {
 
   return (
     <div className={s.root}>
+      <div className={s.rail} aria-hidden />
+
       <header className={s.opponents}>
         {opponents.map((player) => {
           const meta = players.find((item) => item.userId === player.userId);
@@ -254,8 +281,8 @@ export const OnlineTable = () => {
 
       <DiscardPanel
         isOpen={isDiscardOpen}
-        onClose={() => setIsDiscardOpen(false)}
         cards={view.discardPile}
+        onClose={() => setIsDiscardOpen(false)}
       />
 
       <SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />

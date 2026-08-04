@@ -2,7 +2,21 @@ import { Injectable } from '@nestjs/common';
 
 import { ProfilesService } from '../profile/profiles.service';
 
-import type { PublicProfile } from '@durak-master/schemas';
+import type { MyProfile, PublicProfile } from '@durak-master/schemas';
+
+/** Публичная часть профиля: без балансов, их видит только владелец. */
+const toPublicProfile = (profile: MyProfile): PublicProfile => ({
+  userId: profile.userId,
+  name: profile.name,
+  avatarUrl: profile.avatarUrl,
+  rating: profile.rating,
+  seasonRating: profile.seasonRating,
+  gamesPlayed: profile.gamesPlayed,
+  gamesWon: profile.gamesWon,
+  gamesLost: profile.gamesLost,
+  isPremium: profile.isPremium,
+  isOnline: true,
+});
 
 /**
  * Профили подключённых игроков.
@@ -19,26 +33,24 @@ export class SessionsService {
 
   constructor(private readonly profilesService: ProfilesService) {}
 
-  /** Поднимает профиль из БД и кладёт в кеш. Вызывается при подключении. */
-  async load(userId: string): Promise<PublicProfile> {
+  /**
+   * Поднимает профиль из БД и кладёт в кеш.
+   *
+   * Возвращает ПОЛНЫЙ профиль с балансами — он уходит только владельцу
+   * соединения. В кеш при этом ложится публичная часть: её видят соседи
+   * по столу, и кредиты туда попадать не должны.
+   */
+  async load(userId: string): Promise<MyProfile> {
     const profile = await this.profilesService.ensureProfile(userId);
 
-    const publicProfile: PublicProfile = {
-      userId: profile.userId,
-      name: profile.name,
-      avatarUrl: profile.avatarUrl,
-      rating: profile.rating,
-      seasonRating: profile.seasonRating,
-      gamesPlayed: profile.gamesPlayed,
-      gamesWon: profile.gamesWon,
-      gamesLost: profile.gamesLost,
-      isPremium: profile.isPremium,
-      isOnline: true,
-    };
+    this.profiles.set(userId, toPublicProfile(profile));
 
-    this.profiles.set(userId, publicProfile);
+    return profile;
+  }
 
-    return publicProfile;
+  /** Свежий профиль владельца — после партии, бонуса или покупки. */
+  async reload(userId: string): Promise<MyProfile> {
+    return this.load(userId);
   }
 
   get(userId: string): PublicProfile | undefined {

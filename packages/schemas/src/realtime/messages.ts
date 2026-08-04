@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { gameActionSchema, gameErrorCodeSchema } from '../game/action';
 import { playerViewSchema } from '../game/state';
 import { createTableInputSchema, joinTableInputSchema, lobbyTableSchema } from '../lobby/table';
-import { publicProfileSchema } from '../profile/profile';
+import { myProfileSchema, publicProfileSchema } from '../profile/profile';
 import { quickPhraseIdSchema } from './phrases';
 
 /**
@@ -63,6 +63,9 @@ export const clientMessageSchema = z.discriminatedUnion('type', [
     payload: z.object({ phraseId: quickPhraseIdSchema }),
   }),
 
+  /** Забрать бесплатный бонус кредитов. */
+  z.object({ type: z.literal('profile:claim-bonus') }),
+
   /** Пинг для контроля живости соединения. */
   z.object({ type: z.literal('ping') }),
 ]);
@@ -87,10 +90,19 @@ export const tablePhraseSchema = z.object({
 export type TablePhrase = z.infer<typeof tablePhraseSchema>;
 
 export const serverMessageSchema = z.discriminatedUnion('type', [
-  /** Подтверждение подключения с профилем игрока. */
+  /**
+   * Подтверждение подключения. Профиль полный — с балансами: их видит
+   * только владелец, и уходит он тому же соединению, что прошло проверку.
+   */
   z.object({
     type: z.literal('connected'),
-    payload: z.object({ profile: publicProfileSchema }),
+    payload: z.object({ profile: myProfileSchema }),
+  }),
+
+  /** Обновление балансов — после партии, бонуса или покупки. */
+  z.object({
+    type: z.literal('profile:updated'),
+    payload: z.object({ profile: myProfileSchema }),
   }),
 
   /** Полный список столов — приходит после подписки. */

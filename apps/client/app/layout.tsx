@@ -1,4 +1,4 @@
-import { Alegreya_Sans, Playfair_Display } from 'next/font/google';
+import { Nunito, Rubik } from 'next/font/google';
 
 import { DEFAULT_LOCALE } from '@/shared/i18n/config';
 import { AppProviders } from './providers';
@@ -8,22 +8,23 @@ import type { Metadata, Viewport } from 'next';
 import './globals.scss';
 
 /**
- * Интерфейсный шрифт. Гуманистический гротеск: у него есть характер,
- * которого нет у системного, и полноценная кириллица — имена игроков
- * и ставки не должны проваливаться в подстановочный шрифт.
+ * Интерфейсный шрифт. Скруглённый гротеск с большой высотой строчных:
+ * он дружелюбный, как и положено игре, и хорошо читается мелким кеглем
+ * в подписях под иконками.
  */
-const sans = Alegreya_Sans({
+const sans = Nunito({
   subsets: ['latin', 'cyrillic'],
-  weight: ['400', '500', '700', '800'],
+  weight: ['400', '600', '700', '800'],
   variable: '--font-sans',
   display: 'swap',
 });
 
 /**
- * Акцидентный шрифт заголовков и ставок. Антиква с высоким контрастом
- * штрихов задаёт тон карточного клуба — гротеском такого не добиться.
+ * Заголовки и суммы. Плотный геометрический гротеск: цифры ставок должны
+ * читаться как счёт на табло, а не как книжный текст — антиква с тонкими
+ * засечками для этого не годится.
  */
-const display = Playfair_Display({
+const display = Rubik({
   subsets: ['latin', 'cyrillic'],
   weight: ['600', '700', '800'],
   variable: '--font-display',

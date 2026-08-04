@@ -1,0 +1,115 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/**
+ * «Быстрая игра» — главное действие экрана, поэтому занимает всю ширину
+ * и стоит над сеткой: игрок пришёл играть, а не листать разделы.
+ */
+.quickGame {
+  @include interactive-cursor;
+  @include focus-ring;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  border: none;
+  border-radius: var(--radius-lg);
+  color: var(--on-felt);
+  background: oklch(1 0 0 / 12%);
+  box-shadow: 0 rem(1) 0 oklch(1 0 0 / 18%) inset;
+  transition:
+    transform var(--duration-fast) var(--ease-card),
+    background-color var(--duration-fast) ease;
+
+  &:hover {
+    transform: translateY(rem(-2));
+    background: oklch(1 0 0 / 20%);
+  }
+
+  &:active {
+    transform: translateY(rem(1));
+  }
+}
+
+.quickGameLabel {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: rem(24);
+  font-weight: 700;
+  text-shadow: 0 rem(1) rem(3) oklch(0.2 0.03 250 / 55%);
+}
+
+/**
+ * Сетка разделов: плитки без рамок, разделённые тонкими линиями.
+ * Рамка у каждой плитки дробила бы экран на девять коробок.
+ */
+.grid {
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  border-radius: var(--radius-lg);
+  background: oklch(1 0 0 / 16%);
+}
+
+.item {
+  @include interactive-cursor;
+  @include focus-ring;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  align-items: center;
+  justify-content: center;
+  min-height: rem(96);
+  padding: var(--space-4) var(--space-2);
+  border: none;
+  color: var(--on-felt);
+  background: oklch(0.2 0.03 250 / 12%);
+  transition: background-color var(--duration-fast) ease;
+
+  &:hover:not(:disabled) {
+    background: oklch(1 0 0 / 14%);
+  }
+
+  &[data-locked='true'] {
+    cursor: default;
+    opacity: 0.55;
+  }
+}
+
+.itemTop {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  color: var(--on-felt);
+}
+
+.badge {
+  font-size: rem(14);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--gold-bright);
+}
+
+.itemLabel {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: rem(17);
+  font-weight: 700;
+  text-align: center;
+  text-shadow: 0 rem(1) rem(2) oklch(0.2 0.03 250 / 50%);
+}
+
+.soon {
+  font-size: rem(10);
+  color: var(--on-felt-muted);
+  text-transform: uppercase;
+  letter-spacing: rem(0.4);
+}

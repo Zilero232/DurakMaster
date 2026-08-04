@@ -1,6 +1,7 @@
 'use client';
 
 import { cardKey, getBeatableIndexes, getPlayableKeys } from '@/entities/game';
+import { playSound } from '@/shared/lib/sound';
 import { sendGameAction, useSessionStore } from './session-store';
 
 import type { Card } from '@durak-master/schemas';
@@ -48,6 +49,7 @@ export const useOnlineGame = () => {
 
     // Защищаясь — сначала выбираем карту, потом цель на столе.
     if (isDefending) {
+      playSound('click');
       setSelectedKey(selectedKey === key ? null : key);
 
       return;

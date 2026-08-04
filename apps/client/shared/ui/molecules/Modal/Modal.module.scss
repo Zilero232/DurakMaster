@@ -9,8 +9,8 @@
   background: transparent;
 
   &::backdrop {
-    background: oklch(0 0 0 / 62%);
-    backdrop-filter: blur(rem(3));
+    background: oklch(0.25 0.05 250 / 55%);
+    backdrop-filter: blur(rem(4));
   }
 
   // Появление снизу вверх: панель «выезжает» на стол, а не мигает.
@@ -42,7 +42,8 @@
 
 .title {
   margin: 0;
-  font-size: rem(19);
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: rem(21);
   font-weight: 700;
   color: var(--foreground);
 }

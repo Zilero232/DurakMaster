@@ -36,34 +36,39 @@
   left: 0;
 }
 
+/**
+ * Остаток колоды — крупным числом прямо на сукне.
+ * Мелкая метка на самой стопке теряется среди карт, а число нужно
+ * видеть боковым зрением: от него зависит, пора ли беречь козыри.
+ */
 .count {
   position: absolute;
   z-index: 2;
-  right: calc(var(--card-width) * -0.12);
-  bottom: rem(-4);
-  min-width: rem(22);
-  padding: rem(2) rem(6);
-  border-radius: rem(11);
-  font-size: rem(12);
+  bottom: rem(-6);
+  left: calc(var(--card-width) * -0.42);
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: rem(30);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--foreground);
-  text-align: center;
-  background: oklch(0.15 0.02 250 / 0.85);
+  line-height: 1;
+  color: var(--on-felt);
+  text-shadow: 0 rem(2) rem(6) oklch(0.2 0.03 250 / 65%);
 }
 
 .trumpBadge {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: rem(28);
-  height: rem(28);
+  width: rem(30);
+  height: rem(30);
   border-radius: 50%;
-  font-size: rem(17);
+  font-size: rem(18);
   line-height: 1;
-  color: oklch(0.2 0 0);
-  background: oklch(0.97 0 0 / 0.94);
+  color: var(--foreground);
+  background: oklch(1 0 0);
+  box-shadow: var(--shadow-card);
 
   &[data-red='true'] {
-    color: oklch(0.55 0.2 25);
+    color: var(--accent);
   }
 }

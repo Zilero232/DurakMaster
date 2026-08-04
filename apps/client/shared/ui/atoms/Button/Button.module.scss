@@ -1,5 +1,10 @@
 @use '@/shared/styles/mixins' as *;
 
+/**
+ * Кнопки игры «пухлые»: белая заливка, крупный радиус, заметная тень.
+ * Цветом отличается текст, а не фон — так подписи остаются читаемыми
+ * поверх сукна, а кнопка выглядит физической, а не залитым прямоугольником.
+ */
 .root {
   @include interactive-cursor;
   @include button-focus-ring;
@@ -8,18 +13,26 @@
   gap: var(--space-2);
   align-items: center;
   justify-content: center;
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  font-weight: 500;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  letter-spacing: rem(0.2);
   white-space: nowrap;
+  box-shadow: var(--shadow-button);
   transition:
-    transform var(--duration-fast) var(--ease-panel),
-    background-color var(--duration-fast) ease,
-    border-color var(--duration-fast) ease,
+    transform var(--duration-fast) var(--ease-card),
+    box-shadow var(--duration-fast) ease,
+    color var(--duration-fast) ease,
     opacity var(--duration-fast) ease;
 
+  &:hover:not(:disabled) {
+    transform: translateY(rem(-2));
+    box-shadow: var(--shadow-card-raised);
+  }
+
   &:active:not(:disabled) {
-    transform: scale(0.97);
+    transform: translateY(rem(1));
+    box-shadow: var(--shadow-tile);
   }
 
   &:disabled {
@@ -29,6 +42,7 @@
   @include reduced-motion {
     transition: none;
 
+    &:hover:not(:disabled),
     &:active:not(:disabled) {
       transform: none;
     }
@@ -37,69 +51,57 @@
 
 // --- Варианты --------------------------------------------------------------
 
+/** Главное действие: белая плитка с красной подписью — как «Беру» в референсе. */
 .primary {
-  border-color: color-mix(in oklch, var(--gold) 60%, transparent);
-  color: var(--primary-foreground);
-  background: var(--gold);
-
-  &:hover:not(:disabled) {
-    background: color-mix(in oklch, var(--gold) 88%, white);
-  }
+  color: var(--accent);
+  background: linear-gradient(180deg, oklch(1 0 0) 0%, var(--surface-2) 100%);
 }
 
 .secondary {
-  border-color: var(--border-strong);
   color: var(--foreground);
-  background: var(--surface-2);
-
-  &:hover:not(:disabled) {
-    border-color: var(--gold-dim);
-    background: color-mix(in oklch, var(--surface-2) 80%, var(--gold) 12%);
-  }
+  background: linear-gradient(180deg, oklch(1 0 0) 0%, var(--surface-3) 100%);
 }
 
+/** Второстепенное действие поверх сукна — без заливки, светлым текстом. */
 .ghost {
-  color: var(--foreground);
-  background: transparent;
+  color: var(--on-felt);
+  background: oklch(1 0 0 / 14%);
+  box-shadow: none;
 
   &:hover:not(:disabled) {
-    background: var(--surface-1);
+    background: oklch(1 0 0 / 22%);
+    box-shadow: none;
   }
 }
 
 .danger {
-  border-color: color-mix(in oklch, var(--danger) 55%, transparent);
-  color: var(--foreground);
-  background: color-mix(in oklch, var(--danger) 22%, transparent);
-
-  &:hover:not(:disabled) {
-    background: color-mix(in oklch, var(--danger) 34%, transparent);
-  }
+  color: oklch(1 0 0);
+  background: linear-gradient(180deg, var(--accent-bright) 0%, var(--accent-dim) 100%);
 }
 
 // --- Размеры ---------------------------------------------------------------
 
 .sizeSm {
-  height: rem(32);
-  padding: 0 var(--space-3);
-  font-size: rem(13);
-}
-
-.sizeDefault {
-  height: rem(40);
+  height: rem(38);
   padding: 0 var(--space-4);
   font-size: rem(14);
 }
 
-.sizeLg {
-  height: rem(48);
-  padding: 0 var(--space-6);
+.sizeDefault {
+  height: rem(46);
+  padding: 0 var(--space-5);
   font-size: rem(16);
 }
 
+.sizeLg {
+  height: rem(56);
+  padding: 0 var(--space-8);
+  font-size: rem(19);
+}
+
 .sizeIcon {
-  width: rem(40);
-  height: rem(40);
+  width: rem(46);
+  height: rem(46);
   padding: 0;
 }
 

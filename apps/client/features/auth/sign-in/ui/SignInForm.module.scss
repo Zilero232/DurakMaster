@@ -1,0 +1,111 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include table-felt;
+  @include grain(0.045);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: calc(var(--safe-top) + var(--space-6)) var(--space-5)
+    calc(var(--safe-bottom) + var(--space-6));
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: rem(400);
+  padding: var(--space-8) var(--space-6);
+  border-radius: var(--radius-xl);
+  background: var(--surface-overlay);
+  box-shadow: var(--shadow-panel);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: rem(28);
+  font-weight: 800;
+  color: var(--foreground);
+  text-align: center;
+}
+
+.subtitle {
+  margin: 0 0 var(--space-2);
+  font-size: rem(14);
+  line-height: 1.4;
+  color: var(--muted-foreground);
+  text-align: center;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label {
+  font-size: rem(12);
+  font-weight: 500;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: rem(0.6);
+}
+
+.input {
+  @include focus-ring;
+
+  height: rem(50);
+  padding: 0 var(--space-4);
+  border: rem(2) solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: rem(16);
+  color: var(--foreground);
+  background: var(--surface-2);
+  transition:
+    border-color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease;
+
+  &:hover {
+    border-color: var(--border-strong);
+  }
+
+  &:focus {
+    border-color: var(--accent);
+    background: oklch(1 0 0);
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--border-accent);
+  }
+}
+
+.error {
+  margin: 0;
+  font-size: rem(13);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.switch {
+  @include interactive-cursor;
+  @include focus-ring;
+
+  padding: var(--space-2);
+  border: 0;
+  border-radius: var(--radius-sm);
+  font-size: rem(14);
+  font-weight: 600;
+  color: var(--muted-foreground);
+  background: none;
+  transition: color var(--duration-fast) ease;
+
+  &:hover {
+    color: var(--accent);
+  }
+}

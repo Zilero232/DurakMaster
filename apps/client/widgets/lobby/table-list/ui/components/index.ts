@@ -1,0 +1,1 @@
+export { TableBadges } from './TableBadges';

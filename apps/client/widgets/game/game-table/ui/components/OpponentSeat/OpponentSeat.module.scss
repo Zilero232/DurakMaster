@@ -72,9 +72,11 @@
   }
 }
 
+/** Чей ход — белая рамка с золотым свечением, видно с любого края стола. */
 .active {
-  border-color: var(--gold);
-  background: color-mix(in oklch, var(--gold) 10%, transparent);
+  border-color: oklch(1 0 0 / 85%);
+  background: oklch(1 0 0 / 14%);
+  box-shadow: var(--glow-gold);
 }
 
 .out {
@@ -96,26 +98,34 @@
   transform-origin: center bottom;
   width: calc(var(--card-width) * 0.4);
   height: calc(var(--card-height) * 0.4);
-  border: 1px solid oklch(0 0 0 / 0.3);
-  border-radius: rem(4);
+  border: rem(2) solid oklch(1 0 0 / 85%);
+  border-radius: rem(5);
   background:
-    repeating-linear-gradient(45deg, oklch(1 0 0 / 0.08) 0 rem(3), transparent rem(3) rem(6)),
-    linear-gradient(160deg, oklch(0.55 0.11 250), oklch(0.35 0.09 250));
+    repeating-linear-gradient(
+      45deg,
+      oklch(1 0 0 / 0.16) 0 rem(3),
+      transparent rem(3) rem(6)
+    ),
+    linear-gradient(160deg, oklch(0.62 0.13 250), oklch(0.45 0.11 250));
   box-shadow: var(--shadow-card);
 }
 
+/** Счётчик карт — красный кружок поверх стопки, как в референсе. */
 .count {
   position: absolute;
   right: 0;
   bottom: rem(-2);
-  min-width: rem(20);
-  padding: rem(1) rem(5);
-  border-radius: rem(10);
-  font-size: rem(11);
+  min-width: rem(22);
+  padding: rem(2) rem(6);
+  border: rem(2) solid oklch(1 0 0);
+  border-radius: var(--radius-pill);
+  font-size: rem(12);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--foreground);
+  color: oklch(1 0 0);
   text-align: center;
-  background: oklch(0.15 0.02 250 / 0.85);
+  background: var(--accent);
+  box-shadow: var(--shadow-card);
 }
 
 .info {
@@ -130,20 +140,24 @@
   @include truncate;
 
   max-width: 100%;
-  font-size: rem(13);
-  color: var(--foreground);
+  font-size: rem(14);
+  font-weight: 600;
+  color: var(--on-felt);
+  text-shadow: 0 rem(1) rem(2) oklch(0.2 0.03 250 / 55%);
 }
 
 .role {
   font-size: rem(11);
-  color: var(--muted-foreground);
-  letter-spacing: rem(0.2);
+  color: var(--on-felt-muted);
+  text-transform: uppercase;
+  letter-spacing: rem(0.3);
 }
 
 .defender {
-  color: var(--gold);
+  font-weight: 700;
+  color: var(--gold-bright);
 }
 
 .offline {
-  color: var(--danger);
+  color: oklch(0.85 0.14 30);
 }

@@ -1,0 +1,29 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.badge {
+  display: flex;
+  gap: rem(4);
+  align-items: center;
+  padding: rem(3) var(--space-2);
+  border-radius: var(--radius-pill);
+  font-size: rem(11);
+  font-weight: 600;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  background: oklch(0.2 0.03 250 / 6%);
+}
+
+/** «С шулерами» — единственный режим, который меняет доверие к столу. */
+.cheaters {
+  color: var(--accent);
+  background: color-mix(in oklch, var(--accent) 12%, transparent);
+}

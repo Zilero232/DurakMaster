@@ -3,7 +3,7 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
-import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY, resolveLocale } from './config';
+import { DEFAULT_LOCALE, detectLocale, LOCALE_STORAGE_KEY, resolveLocale } from './config';
 import { messages } from './messages';
 
 import type { Locale } from './config';
@@ -41,7 +41,7 @@ export const LocaleProvider = ({ children }: LocaleProviderProps) => {
 
   useEffect(() => {
     const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
-    const next = resolveLocale(stored ?? window.navigator.language.split('-')[0]);
+    const next = stored ? resolveLocale(stored) : detectLocale();
 
     if (next !== DEFAULT_LOCALE) {
       setLocaleState(next);

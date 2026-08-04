@@ -8,36 +8,36 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-4);
-  background: oklch(0.12 0.02 250 / 0.72);
+  background: oklch(0.25 0.05 250 / 58%);
   backdrop-filter: blur(rem(6));
   animation: fade var(--duration-panel) var(--ease-panel);
 }
 
 .panel {
-  @include glass-panel;
-
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
   width: 100%;
-  max-width: rem(340);
+  max-width: rem(360);
   padding: var(--space-8) var(--space-6);
+  border-radius: var(--radius-xl);
   text-align: center;
-  animation: rise var(--duration-panel) var(--ease-card);
+  background: var(--surface-overlay);
+  box-shadow: var(--shadow-panel);
 }
 
 .title {
   margin: 0;
-  font-size: rem(30);
-  font-weight: 700;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: rem(34);
+  font-weight: 800;
 
   &[data-tone='win'] {
-    color: var(--gold);
-    text-shadow: var(--glow-gold);
+    @include gold-text;
   }
 
   &[data-tone='lose'] {
-    color: var(--danger);
+    color: var(--accent);
   }
 
   &[data-tone='draw'] {
@@ -56,12 +56,14 @@
   gap: var(--space-3);
   justify-content: center;
   margin-bottom: var(--space-2);
-  font-size: rem(14);
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: rem(20);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
 .delta {
-  color: var(--danger);
+  color: var(--accent);
 
   &[data-positive='true'] {
     color: var(--success);
@@ -69,7 +71,7 @@
 }
 
 .rating {
-  color: var(--gold);
+  color: var(--gold-dim);
 }
 
 .actions {
@@ -84,16 +86,8 @@
   }
 }
 
-@keyframes rise {
-  from {
-    transform: translateY(rem(16)) scale(0.96);
-    opacity: 0;
-  }
-}
-
 @include reduced-motion {
-  .root,
-  .panel {
+  .root {
     animation: none;
   }
 }

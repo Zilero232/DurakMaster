@@ -2,6 +2,7 @@
 
 import { Toaster } from 'sonner';
 
+import { useApplyCardTheme } from '@/entities/settings';
 import { LocaleProvider } from '@/shared/i18n';
 
 type AppProvidersProps = {
@@ -13,21 +14,25 @@ type AppProvidersProps = {
  * и не наследуют провайдеры из layout — поэтому каждая подключает эту
  * обёртку сама, иначе на них не будет ни переводов, ни тостов.
  */
-export const AppProviders = ({ children }: AppProvidersProps) => (
-  <LocaleProvider>
-    {children}
+export const AppProviders = ({ children }: AppProvidersProps) => {
+  useApplyCardTheme();
 
-    <Toaster
-      position="top-center"
-      duration={3500}
-      toastOptions={{
-        style: {
-          border: '1px solid var(--border)',
-          background: 'var(--surface-overlay)',
-          color: 'var(--foreground)',
-          backdropFilter: 'blur(var(--glass-blur))',
-        },
-      }}
-    />
-  </LocaleProvider>
-);
+  return (
+    <LocaleProvider>
+      {children}
+
+      <Toaster
+        position="top-center"
+        duration={3500}
+        toastOptions={{
+          style: {
+            border: '1px solid var(--border)',
+            background: 'var(--surface-overlay)',
+            color: 'var(--foreground)',
+            backdropFilter: 'blur(var(--glass-blur))',
+          },
+        }}
+      />
+    </LocaleProvider>
+  );
+};

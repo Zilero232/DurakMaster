@@ -56,11 +56,11 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-// Заголовки и суммы — антиквой: она задаёт тон карточного клуба.
+// Заголовки и суммы — плотным гротеском: цифры читаются как счёт на табло.
 h1,
 h2,
 h3 {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-display), system-ui, sans-serif;
   letter-spacing: rem(-0.2);
 }
 

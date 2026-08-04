@@ -1,23 +1,25 @@
 'use client';
 
-import { Coins, Crown, Lock, Users } from 'lucide-react';
+import { ChevronRight, Crown, Lock } from 'lucide-react';
+import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 
 import { formatCredits } from '@/shared/lib/format';
-import { Button } from '@/shared/ui';
+import { Avatar } from '@/shared/ui';
+import { TableBadges } from './components';
 
 import s from './TableList.module.scss';
 
-import type { LobbyTable } from '@durak-master/schemas';
+import type { TableListProps } from './TableList.types';
 
-type TableListProps = {
-  tables: LobbyTable[];
-  onJoin: (tableId: string) => void;
-};
+/** Строки появляются лесенкой — список оживает вместо мгновенной вспышки. */
+const ROW_MOTION = {
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
+} as const;
 
 export const TableList = ({ tables, onJoin }: TableListProps) => {
   const t = useTranslations('lobby');
-  const tMode = useTranslations('create.mode');
 
   if (tables.length === 0) {
     return (
@@ -30,63 +32,82 @@ export const TableList = ({ tables, onJoin }: TableListProps) => {
 
   return (
     <ul className={s.list}>
-      {tables.map((table) => {
-        const isFull = table.players.length >= table.settings.maxPlayers;
+      {tables.map((table, index) => {
+        const { players, settings, hasPremiumPlayer } = table;
+        const isFull = players.length >= settings.maxPlayers;
         const isPlaying = table.status === 'playing';
         const isBlocked = isFull || isPlaying;
 
         return (
-          <li key={table.id} className={s.item} data-premium={table.hasPremiumPlayer}>
-            <div className={s.info}>
-              <div className={s.bet}>
-                <Coins size={16} aria-hidden />
-                <span>{formatCredits(table.settings.bet)}</span>
-                {table.hasPremiumPlayer && (
-                  <Crown size={14} className={s.premium} aria-label={t('premiumPlayer')} />
-                )}
-                {table.settings.isPrivate && <Lock size={13} aria-label={t('privateTable')} />}
-              </div>
+          <motion.li
+            key={table.id}
+            className={s.item}
+            data-premium={hasPremiumPlayer}
+            data-blocked={isBlocked}
+            {...ROW_MOTION}
+            transition={{ delay: Math.min(index * 0.04, 0.3) }}
+          >
+            <button
+              type="button"
+              className={s.row}
+              disabled={isBlocked}
+              onClick={() => onJoin(table.id)}
+            >
+              <span className={s.betColumn}>
+                <span className={s.bet}>{formatCredits(settings.bet)}</span>
 
-              <div className={s.meta}>
-                <span>{tMode(table.settings.mode)}</span>
-                <Dot />
-                <span>{table.settings.deckSize}</span>
-                {table.settings.fairness === 'cheaters' && (
-                  <>
-                    <Dot />
-                    <span className={s.cheaters}>{tMode('cheaters')}</span>
-                  </>
-                )}
-              </div>
-            </div>
-
-            <div className={s.right}>
-              <span className={s.players}>
-                <Users size={14} aria-hidden />
-                {t('playersCount', {
-                  current: table.players.length,
-                  max: table.settings.maxPlayers,
-                })}
+                <span className={s.seats}>
+                  {/* Точками показываем занятые и свободные места: «3/4»
+                      требует чтения, а точки видно боковым зрением. */}
+                  {Array.from({ length: settings.maxPlayers }, (_, seat) => (
+                    <span
+                      // biome-ignore lint/suspicious/noArrayIndexKey: место за столом определяется номером
+                      key={`${table.id}-seat-${seat}`}
+                      className={s.seat}
+                      data-taken={seat < players.length}
+                    />
+                  ))}
+                </span>
               </span>
 
-              <Button
-                size="sm"
-                variant={isBlocked ? 'ghost' : 'primary'}
-                isDisabled={isBlocked}
-                onClick={() => onJoin(table.id)}
-              >
-                {isPlaying ? t('inProgress') : isFull ? t('full') : t('join')}
-              </Button>
-            </div>
-          </li>
+              <span className={s.main}>
+                <span className={s.players}>
+                  {players.slice(0, 4).map((player) => (
+                    <Avatar
+                      key={player.userId}
+                      name={player.name}
+                      src={player.avatarUrl}
+                      size={26}
+                      className={s.playerAvatar}
+                    />
+                  ))}
+
+                  <span className={s.names}>
+                    {players.map((player) => player.name).join(', ') || t('emptySeats')}
+                  </span>
+
+                  {hasPremiumPlayer && (
+                    <Crown size={15} className={s.premium} aria-label={t('premiumPlayer')} />
+                  )}
+                  {settings.isPrivate && (
+                    <Lock size={14} className={s.lock} aria-label={t('privateTable')} />
+                  )}
+                </span>
+
+                <TableBadges settings={settings} />
+              </span>
+
+              <span className={s.action}>
+                {isBlocked ? (
+                  <span className={s.blocked}>{isPlaying ? t('inProgress') : t('full')}</span>
+                ) : (
+                  <ChevronRight size={22} aria-hidden />
+                )}
+              </span>
+            </button>
+          </motion.li>
         );
       })}
     </ul>
   );
 };
-
-const Dot = () => (
-  <span className={s.dot} aria-hidden>
-    ·
-  </span>
-);

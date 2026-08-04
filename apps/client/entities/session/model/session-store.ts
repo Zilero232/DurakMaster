@@ -9,6 +9,7 @@ import type {
   GameAction,
   GameErrorCode,
   LobbyTable,
+  MyProfile,
   PlayerView,
   PublicProfile,
   QuickPhraseId,
@@ -28,7 +29,8 @@ export type GameOutcome = {
 
 type SessionStore = {
   status: ConnectionStatus;
-  profile: PublicProfile | null;
+  /** Полный профиль владельца — с балансами. */
+  profile: MyProfile | null;
 
   tables: LobbyTable[];
   currentTable: LobbyTable | null;
@@ -66,6 +68,8 @@ type SessionStore = {
 
   sendPhrase: (phraseId: QuickPhraseId) => void;
   sendEmoji: (emoji: string) => void;
+  /** Забрать бесплатный бонус. Право на него проверяет сервер. */
+  claimBonus: () => void;
 
   clearOutcome: () => void;
   clearRejection: () => void;
@@ -84,6 +88,10 @@ export const useSessionStore = create<SessionStore>((set, get) => {
     switch (message.type) {
       case 'connected':
         set({ status: 'connected', profile: message.payload.profile });
+        break;
+
+      case 'profile:updated':
+        set({ profile: message.payload.profile });
         break;
 
       case 'lobby:tables':
@@ -221,6 +229,8 @@ export const useSessionStore = create<SessionStore>((set, get) => {
     sendPhrase: (phraseId) => socketClient.send({ type: 'table:phrase', payload: { phraseId } }),
 
     sendEmoji: (emoji) => socketClient.send({ type: 'table:emoji', payload: { emoji } }),
+
+    claimBonus: () => socketClient.send({ type: 'profile:claim-bonus' }),
 
     clearOutcome: () => set({ outcome: null }),
     clearRejection: () => set({ rejectedCode: null }),

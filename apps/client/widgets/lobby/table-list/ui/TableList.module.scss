@@ -10,93 +10,159 @@
 }
 
 .item {
-  display: flex;
-  gap: var(--space-3);
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  background: var(--surface-1);
-  transition: border-color var(--duration-fast) ease;
+  @include embossed-panel;
 
-  &:hover {
-    border-color: var(--border-strong);
+  overflow: hidden;
+  transition:
+    transform var(--duration-fast) var(--ease-card),
+    box-shadow var(--duration-fast) ease;
+
+  &:hover:not([data-blocked='true']) {
+    transform: translateY(rem(-2));
+    box-shadow: var(--shadow-card-raised);
   }
 
-  // Столы с премиум-игроками выделяются — как в референсе.
+  // Стол с премиум-игроком поднимается в списке — отмечаем его золотом.
   &[data-premium='true'] {
-    border-color: color-mix(in oklch, var(--gold) 42%, transparent);
-    background: color-mix(in oklch, var(--gold) 7%, var(--surface-1));
+    box-shadow:
+      0 0 0 rem(2) var(--border-gold) inset,
+      var(--shadow-tile);
+  }
+
+  &[data-blocked='true'] {
+    opacity: 0.6;
   }
 }
 
-.info {
+/**
+ * Вся строка — одна кнопка: попасть в стол должно быть легко, а отдельная
+ * кнопка «Сесть» справа заставляет целиться в маленькую область.
+ */
+.row {
+  @include interactive-cursor;
+  @include focus-ring;
+
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  text-align: left;
+  background: transparent;
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.betColumn {
   display: flex;
   flex-direction: column;
-  gap: rem(3);
-  min-width: 0;
-}
-
-.bet {
-  display: flex;
-  gap: var(--space-1);
-  align-items: center;
-  font-size: rem(16);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  color: var(--gold);
-}
-
-.premium {
-  color: var(--gold);
-}
-
-.meta {
-  display: flex;
-  gap: rem(5);
-  align-items: center;
-  font-size: rem(12);
-  color: var(--muted-foreground);
-}
-
-.dot {
-  opacity: 0.5;
-}
-
-.cheaters {
-  color: color-mix(in oklch, var(--danger) 85%, white);
-}
-
-.right {
-  display: flex;
   flex-shrink: 0;
-  gap: var(--space-3);
-  align-items: center;
+  gap: rem(4);
+  align-items: flex-start;
+  min-width: rem(76);
+}
+
+/** Ставка — первое, что смотрят при выборе стола. */
+.bet {
+  @include gold-text;
+
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: rem(22);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/** Занятость стола точками: считывается без чтения цифр. */
+.seats {
+  display: flex;
+  gap: rem(3);
+}
+
+.seat {
+  width: rem(7);
+  height: rem(7);
+  border-radius: 50%;
+  background: oklch(0.2 0.03 250 / 16%);
+
+  &[data-taken='true'] {
+    background: var(--accent);
+  }
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: rem(5);
+  min-width: 0;
 }
 
 .players {
   display: flex;
-  gap: rem(4);
+  gap: var(--space-1);
   align-items: center;
-  font-size: rem(13);
-  font-variant-numeric: tabular-nums;
-  color: var(--muted-foreground);
+  min-width: 0;
+}
+
+/** Аватары внахлёст — компактно и сразу видно, сколько людей за столом. */
+.playerAvatar {
+  flex-shrink: 0;
+  margin-right: rem(-8);
+  border: rem(2) solid oklch(1 0 0);
+  box-shadow: var(--shadow-card);
+}
+
+.names {
+  @include truncate;
+
+  margin-left: var(--space-3);
+  font-size: rem(14);
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.premium {
+  flex-shrink: 0;
+  color: var(--gold);
+}
+
+.lock {
+  flex-shrink: 0;
+  color: var(--subtle-foreground);
+}
+
+.action {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--accent);
+}
+
+.blocked {
+  font-size: rem(12);
+  font-weight: 600;
+  color: var(--subtle-foreground);
+  white-space: nowrap;
 }
 
 .empty {
-  padding: var(--space-10) var(--space-4);
+  padding: var(--space-12) var(--space-4);
   text-align: center;
 }
 
 .emptyTitle {
-  margin: 0 0 var(--space-1);
-  font-size: rem(15);
-  color: var(--foreground);
+  @include felt-heading;
+
+  margin-bottom: var(--space-2);
 }
 
 .emptyHint {
   margin: 0;
-  font-size: rem(13);
-  color: var(--muted-foreground);
+  font-size: rem(14);
+  line-height: 1.5;
+  color: var(--on-felt-muted);
 }

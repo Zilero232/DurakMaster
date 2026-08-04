@@ -3,7 +3,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import { type CardThemeId, DEFAULT_CARD_THEME, getCardTheme } from '@/shared/lib/card-themes';
+import { type CardThemeId, DEFAULT_CARD_THEME } from '@/shared/lib/card-themes';
 import { setVolume as applyVolume } from '@/shared/lib/sound';
 
 type SettingsStore = {
@@ -16,18 +16,13 @@ type SettingsStore = {
   setShowHints: (value: boolean) => void;
 };
 
-const applyCardTheme = (id: CardThemeId) => {
-  const theme = getCardTheme(id);
-  const root = document.documentElement;
-
-  root.style.setProperty('--card-filter', theme.filter ?? 'none');
-  root.style.setProperty('--card-accent', theme.accent);
-  root.dataset.cardTheme = theme.id;
-};
-
 /**
  * Оформление и удобства. Живут локально, а не на сервере: на исход партии
  * не влияют и должны применяться мгновенно даже без сети.
+ *
+ * Стор НЕ трогает DOM: `persist` поднимает состояние до гидратации React,
+ * и запись атрибутов в `<html>` на этом этапе ломает совпадение разметки.
+ * Тему к документу применяет `useApplyCardTheme` уже после монтирования.
  */
 export const useSettingsStore = create<SettingsStore>()(
   persist(
@@ -36,10 +31,7 @@ export const useSettingsStore = create<SettingsStore>()(
       volume: 0.7,
       showHints: true,
 
-      setCardTheme: (cardTheme) => {
-        applyCardTheme(cardTheme);
-        set({ cardTheme });
-      },
+      setCardTheme: (cardTheme) => set({ cardTheme }),
 
       setVolume: (volume) => {
         applyVolume(volume);
@@ -50,11 +42,10 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: 'durak-master.settings',
-      // Тема и громкость живут вне React — их нужно применить к DOM
-      // и аудиоконтексту сразу после подъёма из хранилища.
+      // Громкость живёт в аудиоконтексте вне React — её достаточно
+      // восстановить сразу, к разметке она отношения не имеет.
       onRehydrateStorage: () => (state) => {
         if (state) {
-          applyCardTheme(state.cardTheme);
           applyVolume(state.volume);
         }
       },

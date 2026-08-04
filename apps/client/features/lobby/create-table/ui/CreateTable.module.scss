@@ -1,0 +1,118 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+// --- Ставка ----------------------------------------------------------------
+
+/** Ставка живёт прямо на сукне — это не поле формы, а объявление суммы. */
+.betSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.betHeader {
+  display: flex;
+  gap: var(--space-3);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.betLabel {
+  @include felt-heading;
+
+  text-align: left;
+}
+
+.betValue {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: rem(30);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--on-felt);
+  text-shadow: 0 rem(1) rem(4) oklch(0.2 0.03 250 / 60%);
+}
+
+.slider {
+  cursor: pointer;
+  width: 100%;
+  height: rem(12);
+  border-radius: var(--radius-pill);
+  appearance: none;
+  background: oklch(0.2 0.03 250 / 22%);
+  box-shadow: 0 rem(1) rem(2) oklch(0.2 0.03 250 / 30%) inset;
+
+  &::-webkit-slider-thumb {
+    cursor: grab;
+    width: rem(32);
+    height: rem(32);
+    border: none;
+    border-radius: 50%;
+    appearance: none;
+    background: linear-gradient(180deg, oklch(1 0 0) 0%, var(--surface-3) 100%);
+    box-shadow: var(--shadow-button);
+  }
+
+  &::-moz-range-thumb {
+    cursor: grab;
+    width: rem(32);
+    height: rem(32);
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(180deg, oklch(1 0 0) 0%, var(--surface-3) 100%);
+    box-shadow: var(--shadow-button);
+  }
+
+  @include focus-ring;
+}
+
+.scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: rem(12);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--on-felt-muted);
+}
+
+// --- Раскладка секций ------------------------------------------------------
+
+.row {
+  display: flex;
+  gap: var(--space-4);
+}
+
+// --- Режимы ----------------------------------------------------------------
+
+.modes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(rem(104), 1fr));
+  gap: var(--space-2);
+}
+
+// --- Приватность -----------------------------------------------------------
+
+.privateRow {
+  cursor: pointer;
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: rem(17);
+  font-weight: 700;
+  color: var(--on-felt);
+  text-shadow: 0 rem(1) rem(3) oklch(0.2 0.03 250 / 55%);
+
+  input {
+    cursor: pointer;
+    width: rem(28);
+    height: rem(28);
+    border-radius: var(--radius-sm);
+    accent-color: var(--accent);
+  }
+}

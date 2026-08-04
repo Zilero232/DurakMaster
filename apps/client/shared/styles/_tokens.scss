@@ -2,79 +2,97 @@
 
 :root {
   // --- Сукно стола ---------------------------------------------------------
-  // Глубокий изумруд с холодным подтоном: тёплая зелень рядом с красными
-  // мастями даёт грязный контраст, холодная — чистый.
-  --felt-core: oklch(0.42 0.09 162);
-  --felt-mid: oklch(0.33 0.075 162);
-  --felt-deep: oklch(0.24 0.055 162);
-  --felt-edge: oklch(0.16 0.035 165);
+  // Приглушённый синий вместо зелёного: красные масти на синем читаются
+  // контрастнее, а сам стол не спорит с картами за внимание.
+  --felt-core: oklch(0.58 0.062 245);
+  --felt-mid: oklch(0.52 0.066 246);
+  --felt-deep: oklch(0.45 0.068 248);
+  --felt-edge: oklch(0.36 0.062 250);
 
   // --- Поверхности ---------------------------------------------------------
-  --background: oklch(0.15 0.02 250);
-  --foreground: oklch(0.97 0.006 250);
+  // Интерфейс светлый: плитки и панели — белые накладки на сукне.
+  --background: oklch(0.5 0.066 246);
+  --foreground: oklch(0.22 0.03 250);
 
-  --surface-1: oklch(0.24 0.022 245 / 0.62);
-  --surface-2: oklch(0.3 0.026 245 / 0.72);
-  --surface-3: oklch(0.36 0.03 245 / 0.8);
-  --surface-overlay: oklch(0.17 0.02 248 / 0.9);
+  --surface-1: oklch(1 0 0 / 0.96);
+  --surface-2: oklch(0.97 0.004 250);
+  --surface-3: oklch(0.93 0.008 250);
+  --surface-overlay: oklch(1 0 0 / 0.97);
 
-  --muted-foreground: oklch(0.73 0.022 248);
-  --subtle-foreground: oklch(0.6 0.02 248);
+  // Текст на сукне — светлый; текст на плитках — тёмный.
+  --on-felt: oklch(0.99 0.004 250);
+  --on-felt-muted: oklch(0.88 0.012 250);
+
+  --muted-foreground: oklch(0.48 0.02 250);
+  --subtle-foreground: oklch(0.62 0.016 250);
 
   // --- Акценты -------------------------------------------------------------
-  // Золото — премиальность карточного стола: ход, победа, ставки.
-  --gold: oklch(0.83 0.135 86);
-  --gold-bright: oklch(0.9 0.14 90);
-  --gold-dim: oklch(0.63 0.11 84);
-  --gold-deep: oklch(0.42 0.08 82);
+  // Красный — язык выбора: галочки, активные подписи, «Беру».
+  --accent: oklch(0.55 0.21 27);
+  --accent-bright: oklch(0.62 0.22 28);
+  --accent-dim: oklch(0.47 0.18 27);
 
-  --danger: oklch(0.66 0.2 27);
-  --danger-dim: oklch(0.5 0.16 27);
-  --success: oklch(0.75 0.16 152);
-  --info: oklch(0.72 0.12 235);
+  // Золото осталось для премиума и ставок.
+  --gold: oklch(0.78 0.14 84);
+  --gold-bright: oklch(0.86 0.14 88);
+  --gold-dim: oklch(0.66 0.12 82);
+  --gold-deep: oklch(0.45 0.09 80);
 
-  --primary: var(--gold);
-  --primary-foreground: oklch(0.19 0.03 86);
+  --danger: oklch(0.55 0.21 27);
+  --danger-dim: oklch(0.47 0.18 27);
+  --success: oklch(0.6 0.15 152);
+  --info: oklch(0.6 0.13 235);
+
+  --primary: var(--accent);
+  --primary-foreground: oklch(1 0 0);
 
   // --- Границы и стекло ----------------------------------------------------
-  --border: oklch(1 0 0 / 9%);
-  --border-strong: oklch(1 0 0 / 17%);
-  --border-gold: oklch(0.83 0.135 86 / 45%);
+  --border: oklch(0.22 0.03 250 / 12%);
+  --border-strong: oklch(0.22 0.03 250 / 22%);
+  --border-gold: oklch(0.78 0.14 84 / 60%);
+  --border-accent: oklch(0.55 0.21 27 / 55%);
 
-  --glass-border: oklch(1 0 0 / 13%);
-  --glass-highlight: oklch(1 0 0 / 8%);
-  --glass-blur: #{rem(20)};
+  --glass-border: oklch(1 0 0 / 55%);
+  --glass-highlight: oklch(1 0 0 / 80%);
+  --glass-blur: #{rem(18)};
 
-  --ring: var(--gold);
+  --ring: var(--accent);
 
   // --- Тени ----------------------------------------------------------------
-  // Карта: тонкий контур + мягкая тень. Многослойность даёт ощущение
-  // физического предмета, одиночная тень выглядит наклейкой.
+  // Всё «пухлое»: мягкая широкая тень + светлая грань сверху.
   --shadow-card:
-    0 #{rem(1)} #{rem(2)} oklch(0 0 0 / 0.3),
-    0 #{rem(3)} #{rem(8)} oklch(0 0 0 / 0.35);
+    0 #{rem(1)} #{rem(2)} oklch(0.2 0.03 250 / 0.18),
+    0 #{rem(4)} #{rem(10)} oklch(0.2 0.03 250 / 0.22);
   --shadow-card-raised:
-    0 #{rem(2)} #{rem(4)} oklch(0 0 0 / 0.3),
-    0 #{rem(10)} #{rem(24)} oklch(0 0 0 / 0.45);
+    0 #{rem(3)} #{rem(6)} oklch(0.2 0.03 250 / 0.2),
+    0 #{rem(12)} #{rem(28)} oklch(0.2 0.03 250 / 0.3);
   --shadow-panel:
     0 #{rem(1)} 0 var(--glass-highlight) inset,
-    0 #{rem(20)} #{rem(48)} #{rem(-24)} oklch(0 0 0 / 0.75);
+    0 #{rem(10)} #{rem(30)} #{rem(-8)} oklch(0.2 0.03 250 / 0.45);
+  --shadow-tile:
+    0 #{rem(1)} 0 oklch(1 0 0 / 0.9) inset,
+    0 #{rem(2)} #{rem(5)} oklch(0.2 0.03 250 / 0.22);
+  --shadow-tile-active:
+    0 #{rem(1)} 0 oklch(1 0 0 / 0.9) inset,
+    0 #{rem(3)} #{rem(9)} oklch(0.2 0.03 250 / 0.3);
   --shadow-button:
-    0 #{rem(1)} 0 oklch(1 0 0 / 0.14) inset,
-    0 #{rem(2)} #{rem(6)} oklch(0 0 0 / 0.35);
+    0 #{rem(1)} 0 oklch(1 0 0 / 0.55) inset,
+    0 #{rem(3)} #{rem(8)} oklch(0.2 0.03 250 / 0.3);
 
-  --glow-gold: 0 0 #{rem(12)} oklch(0.83 0.135 86 / 0.6);
+  --glow-gold: 0 0 #{rem(12)} oklch(0.78 0.14 84 / 0.55);
   --glow-gold-strong:
-    0 0 #{rem(6)} oklch(0.83 0.135 86 / 0.9),
-    0 0 #{rem(22)} oklch(0.83 0.135 86 / 0.5);
-  --glow-danger: 0 0 #{rem(12)} oklch(0.66 0.2 27 / 0.55);
+    0 0 #{rem(6)} oklch(0.78 0.14 84 / 0.85),
+    0 0 #{rem(22)} oklch(0.78 0.14 84 / 0.45);
+  --glow-accent: 0 0 #{rem(12)} oklch(0.55 0.21 27 / 0.45);
+  --glow-danger: var(--glow-accent);
 
   // --- Радиусы -------------------------------------------------------------
-  --radius: #{rem(14)};
-  --radius-sm: calc(var(--radius) - #{rem(7)});
-  --radius-md: calc(var(--radius) - #{rem(3)});
+  // Крупные скругления — плитки читаются как игровые фишки, а не как поля формы.
+  --radius: #{rem(16)};
+  --radius-sm: calc(var(--radius) - #{rem(6)});
+  --radius-md: calc(var(--radius) - #{rem(2)});
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + #{rem(8)});
+  --radius-xl: calc(var(--radius) + #{rem(10)});
   --radius-pill: #{rem(999)};
 
   // --- Отступы -------------------------------------------------------------
@@ -93,7 +111,7 @@
   // считается ТОЛЬКО от этих переменных — размер меняется в одном месте.
   --card-width: #{rem(76)};
   --card-height: #{rem(114)};
-  --card-radius: #{rem(7)};
+  --card-radius: #{rem(8)};
   --card-overlap: -0.45; // множитель нахлёста карт в руке
 
   // --- Тайминги ------------------------------------------------------------

@@ -1,26 +1,29 @@
 @use '@/shared/styles/mixins' as *;
 
+/** Таймер хода — белая пилюля на сукне, читается на любом фоне. */
 .root {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: rem(26);
-  height: rem(22);
-  padding: 0 rem(7);
-  border-radius: rem(11);
-  font-size: rem(13);
+  min-width: rem(34);
+  height: rem(28);
+  padding: 0 rem(10);
+  border-radius: var(--radius-pill);
+  font-size: rem(15);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: var(--foreground);
-  background: var(--surface-2);
+  background: oklch(1 0 0);
+  box-shadow: var(--shadow-card);
   transition:
     background-color var(--duration-fast) ease,
     color var(--duration-fast) ease;
 }
 
+/** Последние секунды — красным с пульсацией: сигнал «ходи сейчас». */
 .warn {
-  font-weight: 600;
-  color: var(--danger);
-  background: color-mix(in oklch, var(--danger) 24%, transparent);
+  color: oklch(1 0 0);
+  background: var(--accent);
   animation: pulse 1s ease-in-out infinite;
 }
 

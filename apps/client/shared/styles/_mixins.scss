@@ -34,39 +34,148 @@
   opacity: 0.45;
 }
 
-/** Стеклянная панель поверх сукна — лобби, диалоги, панель действий. */
+/** Панель поверх сукна — лобби, диалоги, панель действий. */
 @mixin glass-panel {
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   background: var(--surface-1);
-  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(120%);
   box-shadow: var(--shadow-panel);
 }
 
 /**
- * Тиснёная панель: верхняя грань ловит свет, нижняя уходит в тень.
+ * Белая накладка на сукне — карточки лобби, блоки профиля, панели.
  *
- * Отличие от `glass-panel` — physicality: панель читается как накладка
- * на сукне, а не как прямоугольник заливки. Для карточек лобби и
- * блоков профиля, где плоскость выглядит дёшево.
+ * Светлая грань сверху и мягкая тень снизу делают её физическим объектом,
+ * лежащим на столе, а не прямоугольником заливки.
  */
 @mixin embossed-panel {
   position: relative;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  background:
-    linear-gradient(
-      180deg,
-      oklch(1 0 0 / 4%) 0%,
-      transparent 22%,
-      transparent 78%,
-      oklch(0 0 0 / 14%) 100%
-    ),
-    var(--surface-1);
-  box-shadow:
-    0 #{rem(1)} 0 oklch(1 0 0 / 9%) inset,
-    0 #{rem(-1)} 0 oklch(0 0 0 / 22%) inset,
-    0 #{rem(2)} #{rem(10)} #{rem(-4)} oklch(0 0 0 / 55%);
+  background: linear-gradient(180deg, oklch(1 0 0) 0%, var(--surface-2) 100%);
+  box-shadow: var(--shadow-tile);
+}
+
+/**
+ * Плитка выбора: белая, скруглённая, с красной галочкой при активности.
+ *
+ * Основной способ выбора в игре — число игроков, размер колоды, режим.
+ * Галочку рисует `tile-check`, её нужно вызвать у элемента-галочки внутри.
+ */
+@mixin selectable-tile {
+  @include interactive-cursor;
+
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--muted-foreground);
+  background: linear-gradient(180deg, oklch(1 0 0) 0%, var(--surface-2) 100%);
+  box-shadow: var(--shadow-tile);
+  transition:
+    transform var(--duration-fast) var(--ease-card),
+    box-shadow var(--duration-fast) ease,
+    color var(--duration-fast) ease;
+
+  &:hover {
+    transform: translateY(#{rem(-1)});
+    box-shadow: var(--shadow-tile-active);
+  }
+
+  &:active {
+    transform: translateY(#{rem(1)});
+    box-shadow: var(--shadow-tile);
+  }
+
+  &[data-active='true'],
+  &:has(:checked) {
+    font-weight: 700;
+    color: var(--accent);
+    background: oklch(1 0 0);
+    box-shadow:
+      0 0 0 #{rem(2)} var(--accent) inset,
+      var(--shadow-tile-active);
+  }
+}
+
+/**
+ * Красная галочка в правом верхнем углу активной плитки.
+ * Рисуется псевдоэлементом: отдельная иконка на каждую плитку раздула бы DOM.
+ */
+@mixin tile-check {
+  &::after {
+    content: '';
+    position: absolute;
+    top: #{rem(4)};
+    right: #{rem(5)};
+    transform: rotate(-45deg) scale(0.4);
+    width: #{rem(11)};
+    height: #{rem(7)};
+    border: solid var(--accent);
+    border-width: 0 0 #{rem(3)} #{rem(3)};
+    opacity: 0;
+    transition:
+      opacity var(--duration-fast) ease,
+      transform var(--duration-fast) var(--ease-bounce);
+  }
+
+  &[data-active='true']::after,
+  &:has(:checked)::after {
+    transform: rotate(-45deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/**
+ * Крупная кнопка-пилюля — «Беру», «Бито», «Создать».
+ *
+ * Главные действия игры должны попадаться пальцем без прицеливания,
+ * поэтому они белые, широкие и с заметной тенью.
+ */
+@mixin pill-button {
+  @include interactive-cursor;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: #{rem(52)};
+  padding: 0 var(--space-6);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: #{rem(19)};
+  font-weight: 700;
+  letter-spacing: #{rem(0.3)};
+  background: linear-gradient(180deg, oklch(1 0 0) 0%, var(--surface-2) 100%);
+  box-shadow: var(--shadow-button);
+  transition:
+    transform var(--duration-fast) var(--ease-card),
+    box-shadow var(--duration-fast) ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(#{rem(-2)});
+    box-shadow: var(--shadow-card-raised);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(#{rem(1)});
+    box-shadow: var(--shadow-tile);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+  }
+}
+
+/** Заголовок раздела на сукне — «Ваша ставка», «Игроки», «Колода». */
+@mixin felt-heading {
+  margin: 0;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: #{rem(20)};
+  font-weight: 700;
+  color: var(--on-felt);
+  text-align: center;
+  text-shadow: 0 #{rem(1)} #{rem(3)} oklch(0.2 0.03 250 / 55%);
+  letter-spacing: #{rem(0.3)};
 }
 
 /**
@@ -116,12 +225,12 @@
     // Тканевое переплетение: две встречные полоски под 45°.
     repeating-linear-gradient(
         45deg,
-        oklch(1 0 0 / 1.4%) 0 #{rem(2)},
+        oklch(1 0 0 / 3.5%) 0 #{rem(2)},
         transparent #{rem(2)} #{rem(4)}
       ),
     repeating-linear-gradient(
         -45deg,
-        oklch(0 0 0 / 2%) 0 #{rem(2)},
+        oklch(0.2 0.03 250 / 4%) 0 #{rem(2)},
         transparent #{rem(2)} #{rem(4)}
       ),
     // Подсветка центра и затемнение к краям.
@@ -139,7 +248,11 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 90% 70% at 50% 45%, transparent 55%, oklch(0 0 0 / 0.42) 100%);
+    background: radial-gradient(
+      ellipse 92% 74% at 50% 45%,
+      transparent 58%,
+      oklch(0.25 0.05 250 / 0.3) 100%
+    );
   }
 }
 

@@ -287,6 +287,10 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
         this.handleAddBot(socket, userId);
         break;
 
+      case 'profile:claim-bonus':
+        await this.handleClaimBonus(socket, userId);
+        break;
+
       case 'game:action':
         this.handleGameAction(socket, userId, message.payload);
         break;
@@ -425,6 +429,28 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     this.broadcastLobby();
   }
 
+  /**
+   * Бесплатный бонус кредитов.
+   *
+   * Порог и интервал проверяет `ProfilesService`: клиент присылает лишь
+   * намерение, а решение принимает сервер — иначе бонус можно было бы
+   * запрашивать в цикле.
+   */
+  private async handleClaimBonus(socket: Socket, userId: string): Promise<void> {
+    const profile = await this.profiles.claimFreeCredits(userId);
+
+    if (!profile) {
+      this.send(socket, {
+        type: 'error',
+        payload: { message: 'Бонус пока недоступен', code: 'BONUS_NOT_READY' },
+      });
+
+      return;
+    }
+
+    this.send(socket, { type: 'profile:updated', payload: { profile } });
+  }
+
   private handleGameAction(
     socket: Socket,
     userId: string,
@@ -517,10 +543,21 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
 
       const socket = this.sockets.get(userId);
 
-      if (socket) {
+      if (!socket) {
+        continue;
+      }
+
+      this.send(socket, {
+        type: 'game:finished',
+        payload: { loserUserId, isDraw, creditsDelta, ratingDelta },
+      });
+
+      // Балансы изменились — отдаём свежий профиль, чтобы счётчики
+      // в шапке не расходились с БД до следующего подключения.
+      if (!member.isBot) {
         this.send(socket, {
-          type: 'game:finished',
-          payload: { loserUserId, isDraw, creditsDelta, ratingDelta },
+          type: 'profile:updated',
+          payload: { profile: await this.sessions.reload(userId) },
         });
       }
     }

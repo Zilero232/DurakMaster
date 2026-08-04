@@ -1,36 +1,41 @@
 'use client';
 
-import { Plus, Search, Settings, User } from 'lucide-react';
+import { LogOut, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { match } from 'ts-pattern';
 
 import { useSessionStore } from '@/entities/session';
-import { useSession } from '@/shared/api/auth/auth-client';
-import { AuthForm } from '@/widgets/auth/auth-form';
-import { CreateTable } from '@/widgets/lobby/create-table';
+import { SignInForm } from '@/features/auth/sign-in';
+import { CreateTable } from '@/features/lobby/create-table';
+import { SettingsPanel } from '@/features/settings/change-settings';
+import { logout, useSession } from '@/shared/api/auth/auth-client';
+import { SuitIcon } from '@/shared/ui';
 import { TableList } from '@/widgets/lobby/table-list';
-import { ProfileCard } from '@/widgets/profile/profile-card';
-import { SettingsPanel } from '@/widgets/settings/settings-panel';
+import { ProfileMenu } from '@/widgets/profile/profile-menu';
+import { WalletBar } from '@/widgets/profile/wallet-bar';
+import { RulesPanel } from '@/widgets/rules/rules-panel';
 
 import s from './AppShell.module.scss';
 
-import type { TableSettings } from '@durak-master/schemas';
+import type { Suit, TableSettings } from '@durak-master/schemas';
 
 type Tab = 'profile' | 'tables' | 'create';
 
-const TABS: { id: Tab; labelKey: 'profile' | 'tables' | 'create'; Icon: typeof User }[] = [
-  { id: 'profile', labelKey: 'profile', Icon: User },
-  { id: 'tables', labelKey: 'tables', Icon: Search },
-  { id: 'create', labelKey: 'create', Icon: Plus },
-];
+/** Вкладки помечены мастями — язык самой игры вместо абстрактных значков. */
+const TABS = [
+  { id: 'profile', labelKey: 'profile', suit: 'clubs' },
+  { id: 'tables', labelKey: 'tables', suit: 'hearts' },
+  { id: 'create', labelKey: 'create', suit: 'diamonds' },
+] as const satisfies readonly { id: Tab; labelKey: string; suit: Suit }[];
 
 export const AppShell = () => {
   const t = useTranslations();
 
-  const [tab, setTab] = useState<Tab>('tables');
+  const [tab, setTab] = useState<Tab>('profile');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isRulesOpen, setIsRulesOpen] = useState(false);
 
   const { data: session, isPending } = useSession();
 
@@ -43,6 +48,7 @@ export const AppShell = () => {
   const joinTable = useSessionStore((store) => store.joinTable);
   const lastError = useSessionStore((store) => store.lastError);
   const clearError = useSessionStore((store) => store.clearError);
+  const claimBonus = useSessionStore((store) => store.claimBonus);
 
   // Подключаемся только с активной сессией: без неё шлюз всё равно
   // разорвёт соединение — личность игрока берётся из проверенного токена.
@@ -77,51 +83,80 @@ export const AppShell = () => {
     createTable(settings);
   };
 
+  const handleLogout = async () => {
+    await logout();
+    // Полная перезагрузка: соединение и состояние стола должны обнулиться
+    // вместе с сессией, иначе останутся данные прошлого игрока.
+    window.location.reload();
+  };
+
   if (isPending) {
     return <div className={s.loading}>{t('common.loading')}</div>;
   }
 
   if (!session) {
-    return <AuthForm />;
+    return <SignInForm />;
   }
 
   return (
     <div className={s.root}>
       <header className={s.header}>
-        <h1 className={s.title}>
-          {match(tab)
-            .with('profile', () => profile?.name ?? t('nav.profile'))
-            .with('tables', () => t('lobby.title'))
-            .with('create', () => t('create.title'))
-            .exhaustive()}
-        </h1>
+        <div className={s.headerInner}>
+          <h1 className={s.title}>
+            {match(tab)
+              .with('profile', () => t('nav.profile'))
+              .with('tables', () => t('lobby.title'))
+              .with('create', () => t('create.title'))
+              .exhaustive()}
+          </h1>
 
-        <div className={s.headerActions}>
-          {status !== 'connected' && (
-            <span className={s.status} data-status={status}>
-              {status === 'connecting' ? t('connection.connecting') : t('connection.offline')}
-            </span>
-          )}
+          <div className={s.headerActions}>
+            {status !== 'connected' && (
+              <span className={s.status} data-status={status}>
+                {status === 'connecting' ? t('connection.connecting') : t('connection.offline')}
+              </span>
+            )}
 
-          <button
-            type="button"
-            className={s.iconButton}
-            aria-label={t('settings.title')}
-            onClick={() => setIsSettingsOpen(true)}
-          >
-            <Settings size={18} aria-hidden />
-          </button>
+            <button
+              type="button"
+              className={s.iconButton}
+              aria-label={t('settings.title')}
+              onClick={() => setIsSettingsOpen(true)}
+            >
+              <Settings size={18} aria-hidden />
+            </button>
+
+            <button
+              type="button"
+              className={s.iconButton}
+              aria-label={t('auth.signOut')}
+              onClick={handleLogout}
+            >
+              <LogOut size={18} aria-hidden />
+            </button>
+          </div>
         </div>
       </header>
 
       <main className={s.content}>
-        {tab === 'profile' && profile && <ProfileCard profile={profile} />}
+        {tab === 'profile' && profile && (
+          <div className={s.profile}>
+            <WalletBar profile={profile} onClaimBonus={claimBonus} />
+
+            <ProfileMenu
+              onQuickGame={() => setTab('tables')}
+              onOpenSettings={() => setIsSettingsOpen(true)}
+              onOpenRules={() => setIsRulesOpen(true)}
+            />
+          </div>
+        )}
+
         {tab === 'tables' && <TableList tables={tables} onJoin={joinTable} />}
         {tab === 'create' && <CreateTable onCreate={handleCreate} />}
       </main>
 
       <nav className={s.nav}>
-        {TABS.map(({ id, labelKey, Icon }) => (
+        {TABS.map(({ id, labelKey, suit }) => (
           <button
             key={id}
             type="button"
@@ -129,13 +164,14 @@ export const AppShell = () => {
             data-active={tab === id}
             onClick={() => setTab(id)}
           >
-            <Icon size={20} aria-hidden />
+            <SuitIcon suit={suit} size={26} className={s.navIcon} />
             <span>{t(`nav.${labelKey}`)}</span>
           </button>
         ))}
       </nav>
 
       <SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+      <RulesPanel isOpen={isRulesOpen} onClose={() => setIsRulesOpen(false)} />
     </div>
   );
 };
