@@ -1,34 +1,46 @@
 @use '@/shared/styles/mixins' as *;
 
-.dialog {
-  overscroll-behavior: contain;
-  max-width: min(rem(520), calc(100vw - var(--space-8)));
-  max-height: calc(100dvh - var(--space-10));
-  padding: 0;
-  border: none;
-  background: transparent;
+.backdrop {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  background: oklch(0.25 0.05 250 / 55%);
+  backdrop-filter: blur(rem(4));
+  transition: opacity var(--duration-panel) var(--ease-panel);
 
-  &::backdrop {
-    background: oklch(0.25 0.05 250 / 55%);
-    backdrop-filter: blur(rem(4));
-  }
-
-  // Появление снизу вверх: панель «выезжает» на стол, а не мигает.
-  &[open] {
-    animation: appear var(--duration-panel) var(--ease-panel);
-  }
-
-  &[open]::backdrop {
-    animation: fade var(--duration-panel) ease;
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
   }
 }
 
-.panel {
+/**
+ * Панель выезжает снизу вверх. Состояния анимации приходят от Base UI
+ * атрибутами `data-starting-style` / `data-ending-style` — свои классы
+ * и таймеры для этого не нужны.
+ */
+.popup {
   @include glass-panel;
+
+  position: fixed;
+  z-index: 31;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  width: min(rem(520), calc(100vw - var(--space-8)));
   max-height: calc(100dvh - var(--space-10));
+  transition:
+    transform var(--duration-panel) var(--ease-panel),
+    opacity var(--duration-panel) var(--ease-panel);
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    transform: translate(-50%, calc(-50% + #{rem(24)})) scale(0.97);
+    opacity: 0;
+  }
 }
 
 .header {
@@ -56,8 +68,8 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: rem(32);
-  height: rem(32);
+  width: rem(34);
+  height: rem(34);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--muted-foreground);
@@ -85,22 +97,9 @@
   border-top: 1px solid var(--border);
 }
 
-@keyframes appear {
-  from {
-    transform: translateY(rem(24)) scale(0.97);
-    opacity: 0;
-  }
-}
-
-@keyframes fade {
-  from {
-    opacity: 0;
-  }
-}
-
 @include reduced-motion {
-  .dialog[open],
-  .dialog[open]::backdrop {
-    animation: none;
+  .backdrop,
+  .popup {
+    transition: none;
   }
 }

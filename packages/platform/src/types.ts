@@ -35,7 +35,7 @@ export type BillingAdapter = {
   restorePurchases(): Promise<PurchaseResult[]>;
 };
 
-/** Push-уведомления: «твой ход», приглашения за стол, турниры. */
+/** Push-уведомления: «твой ход», приглашения за стол. */
 export type PushAdapter = {
   requestPermission(): Promise<boolean>;
   getToken(): Promise<string | null>;

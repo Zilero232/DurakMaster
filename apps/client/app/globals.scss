@@ -46,6 +46,10 @@ body {
 body {
   // Стол не скроллится: свайпы должны уходить в игру, а не в страницу.
   user-select: none;
+
+  // Отдельный контекст наложения для порталов Base UI: без него всплывающие
+  // панели могут уйти под содержимое из-за чужих z-index.
+  isolation: isolate;
   overscroll-behavior: none;
   margin: 0;
   font-family: var(--font-sans), system-ui, -apple-system, 'Segoe UI', sans-serif;

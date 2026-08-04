@@ -2,7 +2,6 @@ import type { LucideIcon } from 'lucide-react';
 
 /** Ключи разделов меню — совпадают с ветвью `menu.*` в переводах. */
 export type ProfileMenuKey =
-  | 'tournaments'
   | 'news'
   | 'friends'
   | 'items'

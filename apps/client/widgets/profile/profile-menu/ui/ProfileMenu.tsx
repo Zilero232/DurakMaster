@@ -8,7 +8,6 @@ import {
   Play,
   Settings,
   Share2,
-  Trophy,
   UserRound,
   Users,
 } from 'lucide-react';
@@ -30,7 +29,6 @@ export const ProfileMenu = ({ onQuickGame, onOpenSettings, onOpenRules }: Profil
   const t = useTranslations('menu');
 
   const items: ProfileMenuItem[] = [
-    { id: 'tournaments', icon: Trophy, labelKey: 'tournaments', isLocked: true },
     { id: 'news', icon: Newspaper, labelKey: 'news', isLocked: true },
     { id: 'friends', icon: Users, labelKey: 'friends', isLocked: true },
     { id: 'items', icon: Gift, labelKey: 'items', isLocked: true },

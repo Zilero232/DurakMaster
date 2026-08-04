@@ -37,9 +37,20 @@
 
 ## Состав
 
-36 карт для дурака (6–туз, четыре масти) + 2 рубашки.
+36 карт для дурака (6–туз, четыре масти) + 4 рубашки.
 Файлы `<ранг>_<масть>.svg`, viewBox `0 0 360 540` (соотношение 2:3).
 Оптимизированы SVGO (`--multipass -p 2`).
+
+### Рубашки
+
+| Файл | Источник |
+|---|---|
+| `back_blue.svg`, `back_green.svg` | из основного набора |
+| `back_atlas_blue.svg` | [Atlas deck card back blue and brown](https://commons.wikimedia.org/wiki/File:Atlas_deck_card_back_blue_and_brown.svg) |
+| `back_atlas_green.svg` | [Atlas deck card back green and dark red](https://commons.wikimedia.org/wiki/File:Atlas_deck_card_back_green_and_dark_red.svg) |
+
+Клетчатые рубашки — тот же автор (Дмитрий Фомин, 2017) и та же лицензия CC0,
+поэтому они стилистически совпадают с лицевыми картами.
 
 ## Важно
 

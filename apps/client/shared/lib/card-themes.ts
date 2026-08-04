@@ -20,7 +20,7 @@ const RANK_FILE: Record<Rank, string> = {
   ace: 'ace',
 };
 
-export const CARD_BACKS = ['blue', 'green'] as const;
+export const CARD_BACKS = ['blue', 'green', 'atlas_blue', 'atlas_green'] as const;
 export type CardBack = (typeof CARD_BACKS)[number];
 
 /**
@@ -37,19 +37,19 @@ export const CARD_THEMES = [
   },
   {
     id: 'emerald',
-    back: 'green',
+    back: 'atlas_green',
     filter: 'hue-rotate(96deg) saturate(1.05)',
     accent: 'oklch(0.78 0.15 156)',
   },
   {
     id: 'crimson',
-    back: 'blue',
+    back: 'atlas_blue',
     filter: 'hue-rotate(-28deg) saturate(1.18)',
     accent: 'oklch(0.7 0.19 22)',
   },
   {
     id: 'noir',
-    back: 'blue',
+    back: 'green',
     filter: 'grayscale(1) contrast(1.12)',
     accent: 'oklch(0.86 0.02 250)',
   },

@@ -14,25 +14,22 @@
   box-shadow: var(--shadow-tile);
 }
 
-.input {
-  @include visually-hidden;
-}
-
 .option {
   @include interactive-cursor;
-  @include tile-check;
+  @include focus-ring;
 
-  position: relative;
   display: flex;
   flex: 1;
   align-items: center;
   justify-content: center;
   min-width: rem(44);
   height: rem(44);
+  border: none;
   border-radius: var(--radius-pill);
   font-size: rem(19);
   font-weight: 600;
   color: var(--muted-foreground);
+  background: transparent;
   transition:
     color var(--duration-fast) ease,
     background-color var(--duration-fast) ease;
@@ -42,13 +39,8 @@
     background: oklch(0.2 0.03 250 / 5%);
   }
 
-  // Фокус ловит скрытый input, а подсвечивать надо видимую плитку.
-  &:has(.input:focus-visible) {
-    outline: none;
-    box-shadow: 0 0 0 rem(2) var(--ring);
-  }
-
-  &[data-active='true'] {
+  // Состояние выбора приходит атрибутом от Base UI.
+  &[data-checked] {
     font-weight: 700;
     color: var(--accent);
     background: oklch(1 0 0);

@@ -1,9 +1,12 @@
 'use client';
 
+import { Checkbox } from '@base-ui-components/react/checkbox';
+import { Slider } from '@base-ui-components/react/slider';
 import { BET_STEPS, DEFAULT_TABLE_SETTINGS, TURN_SECONDS_BY_SPEED } from '@durak-master/schemas';
 import {
   ArrowLeftRight,
   ArrowRightToLine,
+  Check,
   Crown,
   Equal,
   Handshake,
@@ -76,16 +79,21 @@ export const CreateTable = ({ onCreate }: CreateTableProps) => {
           <span className={s.betValue}>{formatCredits(bet)}</span>
         </div>
 
-        <input
-          type="range"
+        <Slider.Root
           className={s.slider}
           min={0}
           max={BET_STEPS.length - 1}
           step={1}
           value={betIndex}
-          aria-label={t('betLabel')}
-          onChange={(event) => setBetIndex(Number(event.target.value))}
-        />
+          onValueChange={(next) => setBetIndex(Number(next))}
+        >
+          <Slider.Control className={s.sliderControl}>
+            <Slider.Track className={s.sliderTrack}>
+              <Slider.Indicator className={s.sliderIndicator} />
+              <Slider.Thumb className={s.sliderThumb} aria-label={t('betLabel')} />
+            </Slider.Track>
+          </Slider.Control>
+        </Slider.Root>
 
         <div className={s.scale}>
           {BET_STEPS.filter((_, index) => index % 2 === 0).map((step) => (
@@ -180,14 +188,22 @@ export const CreateTable = ({ onCreate }: CreateTableProps) => {
         </div>
       </SettingsSection>
 
-      <label className={s.privateRow}>
-        <input
-          type="checkbox"
+      {/* Base UI рендерит кнопку с role="checkbox", поэтому подпись живёт
+          рядом в общей строке, а не в <label>. */}
+      <div className={s.privateRow}>
+        <Checkbox.Root
+          className={s.checkbox}
           checked={isPrivate}
-          onChange={(event) => setIsPrivate(event.target.checked)}
-        />
+          aria-label={t('private')}
+          onCheckedChange={setIsPrivate}
+        >
+          <Checkbox.Indicator className={s.checkboxMark}>
+            <Check size={18} strokeWidth={3} aria-hidden />
+          </Checkbox.Indicator>
+        </Checkbox.Root>
+
         <span>{t('private')}</span>
-      </label>
+      </div>
 
       {isPrivate && (
         <input
