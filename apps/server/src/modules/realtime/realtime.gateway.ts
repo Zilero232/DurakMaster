@@ -10,6 +10,7 @@ import { RateLimiterMemory } from 'rate-limiter-flexible';
 
 import { AuthService } from '../../lib/auth/auth.service';
 import { RoomsService } from '../game/rooms.service';
+import { hashTablePassword, verifyTablePassword } from '../game/table-password';
 import { ProfilesService } from '../profile/profiles.service';
 import { SessionsService } from './sessions.service';
 
@@ -18,6 +19,7 @@ import type {
   CreateTableInput,
   GameAction,
   GameErrorCode,
+  JoinTableInput,
   ServerMessage,
 } from '@durak-master/schemas';
 import type { WebSocket } from 'ws';
@@ -336,10 +338,22 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
       return;
     }
 
+    // Приватный стол без пароля был бы обычным открытым: настройка
+    // обещает закрытость, и пустой пароль эту гарантию ломает.
+    if (payload.settings.isPrivate && !payload.password) {
+      this.send(socket, {
+        type: 'error',
+        payload: { message: 'Приватный стол требует пароль', code: 'PASSWORD_REQUIRED' },
+      });
+
+      return;
+    }
+
     // Игрок не может сидеть за двумя столами одновременно.
     this.rooms.leave(userId);
 
-    const room = this.rooms.createRoom(payload.settings, null);
+    const passwordHash = payload.password ? hashTablePassword(payload.password) : null;
+    const room = this.rooms.createRoom(payload.settings, passwordHash);
 
     this.rooms.join(room, profile);
     this.sendTableJoined(userId, room.id);
@@ -349,7 +363,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
   private async handleJoinTable(
     socket: Socket,
     userId: string,
-    payload: { tableId: string },
+    payload: JoinTableInput,
   ): Promise<void> {
     const profile = this.sessions.get(userId);
     const room = this.rooms.getRoom(payload.tableId);
@@ -361,6 +375,21 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
       });
 
       return;
+    }
+
+    // Пароль спрашиваем только у новых игроков: вернувшемуся после обрыва
+    // связи пришлось бы вводить его заново посреди партии.
+    const isReturning = Boolean(room.getMember(userId));
+
+    if (room.passwordHash && !isReturning) {
+      if (!payload.password || !verifyTablePassword(payload.password, room.passwordHash)) {
+        this.send(socket, {
+          type: 'error',
+          payload: { message: 'Неверный пароль стола', code: 'WRONG_PASSWORD' },
+        });
+
+        return;
+      }
     }
 
     if (!(await this.profiles.canAfford(userId, room.settings.bet))) {

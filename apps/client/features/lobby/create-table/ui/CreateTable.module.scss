@@ -97,6 +97,24 @@
 
 // --- Приватность -----------------------------------------------------------
 
+/** Пароль стола — белое поле на сукне, появляется вместе с приватностью. */
+.password {
+  @include focus-ring;
+
+  height: rem(50);
+  padding: 0 var(--space-4);
+  border: rem(2) solid transparent;
+  border-radius: var(--radius-md);
+  font-size: rem(16);
+  color: var(--foreground);
+  background: oklch(1 0 0);
+  box-shadow: var(--shadow-tile);
+
+  &:focus {
+    border-color: var(--accent);
+  }
+}
+
 .privateRow {
   cursor: pointer;
   display: flex;

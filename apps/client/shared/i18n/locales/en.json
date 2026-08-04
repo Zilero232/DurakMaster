@@ -138,7 +138,8 @@
     "playersCount": "{current}/{max}",
     "privateTable": "Private table",
     "premiumPlayer": "Premium player",
-    "emptySeats": "Table is empty"
+    "emptySeats": "Table is empty",
+    "passwordPrompt": "Enter the table password"
   },
   "create": {
     "title": "New game",
@@ -165,7 +166,9 @@
       "classic": "Classic",
       "classicHint": "lowest trump leads",
       "draw": "Draw"
-    }
+    },
+    "password": "Table password",
+    "passwordPlaceholder": "Choose a password"
   },
   "table": {
     "waitingTitle": "Waiting for players",
@@ -267,6 +270,8 @@
     "UNAUTHORIZED": "Sign in required",
     "RATE_LIMITED": "Too many actions, slow down",
     "BAD_MESSAGE": "Communication error",
-    "BONUS_NOT_READY": "Bonus is not available yet"
+    "BONUS_NOT_READY": "Bonus is not available yet",
+    "PASSWORD_REQUIRED": "A private table needs a password",
+    "WRONG_PASSWORD": "Wrong table password"
   }
 }

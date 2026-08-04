@@ -20,18 +20,8 @@ import { ModeCard, OptionRow, SettingsSection } from './components';
 
 import s from './CreateTable.module.scss';
 
-import type {
-  DeckSize,
-  Fairness,
-  GameMode,
-  GameSpeed,
-  TableSettings,
-  ThrowInScope,
-} from '@durak-master/schemas';
-
-type CreateTableProps = {
-  onCreate: (settings: TableSettings) => void;
-};
+import type { DeckSize, Fairness, GameMode, GameSpeed, ThrowInScope } from '@durak-master/schemas';
+import type { CreateTableProps } from './CreateTable.types';
 
 const PLAYER_COUNTS = [2, 3, 4, 5, 6];
 const DECK_SIZES: DeckSize[] = [24, 36, 52];
@@ -52,24 +42,30 @@ export const CreateTable = ({ onCreate }: CreateTableProps) => {
   const [isClassic, setIsClassic] = useState(true);
   const [allowDraw, setAllowDraw] = useState(true);
   const [isPrivate, setIsPrivate] = useState(false);
+  const [password, setPassword] = useState('');
 
   const bet = BET_STEPS[betIndex] ?? BET_STEPS[0];
+  // Приватный стол без пароля пустил бы кого угодно — кнопка ждёт ввода.
+  const canCreate = !isPrivate || password.trim().length > 0;
 
   const handleCreate = () => {
-    onCreate({
-      ...DEFAULT_TABLE_SETTINGS,
-      mode,
-      deckSize,
-      maxPlayers,
-      throwInScope,
-      fairness,
-      speed,
-      isClassic,
-      allowDraw,
-      isPrivate,
-      bet,
-      turnTimeoutSeconds: TURN_SECONDS_BY_SPEED[speed],
-    });
+    onCreate(
+      {
+        ...DEFAULT_TABLE_SETTINGS,
+        mode,
+        deckSize,
+        maxPlayers,
+        throwInScope,
+        fairness,
+        speed,
+        isClassic,
+        allowDraw,
+        isPrivate,
+        bet,
+        turnTimeoutSeconds: TURN_SECONDS_BY_SPEED[speed],
+      },
+      isPrivate ? password.trim() : undefined,
+    );
   };
 
   return (
@@ -193,7 +189,26 @@ export const CreateTable = ({ onCreate }: CreateTableProps) => {
         <span>{t('private')}</span>
       </label>
 
-      <Button variant="primary" size="lg" isFullWidth onClick={handleCreate}>
+      {isPrivate && (
+        <input
+          className={s.password}
+          type="text"
+          value={password}
+          maxLength={32}
+          autoComplete="off"
+          placeholder={t('passwordPlaceholder')}
+          aria-label={t('password')}
+          onChange={(event) => setPassword(event.target.value)}
+        />
+      )}
+
+      <Button
+        variant="primary"
+        size="lg"
+        isFullWidth
+        isDisabled={!canCreate}
+        onClick={handleCreate}
+      >
         {t('submit')}
       </Button>
     </div>

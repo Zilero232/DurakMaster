@@ -9,6 +9,7 @@ import { match } from 'ts-pattern';
 import { useSessionStore } from '@/entities/session';
 import { SignInForm } from '@/features/auth/sign-in';
 import { CreateTable } from '@/features/lobby/create-table';
+import { PasswordPrompt } from '@/features/lobby/join-table';
 import { SettingsPanel } from '@/features/settings/change-settings';
 import { logout, useSession } from '@/shared/api/auth/auth-client';
 import { SuitIcon } from '@/shared/ui';
@@ -36,6 +37,8 @@ export const AppShell = () => {
   const [tab, setTab] = useState<Tab>('profile');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isRulesOpen, setIsRulesOpen] = useState(false);
+  /** Стол, к которому игрок вводит пароль. */
+  const [pendingTableId, setPendingTableId] = useState<string | null>(null);
 
   const { data: session, isPending } = useSession();
 
@@ -79,8 +82,31 @@ export const AppShell = () => {
     clearError();
   }, [lastError, clearError]);
 
-  const handleCreate = (settings: TableSettings) => {
-    createTable(settings);
+  const handleCreate = (settings: TableSettings, password?: string) => {
+    createTable(settings, password);
+  };
+
+  /**
+   * Вход за стол. У приватного открывается окно пароля: отдельный экран
+   * ради одного поля разрывал бы путь «увидел стол — сел за него».
+   */
+  const handleJoin = (tableId: string) => {
+    const table = tables.find((item) => item.id === tableId);
+
+    if (table?.settings.isPrivate) {
+      setPendingTableId(tableId);
+
+      return;
+    }
+
+    joinTable(tableId);
+  };
+
+  const handlePasswordSubmit = (password: string) => {
+    if (pendingTableId) {
+      joinTable(pendingTableId, password);
+      setPendingTableId(null);
+    }
   };
 
   const handleLogout = async () => {
@@ -151,7 +177,7 @@ export const AppShell = () => {
           </div>
         )}
 
-        {tab === 'tables' && <TableList tables={tables} onJoin={joinTable} />}
+        {tab === 'tables' && <TableList tables={tables} onJoin={handleJoin} />}
         {tab === 'create' && <CreateTable onCreate={handleCreate} />}
       </main>
 
@@ -172,6 +198,12 @@ export const AppShell = () => {
 
       <SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
       <RulesPanel isOpen={isRulesOpen} onClose={() => setIsRulesOpen(false)} />
+
+      <PasswordPrompt
+        isOpen={pendingTableId !== null}
+        onSubmit={handlePasswordSubmit}
+        onClose={() => setPendingTableId(null)}
+      />
     </div>
   );
 };

@@ -59,8 +59,8 @@ type SessionStore = {
   disconnect: () => void;
 
   subscribeLobby: () => void;
-  createTable: (settings: TableSettings) => void;
-  joinTable: (tableId: string) => void;
+  createTable: (settings: TableSettings, password?: string) => void;
+  joinTable: (tableId: string, password?: string) => void;
   leaveTable: () => void;
   setReady: (isReady: boolean) => void;
   /** Посадить бота на свободное место, чтобы начать партию не дожидаясь людей. */
@@ -216,9 +216,11 @@ export const useSessionStore = create<SessionStore>((set, get) => {
 
     subscribeLobby: () => socketClient.send({ type: 'lobby:subscribe' }),
 
-    createTable: (settings) => socketClient.send({ type: 'table:create', payload: { settings } }),
+    createTable: (settings, password) =>
+      socketClient.send({ type: 'table:create', payload: { settings, password } }),
 
-    joinTable: (tableId) => socketClient.send({ type: 'table:join', payload: { tableId } }),
+    joinTable: (tableId, password) =>
+      socketClient.send({ type: 'table:join', payload: { tableId, password } }),
 
     leaveTable: () => socketClient.send({ type: 'table:leave' }),
 

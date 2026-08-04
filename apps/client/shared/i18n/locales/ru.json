@@ -138,7 +138,8 @@
     "playersCount": "{current}/{max}",
     "privateTable": "Приватный стол",
     "premiumPlayer": "Премиум-игрок",
-    "emptySeats": "Стол свободен"
+    "emptySeats": "Стол свободен",
+    "passwordPrompt": "Введите пароль стола"
   },
   "create": {
     "title": "Создать игру",
@@ -165,7 +166,9 @@
       "classic": "Классика",
       "classicHint": "ходит младший козырь",
       "draw": "Ничья"
-    }
+    },
+    "password": "Пароль стола",
+    "passwordPlaceholder": "Придумайте пароль"
   },
   "table": {
     "waitingTitle": "Ожидание игроков",
@@ -267,6 +270,8 @@
     "UNAUTHORIZED": "Требуется вход",
     "RATE_LIMITED": "Слишком часто, подождите",
     "BAD_MESSAGE": "Ошибка обмена данными",
-    "BONUS_NOT_READY": "Бонус пока недоступен"
+    "BONUS_NOT_READY": "Бонус пока недоступен",
+    "PASSWORD_REQUIRED": "Приватный стол требует пароль",
+    "WRONG_PASSWORD": "Неверный пароль стола"
   }
 }
