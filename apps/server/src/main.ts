@@ -1,23 +1,19 @@
-import 'reflect-metadata';
-
 import { NestFactory } from '@nestjs/core';
 import { WsAdapter } from '@nestjs/platform-ws';
 import helmet from 'helmet';
 
 import { AppModule } from './app.module';
 
+import 'reflect-metadata';
+
 const bootstrap = async () => {
   const app = await NestFactory.create(AppModule);
 
-  // Сырой WebSocket вместо Socket.IO: для пошаговой игры дополнительный
-  // протокол поверх WS не нужен, а `ws` — самый распространённый и лёгкий.
   app.useWebSocketAdapter(new WsAdapter(app));
 
   app.use(helmet());
 
-  // Origin'ы Tauri (tauri://localhost) браузерный CORS не затрагивает —
-  // перечисляем только веб-клиент.
-  const origins = (process.env.CORS_ORIGINS ?? 'http://localhost:3000')
+  const origins = (process.env.CORS_ORIGINS ?? 'http://localhost:8081')
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean);
@@ -28,7 +24,7 @@ const bootstrap = async () => {
 
   await app.listen(port);
 
-  // biome-ignore lint/suspicious/noConsole: стартовое сообщение сервера
+  // eslint-disable-next-line no-console
   console.log(`DurakMaster API: http://localhost:${port}`);
 };
 

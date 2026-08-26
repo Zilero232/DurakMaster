@@ -1,3 +1,11 @@
+import type {
+  Card,
+  GameAction,
+  GameErrorCode,
+  GameState,
+  PlayerState
+} from '@durak-master/schemas';
+
 import { beats } from './deck';
 import {
   canThrowIn,
@@ -8,19 +16,11 @@ import {
   hasDefendedCards,
   hasUndefendedCards,
   isLegalAttackCard,
-  removeCard,
+  removeCard
 } from './rules';
 import { nextActiveSeat } from './setup';
 
-import type {
-  Card,
-  GameAction,
-  GameErrorCode,
-  GameState,
-  PlayerState,
-} from '@durak-master/schemas';
-
-export type ReduceResult = { ok: true; state: GameState } | { ok: false; error: GameErrorCode };
+export type ReduceResult = { ok: false; error: GameErrorCode } | { ok: true; state: GameState };
 
 const HAND_SIZE = 6;
 
@@ -38,22 +38,14 @@ const handSizeAtSeat = (state: GameState, seat: number): number => {
   return player ? (state.hands[player.userId]?.length ?? 0) : 0;
 };
 
-/** Синхронизирует публичные счётчики карт с реальными руками. */
 const syncHandCounts = (state: GameState): GameState => ({
   ...state,
   players: state.players.map((player) => ({
     ...player,
-    handCount: state.hands[player.userId]?.length ?? 0,
-  })),
+    handCount: state.hands[player.userId]?.length ?? 0
+  }))
 });
 
-/**
- * Применяет действие игрока к состоянию.
- *
- * Чистая функция: вход не мутируется, результат детерминирован.
- * Вся валидация происходит здесь — сервер не должен дублировать проверки,
- * а клиент не должен на них полагаться.
- */
 export function reduce(state: GameState, userId: string, action: GameAction): ReduceResult {
   if (state.phase === 'finished') {
     return fail('GAME_NOT_ACTIVE');
@@ -89,13 +81,7 @@ export function reduce(state: GameState, userId: string, action: GameAction): Re
   }
 }
 
-// ---------------------------------------------------------------------------
-// Атака и подкидывание
-// ---------------------------------------------------------------------------
-
 function applyAttack(state: GameState, seat: number, userId: string, card: Card): ReduceResult {
-  // Защищающийся не подкидывает; при режиме «соседи» подкидывать вправе
-  // только соседи защищающегося.
   if (!canThrowIn(seat, state)) {
     return fail('INVALID_ACTION_FOR_PHASE');
   }
@@ -118,25 +104,20 @@ function applyAttack(state: GameState, seat: number, userId: string, card: Card)
     ...state,
     hands: { ...state.hands, [userId]: removeCard(hand, card) },
     table: [...state.table, { attack: card, defense: null }],
-    // Новая карта — все прежние пасы аннулируются: подкинуть могут снова.
     passedSeats: [],
     activeSeat: state.defenderSeat,
-    version: state.version + 1,
+    version: state.version + 1
   };
 
   return { ok: true, state: syncHandCounts(next) };
 }
-
-// ---------------------------------------------------------------------------
-// Защита
-// ---------------------------------------------------------------------------
 
 function applyDefend(
   state: GameState,
   seat: number,
   userId: string,
   pairIndex: number,
-  card: Card,
+  card: Card
 ): ReduceResult {
   if (seat !== state.defenderSeat) {
     return fail('NOT_YOUR_TURN');
@@ -167,25 +148,20 @@ function applyDefend(
   }
 
   const table = state.table.map((item, index) =>
-    index === pairIndex ? { ...item, defense: card } : item,
+    index === pairIndex ? { ...item, defense: card } : item
   );
 
   const next: GameState = {
     ...state,
     hands: { ...state.hands, [userId]: removeCard(hand, card) },
     table,
-    // Отбитая карта открывает новый ранг — атакующие снова могут подкинуть.
     passedSeats: [],
     activeSeat: state.attackerSeat,
-    version: state.version + 1,
+    version: state.version + 1
   };
 
   return { ok: true, state: syncHandCounts(next) };
 }
-
-// ---------------------------------------------------------------------------
-// Перевод
-// ---------------------------------------------------------------------------
 
 function applyTransfer(state: GameState, seat: number, userId: string, card: Card): ReduceResult {
   if (state.settings.mode !== 'transfer') {
@@ -210,7 +186,6 @@ function applyTransfer(state: GameState, seat: number, userId: string, card: Car
   const nextDefenderHandSize = handSizeAtSeat(state, nextDefenderSeat);
 
   if (!canTransfer(card, state.table, nextDefenderHandSize)) {
-    // Различаем причину: несовпадение ранга или нехватка карт у цели.
     const tableRank = state.table[0]?.attack.rank;
 
     if (tableRank !== undefined && card.rank !== tableRank) {
@@ -226,31 +201,22 @@ function applyTransfer(state: GameState, seat: number, userId: string, card: Car
     ...state,
     hands: { ...state.hands, [userId]: removeCard(hand, card) },
     table,
-    // Бывший защищающийся становится атакующим, атака идёт дальше по кругу.
     attackerSeat: state.defenderSeat,
     defenderSeat: nextDefenderSeat,
     activeSeat: nextDefenderSeat,
     attackLimit: computeAttackLimit(nextDefenderHandSize),
     passedSeats: [],
-    version: state.version + 1,
+    version: state.version + 1
   };
 
   return { ok: true, state: syncHandCounts(next) };
 }
 
-/**
- * Перевод показом козыря: защищающийся показывает козырь того же ранга,
- * что и карты на столе, и оставляет его в руке.
- *
- * Отличия от обычного перевода: карта не покидает руку, поэтому на столе
- * не прибавляется атакующих карт, а «достаточность» проверяется по уже
- * лежащим картам — новому защищающемуся отбивать ровно их.
- */
 function applyTransferByShowing(
   state: GameState,
   seat: number,
   userId: string,
-  card: Card,
+  card: Card
 ): ReduceResult {
   if (state.settings.mode !== 'transfer' || !state.settings.allowTransferByShowingTrump) {
     return fail('TRANSFER_NOT_ALLOWED');
@@ -268,12 +234,10 @@ function applyTransferByShowing(
     return fail('TRANSFER_AFTER_DEFENSE');
   }
 
-  // Показ разрешён один раз за партию: дальше козырь надо выкладывать.
   if (state.shownTrumpSeats.includes(seat)) {
     return fail('TRANSFER_NOT_ALLOWED');
   }
 
-  // Показывают именно козырь — некозырной картой перевод только выкладыванием.
   if (card.suit !== state.trump) {
     return fail('TRANSFER_NOT_ALLOWED');
   }
@@ -297,7 +261,6 @@ function applyTransferByShowing(
   const nextDefenderSeat = nextActiveSeat(state.players, state.defenderSeat);
   const nextDefenderHandSize = handSizeAtSeat(state, nextDefenderSeat);
 
-  // Карта остаётся в руке, поэтому отбивать придётся уже лежащие карты.
   if (state.table.length > nextDefenderHandSize) {
     return fail('TRANSFER_TARGET_HAS_TOO_FEW_CARDS');
   }
@@ -310,15 +273,11 @@ function applyTransferByShowing(
     attackLimit: computeAttackLimit(nextDefenderHandSize),
     passedSeats: [],
     shownTrumpSeats: [...state.shownTrumpSeats, seat],
-    version: state.version + 1,
+    version: state.version + 1
   };
 
   return { ok: true, state: syncHandCounts(next) };
 }
-
-// ---------------------------------------------------------------------------
-// Взятие
-// ---------------------------------------------------------------------------
 
 function applyTake(state: GameState, seat: number): ReduceResult {
   if (seat !== state.defenderSeat) {
@@ -329,21 +288,16 @@ function applyTake(state: GameState, seat: number): ReduceResult {
     return fail('NOTHING_TO_TAKE');
   }
 
-  // Взятие не мгновенно: атакующие ещё могут подкинуть в пределах лимита.
   const next: GameState = {
     ...state,
     phase: 'taking',
     activeSeat: state.attackerSeat,
     passedSeats: [],
-    version: state.version + 1,
+    version: state.version + 1
   };
 
   return { ok: true, state: next };
 }
-
-// ---------------------------------------------------------------------------
-// Пас / бито
-// ---------------------------------------------------------------------------
 
 function applyPass(state: GameState, seat: number): ReduceResult {
   if (seat === state.defenderSeat) {
@@ -358,37 +312,29 @@ function applyPass(state: GameState, seat: number): ReduceResult {
     ? state.passedSeats
     : [...state.passedSeats, seat];
 
-  // Ждём паса только от тех, кто вправе подкидывать: при режиме «соседи»
-  // остальные в отбое не участвуют и блокировать его не должны.
   const attackers = state.players.filter((item) => canThrowIn(item.seat, state));
   const everyonePassed = attackers.every((item) => passedSeats.includes(item.seat));
 
   if (!everyonePassed) {
     return {
       ok: true,
-      state: { ...state, passedSeats, activeSeat: state.attackerSeat, version: state.version + 1 },
+      state: { ...state, passedSeats, activeSeat: state.attackerSeat, version: state.version + 1 }
     };
   }
 
-  // Все спасовали — отбой завершается.
   if (state.phase === 'taking') {
     return { ok: true, state: finishBout(state, { defenderTook: true }) };
   }
 
   if (hasUndefendedCards(state.table)) {
-    // Есть неотбитые карты, а атакующие пасуют — защищающийся ещё не закончил.
     return {
       ok: true,
-      state: { ...state, passedSeats, activeSeat: state.defenderSeat, version: state.version + 1 },
+      state: { ...state, passedSeats, activeSeat: state.defenderSeat, version: state.version + 1 }
     };
   }
 
   return { ok: true, state: finishBout(state, { defenderTook: false }) };
 }
-
-// ---------------------------------------------------------------------------
-// Завершение отбоя: сброс/взятие, добор, смена ролей, проверка конца партии
-// ---------------------------------------------------------------------------
 
 type FinishBoutOptions = { defenderTook: boolean };
 
@@ -403,18 +349,11 @@ function finishBout(state: GameState, options: FinishBoutOptions): GameState {
     discard = [...discard, ...collectTableCards(state.table)];
   }
 
-  // Добор строго по порядку: атакующий → остальные по часовой → защищающийся последним.
-  //
-  // Раздаём по кругу, а не «каждому сразу до шести»: когда карт в колоде
-  // меньше, чем нужно всем, порядок определяет, кому достанутся остатки.
-  // Выдача одному игроку всей колоды оставила бы следующих ни с чем —
-  // на последних картах это решало бы исход партии.
   const talon = [...state.talon];
   const drawOrder = buildDrawOrder(state)
     .map((drawSeat) => playerAtSeat(state, drawSeat))
     .filter((drawPlayer): drawPlayer is PlayerState => drawPlayer !== undefined);
 
-  // Руки копируем: вход мутировать нельзя.
   for (const drawPlayer of drawOrder) {
     hands[drawPlayer.userId] = [...(hands[drawPlayer.userId] ?? [])];
   }
@@ -431,7 +370,6 @@ function finishBout(state: GameState, options: FinishBoutOptions): GameState {
         continue;
       }
 
-      // Добор с конца: козырная карта лежит первой и уходит последней.
       const drawn = talon.pop();
 
       if (drawn) {
@@ -440,11 +378,10 @@ function finishBout(state: GameState, options: FinishBoutOptions): GameState {
     }
   }
 
-  // Выбывают только при пустой колоде.
   const players = state.players.map((item) => ({
     ...item,
     handCount: hands[item.userId]?.length ?? 0,
-    isOut: talon.length === 0 && (hands[item.userId]?.length ?? 0) === 0,
+    isOut: talon.length === 0 && (hands[item.userId]?.length ?? 0) === 0
   }));
 
   const active = players.filter((item) => !item.isOut);
@@ -458,17 +395,16 @@ function finishBout(state: GameState, options: FinishBoutOptions): GameState {
     table: [],
     passedSeats: [],
     turnDeadline: null,
-    version: state.version + 1,
+    version: state.version + 1
   };
 
-  // Ничья: колода пуста и ни у кого не осталось карт.
   if (active.length === 0) {
     return {
       ...base,
       phase: 'finished',
       isDraw: state.settings.allowDraw,
       loserUserId: null,
-      trumpCard: talon.length > 0 ? base.trumpCard : null,
+      trumpCard: talon.length > 0 ? base.trumpCard : null
     };
   }
 
@@ -480,12 +416,10 @@ function finishBout(state: GameState, options: FinishBoutOptions): GameState {
       phase: 'finished',
       isDraw: false,
       loserUserId: loser?.userId ?? null,
-      trumpCard: talon.length > 0 ? base.trumpCard : null,
+      trumpCard: talon.length > 0 ? base.trumpCard : null
     };
   }
 
-  // Роли на следующий отбой.
-  // Отбились — атакует бывший защищающийся. Взял — ход к игроку ПОСЛЕ него.
   const nextAttackerSeat = options.defenderTook
     ? nextActiveSeat(players, state.defenderSeat)
     : firstActiveFrom(players, state.defenderSeat);
@@ -498,13 +432,12 @@ function finishBout(state: GameState, options: FinishBoutOptions): GameState {
     defenderSeat: nextDefenderSeat,
     activeSeat: nextAttackerSeat,
     attackLimit: computeAttackLimit(
-      players.find((item) => item.seat === nextDefenderSeat)?.handCount ?? HAND_SIZE,
+      players.find((item) => item.seat === nextDefenderSeat)?.handCount ?? HAND_SIZE
     ),
-    trumpCard: talon.length > 0 ? base.trumpCard : null,
+    trumpCard: talon.length > 0 ? base.trumpCard : null
   };
 }
 
-/** Само это место, если игрок активен; иначе следующее активное. */
 function firstActiveFrom(players: PlayerState[], seat: number): number {
   const player = players.find((item) => item.seat === seat);
 
@@ -515,7 +448,6 @@ function firstActiveFrom(players: PlayerState[], seat: number): number {
   return nextActiveSeat(players, seat);
 }
 
-/** Порядок добора: атакующий → подкидывавшие по часовой → защищающийся. */
 function buildDrawOrder(state: GameState): number[] {
   const order: number[] = [state.attackerSeat];
   const count = state.players.length;

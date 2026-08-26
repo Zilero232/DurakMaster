@@ -1,12 +1,20 @@
+import type {
+  ClientMessage,
+  CreateTableInput,
+  GameAction,
+  GameErrorCode,
+  JoinTableInput,
+  ServerMessage
+} from '@durak-master/schemas';
+import type { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit } from '@nestjs/websockets';
+import type { WebSocket } from 'ws';
+
 import { clientMessageSchema, computeRatingGain } from '@durak-master/schemas';
 import { Logger } from '@nestjs/common';
-import {
-  type OnGatewayConnection,
-  type OnGatewayDisconnect,
-  type OnGatewayInit,
-  WebSocketGateway,
-} from '@nestjs/websockets';
+import { WebSocketGateway } from '@nestjs/websockets';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
+
+import type { RoomEvent } from '../game/game-room';
 
 import { AuthService } from '../../lib/auth/auth.service';
 import { RoomsService } from '../game/rooms.service';
@@ -14,59 +22,27 @@ import { hashTablePassword, verifyTablePassword } from '../game/table-password';
 import { ProfilesService } from '../profile/profiles.service';
 import { SessionsService } from './sessions.service';
 
-import type {
-  ClientMessage,
-  CreateTableInput,
-  GameAction,
-  GameErrorCode,
-  JoinTableInput,
-  ServerMessage,
-} from '@durak-master/schemas';
-import type { WebSocket } from 'ws';
-import type { RoomEvent } from '../game/game-room';
-
 type Socket = WebSocket & { userId?: string; isAlive?: boolean };
 
-/**
- * WebSocket-шлюз.
- *
- * Отвечает только за транспорт: разбор и валидацию сообщений, маршрутизацию
- * в комнаты и рассылку. Правила игры живут в game-core, состояние — в комнатах.
- */
 @WebSocketGateway({ path: '/ws' })
 export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(RealtimeGateway.name);
 
   private readonly sockets = new Map<string, Socket>();
-  /** Кто подписан на список столов. */
   private readonly lobbySubscribers = new Set<string>();
 
-  /**
-   * Ограничение частоты сообщений на соединение. У обычного игрока в дураке
-   * это единицы действий в секунду; всё сверх — либо баг клиента, либо
-   * попытка нагрузить сервер.
-   */
   private readonly rateLimiter = new RateLimiterMemory({
     points: 25,
-    duration: 5,
+    duration: 5
   });
 
   constructor(
     private readonly rooms: RoomsService,
     private readonly sessions: SessionsService,
     private readonly auth: AuthService,
-    private readonly profiles: ProfilesService,
+    private readonly profiles: ProfilesService
   ) {}
 
-  /**
-   * Заголовки апгрейда в веб-стандартный `Headers` — в таком виде их ждёт
-   * better-auth. Cookie и `Authorization` проходят насквозь, поэтому
-   * работает браузерная сессия.
-   *
-   * Токен из query — запасной путь для нативной обёртки: браузерный
-   * WebSocket не позволяет задать заголовки, а в Tauri нет общих cookie.
-   * Значение всё равно проверяется подписью, поэтому подделать его нельзя.
-   */
   private toHeaders(request: {
     url?: string;
     headers: Record<string, string | string[] | undefined>;
@@ -95,7 +71,6 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
   afterInit(): void {
     this.rooms.onEvent((roomId, event) => this.handleRoomEvent(roomId, event));
 
-    // Пинг живости: соединения в мобильных сетях умирают молча.
     setInterval(() => {
       for (const socket of this.sockets.values()) {
         if (socket.isAlive === false) {
@@ -114,23 +89,18 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
 
   async handleConnection(
     socket: Socket,
-    request: { url?: string; headers: Record<string, string | string[] | undefined> },
+    request: { url?: string; headers: Record<string, string | string[] | undefined> }
   ): Promise<void> {
-    // Слушатель вешается ДО любого await: проверка сессии и загрузка профиля
-    // занимают время, а клиент шлёт первую команду сразу после `open`.
-    // Без буфера эти сообщения пропали бы молча.
     const buffered: Buffer[] = [];
     let isReady = false;
 
     const dispatch = (raw: Buffer) => {
-      // Ошибку обработчика нельзя терять: без лога сбой выглядит как
-      // «сервер молча не ответил» и не находится по симптомам.
       this.handleMessage(socket, raw).catch((error) => {
         this.logger.error(`Ошибка обработки сообщения от ${socket.userId}`, error);
 
         this.send(socket, {
           type: 'error',
-          payload: { message: 'Внутренняя ошибка', code: 'INTERNAL_ERROR' },
+          payload: { message: 'Внутренняя ошибка', code: 'INTERNAL_ERROR' }
         });
       });
     };
@@ -149,15 +119,12 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
       socket.isAlive = true;
     });
 
-    // Личность берётся ТОЛЬКО из проверенной сессии. Идентификатор из
-    // параметров запроса принимать нельзя: он позволил бы подключиться
-    // от чужого имени и увидеть чужую руку.
     const userId = await this.auth.resolveUserId(this.toHeaders(request));
 
     if (!userId) {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'Требуется вход', code: 'UNAUTHORIZED' },
+        payload: { message: 'Требуется вход', code: 'UNAUTHORIZED' }
       });
       socket.close(4401, 'Unauthorized');
 
@@ -166,8 +133,6 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
 
     const profile = await this.sessions.load(userId);
 
-    // Второе подключение того же игрока вытесняет первое: иначе за столом
-    // окажутся два сокета с одной личностью и рассылка станет неоднозначной.
     const previous = this.sockets.get(userId);
 
     if (previous && previous !== socket) {
@@ -180,7 +145,6 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
 
     this.send(socket, { type: 'connected', payload: { profile } });
 
-    // Профиль готов — разбираем накопленное в порядке поступления.
     isReady = true;
 
     for (const raw of buffered) {
@@ -189,7 +153,6 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
 
     buffered.length = 0;
 
-    // Игрок мог вернуться в идущую партию — сразу отдаём состояние.
     const room = this.rooms.getRoomOfUser(profile.userId);
 
     if (room) {
@@ -213,8 +176,6 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     this.broadcastLobby();
   }
 
-  // --- Обработка сообщений -------------------------------------------------
-
   private async handleMessage(socket: Socket, raw: Buffer): Promise<void> {
     const userId = socket.userId;
 
@@ -227,7 +188,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     } catch {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'Слишком много запросов', code: 'RATE_LIMITED' },
+        payload: { message: 'Слишком много запросов', code: 'RATE_LIMITED' }
       });
 
       return;
@@ -236,12 +197,11 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     let message: ClientMessage;
 
     try {
-      // Форме клиентских данных доверять нельзя — валидируем схемой.
       message = clientMessageSchema.parse(JSON.parse(raw.toString()));
     } catch {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'Некорректное сообщение', code: 'BAD_MESSAGE' },
+        payload: { message: 'Некорректное сообщение', code: 'BAD_MESSAGE' }
       });
 
       return;
@@ -256,7 +216,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
         this.lobbySubscribers.add(userId);
         this.send(socket, {
           type: 'lobby:tables',
-          payload: { tables: this.rooms.listTables() },
+          payload: { tables: this.rooms.listTables() }
         });
         break;
 
@@ -319,7 +279,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
   private async handleCreateTable(
     socket: Socket,
     userId: string,
-    payload: CreateTableInput,
+    payload: CreateTableInput
   ): Promise<void> {
     const profile = this.sessions.get(userId);
 
@@ -327,29 +287,24 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
       return;
     }
 
-    // Ставка резервируется рукой игрока: сесть за стол дороже своего
-    // баланса нельзя, иначе проигрыш увёл бы счёт в минус.
     if (!(await this.profiles.canAfford(userId, payload.settings.bet))) {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'Не хватает кредитов на эту ставку', code: 'NOT_ENOUGH_CREDITS' },
+        payload: { message: 'Не хватает кредитов на эту ставку', code: 'NOT_ENOUGH_CREDITS' }
       });
 
       return;
     }
 
-    // Приватный стол без пароля был бы обычным открытым: настройка
-    // обещает закрытость, и пустой пароль эту гарантию ломает.
     if (payload.settings.isPrivate && !payload.password) {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'Приватный стол требует пароль', code: 'PASSWORD_REQUIRED' },
+        payload: { message: 'Приватный стол требует пароль', code: 'PASSWORD_REQUIRED' }
       });
 
       return;
     }
 
-    // Игрок не может сидеть за двумя столами одновременно.
     this.rooms.leave(userId);
 
     const passwordHash = payload.password ? hashTablePassword(payload.password) : null;
@@ -363,7 +318,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
   private async handleJoinTable(
     socket: Socket,
     userId: string,
-    payload: JoinTableInput,
+    payload: JoinTableInput
   ): Promise<void> {
     const profile = this.sessions.get(userId);
     const room = this.rooms.getRoom(payload.tableId);
@@ -371,21 +326,19 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     if (!profile || !room) {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'Стол не найден', code: 'TABLE_NOT_FOUND' },
+        payload: { message: 'Стол не найден', code: 'TABLE_NOT_FOUND' }
       });
 
       return;
     }
 
-    // Пароль спрашиваем только у новых игроков: вернувшемуся после обрыва
-    // связи пришлось бы вводить его заново посреди партии.
     const isReturning = Boolean(room.getMember(userId));
 
     if (room.passwordHash && !isReturning) {
       if (!payload.password || !verifyTablePassword(payload.password, room.passwordHash)) {
         this.send(socket, {
           type: 'error',
-          payload: { message: 'Неверный пароль стола', code: 'WRONG_PASSWORD' },
+          payload: { message: 'Неверный пароль стола', code: 'WRONG_PASSWORD' }
         });
 
         return;
@@ -395,7 +348,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     if (!(await this.profiles.canAfford(userId, room.settings.bet))) {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'Не хватает кредитов на эту ставку', code: 'NOT_ENOUGH_CREDITS' },
+        payload: { message: 'Не хватает кредитов на эту ставку', code: 'NOT_ENOUGH_CREDITS' }
       });
 
       return;
@@ -404,7 +357,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     if (!this.rooms.join(room, profile)) {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'За столом нет мест', code: 'TABLE_FULL' },
+        payload: { message: 'За столом нет мест', code: 'TABLE_FULL' }
       });
 
       return;
@@ -414,13 +367,6 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     this.broadcastLobby();
   }
 
-  /**
-   * Сажает бота на свободное место.
-   *
-   * Бот — не пользователь БД: профиль собирается на лету и живёт только
-   * в памяти комнаты. Записывать ему рейтинг и кредиты некуда, поэтому
-   * итоги партии для ботов не сохраняются.
-   */
   private handleAddBot(socket: Socket, userId: string): void {
     const room = this.rooms.getRoomOfUser(userId);
 
@@ -431,7 +377,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     if (room.isPlaying || room.isFull) {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'За столом нет мест', code: 'TABLE_FULL' },
+        payload: { message: 'За столом нет мест', code: 'TABLE_FULL' }
       });
 
       return;
@@ -450,28 +396,21 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
         gamesWon: 0,
         gamesLost: 0,
         isPremium: false,
-        isOnline: true,
+        isOnline: true
       },
-      true,
+      true
     );
 
     this.broadcastLobby();
   }
 
-  /**
-   * Бесплатный бонус кредитов.
-   *
-   * Порог и интервал проверяет `ProfilesService`: клиент присылает лишь
-   * намерение, а решение принимает сервер — иначе бонус можно было бы
-   * запрашивать в цикле.
-   */
   private async handleClaimBonus(socket: Socket, userId: string): Promise<void> {
     const profile = await this.profiles.claimFreeCredits(userId);
 
     if (!profile) {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'Бонус пока недоступен', code: 'BONUS_NOT_READY' },
+        payload: { message: 'Бонус пока недоступен', code: 'BONUS_NOT_READY' }
       });
 
       return;
@@ -483,7 +422,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
   private handleGameAction(
     socket: Socket,
     userId: string,
-    payload: { action: GameAction; expectedVersion: number },
+    payload: { action: GameAction; expectedVersion: number }
   ): void {
     const room = this.rooms.getRoomOfUser(userId);
 
@@ -496,12 +435,10 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     if (error) {
       this.send(socket, {
         type: 'game:rejected',
-        payload: { code: error as GameErrorCode },
+        payload: { code: error as GameErrorCode }
       });
     }
   }
-
-  // --- Рассылка ------------------------------------------------------------
 
   private handleRoomEvent(roomId: string, event: RoomEvent): void {
     switch (event.type) {
@@ -517,14 +454,14 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
       case 'phrase':
         this.broadcastToRoom(roomId, {
           type: 'table:phrase',
-          payload: { phrase: event.phrase },
+          payload: { phrase: event.phrase }
         });
         break;
 
       case 'emoji':
         this.broadcastToRoom(roomId, {
           type: 'table:emoji',
-          payload: { userId: event.userId, emoji: event.emoji },
+          payload: { userId: event.userId, emoji: event.emoji }
         });
         break;
 
@@ -533,14 +470,10 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     }
   }
 
-  /**
-   * Итоги партии: ставка проигравшего делится между остальными,
-   * победителям начисляется рейтинг по логарифму выигрыша.
-   */
   private async handleGameFinished(
     roomId: string,
     loserUserId: string | null,
-    isDraw: boolean,
+    isDraw: boolean
   ): Promise<void> {
     const room = this.rooms.getRoom(roomId);
 
@@ -559,14 +492,13 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
       const creditsDelta = isDraw ? 0 : isLoser ? -bet : prize;
       const ratingDelta = isDraw || isLoser ? 0 : computeRatingGain(prize, member.profile.rating);
 
-      // У ботов нет профиля в БД — записывать им итоги некуда.
       if (!member.isBot) {
         await this.sessions.applyGameResult({
           userId,
           creditsDelta,
           ratingDelta,
           isWinner: !isLoser && !isDraw,
-          isDraw,
+          isDraw
         });
       }
 
@@ -578,24 +510,18 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
 
       this.send(socket, {
         type: 'game:finished',
-        payload: { loserUserId, isDraw, creditsDelta, ratingDelta },
+        payload: { loserUserId, isDraw, creditsDelta, ratingDelta }
       });
 
-      // Балансы изменились — отдаём свежий профиль, чтобы счётчики
-      // в шапке не расходились с БД до следующего подключения.
       if (!member.isBot) {
         this.send(socket, {
           type: 'profile:updated',
-          payload: { profile: await this.sessions.reload(userId) },
+          payload: { profile: await this.sessions.reload(userId) }
         });
       }
     }
   }
 
-  /**
-   * Состояние партии рассылается ПЕРСОНАЛЬНО: каждый получает только свою
-   * руку. Общая рассылка одного объекта раскрыла бы карты соперников.
-   */
   private sendGameState(roomId: string): void {
     const room = this.rooms.getRoom(roomId);
 
@@ -633,7 +559,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
 
     this.send(socket, {
       type: 'table:joined',
-      payload: { table: room.toLobbyTable(), seat },
+      payload: { table: room.toLobbyTable(), seat }
     });
   }
 

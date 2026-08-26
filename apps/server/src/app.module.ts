@@ -12,15 +12,14 @@ import { RealtimeModule } from './modules/realtime/realtime.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      cache: true,
+      cache: true
     }),
-    // Prisma и Auth глобальные: доступ к БД и проверка сессии нужны почти везде.
     PrismaModule,
     AuthModule,
     ProfileModule,
     GameModule,
-    RealtimeModule,
+    RealtimeModule
   ],
-  controllers: [HealthController],
+  controllers: [HealthController]
 })
 export class AppModule {}

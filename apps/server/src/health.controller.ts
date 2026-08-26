@@ -7,7 +7,7 @@ export class HealthController {
     return {
       status: 'ok',
       service: 'durakmaster-api',
-      nodeId: process.env.NODE_ID ?? 'unknown',
+      nodeId: process.env.NODE_ID ?? 'unknown'
     };
   }
 }

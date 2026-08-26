@@ -1,12 +1,3 @@
-import { randomInt, randomUUID } from 'node:crypto';
-import {
-  createGame,
-  decideBotAction,
-  decideTimeoutAction,
-  reduce,
-  toPlayerView,
-} from '@durak-master/game-core';
-
 import type {
   GameAction,
   GameState,
@@ -16,8 +7,17 @@ import type {
   TablePhrase,
   TablePlayer,
   TableSettings,
-  TableStatus,
+  TableStatus
 } from '@durak-master/schemas';
+
+import {
+  createGame,
+  decideBotAction,
+  decideTimeoutAction,
+  reduce,
+  toPlayerView
+} from '@durak-master/game-core';
+import { randomInt, randomUUID } from 'node:crypto';
 
 export type RoomMember = {
   profile: PublicProfile;
@@ -28,21 +28,11 @@ export type RoomMember = {
 };
 
 export type RoomEvent =
-  | { type: 'state-changed' }
+  | { type: 'emoji'; userId: string; emoji: string }
   | { type: 'finished'; loserUserId: string | null; isDraw: boolean }
   | { type: 'phrase'; phrase: TablePhrase }
-  | { type: 'emoji'; userId: string; emoji: string };
+  | { type: 'state-changed' };
 
-/**
- * Комната одного стола.
- *
- * Владеет состоянием партии целиком и в памяти. Все правила применяются
- * ЗДЕСЬ через `reduce` из game-core — клиентские данные проходят валидацию
- * до применения, и клиент никогда не получает скрытую часть состояния.
- *
- * Одна комната всегда живёт на одной ноде: так состояние остаётся
- * согласованным без распределённых блокировок.
- */
 export class GameRoom {
   readonly id: string;
   readonly createdAt = Date.now();
@@ -52,18 +42,15 @@ export class GameRoom {
   private status: TableStatus = 'waiting';
   private turnTimer: NodeJS.Timeout | null = null;
   private botTimer: NodeJS.Timeout | null = null;
-  /** Последние фразы за столом — для догона после реконнекта. */
   private phrases: TablePhrase[] = [];
 
   constructor(
     readonly settings: TableSettings,
     readonly passwordHash: string | null,
-    private readonly emit: (event: RoomEvent) => void,
+    private readonly emit: (event: RoomEvent) => void
   ) {
     this.id = randomUUID();
   }
-
-  // --- Участники -----------------------------------------------------------
 
   getMembers(): RoomMember[] {
     return [...this.members.values()].sort((a, b) => a.seat - b.seat);
@@ -102,7 +89,7 @@ export class GameRoom {
       seat,
       isReady: isBot,
       isBot,
-      isConnected: true,
+      isConnected: true
     };
 
     this.members.set(profile.userId, member);
@@ -118,8 +105,6 @@ export class GameRoom {
       return;
     }
 
-    // В идущей партии место сохраняется: игрок может вернуться,
-    // а до тех пор за него ходит авто-игрок по таймауту.
     if (this.status === 'playing') {
       member.isConnected = false;
 
@@ -127,8 +112,8 @@ export class GameRoom {
         this.state = {
           ...this.state,
           players: this.state.players.map((player) =>
-            player.userId === userId ? { ...player, isDisconnected: true } : player,
-          ),
+            player.userId === userId ? { ...player, isDisconnected: true } : player
+          )
         };
       }
 
@@ -154,8 +139,8 @@ export class GameRoom {
       this.state = {
         ...this.state,
         players: this.state.players.map((player) =>
-          player.userId === userId ? { ...player, isDisconnected: false } : player,
-        ),
+          player.userId === userId ? { ...player, isDisconnected: false } : player
+        )
       };
     }
 
@@ -187,8 +172,6 @@ export class GameRoom {
     );
   }
 
-  // --- Партия --------------------------------------------------------------
-
   start(): void {
     if (this.status === 'playing') {
       return;
@@ -201,9 +184,7 @@ export class GameRoom {
       tableId: this.id,
       settings: this.settings,
       userIds: members.map((member) => member.profile.userId),
-      // Криптографический источник случайности. `Math.random` предсказуем
-      // и для игры на ставки недопустим.
-      randomInt: (maxExclusive) => randomInt(maxExclusive),
+      randomInt: (maxExclusive) => randomInt(maxExclusive)
     });
 
     this.scheduleTurnTimer();
@@ -216,8 +197,6 @@ export class GameRoom {
       return 'GAME_NOT_ACTIVE';
     }
 
-    // Защита от гонок и повторной отправки: клиент принимал решение
-    // на конкретной версии состояния.
     if (expectedVersion !== this.state.version) {
       return 'VERSION_MISMATCH';
     }
@@ -246,7 +225,7 @@ export class GameRoom {
       this.emit({
         type: 'finished',
         loserUserId: this.state.loserUserId,
-        isDraw: this.state.isDraw,
+        isDraw: this.state.isDraw
       });
 
       return;
@@ -257,11 +236,6 @@ export class GameRoom {
     this.emit({ type: 'state-changed' });
   }
 
-  /**
-   * Таймер хода. Дедлайн хранится В СОСТОЯНИИ абсолютным временем —
-   * тогда после рестарта процесса таймер восстанавливается из снапшота,
-   * а не теряется вместе с `setTimeout`.
-   */
   private scheduleTurnTimer(): void {
     if (this.turnTimer) {
       clearTimeout(this.turnTimer);
@@ -274,7 +248,6 @@ export class GameRoom {
 
     const activeMember = this.getMembers().find((member) => member.seat === this.state?.activeSeat);
 
-    // Ботам таймер не нужен — они ходят по своему расписанию.
     if (!activeMember || activeMember.isBot) {
       return;
     }
@@ -322,7 +295,6 @@ export class GameRoom {
       return;
     }
 
-    // Пауза перед ходом бота: мгновенные ходы читаются как сбой.
     this.botTimer = setTimeout(() => {
       if (!this.state || this.status !== 'playing') {
         return;
@@ -339,7 +311,6 @@ export class GameRoom {
         return;
       }
 
-      // Недопустимое действие бота — пасуем, чтобы партия не зависла.
       const fallback = reduce(this.state, userId, { type: 'pass' });
 
       if (fallback.ok) {
@@ -349,15 +320,6 @@ export class GameRoom {
     }, 700);
   }
 
-  // --- Чат и реакции -------------------------------------------------------
-
-  /**
-   * Готовая фраза за столом.
-   *
-   * Произвольного текста здесь нет: пересылается только идентификатор из
-   * фиксированного набора, поэтому через стол невозможно передать ни
-   * оскорбление, ни ссылку, ни контакты — и модерация не нужна.
-   */
   sendPhrase(userId: string, phraseId: QuickPhraseId): TablePhrase | null {
     const member = this.members.get(userId);
 
@@ -369,7 +331,7 @@ export class GameRoom {
       id: randomUUID(),
       userId,
       phraseId,
-      sentAt: Date.now(),
+      sentAt: Date.now()
     };
 
     this.phrases = [...this.phrases.slice(-19), phrase];
@@ -386,9 +348,6 @@ export class GameRoom {
     this.emit({ type: 'emoji', userId, emoji });
   }
 
-  // --- Проекции ------------------------------------------------------------
-
-  /** Состояние для конкретного игрока: чужие руки и колода не попадают. */
   getViewFor(userId: string) {
     if (!this.state) {
       return null;
@@ -408,7 +367,7 @@ export class GameRoom {
       avatarUrl: member.profile.avatarUrl,
       rating: member.profile.rating,
       seat: member.seat,
-      isReady: member.isReady,
+      isReady: member.isReady
     }));
 
     return {
@@ -417,7 +376,7 @@ export class GameRoom {
       settings: this.settings,
       players,
       hasPremiumPlayer: this.getMembers().some((member) => member.profile.isPremium),
-      createdAt: this.createdAt,
+      createdAt: this.createdAt
     };
   }
 

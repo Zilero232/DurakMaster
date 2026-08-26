@@ -1,15 +1,9 @@
+import type { Request, Response } from 'express';
+
 import { All, Controller, Req, Res } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 
-import type { Request, Response } from 'express';
-
-/**
- * Точка входа better-auth: регистрация, вход, выход, сессия.
- *
- * Библиотека работает с веб-стандартными Request/Response, поэтому запрос
- * Express конвертируется в оба конца вручную.
- */
 @Controller('api/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -34,14 +28,13 @@ export class AuthController {
       new Request(url.toString(), {
         method: request.method,
         headers,
-        body: hasBody ? JSON.stringify(request.body) : undefined,
-      }),
+        body: hasBody ? JSON.stringify(request.body) : undefined
+      })
     );
 
     response.status(authResponse.status);
 
     authResponse.headers.forEach((value, key) => {
-      // Set-Cookie может прийти несколькими значениями — append сохраняет все.
       response.append(key, value);
     });
 

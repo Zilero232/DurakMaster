@@ -1,1 +1,0 @@
-export { OpponentSeat } from './OpponentSeat';

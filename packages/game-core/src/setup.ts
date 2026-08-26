@@ -1,30 +1,21 @@
+import type { Card, GameState, PlayerState, TableSettings } from '@durak-master/schemas';
+
 import { buildDeck, rankValue, shuffle } from './deck';
 import { computeAttackLimit } from './rules';
-
-import type { Card, GameState, PlayerState, TableSettings } from '@durak-master/schemas';
 
 export type CreateGameInput = {
   tableId: string;
   settings: TableSettings;
-  /** Игроки в порядке посадки. */
   userIds: string[];
-  /**
-   * Источник случайности. Сервер обязан передавать CSPRNG (`crypto.randomInt`).
-   * `Math.random` предсказуем и в продакшене недопустим.
-   */
   randomInt: (maxExclusive: number) => number;
 };
 
 const HAND_SIZE = 6;
 
-/**
- * Кто ходит первым: владелец младшего козыря. Если козырей нет ни у кого
- * (возможно на колоде 24 при малом числе игроков) — владелец младшей карты.
- */
 export function findFirstAttackerSeat(
   hands: Record<string, Card[]>,
   players: PlayerState[],
-  trump: GameState['trump'],
+  trump: GameState['trump']
 ): number {
   let bestSeat = players[0]?.seat ?? 0;
   let bestTrump: number | null = null;
@@ -52,7 +43,6 @@ export function findFirstAttackerSeat(
   return bestTrump === null ? bestAnySeat : bestSeat;
 }
 
-/** Место следующего игрока по часовой стрелке, пропуская вышедших. */
 export function nextActiveSeat(players: PlayerState[], fromSeat: number): number {
   const count = players.length;
 
@@ -68,13 +58,6 @@ export function nextActiveSeat(players: PlayerState[], fromSeat: number): number
   return fromSeat;
 }
 
-/**
- * Новая партия: колода, раздача, козырь, первый атакующий.
- *
- * Козырная карта вскрывается и кладётся под низ колоды — она ЧАСТЬ колоды
- * и добирается последней. Здесь она хранится первым элементом `talon`,
- * поскольку добор идёт с конца массива.
- */
 export function createGame(input: CreateGameInput): GameState {
   const { tableId, settings, userIds, randomInt } = input;
 
@@ -85,7 +68,7 @@ export function createGame(input: CreateGameInput): GameState {
     seat: index,
     handCount: HAND_SIZE,
     isOut: false,
-    isDisconnected: false,
+    isDisconnected: false
   }));
 
   const hands: Record<string, Card[]> = {};
@@ -97,12 +80,9 @@ export function createGame(input: CreateGameInput): GameState {
   }
 
   const rest = deck.slice(cursor);
-  // Козырная карта — самая нижняя, то есть добирается последней.
   const trumpCard = rest[rest.length - 1] ?? null;
   const trump = trumpCard?.suit ?? 'spades';
 
-  // «Классика» — первым ходит владелец младшего козыря. Иначе первым
-  // ходит игрок слева от сдающего, то есть место 0.
   const attackerSeat = settings.isClassic ? findFirstAttackerSeat(hands, players, trump) : 0;
   const defenderSeat = nextActiveSeat(players, attackerSeat);
   const defenderId = players.find((player) => player.seat === defenderSeat)?.userId;
@@ -128,6 +108,6 @@ export function createGame(input: CreateGameInput): GameState {
     turnDeadline: null,
     version: 0,
     loserUserId: null,
-    isDraw: false,
+    isDraw: false
   };
 }
