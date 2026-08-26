@@ -1,3 +1,3 @@
-export { haptic } from './haptics';
+export { haptic, setHapticsEnabled } from './haptics';
 
 export type { HapticKind } from './haptics';

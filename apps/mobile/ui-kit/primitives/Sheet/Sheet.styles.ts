@@ -4,8 +4,16 @@ import { colors, fontFamily, fontSize, radii, shadows, spacing } from '../../the
 
 export const styles = StyleSheet.create({
   backdrop: {
-    ...StyleSheet.absoluteFill,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
     backgroundColor: colors.scrim
+  },
+
+  backdropFill: {
+    flex: 1
   },
 
   sheet: {
@@ -13,12 +21,23 @@ export const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    maxHeight: '86%',
     paddingTop: spacing[2],
     borderTopLeftRadius: radii.xl,
     borderTopRightRadius: radii.xl,
     backgroundColor: colors.surface1,
     ...shadows.panel
+  },
+
+  dialog: {
+    top: '50%',
+    right: undefined,
+    bottom: undefined,
+    left: '50%',
+    width: '100%',
+    maxWidth: 620,
+    paddingTop: spacing[3],
+    borderRadius: radii.xl,
+    transform: [{ translateX: '-50%' }, { translateY: '-50%' }]
   },
 
   grabber: {
@@ -57,7 +76,7 @@ export const styles = StyleSheet.create({
   },
 
   scroll: {
-    flexGrow: 0
+    flex: 1
   },
 
   content: {

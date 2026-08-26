@@ -1,7 +1,7 @@
 import { Plus } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 
-import { colors } from '@/ui-kit';
+import { colors, iconSize } from '@/ui-kit';
 
 import type { WalletAmountProps } from './WalletAmount.types';
 
@@ -16,7 +16,7 @@ export const WalletAmount = ({
   onTopUp
 }: WalletAmountProps) => (
   <View style={styles.root}>
-    <Icon color={iconColor} size={20} />
+    <Icon color={iconColor} size={iconSize.md} />
 
     <AnimatedNumber style={styles.amount} value={value} />
 
@@ -27,7 +27,7 @@ export const WalletAmount = ({
       style={({ pressed }) => [styles.topUp, pressed && styles.pressed]}
       onPress={onTopUp}
     >
-      <Plus color={colors.accent} size={16} />
+      <Plus color={colors.accent} size={iconSize.sm} />
     </Pressable>
   </View>
 );

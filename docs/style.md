@@ -20,7 +20,7 @@ In one command: `bun run verify` (typecheck + lint + format:check) and `bun run 
 Every slice is a folder of segments. The minimum is `ui/` + `index.ts`:
 
 ```
-widgets/game/game-table/
+widgets/game/online-table/
   index.ts          ← public API (barrel)
   ui/               ← React components
   model/            ← hooks, Zustand store, form schemas, state types
@@ -36,11 +36,11 @@ widgets/game/game-table/
 **The main component** lives flat in `ui/`, with its files next to it:
 
 ```
-widgets/game/game-table/ui/
-  GameTable.tsx          ← JSX + entry component
-  GameTable.types.ts     ← Props and local union types
-  GameTable.styles.ts    ← the component's StyleSheet
-  GameTable.config.ts    ← static tables/layout constants (if any)
+widgets/game/online-table/ui/
+  OnlineTable.tsx        ← JSX + entry component
+  OnlineTable.types.ts   ← Props and local union types
+  OnlineTable.styles.ts  ← the component's StyleSheet
+  OnlineTable.config.ts  ← static tables/layout constants (if any)
 ```
 
 **Subcomponents** (used only inside the parent) — each in a `components/` folder:
@@ -100,6 +100,7 @@ ui-kit/
       PlayingCard.tsx
       PlayingCard.styles.ts
       PlayingCard.types.ts
+      card-theme-context.ts   ← CardThemeProvider, useCardTheme, useSetCardTheme
       components/
         index.ts
         CardFace/
@@ -112,11 +113,10 @@ ui-kit/
       SuitIcon.tsx
       SuitIcon.types.ts
       index.ts
-  lib/                        ← the layer's utilities and contexts
-    cards/                    ← cardKey, rankLabel, suitSymbol, isRedSuit
-    feedback-context.ts       ← FeedbackProvider, usePressFeedback
-  theme/                      ← tokens, layout, card-themes, card-theme-context
+  theme/                      ← tokens, layout, card-themes, suits
 ```
+
+There is no `ui-kit/lib/`. A context lives **next to the component that consumes it** (`Button/feedback-context.ts`, `PlayingCard/card-theme-context.ts`) and reaches the outside through that component's barrel. How a card is drawn — `isRedSuit`, `rankLabel`, `suitSymbol` — is presentation, so it sits in `theme/suits.ts` next to the palettes that colour it. `cardKey` is not: it is the identity of a card in game logic, and it lives in `shared/lib/cards`.
 
 **Rules:**
 
@@ -128,7 +128,7 @@ ui-kit/
 - Modal panels — our own `Sheet` on top of the system `Modal` (it intercepts the hardware back button on Android and draws above native views).
 - Icons — `lucide-react-native`, size and color as props: `<Settings size={18} color={colors.onFelt} />`. Suits are drawn with our own `SuitIcon` — lucide has none.
 - React types are **named** (`ComponentProps`, `ReactNode`, …), not `import type * as React`.
-- Inside `ui-kit` — relative imports between segments (`../../theme`, `../../lib`). From the outside — only `@/ui-kit`.
+- Inside `ui-kit` — relative imports between segments (`../../theme`, `./card-theme-context`). From the outside — only `@/ui-kit`.
 - **Data from the app arrives through context, not through an import.** `ui-kit` does not read stores and does not call `@/shared/lib`: what it needs is supplied from above (§2.2).
 
 ### 2.2. `ui-kit` contexts
@@ -137,34 +137,35 @@ Two contexts built on `createContext` from `@siberiacancode/reactuse` — this i
 
 | Context | Export | Who supplies the value |
 |---|---|---|
-| `theme/card-theme-context.ts` | `CardThemeProvider`, `useCardTheme`, `useSetCardTheme` | `app/_layout.tsx` — `initialValue` from the settings store |
-| `lib/feedback-context.ts` | `FeedbackProvider`, `usePressFeedback` | `app/_layout.tsx` — sound + vibration from `shared/lib` |
+| `components/PlayingCard/card-theme-context.ts` | `CardThemeProvider`, `useCardTheme`, `useSetCardTheme` | `views/root-layout` — `initialValue` from the settings store |
+| `primitives/Button/feedback-context.ts` | `FeedbackProvider`, `usePressFeedback` | `views/root-layout` — sound + vibration from `shared/lib` |
 
 ```tsx
-// app/_layout.tsx
-const handlePressFeedback = () => {
-  unlockSound();
-  playSound('click');
-  haptic('tap');
+// views/root-layout/config/press-feedback.ts
+export const PRESS_FEEDBACK = {
+  onPress: () => {
+    unlockSound();
+    playSound('click');
+    haptic('tap');
+  }
 };
 
-<FeedbackProvider initialValue={handlePressFeedback}>
-  <CardThemeProvider initialValue={cardTheme}>{/* … */}</CardThemeProvider>
+// views/root-layout/ui/components/AppProviders/AppProviders.tsx
+<FeedbackProvider initialValue={PRESS_FEEDBACK}>
+  <CardThemeProvider initialValue={cardTheme}>{children}</CardThemeProvider>
 </FeedbackProvider>;
 ```
 
 - `Button` calls `usePressFeedback()` in `onPress` — a click and vibration without depending on `expo-audio` / `expo-haptics`. The context default is a noop, so the primitive works without a provider too.
 - `PlayingCard` takes the card back from `useCardTheme()` instead of reading `useSettingsStore`. Persistence stays in `entities/settings`, and the context is a projection for rendering, which is why `SettingsPanel` calls **both** the store's `setCardTheme` **and** `useSetCardTheme` when a theme is picked.
 
-A new dependency on the app is a new context in `ui-kit/lib/` (or `ui-kit/theme/`, if it is presentation), not a new import.
+A new dependency on the app is a new context next to its consuming component, not a new import.
 
 ### Slice barrel
 
 ```ts
-// widgets/game/game-table/index.ts
-export { GameTable } from './ui/GameTable';
-
-export type { GameTableProps } from './ui/GameTable.types';
+// widgets/game/online-table/index.ts
+export { OnlineTable } from './ui/OnlineTable';
 ```
 
 ### Examples
@@ -393,7 +394,7 @@ const insets = useSafeAreaInsets();
 <View style={[styles.root, { paddingTop: insets.top }]} />;
 ```
 
-The provider (`SafeAreaProvider`) is lifted into `app/_layout.tsx` — there is no need to wrap screens separately.
+The provider (`SafeAreaProvider`) is lifted into `views/root-layout` (`AppProviders`) — there is no need to wrap screens separately.
 
 ### 3.4. Lists
 
@@ -870,20 +871,22 @@ Do not create a separate `types/` or `hooks/` segment — that is a split by the
 **`lib/`** — pure functions with no React dependencies:
 
 ```
-entities/game/lib/
-  playable.ts       ← getPlayableKeys / getBeatableIndexes
+widgets/game/online-table/lib/
+  status.ts         ← getStatusKey — the slice's own helper
 
 shared/lib/
+  cards/            ← cardKey — a card's identity
+  feedback/         ← PRESS_FEEDBACK — sound + vibration on a press
   format/           ← formatting of amounts and time
+  games/durak/      ← playable.ts: getPlayableKeys / getBeatableIndexes
   haptics/          ← a wrapper over expo-haptics
   sound/            ← playback through expo-audio
   time/             ← useNow — a ticking "now"
-
-ui-kit/lib/
-  cards/            ← cardKey, rankLabel, suitSymbol, isRedSuit
 ```
 
-The card utilities live in `ui-kit/lib/` rather than `shared/lib/`: their consumers are `PlayingCard` and `SuitIcon`, and `ui-kit` may not import `@/shared` (§2.1). They go outside from `@/ui-kit`.
+**Rules of one game go to `shared/lib/games/<game>/`**, not into an entity. They are pure functions over that game's `PlayerView`, several layers read them, and a per-game folder keeps four rule sets from growing into each other.
+
+**Card helpers are split by nature, not duplicated.** `cardKey` is identity — React keys, looking a card up in a hand — so it is `shared/lib/`, where the game layers use it. `isRedSuit` / `rankLabel` / `suitSymbol` are how a card is *drawn*; they live in `ui-kit/theme/suits.ts` and go outside from `@/ui-kit`. This is what keeps `ui-kit` free of `@/` imports (§2.1): the design system owns its rendering helpers instead of borrowing them from `shared`.
 
 If a function returns JSX — it is a component, move it into `ui/`.
 
@@ -923,7 +926,7 @@ Incoming messages are validated by `serverMessageSchema` from `@durak-master/sch
 - Tokens are TypeScript objects in `ui-kit/theme/`, exposed from `@/ui-kit`: `colors`, `spacing`, `radii`, `fontSize`, `fontFamily`, `shadows`, `card`, `duration`.
 - **Literal colors and spacings in components are forbidden.** `backgroundColor: '#436787'` instead of `colors.background` turns a change of appearance into a project-wide search.
 - Colors are written in hex: RN does not understand `oklch()`, and the values go into native views, where interpolation has to work without parsing CSS functions.
-- Fonts — the `fontFamily` keys match the names the fonts are loaded under in `app/_layout.tsx` via `useFonts`. Weight is set by **choosing the family** (`fontFamily.sansBold`), not by `fontWeight` alone: on Android, `fontWeight` without a matching font file is ignored.
+- Fonts — the `fontFamily` keys match the names the fonts are loaded under in `views/root-layout` (`config/fonts.ts`, `useFonts`). Weight is set by **choosing the family** (`fontFamily.sansBold`), not by `fontWeight` alone: on Android, `fontWeight` without a matching font file is ignored.
 - Shadows — the `shadows.*` presets: they gather the incompatible iOS (`shadow*`) and Android (`elevation`) fields into a single object.
 - Screen-dependent sizes are in `ui-kit/theme/layout.ts` (`getCardSize`, `cardSize`, `screen`, `MAX_FAN_ANGLE`). RN has no breakpoints, so the card size is computed as a fraction of the screen width with a clamp at the top and the bottom.
 - There is no dark theme — the app is single-toned by design, `colors` is one set. Only the deck's appearance switches: `CARD_THEMES` / `getCardTheme` in `ui-kit/theme/card-themes.ts`, and the selected theme is distributed through `CardThemeProvider` (§2.2).
@@ -1214,7 +1217,7 @@ const { t } = useTranslation();
   ```
 
 - Locales are in `apps/mobile/shared/i18n/locales/{ru,en}.json`. A key added only to `ru.json` will pass the types, but in English the screen will show the identifier — edit both files in one commit.
-- The language is restored asynchronously in `app/_layout.tsx` (`restoreLocale`): the app starts in the default language, and the first frame does not wait on disk. To change it — `changeLocale(locale)`; the choice survives a restart.
+- The language is restored asynchronously in `views/root-layout` (`model/use-app-bootstrap.ts`, `restoreLocale`): the app starts in the default language, and the first frame does not wait on disk. To change it — `changeLocale(locale)`; the choice survives a restart.
 - A key assembled in a config is typed with `ParseKeys` from `i18next` (`TabBar.config.ts`), not `string`.
 
 ---

@@ -1,41 +1,68 @@
+import type { Suit } from '@durak-master/schemas';
+
 import { colors } from './tokens';
+
+export type SuitPalette = Record<Suit, string>;
+
+const twoColour = (red: string, black: string): SuitPalette => ({
+  hearts: red,
+  diamonds: red,
+  spades: black,
+  clubs: black
+});
 
 export const CARD_THEMES = [
   {
     id: 'classic',
-    back: colors.feltDeep,
-    backPattern: colors.gold,
-    red: '#C8102E',
-    black: '#1A2733',
-    face: colors.surface1,
-    accent: colors.gold
+    back: '#2B2340',
+    backPattern: '#6C5B96',
+    face: '#F7F4EF',
+    edge: '#8E8A83',
+    accent: '#6C5B96',
+    suits: twoColour('#C8102E', '#1A1A22')
+  },
+  {
+    id: 'fourColour',
+    back: '#1F3446',
+    backPattern: '#4FA3E3',
+    face: '#F7F4EF',
+    edge: '#8E8A83',
+    accent: '#4FA3E3',
+
+    suits: {
+      hearts: '#C8102E',
+      diamonds: '#D98324',
+      spades: '#1F6FB2',
+      clubs: '#1E7D4F'
+    }
   },
   {
     id: 'emerald',
-    back: '#14532D',
+    back: '#14342A',
     backPattern: '#56D38E',
-    red: '#C8102E',
-    black: '#14342A',
-    face: '#F5FBF7',
-    accent: '#56D38E'
+    face: '#F4FAF6',
+    edge: '#8AA694',
+    accent: '#56D38E',
+    suits: twoColour('#C8102E', '#14342A')
   },
   {
     id: 'crimson',
-    back: '#6B1420',
-    backPattern: '#F0A5A5',
-    red: '#B01029',
-    black: '#2A1418',
-    face: '#FDF6F5',
-    accent: '#EE362F'
+    back: '#4A1420',
+    backPattern: '#E0808F',
+    face: '#FBF4F4',
+    edge: '#A98F8F',
+    accent: '#E8543F',
+    suits: twoColour('#B01029', '#2A1418')
   },
   {
     id: 'noir',
-    back: '#1E262E',
-    backPattern: '#8A99A8',
-    red: '#5A6672',
-    black: '#161C22',
-    face: '#EDF1F5',
-    accent: colors.noirAccent
+    back: '#1A1E24',
+    backPattern: '#7C8894',
+    face: '#EEF1F4',
+    edge: '#8B949D',
+    accent: colors.noirAccent,
+
+    suits: twoColour('#5F6B78', '#12161B')
   }
 ] as const;
 
@@ -46,3 +73,5 @@ export const DEFAULT_CARD_THEME: CardThemeId = 'classic';
 
 export const getCardTheme = (id: CardThemeId): CardTheme =>
   CARD_THEMES.find((theme) => theme.id === id) ?? CARD_THEMES[0];
+
+export const suitColor = (theme: CardTheme, suit: Suit): string => theme.suits[suit];

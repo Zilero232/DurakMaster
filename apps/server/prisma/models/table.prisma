@@ -1,0 +1,55 @@
+// A table is a lobby entry plus the seats at it. It outlives the games played
+// on it: `Game` in game.prisma is one deal, this is the room.
+
+enum TableStatus {
+  WAITING
+  PLAYING
+  FINISHED
+}
+
+model GameTable {
+  id     String      @id @default(cuid())
+  status TableStatus @default(WAITING)
+
+  /** Which of the four games is played here. */
+  game String
+
+  /** The full rule set, shaped by `game` — see the note on `Game.settings`. */
+  settings Json
+
+  maxPlayers Int    @default(4)
+  bet        BigInt @default(100)
+
+  isPrivate    Boolean @default(false)
+  passwordHash String?
+
+  // Node that owns the table state. Empty — the table is not hosted.
+  nodeId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  seats TableSeat[]
+  games Game[]
+
+  @@index([status, isPrivate])
+  @@index([nodeId])
+  @@map("game_table")
+}
+
+model TableSeat {
+  id      String @id @default(cuid())
+  tableId String
+  userId  String
+  seat    Int
+
+  joinedAt DateTime @default(now())
+
+  table GameTable @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  user  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tableId, seat])
+  @@unique([tableId, userId])
+  @@index([userId])
+  @@map("table_seat")
+}

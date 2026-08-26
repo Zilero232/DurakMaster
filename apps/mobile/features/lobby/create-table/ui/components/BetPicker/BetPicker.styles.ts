@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -28,37 +28,16 @@ export const styles = StyleSheet.create({
     color: colors.goldBright
   },
 
-  steps: {
-    gap: spacing[2],
-    paddingVertical: spacing[1]
+  bounds: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing[1]
   },
 
-  step: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 64,
-    height: 44,
-    paddingHorizontal: spacing[3],
-    borderWidth: 2,
-    borderColor: colors.transparent,
-    borderRadius: radii.pill,
-    backgroundColor: colors.surface1,
-    ...shadows.tile
-  },
-
-  stepActive: {
-    borderColor: colors.gold,
-    backgroundColor: colors.goldBright
-  },
-
-  stepLabel: {
-    fontSize: fontSize.md,
-    fontWeight: '700',
-    fontFamily: fontFamily.sansBold,
-    color: colors.mutedForeground
-  },
-
-  stepLabelActive: {
-    color: colors.goldDeep
+  bound: {
+    fontSize: fontSize.xs,
+    fontWeight: '600',
+    fontFamily: fontFamily.sansSemi,
+    color: colors.onFeltMuted
   }
 });

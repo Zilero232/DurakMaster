@@ -5,4 +5,6 @@ export type PlayerIdentityProps = {
   avatarUrl: string | null;
   rank: RankInfo;
   isPremium: boolean;
+
+  onEdit: () => void;
 };

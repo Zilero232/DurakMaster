@@ -106,6 +106,14 @@ typical case: the defender beat everything with their last cards, and the attack
 also emptied their hand. Check only at the end of a bout, not mid-bout. A draw is
 a table setting (`allowDraw`).
 
+**With `allowDraw: false`** the same position must still produce a loser, because
+"there is always exactly one loser" holds. The loser is the **defender of that
+last bout**: they were the last to be under attack. Sources do not cover this
+case — the rule is chosen so that the outcome is never empty.
+
+> **Pitfall.** Ending the deal with `isDraw: false` and `loserUserId: null` is a
+> dead state: nobody won, nobody lost, and the score has nothing to record.
+
 ---
 
 ## 8. Transfer Durak

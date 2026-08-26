@@ -1,0 +1,111 @@
+{
+  "lobby": {
+    "title": "Rooms",
+    "empty": "No open tables",
+    "emptyHint": "Create one — other players will join",
+    "join": "Join",
+    "full": "Full",
+    "inProgress": "In progress",
+    "playersCount": "{{current}}/{{max}}",
+    "privateTable": "Private table",
+    "premiumPlayer": "Premium player",
+    "emptySeats": "Table is empty",
+    "passwordPrompt": "Enter the table password",
+    "offline": "No connection to the server",
+    "offlineHint": "Check your network — tables appear as soon as the connection is back",
+    "createFirst": "Create a table",
+    "allGames": "All games",
+    "onlyJoinable": "Joinable only",
+    "tableCount_one": "{{count}} table",
+    "tableCount_other": "{{count}} tables",
+    "nothingMatches": "Nothing matches the filters",
+    "nothingMatchesHint": "Drop a filter, or create a table of your own",
+    "bets": {
+      "all": "Any bet",
+      "low": "Up to 1K",
+      "mid": "1K–50K",
+      "high": "50K+"
+    }
+  },
+  "create": {
+    "title": "New game",
+    "yourBet": "Your bet",
+    "betLabel": "Bet size",
+    "players": "Players",
+    "speed": "Speed",
+    "speedNormal": "Normal",
+    "speedFast": "Fast",
+    "modes": "Game modes",
+    "private": "Private table",
+    "submit": "Create",
+    "password": "Table password",
+    "passwordPlaceholder": "Choose a password"
+  },
+  "games": {
+    "pick": "Game",
+    "soon": "soon",
+    "comingSoon": "{{game}} is coming soon",
+    "comingSoonHint": "This game is still being built. Play Durak for now — the other tables open later.",
+    "durak": {
+      "name": "Durak",
+      "tagline": "be the first to run out of cards",
+      "deck": "Deck",
+      "allowDraw": "Draw",
+      "showTrump": "Pass by trump",
+      "showTrumpHint": "pass by showing a trump",
+      "mode": {
+        "throwIn": "Throw-in",
+        "transfer": "Passing"
+      },
+      "throwInScope": {
+        "neighbors": "Neighbours",
+        "neighborsHint": "only neighbours throw in",
+        "all": "Everyone",
+        "allHint": "all players throw in"
+      },
+      "fairness": {
+        "fair": "Fair",
+        "cheaters": "Cheaters",
+        "cheatersHint": "cheating allowed"
+      },
+      "firstMove": {
+        "lowestTrump": "Lowest trump",
+        "lowestTrumpHint": "lowest trump leads",
+        "random": "Random"
+      }
+    },
+    "burkozel": {
+      "name": "Burkozel",
+      "tagline": "take tricks and count points",
+      "penaltyLimit": "Penalty points",
+      "shokha": "Shokha",
+      "shokhaHint": "four trumps take the deal",
+      "combinations": "Combinations",
+      "combinationsHint": "bura, molodka and the rest",
+      "teamMode": {
+        "solo": "Every player alone",
+        "pairs": "In pairs",
+        "pairsHint": "two against two"
+      }
+    },
+    "kozel": {
+      "name": "Kozel",
+      "tagline": "play in pairs up to six goats",
+      "targetPairs": "Pairs to win",
+      "shamok": "Shamok",
+      "shamokHint": "7♣ is the highest trump",
+      "aceRestriction": "Hold the ace",
+      "aceRestrictionHint": "no discarding an ace of an unled suit",
+      "firstLead": {
+        "lowestTrump": "Lowest trump",
+        "lowestTrumpHint": "whoever holds 8♣ leads",
+        "leftOfDealer": "Left of the dealer",
+        "dealer": "The dealer"
+      }
+    },
+    "tysyacha": {
+      "name": "Tysyacha",
+      "tagline": "bid and race to 1000"
+    }
+  }
+}

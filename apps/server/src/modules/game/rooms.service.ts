@@ -102,7 +102,6 @@ export class RoomsService {
 
   listTables(): LobbyTable[] {
     return [...this.rooms.values()]
-      .filter((room) => !room.settings.isPrivate)
       .map((room) => room.toLobbyTable())
       .sort((a, b) => {
         if (a.hasPremiumPlayer !== b.hasPremiumPlayer) {

@@ -1,12 +1,19 @@
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
+import { OpponentSeat } from '@/entities/game-table';
+
 import type { OpponentsRowProps } from './OpponentsRow.types';
 
-import { OpponentSeat } from '../../../../game-table/ui/components';
 import { styles } from './OpponentsRow.styles';
 
-export const OpponentsRow = ({ view, players, mySeat, phrases }: OpponentsRowProps) => {
+export const OpponentsRow = ({
+  view,
+  players,
+  mySeat,
+  phrases,
+  turnSeconds
+}: OpponentsRowProps) => {
   const { t } = useTranslation();
 
   const opponents = view.players.filter((player) => player.seat !== mySeat);
@@ -26,6 +33,8 @@ export const OpponentsRow = ({ view, players, mySeat, phrases }: OpponentsRowPro
             name={meta?.name ?? t('table.playerFallback', { seat: player.seat + 1 })}
             phrase={phrases[player.userId]}
             player={player}
+            turnDeadline={view.turnDeadline}
+            turnSeconds={turnSeconds}
           />
         );
       })}

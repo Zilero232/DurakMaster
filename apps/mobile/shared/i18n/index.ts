@@ -1,5 +1,6 @@
-export { DEFAULT_LOCALE, LOCALE_LABELS, LOCALES, resolveLocale } from './config';
+export { DEFAULT_LOCALE, LOCALE_LABELS, LOCALE_STORAGE_KEY, LOCALES } from './config';
 export type { Locale } from './config';
-export { changeLocale, i18next, restoreLocale } from './i18n';
 
-export { useLocale } from './use-locale';
+export { detectLocale, isLocale, resolveLocale } from './lib';
+
+export { changeLocale, i18next, restoreLocale, useLocale } from './model';

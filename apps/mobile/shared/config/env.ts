@@ -29,7 +29,7 @@ const resolveApiUrl = (): string => {
   }
 
   if (!__DEV__) {
-    console.error('EXPO_PUBLIC_API_URL не задан для релизной сборки — сервер недоступен');
+    console.error('EXPO_PUBLIC_API_URL is not set for a release build — the server is unreachable');
   }
 
   return `http://localhost:${SERVER_PORT}`;

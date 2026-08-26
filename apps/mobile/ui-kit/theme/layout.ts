@@ -3,14 +3,22 @@ import { clamp } from 'remeda';
 
 import { card } from './tokens';
 
-const MIN_CARD_WIDTH = 58;
-const MAX_CARD_WIDTH = 104;
+const MIN_CARD_WIDTH = 52;
+const MAX_CARD_WIDTH = 92;
 
-const CARD_WIDTH_RATIO = 0.2;
+const CARD_WIDTH_RATIO = 0.17;
 
-export const getCardSize = (screenWidth: number) => {
+export const CARD_SCALE = {
+  small: 0.85,
+  normal: 1,
+  large: 1.2
+} as const;
+
+export type CardScaleName = keyof typeof CARD_SCALE;
+
+export const getCardSize = (screenWidth: number, scale: number = 1) => {
   const width = PixelRatio.roundToNearestPixel(
-    clamp(screenWidth * CARD_WIDTH_RATIO, { min: MIN_CARD_WIDTH, max: MAX_CARD_WIDTH })
+    clamp(screenWidth * CARD_WIDTH_RATIO * scale, { min: MIN_CARD_WIDTH, max: MAX_CARD_WIDTH })
   );
 
   return {
@@ -22,4 +30,8 @@ export const getCardSize = (screenWidth: number) => {
 export const screen = Dimensions.get('window');
 export const cardSize = getCardSize(screen.width);
 
-export const MAX_FAN_ANGLE = 24;
+export const MAX_FAN_ANGLE = 18;
+
+export const CONTENT_MAX_WIDTH = 720;
+
+export const TABLE_MAX_WIDTH = 900;

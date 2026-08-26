@@ -2,8 +2,10 @@ import { Pressable, Text } from 'react-native';
 
 import type { ButtonProps } from './Button.types';
 
-import { usePressFeedback } from '../../lib';
-import { SIZE_STYLES, styles, VARIANT_STYLES } from './Button.styles';
+import { iconSize } from '../../theme';
+import { Spinner } from '../Spinner';
+import { SIZE_STYLES, styles, VARIANT_SPINNER_COLOR, VARIANT_STYLES } from './Button.styles';
+import { usePressFeedback } from './feedback-context';
 
 export const Button = ({
   children,
@@ -11,6 +13,7 @@ export const Button = ({
   size = 'default',
   isFullWidth = false,
   isDisabled = false,
+  isLoading = false,
   accessibilityLabel,
   style,
   onPress
@@ -19,6 +22,8 @@ export const Button = ({
   const sizeStyle = SIZE_STYLES[size];
 
   const feedback = usePressFeedback();
+
+  const isBlocked = isDisabled || isLoading;
 
   const handlePress = () => {
     feedback();
@@ -33,16 +38,18 @@ export const Button = ({
         sizeStyle.container,
         isFullWidth && styles.fullWidth,
         pressed && styles.pressed,
-        isDisabled && styles.disabled,
+        isBlocked && styles.disabled,
         style
       ]}
       accessibilityLabel={accessibilityLabel}
       accessibilityRole='button'
-      accessibilityState={{ disabled: isDisabled }}
-      disabled={isDisabled}
+      accessibilityState={{ busy: isLoading, disabled: isBlocked }}
+      disabled={isBlocked}
       onPress={handlePress}
     >
-      {typeof children === 'string' ? (
+      {isLoading ? (
+        <Spinner color={VARIANT_SPINNER_COLOR[variant]} size={iconSize.md} />
+      ) : typeof children === 'string' ? (
         <Text numberOfLines={1} style={[styles.label, variantStyle.label, sizeStyle.label]}>
           {children}
         </Text>

@@ -7,7 +7,7 @@ export const billingAdapter: BillingAdapter = {
 
   purchase: async (): Promise<PurchaseResult> => ({
     status: 'failed',
-    reason: 'Покупки пока недоступны'
+    reason: 'Purchases are not available yet'
   }),
 
   restorePurchases: async (): Promise<PurchaseResult[]> => []

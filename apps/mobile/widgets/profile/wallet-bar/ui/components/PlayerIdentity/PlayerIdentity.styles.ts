@@ -1,8 +1,26 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+import { borderWidth, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
+  pressed: {
+    opacity: 0.75
+  },
+
+  editBadge: {
+    position: 'absolute',
+    right: -2,
+    bottom: -2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 20,
+    height: 20,
+    borderRadius: radii.pill,
+    borderWidth: borderWidth.regular,
+    borderColor: colors.surface1,
+    backgroundColor: colors.accent
+  },
+
   root: {
     flexGrow: 1,
     flexShrink: 1,

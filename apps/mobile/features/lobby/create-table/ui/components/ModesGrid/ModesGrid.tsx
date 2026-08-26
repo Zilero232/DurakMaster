@@ -5,22 +5,21 @@ import { View } from 'react-native';
 import type { ModesGridProps } from './ModesGrid.types';
 
 import { ModeCard } from '../ModeCard';
-import { CHOICE_FIELDS, TOGGLE_FIELDS } from './ModesGrid.config';
 import { styles } from './ModesGrid.styles';
 
-export const ModesGrid = ({ control }: ModesGridProps) => {
+export const ModesGrid = ({ control, choices = [], toggles = [] }: ModesGridProps) => {
   const { t } = useTranslation();
 
   return (
     <View style={styles.root}>
-      {CHOICE_FIELDS.map((field) => (
+      {choices.map((field) => (
         <Controller
           key={field.name}
           render={({ field: { value, onChange } }) => (
             <>
               {field.options.map((option) => (
                 <ModeCard
-                  key={option.value}
+                  key={String(option.value)}
                   hint={option.hintKey && t(option.hintKey)}
                   icon={option.icon}
                   isActive={value === option.value}
@@ -35,14 +34,14 @@ export const ModesGrid = ({ control }: ModesGridProps) => {
         />
       ))}
 
-      {TOGGLE_FIELDS.map((field) => (
+      {toggles.map((field) => (
         <Controller
           key={field.name}
           render={({ field: { value, onChange } }) => (
             <ModeCard
               hint={field.hintKey && t(field.hintKey)}
               icon={field.icon}
-              isActive={value}
+              isActive={Boolean(value)}
               label={t(field.labelKey)}
               onPress={() => onChange(!value)}
             />

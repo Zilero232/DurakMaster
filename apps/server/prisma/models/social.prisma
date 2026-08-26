@@ -1,0 +1,58 @@
+// Friends and the invitations they send each other.
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
+}
+
+/**
+ * One row per pair, not two.
+ *
+ * `requester` is whoever sent the request and `addressee` whoever received it;
+ * only the addressee may accept. The unique index is on the ordered pair, so a
+ * second request in the opposite direction is rejected by the database rather
+ * than by application code that could forget to check.
+ */
+model Friendship {
+  id String @id @default(cuid())
+
+  requesterId String
+  addresseeId String
+
+  status FriendshipStatus @default(PENDING)
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  acceptedAt DateTime?
+
+  requester User @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  addressee User @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, addresseeId])
+  @@index([addresseeId, status])
+  @@index([requesterId, status])
+  @@map("friendship")
+}
+
+/**
+ * A "come and play" ping. Short-lived: it points at a table that may fill up or
+ * finish, so it carries its own expiry instead of lingering as a stale row.
+ */
+model TableInvite {
+  id String @id @default(cuid())
+
+  fromUserId String
+  toUserId   String
+  tableId    String
+
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  from User @relation("InviteFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
+  to   User @relation("InviteTo", fields: [toUserId], references: [id], onDelete: Cascade)
+
+  @@index([toUserId, expiresAt])
+  @@map("table_invite")
+}

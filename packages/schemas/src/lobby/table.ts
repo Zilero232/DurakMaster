@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
-import { tableSettingsSchema } from '../game/table-settings';
+import { tableSettingsSchema } from '../game';
+
+export const TABLE_PASSWORD_MAX_LENGTH = 32;
 
 export const tableStatusSchema = z.enum(['waiting', 'playing', 'finished']);
 export type TableStatus = z.infer<typeof tableStatusSchema>;
@@ -29,7 +31,7 @@ export type LobbyTable = z.infer<typeof lobbyTableSchema>;
 
 export const createTableInputSchema = z.object({
   settings: tableSettingsSchema,
-  password: z.string().min(1).max(32).optional()
+  password: z.string().min(1).max(TABLE_PASSWORD_MAX_LENGTH).optional()
 });
 
 export type CreateTableInput = z.infer<typeof createTableInputSchema>;

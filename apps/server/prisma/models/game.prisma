@@ -1,0 +1,57 @@
+// A finished or running deal and what it paid out. The authoritative live state
+// lives in node memory; `snapshot` is only what is needed to recover it.
+
+model Game {
+  id      String @id @default(cuid())
+  tableId String
+
+  /** Which of the four games this was. */
+  game String
+
+  /**
+   * The table's rule set as it was when the deal started.
+   *
+   * Stored as JSON rather than as columns: every game has its own rules, and a
+   * column per option would mean a migration for each new game — see
+   * docs/games/architecture.md.
+   */
+  settings Json
+
+  bet BigInt
+
+  // State snapshot at a turn boundary — used to recover after a restart.
+  snapshot Json?
+  version  Int   @default(0)
+
+  loserUserId String?
+  isDraw      Boolean @default(false)
+
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+
+  table   GameTable    @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  players GamePlayer[]
+
+  @@index([tableId])
+  @@index([finishedAt])
+  @@map("game")
+}
+
+model GamePlayer {
+  id     String @id @default(cuid())
+  gameId String
+  userId String
+  seat   Int
+
+  // Balance change from the game result: positive means a win.
+  creditsDelta BigInt  @default(0)
+  ratingDelta  Int     @default(0)
+  isLoser      Boolean @default(false)
+
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, seat])
+  @@index([userId])
+  @@map("game_player")
+}

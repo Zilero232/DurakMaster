@@ -5,6 +5,10 @@
   "type": "module",
   "main": "src/main.ts",
   "scripts": {
+    "postinstall": "prisma generate",
+    "predev": "fkill :4000 --force --silent",
+    "dev": "bun --hot --cwd ../.. --env-file .env apps/server/src/main.ts",
+    "start": "bun src/main.ts",
     "build": "bun build src/main.ts --target=bun --outdir=dist --packages external",
     "db:deploy": "prisma migrate deploy && prisma generate",
     "db:format": "prisma format",
@@ -14,12 +18,6 @@
     "db:reset": "prisma migrate reset",
     "db:status": "prisma migrate status",
     "db:studio": "prisma studio",
-    "predev": "fkill :4000 --force --silent",
-    "dev": "bun --hot --cwd ../.. --env-file .env apps/server/src/main.ts",
-    "postinstall": "prisma generate",
-    "lint": "biome check .",
-    "lint:fix": "biome check --write .",
-    "start": "bun src/main.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

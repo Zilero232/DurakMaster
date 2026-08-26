@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useInterval } from '@siberiacancode/reactuse';
+import { useEffect, useRef, useState } from 'react';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
+import { useAnimationSpeed } from '@/entities/settings';
 import { duration } from '@/ui-kit';
 
 import type { AnimatedNumberProps } from './AnimatedNumber.types';
@@ -8,33 +10,48 @@ import type { AnimatedNumberProps } from './AnimatedNumber.types';
 import { styles } from './AnimatedNumber.styles';
 
 const STEPS = 12;
+const MIN_TICK_MS = 16;
 
 export const AnimatedNumber = ({ value, suffix = '', style }: AnimatedNumberProps) => {
-  const [shown, setShown] = useState(value);
+  const { duration: scaled, isInstant } = useAnimationSpeed();
+
+  const [counted, setCounted] = useState(value);
+
+  const countedRef = useRef(value);
+  const fromRef = useRef(value);
+  const stepRef = useRef(0);
+
+  const { pause, resume } = useInterval(
+    () => {
+      stepRef.current += 1;
+
+      const isLast = stepRef.current >= STEPS;
+      const next = isLast
+        ? value
+        : Math.round(fromRef.current + ((value - fromRef.current) / STEPS) * stepRef.current);
+
+      countedRef.current = next;
+      setCounted(next);
+
+      if (isLast) {
+        pause();
+      }
+    },
+    Math.max(MIN_TICK_MS, scaled(duration.panel) / STEPS),
+    { immediately: false }
+  );
 
   useEffect(() => {
-    if (shown === value) {
+    if (countedRef.current === value || isInstant) {
       return;
     }
 
-    const from = shown;
-    const step = (value - from) / STEPS;
-    let current = 0;
+    fromRef.current = countedRef.current;
+    stepRef.current = 0;
+    resume();
+  }, [value, isInstant, resume]);
 
-    const timer = setInterval(() => {
-      current += 1;
-
-      setShown(current >= STEPS ? value : Math.round(from + step * current));
-
-      if (current >= STEPS) {
-        clearInterval(timer);
-      }
-    }, duration.panel / STEPS);
-
-    return () => {
-      clearInterval(timer);
-    };
-  }, [value, shown]);
+  const shown = isInstant ? value : counted;
 
   return (
     <Animated.Text entering={FadeIn} numberOfLines={1} style={[styles.root, style]}>

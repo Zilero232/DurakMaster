@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { formatCredits } from '@/shared/lib/format';
-import { Avatar, colors } from '@/ui-kit';
+import { Avatar, colors, iconSize } from '@/ui-kit';
 
 import type { TableRowProps } from './TableRow.types';
 
@@ -42,7 +42,6 @@ export const TableRow = ({ table, onJoin }: TableRowProps) => {
         <View style={styles.seats}>
           {Array.from({ length: settings.maxPlayers }, (_, seat) => (
             <View
-              // biome-ignore lint/suspicious/noArrayIndexKey: место за столом определяется номером
               key={`${table.id}-seat-${seat}`}
               style={[styles.seat, seat < players.length && styles.seatTaken]}
             />
@@ -56,7 +55,7 @@ export const TableRow = ({ table, onJoin }: TableRowProps) => {
             <Avatar
               key={player.userId}
               name={player.name}
-              size={26}
+              size={iconSize.lg}
               src={player.avatarUrl}
               style={styles.playerAvatar}
             />
@@ -67,14 +66,18 @@ export const TableRow = ({ table, onJoin }: TableRowProps) => {
           </Text>
 
           {hasPremiumPlayer && (
-            <Crown accessibilityLabel={t('lobby.premiumPlayer')} color={colors.gold} size={15} />
+            <Crown
+              accessibilityLabel={t('lobby.premiumPlayer')}
+              color={colors.gold}
+              size={iconSize.sm}
+            />
           )}
 
           {settings.isPrivate && (
             <Lock
               accessibilityLabel={t('lobby.privateTable')}
               color={colors.subtleForeground}
-              size={14}
+              size={iconSize.xs}
             />
           )}
         </View>
@@ -88,7 +91,7 @@ export const TableRow = ({ table, onJoin }: TableRowProps) => {
             {isPlaying ? t('lobby.inProgress') : t('lobby.full')}
           </Text>
         ) : (
-          <ChevronRight color={colors.accent} size={22} />
+          <ChevronRight color={colors.accent} size={iconSize.lg} />
         )}
       </View>
     </Pressable>

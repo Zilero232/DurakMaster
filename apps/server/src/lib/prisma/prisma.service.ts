@@ -13,7 +13,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     const connectionString = process.env.DATABASE_URL;
 
     if (!connectionString) {
-      throw new Error('DATABASE_URL не задан — скопируйте apps/server/.env.example в .env');
+      throw new Error('DATABASE_URL is not set — copy .env.example to .env');
     }
 
     super({ adapter: new PrismaPg({ connectionString }) });
@@ -21,7 +21,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
   async onModuleInit(): Promise<void> {
     await this.$connect();
-    this.logger.log('Postgres подключён');
+    this.logger.log('Postgres connected');
   }
 
   async onModuleDestroy(): Promise<void> {

@@ -1,24 +1,18 @@
-import type { DeckSize, GameSpeed } from '@durak-master/schemas';
+import type { GameId, GameSpeed } from '@durak-master/schemas';
 
-import { MAX_PLAYERS, MIN_PLAYERS } from '@durak-master/schemas';
+import { PLAYER_RANGE_BY_GAME } from '@durak-master/schemas';
 
 import type { OptionItem } from './components';
 
-export const PLAYER_COUNT_ITEMS: OptionItem<number>[] = Array.from(
-  { length: MAX_PLAYERS - MIN_PLAYERS + 1 },
-  (_, index) => {
-    const count = MIN_PLAYERS + index;
+export const playerCountItems = (game: GameId): OptionItem<number>[] => {
+  const { min, max } = PLAYER_RANGE_BY_GAME[game];
+
+  return Array.from({ length: max - min + 1 }, (_, index) => {
+    const count = min + index;
 
     return { value: count, label: String(count) };
-  }
-);
-
-const DECK_SIZES: DeckSize[] = [24, 36, 52];
-
-export const DECK_SIZE_ITEMS: OptionItem<DeckSize>[] = DECK_SIZES.map((size) => ({
-  value: size,
-  label: String(size)
-}));
+  });
+};
 
 export const SPEED_ITEMS: {
   value: GameSpeed;

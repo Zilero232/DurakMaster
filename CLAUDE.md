@@ -60,13 +60,18 @@ These are not style preferences — breaking any one of them breaks the game or 
 ```bash
 bun install                # dependencies for all workspaces
 bun dev:infra              # Postgres + Valkey + Mailpit in Docker
-bun dev                    # server + client in parallel
+bun dev:server             # API — one terminal
+bun dev:mobile             # Expo — another terminal, this is where the QR code is
 bun typecheck              # type check across all packages
 bun lint:fix               # ESLint
 bun android                # Android (needs a running emulator or device)
 bun ios                    # iOS
 bun web                    # browser
 ```
+
+The two dev servers run in separate terminals on purpose: `bun --filter
+--parallel` prefixes every output line with the package name, which mangles the
+ANSI art Expo draws its QR code with.
 
 ## How to work
 

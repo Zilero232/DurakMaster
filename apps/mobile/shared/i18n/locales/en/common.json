@@ -1,0 +1,22 @@
+{
+  "common": {
+    "appName": "Durak",
+    "appSubtitle": "Master",
+    "cancel": "Cancel",
+    "close": "Close",
+    "back": "Back",
+    "loading": "Loading…",
+    "soon": "soon",
+    "save": "Save"
+  },
+  "nav": {
+    "profile": "Profile",
+    "tables": "Rooms",
+    "create": "New game"
+  },
+  "connection": {
+    "connecting": "Connecting…",
+    "offline": "Offline",
+    "reconnecting": "Reconnecting…"
+  }
+}

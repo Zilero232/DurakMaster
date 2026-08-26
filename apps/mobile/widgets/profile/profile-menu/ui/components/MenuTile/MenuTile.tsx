@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { colors } from '@/ui-kit';
+import { iconSize } from '@/ui-kit';
 
 import type { MenuTileProps } from './MenuTile.types';
 
@@ -10,6 +10,7 @@ import { styles } from './MenuTile.styles';
 export const MenuTile = ({
   icon: Icon,
   label,
+  tint,
   badge,
   isLocked = false,
   onPress
@@ -30,7 +31,9 @@ export const MenuTile = ({
       onPress={onPress}
     >
       <View style={styles.top}>
-        <Icon color={colors.onFelt} size={22} />
+        <View style={[styles.halo, { backgroundColor: `${tint}22`, borderColor: `${tint}55` }]}>
+          <Icon color={tint} size={iconSize.lg} />
+        </View>
 
         {badge && <Text style={styles.badge}>{badge}</Text>}
       </View>

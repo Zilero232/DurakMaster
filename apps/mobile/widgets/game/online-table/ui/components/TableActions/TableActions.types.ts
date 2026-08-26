@@ -1,12 +1,19 @@
-import type { QuickPhraseId } from '@durak-master/schemas';
+import type { BoostId, MyProfile, QuickPhraseId } from '@durak-master/schemas';
 
 export type TableActionsProps = {
-  discardCount: number;
+  profile: MyProfile | null;
+
+  chatter?: string;
+  isMyTurn: boolean;
+  turnDeadline: number | null;
+  turnSeconds: number;
   canTake: boolean;
   canPass: boolean;
+  onSendEmoji: (emoji: string) => void;
   onSendPhrase: (phraseId: QuickPhraseId) => void;
-  onOpenDiscard: () => void;
-  onOpenSettings: () => void;
+  onUseBoost: (boost: BoostId) => void;
   onTake: () => void;
   onPass: () => void;
+
+  onLeave: () => void;
 };

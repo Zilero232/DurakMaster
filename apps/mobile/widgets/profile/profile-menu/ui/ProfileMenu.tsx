@@ -1,19 +1,7 @@
-import {
-  Award,
-  BookOpen,
-  Gift,
-  Newspaper,
-  Play,
-  Settings,
-  Share2,
-  UserRound,
-  Users
-} from 'lucide-react-native';
+import { Award, BarChart3, BookOpen, Share2, Trophy, Users } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Share, View } from 'react-native';
 
-import { haptic } from '@/shared/lib/haptics';
-import { playSound } from '@/shared/lib/sound';
 import { colors } from '@/ui-kit';
 
 import type { ProfileMenuItem, ProfileMenuProps } from './ProfileMenu.types';
@@ -21,50 +9,41 @@ import type { ProfileMenuItem, ProfileMenuProps } from './ProfileMenu.types';
 import { MenuTile } from './components';
 import { styles } from './ProfileMenu.styles';
 
-export const ProfileMenu = ({ onQuickGame, onOpenSettings, onOpenRules }: ProfileMenuProps) => {
+export const ProfileMenu = ({
+  onOpenRules,
+  onOpenStats,
+  onOpenFriends,
+  onOpenAchievements,
+  onOpenLeaderboard
+}: ProfileMenuProps) => {
   const { t } = useTranslation();
 
-  const items: ProfileMenuItem[] = [
-    { id: 'news', icon: Newspaper, isLocked: true },
-    { id: 'friends', icon: Users, isLocked: true },
-    { id: 'items', icon: Gift, isLocked: true },
-    { id: 'leaderboard', icon: Award, isLocked: true },
-    { id: 'achievements', icon: UserRound, isLocked: true },
-    { id: 'settings', icon: Settings, onPress: onOpenSettings },
-    { id: 'share', icon: Share2, isLocked: true },
-    { id: 'rules', icon: BookOpen, onPress: onOpenRules }
-  ];
-
-  const handleQuickGame = () => {
-    playSound('click');
-    haptic('tap');
-    onQuickGame();
+  const handleShare = () => {
+    void Share.share({ message: t('menu.shareMessage') });
   };
 
+  const items: ProfileMenuItem[] = [
+    { id: 'friends', icon: Users, tint: colors.info, onPress: onOpenFriends },
+    { id: 'achievements', icon: Award, tint: colors.gold, onPress: onOpenAchievements },
+    { id: 'leaderboard', icon: Trophy, tint: colors.accentBright, onPress: onOpenLeaderboard },
+    { id: 'stats', icon: BarChart3, tint: colors.success, onPress: onOpenStats },
+    { id: 'rules', icon: BookOpen, tint: colors.mutedForeground, onPress: onOpenRules },
+    { id: 'share', icon: Share2, tint: colors.trump, onPress: handleShare }
+  ];
+
   return (
-    <View style={styles.root}>
-      <Pressable
-        accessibilityRole='button'
-        style={({ pressed }) => [styles.quickGame, pressed && styles.quickGamePressed]}
-        onPress={handleQuickGame}
-      >
-        <Play color={colors.onFelt} fill={colors.onFelt} size={30} />
-
-        <Text style={styles.quickGameLabel}>{t('menu.quickGame')}</Text>
-      </Pressable>
-
-      <View style={styles.grid}>
-        {items.map(({ id, icon, badge, isLocked, onPress }) => (
-          <MenuTile
-            key={id}
-            badge={badge}
-            icon={icon}
-            isLocked={isLocked}
-            label={t(`menu.${id}`)}
-            onPress={onPress}
-          />
-        ))}
-      </View>
+    <View style={styles.grid}>
+      {items.map(({ id, icon, badge, isLocked, tint, onPress }) => (
+        <MenuTile
+          key={id}
+          badge={badge}
+          icon={icon}
+          isLocked={isLocked}
+          label={t(`menu.${id}`)}
+          tint={tint}
+          onPress={onPress}
+        />
+      ))}
     </View>
   );
 };

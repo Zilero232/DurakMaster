@@ -10,6 +10,8 @@ export type ButtonProps = {
   size?: ButtonSize;
   isFullWidth?: boolean;
   isDisabled?: boolean;
+
+  isLoading?: boolean;
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;

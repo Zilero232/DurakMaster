@@ -1,15 +1,26 @@
 import { BET_STEPS } from '@durak-master/schemas';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { formatCredits } from '@/shared/lib/format';
 
 import type { BetPickerProps } from './BetPicker.types';
 
 import { styles } from './BetPicker.styles';
+import { BetShortcuts, BetSlider } from './components';
+
+const LAST_INDEX = BET_STEPS.length - 1;
 
 export const BetPicker = ({ value, onChange }: BetPickerProps) => {
   const { t } = useTranslation();
+
+  const index = Math.max(BET_STEPS.indexOf(value as (typeof BET_STEPS)[number]), 0);
+
+  const label = t('create.betLabel');
+
+  const selectIndex = (next: number) => {
+    onChange(BET_STEPS[next] ?? BET_STEPS[0]);
+  };
 
   return (
     <View style={styles.root}>
@@ -18,30 +29,16 @@ export const BetPicker = ({ value, onChange }: BetPickerProps) => {
         <Text style={styles.value}>{formatCredits(value)}</Text>
       </View>
 
-      <ScrollView
-        horizontal
-        contentContainerStyle={styles.steps}
-        showsHorizontalScrollIndicator={false}
-      >
-        {BET_STEPS.map((step) => {
-          const isActive = step === value;
+      <View>
+        <BetSlider index={index} label={label} onChange={selectIndex} />
 
-          return (
-            <Pressable
-              key={step}
-              accessibilityLabel={t('create.betLabel')}
-              accessibilityRole='radio'
-              accessibilityState={{ checked: isActive }}
-              style={[styles.step, isActive && styles.stepActive]}
-              onPress={() => onChange(step)}
-            >
-              <Text style={[styles.stepLabel, isActive && styles.stepLabelActive]}>
-                {formatCredits(step)}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
+        <View style={styles.bounds}>
+          <Text style={styles.bound}>{formatCredits(BET_STEPS[0])}</Text>
+          <Text style={styles.bound}>{formatCredits(BET_STEPS[LAST_INDEX])}</Text>
+        </View>
+      </View>
+
+      <BetShortcuts label={label} value={value} onChange={onChange} />
     </View>
   );
 };

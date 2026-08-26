@@ -5,8 +5,14 @@ export type HapticKind = 'beat' | 'error' | 'lose' | 'play' | 'take' | 'tap' | '
 
 const isSupported = Platform.OS === 'ios' || Platform.OS === 'android';
 
+let isEnabled = true;
+
+export const setHapticsEnabled = (enabled: boolean) => {
+  isEnabled = enabled;
+};
+
 const run = (effect: () => Promise<void>) => {
-  if (!isSupported) {
+  if (!isSupported || !isEnabled) {
     return;
   }
 

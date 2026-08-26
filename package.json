@@ -8,32 +8,29 @@
     "packages/*"
   ],
   "scripts": {
+    "prepare": "husky",
+    "dev:infra": "docker compose -f docker-compose.dev.yml up -d",
+    "dev:full": "docker compose -f docker-compose.dev.yml up -d && bun dev:server",
+    "dev:server": "bun --filter @durak-master/server dev",
+    "dev:mobile": "bun --filter @durak-master/mobile dev",
     "android": "bun --filter @durak-master/mobile android",
+    "ios": "bun --filter @durak-master/mobile ios",
+    "web": "bun --filter @durak-master/mobile web",
     "prebuild": "bun --filter @durak-master/mobile prebuild",
     "build": "bun --filter @durak-master/server build && bun --filter @durak-master/mobile build:web",
-    "dev": "bun --filter '@durak-master/server' --filter '@durak-master/mobile' --parallel dev",
-    "dev:full": "docker compose -f docker-compose.dev.yml up -d && bun dev",
-    "dev:infra": "docker compose -f docker-compose.dev.yml up -d",
-    "dev:mobile": "bun --filter @durak-master/mobile dev",
-    "dev:server": "bun --filter @durak-master/server dev",
-    "fix": "bun run lint:fix && bun run format",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "ios": "bun --filter @durak-master/mobile ios",
+    "typecheck": "bun --filter @durak-master/schemas typecheck && bun --filter @durak-master/game-core typecheck && bun --filter @durak-master/platform typecheck && bun --filter @durak-master/server typecheck && bun --filter @durak-master/mobile typecheck",
+    "test": "bun --filter @durak-master/game-core test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepare": "husky",
-    "typecheck": "bun --filter @durak-master/schemas typecheck && bun --filter @durak-master/game-core typecheck && bun --filter @durak-master/platform typecheck && bun --filter @durak-master/server typecheck && bun --filter @durak-master/mobile typecheck",
-    "verify": "bun run typecheck && bun run lint && bun run format:check",
-    "web": "bun --filter @durak-master/mobile web"
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "verify": "bun run typecheck && bun run test && bun run lint && bun run format:check",
+    "fix": "bun run lint:fix && bun run format"
   },
   "lint-staged": {
     "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": [
       "eslint --fix",
       "prettier --write"
-    ],
-    "**/package.json": [
-      "sort-package-json"
     ],
     "*.{json,md,yml,yaml}": "prettier --write"
   },
@@ -46,7 +43,6 @@
     "husky": "^9.1.7",
     "lint-staged": "^17.3.0",
     "prettier": "^3.9.6",
-    "sort-package-json": "^4.0.0",
     "typescript": "~6.0.3"
   }
 }

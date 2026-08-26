@@ -1,4 +1,5 @@
 import type {
+  AvatarSeed,
   GameAction,
   GameErrorCode,
   LobbyTable,
@@ -27,6 +28,8 @@ export type GameOutcome = {
 
 type SessionStore = {
   status: ConnectionStatus;
+
+  isLobbySubscribed: boolean;
   profile: MyProfile | null;
 
   tables: LobbyTable[];
@@ -39,6 +42,8 @@ type SessionStore = {
 
   phrases: TablePhrase[];
   emojis: Record<string, { emoji: string; at: number }>;
+
+  lastErrorCode: string | null;
 
   lastError: string | null;
   rejectedCode: GameErrorCode | null;
@@ -59,6 +64,8 @@ type SessionStore = {
   sendPhrase: (phraseId: QuickPhraseId) => void;
   sendEmoji: (emoji: string) => void;
   claimBonus: () => void;
+  setAvatar: (seed: AvatarSeed) => void;
+  setName: (name: string) => void;
 
   clearOutcome: () => void;
   clearRejection: () => void;
@@ -66,6 +73,9 @@ type SessionStore = {
 };
 
 export const useSessionStore = create<SessionStore>((set, get) => {
+  let unsubscribeMessages: (() => void) | null = null;
+  let unsubscribeState: (() => void) | null = null;
+
   const handleMessage = (message: ServerMessage) => {
     switch (message.type) {
       case 'connected':
@@ -142,7 +152,10 @@ export const useSessionStore = create<SessionStore>((set, get) => {
         break;
 
       case 'error':
-        set({ lastError: message.payload.message });
+        set({
+          lastErrorCode: message.payload.code ?? null,
+          lastError: message.payload.message
+        });
         break;
 
       default:
@@ -161,9 +174,11 @@ export const useSessionStore = create<SessionStore>((set, get) => {
     outcome: null,
     phrases: [],
     emojis: {},
+    lastErrorCode: null,
     lastError: null,
     rejectedCode: null,
     selectedTableCardKey: null,
+    isLobbySubscribed: false,
 
     selectTableCard: (key) => set({ selectedTableCardKey: key }),
 
@@ -174,19 +189,59 @@ export const useSessionStore = create<SessionStore>((set, get) => {
 
       set({ status: 'connecting' });
 
-      socketClient.subscribe(handleMessage);
+      unsubscribeMessages?.();
+      unsubscribeMessages = socketClient.subscribe(handleMessage);
+
+      unsubscribeState?.();
+      unsubscribeState = socketClient.subscribeState((state) => {
+        if (state === 'closed') {
+          set({ status: 'error' });
+
+          return;
+        }
+
+        if (state === 'connecting') {
+          set({ status: 'connecting' });
+
+          return;
+        }
+
+        set({ status: 'connected' });
+
+        if (get().isLobbySubscribed) {
+          socketClient.send({ type: 'lobby:subscribe' });
+        }
+      });
 
       const token = await getAuthToken();
+
+      if (get().status !== 'connecting') {
+        return;
+      }
 
       socketClient.connect(token ? `${WS_URL}?token=${encodeURIComponent(token)}` : WS_URL);
     },
 
     disconnect: () => {
+      unsubscribeMessages?.();
+      unsubscribeMessages = null;
+      unsubscribeState?.();
+      unsubscribeState = null;
+
       socketClient.disconnect();
-      set({ status: 'idle', profile: null, currentTable: null, view: null });
+      set({
+        status: 'idle',
+        profile: null,
+        currentTable: null,
+        view: null,
+        isLobbySubscribed: false
+      });
     },
 
-    subscribeLobby: () => socketClient.send({ type: 'lobby:subscribe' }),
+    subscribeLobby: () => {
+      set({ isLobbySubscribed: true });
+      socketClient.send({ type: 'lobby:subscribe' });
+    },
 
     createTable: (settings, password) =>
       socketClient.send({ type: 'table:create', payload: { settings, password } }),
@@ -206,11 +261,15 @@ export const useSessionStore = create<SessionStore>((set, get) => {
 
     claimBonus: () => socketClient.send({ type: 'profile:claim-bonus' }),
 
+    setAvatar: (seed) => socketClient.send({ type: 'profile:set-avatar', payload: { seed } }),
+
+    setName: (name) => socketClient.send({ type: 'profile:set-name', payload: { name } }),
+
     clearOutcome: () => set({ outcome: null }),
 
     clearRejection: () => set({ rejectedCode: null }),
 
-    clearError: () => set({ lastError: null })
+    clearError: () => set({ lastError: null, lastErrorCode: null })
   };
 });
 

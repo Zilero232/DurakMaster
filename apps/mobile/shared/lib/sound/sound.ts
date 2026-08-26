@@ -2,7 +2,7 @@ import type { AudioPlayer } from 'expo-audio';
 
 import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import { Platform } from 'react-native';
-import { clamp } from 'remeda';
+import { clamp, sample } from 'remeda';
 
 import type { SoundName } from './sound-assets';
 
@@ -64,7 +64,7 @@ export const playSound = (name: SoundName) => {
   ensureAudioMode();
 
   const variants = getPlayers(name);
-  const player = variants[Math.floor(Math.random() * variants.length)];
+  const [player] = sample(variants, 1);
 
   if (!player) {
     return;

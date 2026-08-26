@@ -1,92 +1,41 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, Text } from 'react-native';
 
 import { Button } from '@/ui-kit';
 
-import type { CreateTableFormValues } from '../model';
 import type { CreateTableProps } from './CreateTable.types';
 
-import { CREATE_TABLE_DEFAULTS, createTableFormSchema, toTableSettings } from '../model';
-import { BetPicker, ModesGrid, OptionRow, PrivacySection, SettingsSection } from './components';
-import { DECK_SIZE_ITEMS, PLAYER_COUNT_ITEMS, SPEED_ITEMS } from './CreateTable.config';
+import { useCreateTableForm } from '../model';
+import {
+  CommonSettings,
+  GamePicker,
+  GameSettings,
+  PrivacySection,
+  SettingsSection
+} from './components';
 import { styles } from './CreateTable.styles';
 
 export const CreateTable = ({ onCreate }: CreateTableProps) => {
   const { t } = useTranslation();
 
-  const { control, handleSubmit, formState } = useForm<CreateTableFormValues>({
-    resolver: zodResolver(createTableFormSchema),
-    defaultValues: CREATE_TABLE_DEFAULTS,
-    mode: 'onChange'
-  });
-
-  const isPrivate = useWatch({ control, name: 'isPrivate' });
-
-  const handleCreate = handleSubmit((values) => {
-    const password = values.password.trim();
-
-    onCreate(toTableSettings(values), values.isPrivate ? password : undefined);
-  });
+  const { control, game, isPrivate, isAvailable, canSubmit, selectGame, submit } =
+    useCreateTableForm({ onCreate });
 
   return (
     <ScrollView contentContainerStyle={styles.root} showsVerticalScrollIndicator={false}>
-      <Controller
-        control={control}
-        name='bet'
-        render={({ field }) => <BetPicker value={field.value} onChange={field.onChange} />}
-      />
-
-      <SettingsSection title={t('create.players')}>
-        <Controller
-          render={({ field }) => (
-            <OptionRow items={PLAYER_COUNT_ITEMS} value={field.value} onChange={field.onChange} />
-          )}
-          control={control}
-          name='maxPlayers'
-        />
+      <SettingsSection title={t('games.pick')}>
+        <GamePicker value={game} onChange={selectGame} />
       </SettingsSection>
 
-      <View style={styles.row}>
-        <SettingsSection isInRow title={t('create.deck')}>
-          <Controller
-            render={({ field }) => (
-              <OptionRow items={DECK_SIZE_ITEMS} value={field.value} onChange={field.onChange} />
-            )}
-            control={control}
-            name='deckSize'
-          />
-        </SettingsSection>
+      {!isAvailable && <Text style={styles.notice}>{t('games.comingSoonHint')}</Text>}
 
-        <SettingsSection isInRow title={t('create.speed')}>
-          <Controller
-            render={({ field }) => (
-              <OptionRow
-                items={SPEED_ITEMS.map((item) => ({ ...item, label: t(item.labelKey) }))}
-                value={field.value}
-                onChange={field.onChange}
-              />
-            )}
-            control={control}
-            name='speed'
-          />
-        </SettingsSection>
-      </View>
+      <CommonSettings control={control} game={game} />
 
-      <SettingsSection title={t('create.modes')}>
-        <ModesGrid control={control} />
-      </SettingsSection>
+      <GameSettings control={control} game={game} />
 
       <PrivacySection control={control} isPrivate={isPrivate} />
 
-      <Button
-        isFullWidth
-        isDisabled={!formState.isValid}
-        size='lg'
-        variant='primary'
-        onPress={handleCreate}
-      >
+      <Button isFullWidth isDisabled={!canSubmit} size='lg' variant='primary' onPress={submit}>
         {t('create.submit')}
       </Button>
     </ScrollView>

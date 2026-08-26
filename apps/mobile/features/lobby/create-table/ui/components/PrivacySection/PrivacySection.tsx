@@ -1,3 +1,4 @@
+import { TABLE_PASSWORD_MAX_LENGTH } from '@durak-master/schemas';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Switch, Text, TextInput, View } from 'react-native';
@@ -7,8 +8,6 @@ import { colors } from '@/ui-kit';
 import type { PrivacySectionProps } from './PrivacySection.types';
 
 import { styles } from './PrivacySection.styles';
-
-const PASSWORD_MAX_LENGTH = 32;
 
 export const PrivacySection = ({ control, isPrivate }: PrivacySectionProps) => {
   const { t } = useTranslation();
@@ -40,7 +39,7 @@ export const PrivacySection = ({ control, isPrivate }: PrivacySectionProps) => {
               accessibilityLabel={t('create.password')}
               autoCapitalize='none'
               autoCorrect={false}
-              maxLength={PASSWORD_MAX_LENGTH}
+              maxLength={TABLE_PASSWORD_MAX_LENGTH}
               placeholder={t('create.passwordPlaceholder')}
               placeholderTextColor={colors.subtleForeground}
               style={styles.password}

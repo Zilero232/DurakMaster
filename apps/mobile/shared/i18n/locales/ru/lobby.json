@@ -1,0 +1,112 @@
+{
+  "lobby": {
+    "title": "Комнаты",
+    "empty": "Открытых столов нет",
+    "emptyHint": "Создайте свой — к нему присоединятся другие игроки",
+    "join": "Сесть",
+    "full": "Занят",
+    "inProgress": "Идёт игра",
+    "playersCount": "{{current}}/{{max}}",
+    "privateTable": "Приватный стол",
+    "premiumPlayer": "Премиум-игрок",
+    "emptySeats": "Стол свободен",
+    "passwordPrompt": "Введите пароль стола",
+    "offline": "Нет связи с сервером",
+    "offlineHint": "Проверьте подключение — столы появятся, как только связь восстановится",
+    "createFirst": "Создать стол",
+    "allGames": "Все игры",
+    "onlyJoinable": "Только свободные",
+    "tableCount_one": "{{count}} стол",
+    "tableCount_few": "{{count}} стола",
+    "tableCount_many": "{{count}} столов",
+    "nothingMatches": "Под фильтры ничего не подходит",
+    "nothingMatchesHint": "Снимите часть фильтров или создайте свой стол",
+    "bets": {
+      "all": "Любая ставка",
+      "low": "До 1K",
+      "mid": "1K–50K",
+      "high": "От 50K"
+    }
+  },
+  "create": {
+    "title": "Создать игру",
+    "yourBet": "Ваша ставка",
+    "betLabel": "Размер ставки",
+    "players": "Игроки",
+    "speed": "Скорость",
+    "speedNormal": "Обычная",
+    "speedFast": "Быстрая",
+    "modes": "Режимы игры",
+    "private": "Приватный стол",
+    "submit": "Создать",
+    "password": "Пароль стола",
+    "passwordPlaceholder": "Придумайте пароль"
+  },
+  "games": {
+    "pick": "Игра",
+    "soon": "скоро",
+    "comingSoon": "{{game}} — скоро",
+    "comingSoonHint": "Эта игра ещё в работе. Пока сыграйте в дурака — остальные столы откроются позже.",
+    "durak": {
+      "name": "Дурак",
+      "tagline": "избавьтесь от карт первым",
+      "deck": "Колода",
+      "allowDraw": "Ничья",
+      "showTrump": "Перевод козырем",
+      "showTrumpHint": "перевести, показав козырь",
+      "mode": {
+        "throwIn": "Подкидной",
+        "transfer": "Переводной"
+      },
+      "throwInScope": {
+        "neighbors": "Соседи",
+        "neighborsHint": "подкидывают только соседи",
+        "all": "Все",
+        "allHint": "подкидывают все игроки"
+      },
+      "fairness": {
+        "fair": "Честная",
+        "cheaters": "С шулерами",
+        "cheatersHint": "можно жульничать"
+      },
+      "firstMove": {
+        "lowestTrump": "Младший козырь",
+        "lowestTrumpHint": "ходит младший козырь",
+        "random": "Случайно"
+      }
+    },
+    "burkozel": {
+      "name": "Буркозёл",
+      "tagline": "берите взятки и считайте очки",
+      "penaltyLimit": "Штрафных очков",
+      "shokha": "Шоха",
+      "shokhaHint": "четыре козыря забирают партию",
+      "combinations": "Комбинации",
+      "combinationsHint": "бура, молодка и другие",
+      "teamMode": {
+        "solo": "Каждый сам",
+        "pairs": "Парами",
+        "pairsHint": "двое на двое"
+      }
+    },
+    "kozel": {
+      "name": "Козёл",
+      "tagline": "играйте парами до шести козлов",
+      "targetPairs": "Партий до победы",
+      "shamok": "Шамок",
+      "shamokHint": "7♣ — старший козырь",
+      "aceRestriction": "Придержать туза",
+      "aceRestrictionHint": "нельзя сбросить туза несыгранной масти",
+      "firstLead": {
+        "lowestTrump": "Младший козырь",
+        "lowestTrumpHint": "ходит владелец 8♣",
+        "leftOfDealer": "Слева от сдающего",
+        "dealer": "Сдающий"
+      }
+    },
+    "tysyacha": {
+      "name": "Тысяча",
+      "tagline": "торгуйтесь и наберите 1000"
+    }
+  }
+}

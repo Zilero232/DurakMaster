@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Layers, Rabbit, Users, VenetianMask } from 'lucide-react-native';
+import { Rabbit } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -6,43 +6,28 @@ import { colors } from '@/ui-kit';
 
 import type { TableBadgesProps } from './TableBadges.types';
 
-import { styles } from './TableBadges.styles';
-
-const ICON_SIZE = 13;
+import { DurakBadges } from './components';
+import { GAME_ICONS } from './TableBadges.config';
+import { BADGE_ICON_SIZE, styles } from './TableBadges.styles';
 
 export const TableBadges = ({ settings }: TableBadgesProps) => {
   const { t } = useTranslation();
 
-  const { deckSize, mode, throwInScope, fairness, speed } = settings;
+  const GameIcon = GAME_ICONS[settings.game];
 
   return (
     <View style={styles.root}>
-      <View style={styles.badge}>
-        <Layers color={colors.mutedForeground} size={ICON_SIZE} />
-        <Text style={styles.label}>{deckSize}</Text>
+      <View style={[styles.badge, styles.gameBadge]}>
+        <GameIcon color={colors.accent} size={BADGE_ICON_SIZE} />
+        <Text style={[styles.label, styles.gameLabel]}>{t(`games.${settings.game}.name`)}</Text>
       </View>
 
-      <View style={styles.badge}>
-        <ArrowLeftRight color={colors.mutedForeground} size={ICON_SIZE} />
-        <Text style={styles.label}>{t(`create.mode.${mode}`)}</Text>
-      </View>
+      {settings.game === 'durak' && <DurakBadges rules={settings.rules} />}
 
-      <View style={styles.badge}>
-        <Users color={colors.mutedForeground} size={ICON_SIZE} />
-        <Text style={styles.label}>{t(`create.mode.${throwInScope}`)}</Text>
-      </View>
-
-      {speed === 'fast' && (
+      {settings.speed === 'fast' && (
         <View style={styles.badge}>
-          <Rabbit color={colors.mutedForeground} size={ICON_SIZE} />
+          <Rabbit color={colors.mutedForeground} size={BADGE_ICON_SIZE} />
           <Text style={styles.label}>{t('create.speedFast')}</Text>
-        </View>
-      )}
-
-      {fairness === 'cheaters' && (
-        <View style={[styles.badge, styles.cheaters]}>
-          <VenetianMask color={colors.primaryForeground} size={ICON_SIZE} />
-          <Text style={[styles.label, styles.cheatersLabel]}>{t('create.mode.cheaters')}</Text>
         </View>
       )}
     </View>

@@ -4,18 +4,19 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { isNullish } from 'remeda';
 
-import { useNow } from '@/shared/lib/time';
-import { colors } from '@/ui-kit';
+import { useNow } from '@/shared/model/time';
+import { colors, iconSize } from '@/ui-kit';
 
 import type { WalletBarProps } from './WalletBar.types';
 
-import { PlayerIdentity, ProfileStats, WalletAmount } from './components';
+import { PlayerIdentity, WalletAmount } from './components';
 import { styles } from './WalletBar.styles';
 
 const BONUS_CHECK_INTERVAL_MS = 30_000;
 
 export const WalletBar = ({
   profile,
+  onEdit,
   onClaimBonus,
   onTopUpCoins,
   onTopUpCredits
@@ -27,9 +28,6 @@ export const WalletBar = ({
   const { credits, coins, nextFreeCreditsAt } = profile;
 
   const rank = getRankInfo(profile.rating);
-  const winRate =
-    profile.gamesPlayed > 0 ? Math.round((profile.gamesWon / profile.gamesPlayed) * 100) : 0;
-
   const isBonusReady = isNullish(nextFreeCreditsAt) || nextFreeCreditsAt <= now;
 
   return (
@@ -40,6 +38,7 @@ export const WalletBar = ({
           isPremium={profile.isPremium}
           name={profile.name}
           rank={rank}
+          onEdit={onEdit}
         />
 
         <View style={styles.wallets}>
@@ -68,7 +67,7 @@ export const WalletBar = ({
           style={({ pressed }) => [styles.bonus, pressed && styles.bonusPressed]}
           onPress={onClaimBonus}
         >
-          <Gift color={colors.primaryForeground} size={18} />
+          <Gift color={colors.primaryForeground} size={iconSize.md} />
 
           <Text style={styles.bonusLabel}>{t('profile.claimBonus')}</Text>
         </Pressable>
@@ -82,8 +81,6 @@ export const WalletBar = ({
           ]}
         />
       </View>
-
-      <ProfileStats gamesPlayed={profile.gamesPlayed} rating={profile.rating} winRate={winRate} />
     </View>
   );
 };

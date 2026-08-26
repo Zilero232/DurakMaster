@@ -1,4 +1,4 @@
-import { clamp } from 'remeda';
+import { clamp, sample } from 'remeda';
 
 import type { SoundName } from './sound-assets';
 
@@ -40,7 +40,7 @@ export const playSound = (name: SoundName) => {
   }
 
   const variants = getElements(name);
-  const audio = variants[Math.floor(Math.random() * variants.length)];
+  const [audio] = sample(variants, 1);
 
   if (!audio) {
     return;

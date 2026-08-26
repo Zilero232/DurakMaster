@@ -1,11 +1,8 @@
+export { GameSettingsTab } from './GameSettingsTab';
 export { LocaleOptions } from './LocaleOptions';
-export type { LocaleOptionsProps } from './LocaleOptions';
+export { LookSettingsTab } from './LookSettingsTab';
 export { SettingsSection } from './SettingsSection';
-export type { SettingsSectionProps } from './SettingsSection';
 export { SettingsToggle } from './SettingsToggle';
-
-export type { SettingsToggleProps } from './SettingsToggle';
+export { SoundSettingsTab } from './SoundSettingsTab';
 export { ThemeOption } from './ThemeOption';
-export type { ThemeOptionProps } from './ThemeOption';
 export { VolumeSlider } from './VolumeSlider';
-export type { VolumeSliderProps } from './VolumeSlider';

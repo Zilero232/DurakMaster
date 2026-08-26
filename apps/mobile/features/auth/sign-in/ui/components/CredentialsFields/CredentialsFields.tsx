@@ -18,6 +18,7 @@ export const CredentialsFields = ({ control, errors, mode, onSubmit }: Credentia
           render={({ field }) => (
             <FormField
               autoComplete='nickname'
+              error={errors.name?.message && t(errors.name.message as never)}
               label={t('auth.name')}
               maxLength={MAX_NAME_LENGTH}
               placeholder={t('auth.namePlaceholder')}
@@ -37,7 +38,7 @@ export const CredentialsFields = ({ control, errors, mode, onSubmit }: Credentia
           <FormField
             autoCapitalize='none'
             autoComplete='email'
-            isInvalid={Boolean(errors.email)}
+            error={errors.email?.message && t(errors.email.message as never)}
             keyboardType='email-address'
             label={t('auth.email')}
             textContentType='emailAddress'
@@ -53,10 +54,10 @@ export const CredentialsFields = ({ control, errors, mode, onSubmit }: Credentia
       <Controller
         render={({ field }) => (
           <FormField
-            secureTextEntry
+            isSecret
             autoCapitalize='none'
             autoComplete={isSignIn ? 'current-password' : 'new-password'}
-            isInvalid={Boolean(errors.password)}
+            error={errors.password?.message && t(errors.password.message as never)}
             label={t('auth.password')}
             returnKeyType='go'
             textContentType={isSignIn ? 'password' : 'newPassword'}

@@ -1,0 +1,22 @@
+{
+  "common": {
+    "appName": "Дурак",
+    "appSubtitle": "Мастер",
+    "cancel": "Отмена",
+    "close": "Закрыть",
+    "back": "Назад",
+    "loading": "Загрузка…",
+    "soon": "скоро",
+    "save": "Сохранить"
+  },
+  "nav": {
+    "profile": "Профиль",
+    "tables": "Комнаты",
+    "create": "Создать игру"
+  },
+  "connection": {
+    "connecting": "Подключение…",
+    "offline": "Нет связи",
+    "reconnecting": "Восстановление связи…"
+  }
+}

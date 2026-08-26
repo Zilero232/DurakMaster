@@ -1,0 +1,47 @@
+{
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "cardTheme": "Deck",
+    "sound": "Sound",
+    "volume": "Volume",
+    "hints": "Suggest moves",
+    "hintsDescription": "Highlight the cards you can play",
+    "haptics": "Vibration",
+    "hapticsDescription": "Respond to moves and mistakes with vibration",
+    "themes": {
+      "classic": "Classic",
+      "fourColour": "Four colours",
+      "emerald": "Emerald",
+      "crimson": "Crimson",
+      "noir": "Noir"
+    },
+    "tabs": {
+      "play": "Play",
+      "look": "Look",
+      "sound": "Sound"
+    },
+    "sortTitle": "Order of cards in hand",
+    "sort": {
+      "trumpFirst": "Trumps last",
+      "suit": "By suit",
+      "rank": "By rank",
+      "manual": "As dealt"
+    },
+    "speedTitle": "Animation speed",
+    "speed": {
+      "calm": "Calm",
+      "normal": "Normal",
+      "instant": "Instant"
+    },
+    "cardScale": "Card size",
+    "scale": {
+      "small": "Smaller",
+      "normal": "Normal",
+      "large": "Larger"
+    },
+    "effects": "Effects",
+    "batterySaver": "Battery saver",
+    "batterySaverDescription": "Fewer animations and effects — the charge lasts longer"
+  }
+}

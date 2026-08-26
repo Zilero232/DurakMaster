@@ -99,24 +99,73 @@ Each game describes its own modes declaratively — as a list of settings with o
 The table creation screen is assembled from that description instead of being written
 from scratch for every game.
 
+## 4.1. How the schemas are laid out
+
+```text
+packages/schemas/src/game/
+  core/                    everything shared, nothing game-specific
+    card.ts                cards, suits, ranks, deck sizes
+    player.ts              GameCoreState, PlayerState, GamePhase
+    game-id.ts             GameId, player ranges
+    state.ts               GameState and PlayerView unions
+    action.ts              GameAction union, error codes
+    table-settings-common.ts
+    table-settings.ts      TableSettings union
+    index.ts
+  games/
+    durak/
+      rules.ts             DurakRules — what the lobby offers
+      state.ts             DurakState, DurakView
+      action.ts            DurakAction
+      index.ts
+    burkozel/  kozel/  tysyacha/    same three files each
+    index.ts
+  index.ts
+```
+
+**A game's rules live next to its state, not in a settings folder of their own.**
+`DurakRules` and `DurakState` change together — a new mode almost always adds a
+field to both. Keeping them apart means editing two distant folders for one
+change, and it is how the earlier layout drifted into a mess.
+
+`core/` never imports from `games/` except in the two union files (`state.ts`,
+`action.ts`, `table-settings.ts`) — those exist precisely to assemble the unions.
+A game module imports from `core/`, never from a sibling game.
+
 ## 5. Game module
 
 Every game implements the same interface:
 
 ```ts
-type GameModule<S extends GameState, A extends GameAction, R> = {
-  id: GameId;
-  createGame(input: CreateGameInput<R>): S;
-  reduce(state: S, userId: string, action: A): ReduceResult<S>;
-  toPlayerView(state: S, userId: string): PlayerView;
-  decideBotAction(state: S, userId: string): A;
-  onTimeout(state: S): S;
+type GameModule<G extends GameId> = {
+  id: G;
+  minPlayers: number;
+  maxPlayers: number;
+
+  createGame(input: CreateGameInput<G>): StateForGame<G>;
+  reduce(state, userId, action): ReduceResult<G>;
+  toPlayerView(state, userId): ViewForGame<G>;
+  decideBotAction(state, userId): ActionForGame<G>['action'];
+  decideTimeoutAction(state, userId): ActionForGame<G>['action'];
+
+  // Optional: only for games played over several deals.
+  startNextDeal?(state, randomInt): StateForGame<G> | null;
 };
 ```
 
 The server keeps a registry `Record<GameId, GameModule>` and calls the right one by
 `settings.game`. Adding a game is a new entry in the registry; the transport does not
 change.
+
+**A timeout is an action, not a separate state transition.** The module says which
+action to take (`decideTimeoutAction`) and it goes through the same `reduce` as a
+real move — that keeps a single validation path and one place where state changes.
+
+**`startNextDeal` is how a multi-deal game deals again.** Durak ends with the game;
+kozel, burkozel and tysyacha end a *deal* and carry a scoreboard across many of
+them. Dealing needs a shuffle, a shuffle needs randomness, and randomness has no
+place in a pure reducer — so `reduce` marks the deal finished and the server, which
+owns `randomInt`, calls this hook right after committing an action.
 
 ## 6. Order of work
 
