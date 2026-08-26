@@ -1,10 +1,9 @@
+import type { MyProfile, PublicProfile } from '@durak-master/schemas';
+
 import { Injectable } from '@nestjs/common';
 
 import { ProfilesService } from '../profile/profiles.service';
 
-import type { MyProfile, PublicProfile } from '@durak-master/schemas';
-
-/** Публичная часть профиля: без балансов, их видит только владелец. */
 const toPublicProfile = (profile: MyProfile): PublicProfile => ({
   userId: profile.userId,
   name: profile.name,
@@ -15,31 +14,15 @@ const toPublicProfile = (profile: MyProfile): PublicProfile => ({
   gamesWon: profile.gamesWon,
   gamesLost: profile.gamesLost,
   isPremium: profile.isPremium,
-  isOnline: true,
+  isOnline: true
 });
 
-/**
- * Профили подключённых игроков.
- *
- * Источник истины — Postgres (`ProfilesService`); здесь только кеш на время
- * жизни соединения, чтобы каждая рассылка состояния не ходила в БД.
- *
- * Личность игрока НИКОГДА не берётся из клиентских данных: `userId` приходит
- * из проверенной сессии better-auth, иначе можно было бы играть от чужого имени.
- */
 @Injectable()
 export class SessionsService {
   private readonly profiles = new Map<string, PublicProfile>();
 
   constructor(private readonly profilesService: ProfilesService) {}
 
-  /**
-   * Поднимает профиль из БД и кладёт в кеш.
-   *
-   * Возвращает ПОЛНЫЙ профиль с балансами — он уходит только владельцу
-   * соединения. В кеш при этом ложится публичная часть: её видят соседи
-   * по столу, и кредиты туда попадать не должны.
-   */
   async load(userId: string): Promise<MyProfile> {
     const profile = await this.profilesService.ensureProfile(userId);
 
@@ -48,7 +31,6 @@ export class SessionsService {
     return profile;
   }
 
-  /** Свежий профиль владельца — после партии, бонуса или покупки. */
   async reload(userId: string): Promise<MyProfile> {
     return this.load(userId);
   }
@@ -65,16 +47,10 @@ export class SessionsService {
     }
 
     if (!isOnline) {
-      // Кеш живёт только на время соединения: при следующем подключении
-      // профиль поднимется из БД со свежими балансом и рейтингом.
       this.profiles.delete(userId);
     }
   }
 
-  /**
-   * Итог партии: пишется в БД, кеш обновляется следом.
-   * Порядок важен — в кеше не должно оказаться значений, которых нет в БД.
-   */
   async applyGameResult(input: {
     userId: string;
     creditsDelta: number;

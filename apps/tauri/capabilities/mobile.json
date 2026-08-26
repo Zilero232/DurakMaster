@@ -1,8 +1,0 @@
-{
-  "$schema": "../gen/schemas/mobile-schema.json",
-  "identifier": "mobile-capability",
-  "description": "Права сборок под Android и iOS",
-  "platforms": ["android", "iOS"],
-  "windows": ["main"],
-  "permissions": ["safe-area-insets-css:default"]
-}

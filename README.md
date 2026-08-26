@@ -1,59 +1,77 @@
 # DurakMaster
 
 Онлайн-дурак: подкидной и переводной, 2–6 игроков, колоды 24/36/52.
-Web, десктоп (Windows/macOS/Linux) и мобильные (Android/iOS) из одной кодовой базы.
+Android, iOS и веб — из одной кодовой базы.
 
 ## Стек
 
-| Слой | Технология |
-|---|---|
-| Клиент | Next.js 16, React 19, TanStack Query, SCSS-модули, base-ui, motion, next-intl |
-| Стол | DOM/CSS + motion (без канваса) |
-| Realtime | `partysocket` ↔ `ws` + `@nestjs/platform-ws` |
-| API | NestJS 11 на Bun, Prisma 7, PostgreSQL, better-auth, nestjs-zod |
-| Правила игры | `packages/game-core` — чистые функции без зависимостей |
-| Состояние столов | В памяти ноды, снапшот в Postgres на границах ходов |
-| Директория/pub-sub | Valkey |
-| Все платформы | Tauri 2 |
+| Слой               | Технология                                                                    |
+| ------------------ | ----------------------------------------------------------------------------- |
+| Клиент             | Expo SDK 57, React Native 0.86, Expo Router, TanStack Query, Zustand, i18next |
+| Стол               | Нативные вьюхи + Reanimated (без канваса)                                     |
+| Realtime           | `partysocket` ↔ `ws` + `@nestjs/platform-ws`                                  |
+| API                | NestJS 11 на Bun, Prisma 7, PostgreSQL, better-auth, nestjs-zod               |
+| Правила игры       | `packages/game-core` — чистые функции без зависимостей                        |
+| Состояние столов   | В памяти ноды, снапшот в Postgres на границах ходов                           |
+| Директория/pub-sub | Valkey                                                                        |
 
-**Почему стол на DOM, а не на канвасе.** 40 карт укладываются в CSS-композитинг,
-а канвас в WebView приносит лимит памяти 256 МБ на iOS, потерю WebGL-контекста
-без авто-восстановления и необходимость bitmap-шрифтов для кириллицы.
-`motion` — 42 КБ gzip против 156 КБ у PixiJS.
+**Почему один клиент на все платформы.** Веб-сборка идёт через
+`react-native-web` из того же кода: отдельный веб-фронтенд означал бы два
+набора экранов, расходящихся при каждой правке. Десктопных сборок нет.
+
+**Почему стол не на канвасе.** Карты — это два-три десятка простых вьюх,
+их анимирует Reanimated на UI-потоке. Канвас потребовал бы своей системы
+раскладки, своих шрифтов и ручной обработки нажатий.
+
+**Почему карты рисуются кодом.** Раньше это были 36 SVG-файлов, а темы
+колоды — CSS-фильтры поверх них. В React Native фильтров нет, поэтому карта
+собирается из вьюх, а тема — набор цветов. Ассеты колоды больше не нужны,
+и карта остаётся резкой на любой плотности экрана.
+
+**Дизайн-система — отдельный слой `ui-kit/`.** Его импортируют все слои, сам
+он не импортирует ни одного: тема колоды и отклик на нажатие приходят через
+контексты, которые наполняет приложение.
 
 ## Быстрый старт
 
 ```bash
 bun install                                  # зависимости
-cp apps/server/.env.example apps/server/.env # заполнить BETTER_AUTH_SECRET
+cp .env.example .env # заполнить BETTER_AUTH_SECRET
 bun dev:infra                                # Postgres + Valkey + Mailpit
 bun --filter @durak-master/server db:migrate # схема БД
-bun dev                                      # http://localhost:3000
+bun dev                                      # сервер + Metro
 ```
 
+Дальше — `i` для iOS, `a` для Android, `w` для браузера в терминале Metro.
+
 Почта разработки: http://localhost:8025 (Mailpit).
+
+Адрес сервера в отладочной сборке определяется автоматически по хосту, с
+которого Metro раздаёт бандл. Задать вручную — `EXPO_PUBLIC_API_URL` в
+`apps/mobile/.env`.
 
 ## Команды
 
 ```bash
-bun dev            # server + client
+bun dev            # сервер + клиент
+bun android        # Android
+bun ios            # iOS
+bun web            # браузер
 bun typecheck      # типы по всем пакетам
-bun lint:fix       # Biome
-bun lint:css:fix   # Stylelint
-bun build          # продакшен-сборка
-
-bun tauri:dev      # десктоп
-bun android:dev    # Android
-bun android:build  # AAB для Google Play
+bun lint:fix       # ESLint
+bun format         # Prettier
+bun verify         # типы + линт + формат
+bun prebuild       # нативные проекты (android/, ios/)
 ```
+
+Звуки стола — готовый набор Kenney (CC0) в `apps/mobile/assets/sounds`.
 
 ## Структура
 
 ```text
 apps/
-├── client/     Next.js, FSD-архитектура
-├── server/     NestJS API + игровые комнаты
-└── tauri/      оболочка для десктопа и мобильных
+├── mobile/     Expo-клиент: app/ — маршруты Expo Router, ui-kit/ — дизайн-система, FSD-слои в корне
+└── server/     NestJS API + игровые комнаты
 packages/
 ├── schemas/    Zod-схемы, общие для клиента и сервера
 ├── game-core/  правила дурака — чистые, тестируемые без сети

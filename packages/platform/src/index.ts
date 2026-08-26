@@ -1,12 +1,10 @@
-/**
- * @durak-master/platform
- *
- * Абстракция над нативными возможностями. Приложение обращается только сюда
- * и никогда не импортирует плагины Tauri напрямую.
- *
- * Причина: покупки (IAP) на Tauri mobile держатся на стороннем плагине
- * версии 0.x с одним мейнтейнером. Если он подведёт перед релизом, заменяется
- * ОДНА реализация этого интерфейса, а не код приложения.
- */
-
-export * from './types';
+export type {
+  BillingAdapter,
+  Platform,
+  PlatformInfo,
+  PlatformKind,
+  PurchaseResult,
+  PushAdapter,
+  StorageAdapter,
+  StoreProduct
+} from './types';

@@ -4,10 +4,11 @@ Guidance for Claude Code when working in this repo. Keep it short, link out for 
 
 ## What this is
 
-DurakMaster — онлайн-дурак (web + desktop + mobile). Монорепо на Bun workspaces.
+DurakMaster — онлайн-дурак (Android + iOS + web). Монорепо на Bun workspaces.
 
-- **Web client**: Next.js 16 / React 19 (`apps/client/`)
-- **Desktop + mobile**: Tauri 2 (Rust) оборачивает тот же клиент (`apps/tauri/`)
+- **Клиент**: Expo SDK 57 / React Native 0.86 / Expo Router (`apps/mobile/`).
+  Один код на все платформы: телефон нативно, браузер через `react-native-web`.
+  Десктопных сборок нет.
 - **API**: NestJS на Bun + Prisma 7 + Postgres, авторизация через better-auth (`apps/server/`)
 - **Realtime**: сырой WebSocket (`ws` + `@nestjs/platform-ws`), состояние столов в памяти ноды
 - **Правила игры**: чистый пакет `packages/game-core/` — без транспорта, БД и вендоров
@@ -17,9 +18,8 @@ DurakMaster — онлайн-дурак (web + desktop + mobile). Монореп
 
 ```text
 apps/
-├── client/          # Next.js — FSD-архитектура (docs/fsd.md)
-├── server/          # NestJS API — modules/, lib/, core/, common/
-└── tauri/           # Rust-оболочка (src/), capabilities/, tauri.conf.json
+├── mobile/          # Expo-клиент: app/ — маршруты Expo Router, ui-kit/ — дизайн-система, FSD-слои в корне (docs/fsd.md)
+└── server/          # NestJS API — modules/, lib/, core/, common/
 packages/
 ├── schemas/         # Zod-схемы (@durak-master/schemas), общие для клиента и сервера
 ├── game-core/       # Правила дурака: чистые функции (state, action) => state
@@ -59,12 +59,12 @@ infra/               # Конфиги инфраструктуры
 ```bash
 bun install                # зависимости всех воркспейсов
 bun dev:infra              # Postgres + Valkey + Mailpit в Docker
-bun dev                    # server + client параллельно
+bun dev                    # server + клиент параллельно
 bun typecheck              # проверка типов по всем пакетам
-bun lint:fix               # Biome
-bun lint:css:fix           # Stylelint
-bun tauri:dev              # десктоп-оболочка
-bun android:dev            # Android
+bun lint:fix               # ESLint
+bun android                # Android (нужен запущенный эмулятор или устройство)
+bun ios                    # iOS
+bun web                    # браузер
 ```
 
 ## Порядок работы

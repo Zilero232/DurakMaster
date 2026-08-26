@@ -1,0 +1,16 @@
+node_modules
+dist
+generated
+.expo
+expo-env.d.ts
+bun.lock
+apps/mobile/android
+apps/mobile/ios
+apps/mobile/assets
+apps/server/prisma/migrations
+apps/mobile/shared/i18n/i18next.d.ts
+
+.agents
+.claude
+.superpowers
+docs

@@ -12,16 +12,18 @@ node_modules
 *.local
 
 # Build output
-.next
-out
 dist
 build
 generated
 
-# Rust / Tauri
-target
-apps/tauri/gen/android/app/build
-apps/tauri/gen/apple/build
+# Expo
+.expo
+expo-env.d.ts
+
+# Нативные проекты: создаются `expo prebuild` из app.json.
+# Правки в них теряются при пересоздании — конфиг живёт в app.json и плагинах.
+apps/mobile/android
+apps/mobile/ios
 
 # TypeScript incremental build info (can appear in any package)
 *.tsbuildinfo
@@ -44,14 +46,9 @@ apps/tauri/gen/apple/build
 .env.*.local
 !.env.example
 
-# Tauri updater minisign keys
-*.key
-*.key.pub
-
 # Android signing
 *.keystore
 *.jks
-apps/tauri/gen/android/keystore.properties
 
 # Firebase (FCM service account / client config)
 google-services.json

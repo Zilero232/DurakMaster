@@ -8,6 +8,6 @@ import { SessionsService } from './sessions.service';
 @Module({
   imports: [GameModule, ProfileModule],
   providers: [RealtimeGateway, SessionsService],
-  exports: [SessionsService],
+  exports: [SessionsService]
 })
 export class RealtimeModule {}

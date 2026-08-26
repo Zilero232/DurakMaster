@@ -1,19 +1,17 @@
 {
   "name": "@durak-master/platform",
-  "type": "module",
   "version": "0.0.0",
   "private": true,
-  "main": "src/index.ts",
+  "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
+  "main": "src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@durak-master/schemas": "workspace:*",
-    "@tauri-apps/api": "^2.11.1",
-    "@tauri-apps/plugin-os": "^2.3.2"
+    "@durak-master/schemas": "workspace:*"
   },
   "devDependencies": {
     "typescript": "~6.0.3"

@@ -1,24 +1,17 @@
+import type { LobbyTable, PublicProfile, TableSettings } from '@durak-master/schemas';
+
 import { Injectable, Logger } from '@nestjs/common';
 
-import { GameRoom, type RoomEvent } from './game-room';
+import type { RoomEvent } from './game-room';
 
-import type { LobbyTable, PublicProfile, TableSettings } from '@durak-master/schemas';
+import { GameRoom } from './game-room';
 
 export type RoomListener = (roomId: string, event: RoomEvent) => void;
 
-/**
- * Реестр игровых комнат этой ноды.
- *
- * Состояние держится в памяти: при ~2000 столов это один-два процесса,
- * и распределённое хранилище только добавило бы задержек и сложности.
- * Горизонтальное масштабирование делается закреплением комнаты за нодой
- * (директория `roomId → нода`), а не общим состоянием.
- */
 @Injectable()
 export class RoomsService {
   private readonly logger = new Logger(RoomsService.name);
   private readonly rooms = new Map<string, GameRoom>();
-  /** Где сейчас находится игрок — для реконнекта и запрета двух столов. */
   private readonly userRoom = new Map<string, string>();
   private readonly listeners = new Set<RoomListener>();
 
@@ -54,7 +47,6 @@ export class RoomsService {
   }
 
   join(room: GameRoom, profile: PublicProfile): boolean {
-    // Реконнект: игрок уже за этим столом.
     if (room.getMember(profile.userId)) {
       room.reconnect(profile.userId);
       this.userRoom.set(profile.userId, room.id);
@@ -82,7 +74,6 @@ export class RoomsService {
 
     room.leave(userId);
 
-    // Пустая комната удаляется — иначе список лобби зарастёт мусором.
     if (room.memberCount === 0) {
       room.clearTimers();
       this.rooms.delete(room.id);
@@ -93,7 +84,6 @@ export class RoomsService {
     this.userRoom.delete(userId);
   }
 
-  /** Отключение сокета: в игре место сохраняется, в лобби — освобождается. */
   handleDisconnect(userId: string): void {
     const room = this.getRoomOfUser(userId);
 
@@ -111,19 +101,16 @@ export class RoomsService {
   }
 
   listTables(): LobbyTable[] {
-    return (
-      [...this.rooms.values()]
-        .filter((room) => !room.settings.isPrivate)
-        .map((room) => room.toLobbyTable())
-        // Столы с премиум-игроками поднимаются наверх, затем свежие.
-        .sort((a, b) => {
-          if (a.hasPremiumPlayer !== b.hasPremiumPlayer) {
-            return a.hasPremiumPlayer ? -1 : 1;
-          }
+    return [...this.rooms.values()]
+      .filter((room) => !room.settings.isPrivate)
+      .map((room) => room.toLobbyTable())
+      .sort((a, b) => {
+        if (a.hasPremiumPlayer !== b.hasPremiumPlayer) {
+          return a.hasPremiumPlayer ? -1 : 1;
+        }
 
-          return b.createdAt - a.createdAt;
-        })
-    );
+        return b.createdAt - a.createdAt;
+      });
   }
 
   listAllRooms(): GameRoom[] {

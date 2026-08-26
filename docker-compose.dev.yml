@@ -1,6 +1,6 @@
 # Инфраструктура для ЛОКАЛЬНОЙ разработки: Postgres, Valkey, Mailpit.
 #
-# Сами client и server запускаются на хосте через `bun dev` — так работает
+# Сами клиент и сервер запускаются на хосте через `bun dev` — так работает
 # горячая перезагрузка. Этот файл поднимает только то, что удобнее в контейнерах.
 #
 # Запуск:    docker compose -f docker-compose.dev.yml up -d
@@ -9,7 +9,7 @@
 services:
   postgres:
     # API работает на хосте и подключается через опубликованный порт, поэтому
-    # DATABASE_URL/DIRECT_URL в apps/server/.env указывают на localhost:5433,
+    # DATABASE_URL/DIRECT_URL в .env указывают на localhost:5433,
     # а НЕ на имя сервиса compose.
     image: postgres:17-alpine
     container_name: durakmaster-postgres-dev
@@ -17,14 +17,14 @@ services:
     # напрямую. Не добавлять блок `environment: ${POSTGRES_*}` — Compose раскрывает
     # ${...} из шелла на этапе парсинга, а не из env_file, и подставит пустые значения.
     env_file:
-      - ./apps/server/.env
+      - ./.env
     # 5433, чтобы не конфликтовать с локально установленным Postgres на 5432.
     ports:
-      - "5433:5432"
+      - '5433:5432'
     volumes:
       - pgdata_dev:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      test: [CMD-SHELL, 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
       interval: 30s
       timeout: 5s
       retries: 5
@@ -40,11 +40,11 @@ services:
     container_name: durakmaster-valkey-dev
     command: valkey-server --save 60 1 --loglevel warning
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - valkeydata_dev:/data
     healthcheck:
-      test: ["CMD", "valkey-cli", "ping"]
+      test: [CMD, valkey-cli, ping]
       interval: 30s
       timeout: 3s
       retries: 5
@@ -57,11 +57,11 @@ services:
     image: axllent/mailpit:latest
     container_name: durakmaster-mailpit-dev
     ports:
-      - "1025:1025" # SMTP
-      - "8025:8025" # Web UI
+      - '1025:1025' # SMTP
+      - '8025:8025' # Web UI
     environment:
-      MP_SMTP_AUTH_ACCEPT_ANY: "true"
-      MP_SMTP_AUTH_ALLOW_INSECURE: "true"
+      MP_SMTP_AUTH_ACCEPT_ANY: 'true'
+      MP_SMTP_AUTH_ALLOW_INSECURE: 'true'
 
 volumes:
   pgdata_dev:

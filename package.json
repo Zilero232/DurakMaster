@@ -8,48 +8,45 @@
     "packages/*"
   ],
   "scripts": {
-    "prepare": "husky",
-    "dev": "bun --filter '@durak-master/server' --filter '@durak-master/client' --parallel dev",
-    "dev:client": "bun --filter @durak-master/client dev",
-    "dev:server": "bun --filter @durak-master/server dev",
-    "dev:infra": "docker compose -f docker-compose.dev.yml up -d",
+    "android": "bun --filter @durak-master/mobile android",
+    "prebuild": "bun --filter @durak-master/mobile prebuild",
+    "build": "bun --filter @durak-master/server build && bun --filter @durak-master/mobile build:web",
+    "dev": "bun --filter '@durak-master/server' --filter '@durak-master/mobile' --parallel dev",
     "dev:full": "docker compose -f docker-compose.dev.yml up -d && bun dev",
-    "build": "bun --filter @durak-master/server build && bun --filter @durak-master/client build",
-    "lint": "biome check .",
-    "lint:fix": "biome check --write .",
-    "lint:css": "stylelint \"apps/client/**/*.scss\"",
-    "lint:css:fix": "stylelint \"apps/client/**/*.scss\" --fix",
-    "lint:rust": "cargo clippy --manifest-path apps/tauri/Cargo.toml --all-targets -- -D warnings",
-    "format": "biome format --write .",
-    "format:rust": "cargo fmt --manifest-path apps/tauri/Cargo.toml --all",
-    "check:locales": "bun scripts/check-locales.mjs",
-    "verify": "bun run typecheck && bun run lint && bun run lint:css && bun run check:locales",
-    "fix": "bun run lint:fix && bun run lint:css:fix",
-    "typecheck": "bun --filter @durak-master/schemas typecheck && bun --filter @durak-master/game-core typecheck && bun --filter @durak-master/platform typecheck && bun --filter @durak-master/server typecheck && bun --filter @durak-master/client typecheck",
-    "tauri": "bun --filter @durak-master/tauri tauri",
-    "tauri:icon": "bun --filter @durak-master/tauri icon",
-    "tauri:dev": "bun --filter '@durak-master/server' --filter '@durak-master/tauri' --parallel dev",
-    "tauri:build": "bun --filter @durak-master/client build && bun --filter @durak-master/tauri build",
-    "android:init": "bun --filter @durak-master/tauri android:init",
-    "android:dev": "bun --filter '@durak-master/server' --filter '@durak-master/tauri' --parallel android:dev",
-    "android:build": "bun --filter @durak-master/client build && bun --filter @durak-master/tauri android:build:aab"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "2.5.5",
-    "babel-plugin-react-compiler": "^1.0.0",
-    "husky": "^9.1.7",
-    "kill-port": "^2.0.1",
-    "lint-staged": "^17.2.0",
-    "stylelint": "17.14.1",
-    "stylelint-config-clean-order": "10.0.0",
-    "stylelint-config-standard-scss": "17.0.0",
-    "stylelint-declaration-block-no-ignored-properties": "3.0.0",
-    "stylelint-high-performance-animation": "2.0.0",
-    "stylelint-order": "8.1.1",
-    "typescript": "~6.0.3"
+    "dev:infra": "docker compose -f docker-compose.dev.yml up -d",
+    "dev:mobile": "bun --filter @durak-master/mobile dev",
+    "dev:server": "bun --filter @durak-master/server dev",
+    "fix": "bun run lint:fix && bun run format",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "ios": "bun --filter @durak-master/mobile ios",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prepare": "husky",
+    "typecheck": "bun --filter @durak-master/schemas typecheck && bun --filter @durak-master/game-core typecheck && bun --filter @durak-master/platform typecheck && bun --filter @durak-master/server typecheck && bun --filter @durak-master/mobile typecheck",
+    "verify": "bun run typecheck && bun run lint && bun run format:check",
+    "web": "bun --filter @durak-master/mobile web"
   },
   "lint-staged": {
-    "*": "biome check --write --no-errors-on-unmatched --files-ignore-unknown=true",
-    "apps/client/**/*.scss": "stylelint --fix"
+    "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "**/package.json": [
+      "sort-package-json"
+    ],
+    "*.{json,md,yml,yaml}": "prettier --write"
+  },
+  "devDependencies": {
+    "@siberiacancode/eslint": "^2.18.1",
+    "@siberiacancode/prettier": "^1.9.0",
+    "@siberiacancode/tsconfig": "^1.2.0",
+    "eslint": "^10.9.1",
+    "fkill-cli": "^9.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0",
+    "prettier": "^3.9.6",
+    "sort-package-json": "^4.0.0",
+    "typescript": "~6.0.3"
   }
 }

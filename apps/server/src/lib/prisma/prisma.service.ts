@@ -1,15 +1,10 @@
-import { Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
+import type { OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 import { PrismaClient } from '../../../generated/prisma/client';
 
-/**
- * Доступ к Postgres.
- *
- * Клиент поднимается на драйверном адаптере `@prisma/adapter-pg`: под Bun
- * это единственный поддерживаемый путь — нативный движок Prisma рассчитан
- * на Node и в Bun работает нестабильно.
- */
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(PrismaService.name);
