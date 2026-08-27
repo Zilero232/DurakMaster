@@ -7,7 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#17151A",
+    "backgroundColor": "#191526",
     "newArchEnabled": true,
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -34,10 +34,16 @@
       "expo-secure-store",
       "expo-audio",
       [
+        "expo-image-picker",
+        {
+          "photosPermission": "Let $(PRODUCT_NAME) use a photo of yours as your avatar."
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/splash-icon.png",
-          "backgroundColor": "#17151A",
+          "backgroundColor": "#191526",
           "imageWidth": 180
         }
       ]

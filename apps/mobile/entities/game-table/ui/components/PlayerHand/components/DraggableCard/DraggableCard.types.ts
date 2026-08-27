@@ -15,7 +15,7 @@ export type DraggableCardProps = {
 
   onDropOn: (index: number) => void;
 
-  onDropMiss: () => void;
+  onDropMiss: (travelY: number) => void;
   onPlay: () => void;
 
   onHover: (index: number | null) => void;

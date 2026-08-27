@@ -1,4 +1,4 @@
-import type { AnimationSpeed } from '../model/settings-store';
+import type { AnimationSpeed } from '../model/store';
 
 const SCALE: Record<AnimationSpeed, number> = {
   calm: 1.6,

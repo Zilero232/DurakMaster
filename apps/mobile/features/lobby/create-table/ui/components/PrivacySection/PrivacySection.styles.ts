@@ -1,9 +1,14 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit';
+import { borderWidth, colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
+    padding: spacing[4],
+    borderRadius: radii.lg,
+    borderWidth: borderWidth.hairline,
+    borderColor: colors.border,
+    backgroundColor: colors.surface1,
     gap: spacing[3]
   },
 

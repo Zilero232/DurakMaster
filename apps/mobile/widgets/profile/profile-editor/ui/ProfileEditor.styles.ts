@@ -12,11 +12,9 @@ export const styles = StyleSheet.create({
   },
 
   label: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize.md,
     fontFamily: fontFamily.sansBold,
-    color: colors.mutedForeground,
-    textTransform: 'uppercase',
-    letterSpacing: 0.6
+    color: colors.foreground
   },
 
   nameRow: {
@@ -37,6 +35,48 @@ export const styles = StyleSheet.create({
     fontSize: fontSize.md,
     fontFamily: fontFamily.sans,
     color: colors.foreground
+  },
+
+  upload: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing[2],
+    paddingVertical: spacing[4],
+    borderRadius: radii.md,
+    borderWidth: borderWidth.regular,
+    borderStyle: 'dashed',
+    borderColor: colors.borderStrong,
+    backgroundColor: colors.glass
+  },
+
+  uploadPressed: {
+    borderColor: colors.accent,
+    backgroundColor: colors.glassStrong
+  },
+
+  uploadLabel: {
+    fontSize: fontSize.md,
+    fontFamily: fontFamily.sansBold,
+    color: colors.foreground
+  },
+
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[3]
+  },
+
+  dividerLine: {
+    flex: 1,
+    height: borderWidth.hairline,
+    backgroundColor: colors.border
+  },
+
+  dividerLabel: {
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.sans,
+    color: colors.subtleForeground
   },
 
   grid: {

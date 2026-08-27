@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { GameHistoryService } from './game-history.service';
-import { RoomsService } from './rooms.service';
+import { GameHistoryService, RoomsService } from './services';
 
 @Module({
   providers: [RoomsService, GameHistoryService],

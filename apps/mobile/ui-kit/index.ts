@@ -14,9 +14,10 @@ export type {
   PlayingCardProps,
   StatusScreenProps
 } from './components';
-export { SuitIcon } from './icons';
+export { LoserHat, SuitIcon, TauntIcon } from './icons';
+export type {} from './icons';
 
-export type { SuitIconProps } from './icons';
+export type { LoserHatProps, SuitIconProps, TauntIconProps } from './icons';
 
 export {
   Avatar,

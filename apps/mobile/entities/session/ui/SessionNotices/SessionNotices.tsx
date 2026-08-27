@@ -5,7 +5,7 @@ import { toast } from 'sonner-native';
 import { haptic } from '@/shared/lib/haptics';
 import { playSound } from '@/shared/lib/sound';
 
-import { useSessionStore } from '../../model/session-store';
+import { useSessionStore } from '../../model/store';
 
 export const SessionNotices = () => {
   const { t } = useTranslation();

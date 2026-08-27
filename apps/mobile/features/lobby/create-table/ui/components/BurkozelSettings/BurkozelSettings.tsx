@@ -1,3 +1,4 @@
+import { Settings2, TriangleAlert } from 'lucide-react-native';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -17,7 +18,7 @@ export const BurkozelSettings = ({ control }: BurkozelSettingsProps) => {
 
   return (
     <>
-      <SettingsSection title={t('games.burkozel.penaltyLimit')}>
+      <SettingsSection icon={TriangleAlert} title={t('games.burkozel.penaltyLimit')}>
         <Controller
           render={({ field }) => (
             <OptionRow items={PENALTY_LIMIT_ITEMS} value={field.value} onChange={field.onChange} />
@@ -27,7 +28,7 @@ export const BurkozelSettings = ({ control }: BurkozelSettingsProps) => {
         />
       </SettingsSection>
 
-      <SettingsSection title={t('create.modes')}>
+      <SettingsSection icon={Settings2} title={t('create.modes')}>
         <ModesGrid
           choices={BURKOZEL_CHOICE_FIELDS}
           control={control}

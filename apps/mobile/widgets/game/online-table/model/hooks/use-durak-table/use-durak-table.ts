@@ -17,6 +17,8 @@ export const useDurakTable = ({ game }: UseDurakTableInput) => {
   const sendEmoji = useSessionStore((store) => store.sendEmoji);
   const profile = useSessionStore((store) => store.profile);
   const setReady = useSessionStore((store) => store.setReady);
+  const currentTable = useSessionStore((store) => store.currentTable);
+  const addBot = useSessionStore((store) => store.addBot);
 
   const showHints = useSettingsStore((store) => store.showHints);
   const handSort = useSettingsStore((store) => store.handSort);
@@ -38,6 +40,7 @@ export const useDurakTable = ({ game }: UseDurakTableInput) => {
   return {
     drag,
     profile,
+    currentTable,
     cardScale,
     handSort,
     showHints,
@@ -45,6 +48,7 @@ export const useDurakTable = ({ game }: UseDurakTableInput) => {
     sendEmoji,
     sendPhrase,
     setReady,
+    addBot,
     handleBoost
   };
 };

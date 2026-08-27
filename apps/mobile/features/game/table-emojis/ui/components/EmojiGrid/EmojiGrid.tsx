@@ -1,21 +1,24 @@
-import { Pressable, Text, View } from 'react-native';
+import { TAUNT_IDS } from '@durak-master/schemas';
+import { Pressable, View } from 'react-native';
+
+import { TauntIcon } from '@/ui-kit';
 
 import type { EmojiGridProps } from './EmojiGrid.types';
 
-import { TABLE_EMOJIS } from '../../TableEmojis.config';
+import { TAUNT_TILE_SIZE } from '../../../config';
 import { styles } from './EmojiGrid.styles';
 
 export const EmojiGrid = ({ onSelect }: EmojiGridProps) => (
   <View style={styles.root}>
-    {TABLE_EMOJIS.map((emoji) => (
+    {TAUNT_IDS.map((taunt) => (
       <Pressable
-        key={emoji}
-        accessibilityLabel={emoji}
+        key={taunt}
+        accessibilityLabel={taunt}
         accessibilityRole='button'
-        style={styles.tile}
-        onPress={() => onSelect(emoji)}
+        style={({ pressed }) => [styles.tile, pressed && styles.pressed]}
+        onPress={() => onSelect(taunt)}
       >
-        <Text style={styles.emoji}>{emoji}</Text>
+        <TauntIcon size={TAUNT_TILE_SIZE} taunt={taunt} />
       </Pressable>
     ))}
   </View>

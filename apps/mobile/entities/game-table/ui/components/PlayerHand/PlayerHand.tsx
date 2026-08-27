@@ -1,12 +1,12 @@
 import { View } from 'react-native';
-import Animated, { FadeOut, LinearTransition, SlideInRight } from 'react-native-reanimated';
+import Animated, { FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import { cardKey } from '@/shared/lib/cards';
 import { MAX_FAN_ANGLE } from '@/ui-kit';
 
 import type { PlayerHandProps } from './PlayerHand.types';
 
-import { sortHand } from '../../../lib';
+import { dealFromTalon, sortHand } from '../../../lib';
 import { useCardSize } from '../../../model';
 import { DraggableCard } from './components';
 import { EDGE_PADDING, fanOverlap, styles } from './PlayerHand.styles';
@@ -48,7 +48,7 @@ export const PlayerHand = ({
         return (
           <Animated.View
             key={key}
-            entering={isInstant ? undefined : SlideInRight.springify().damping(30).stiffness(380)}
+            entering={isInstant ? undefined : dealFromTalon}
             exiting={isInstant ? undefined : FadeOut.duration(160)}
             layout={isInstant ? undefined : LinearTransition.springify().damping(30).stiffness(380)}
             style={{ zIndex: index, marginRight: isLast ? 0 : overlap }}
@@ -64,7 +64,7 @@ export const PlayerHand = ({
                 width={width}
                 onDragEnd={() => onDragEnd?.()}
                 onDragStart={() => onDragStart?.(card)}
-                onDropMiss={() => onDropMiss?.(card)}
+                onDropMiss={(travelY) => onDropMiss?.(card, travelY)}
                 onDropOn={(pairIndex) => onDropOn?.(card, pairIndex)}
                 onHover={(hovered) => onHover?.(hovered)}
                 onPlay={() => onSelect(card)}

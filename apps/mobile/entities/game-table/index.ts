@@ -1,8 +1,8 @@
 export type { CardMetrics, DropZone } from './model';
 export { useCardSize } from './model';
 
-export { GameResult } from './ui/components/GameResult';
-export type { GameResultProps } from './ui/components/GameResult';
+export { DiscardStack } from './ui/components/DiscardStack';
+export type { DiscardStackProps } from './ui/components/DiscardStack';
 
 export { OpponentSeat } from './ui/components/OpponentSeat';
 export type { OpponentSeatProps } from './ui/components/OpponentSeat';
@@ -10,8 +10,10 @@ export type { OpponentSeatProps } from './ui/components/OpponentSeat';
 export { PlayerHand } from './ui/components/PlayerHand';
 export type { PlayerHandProps } from './ui/components/PlayerHand';
 
+export { RewardBurst } from './ui/components/RewardBurst';
+export type { RewardBurstProps } from './ui/components/RewardBurst';
 export { SeatChatter } from './ui/components/SeatChatter';
-export type { SeatChatterProps } from './ui/components/SeatChatter';
+export type { Chatter, SeatChatterProps } from './ui/components/SeatChatter';
 
 export { SeatTimer } from './ui/components/SeatTimer';
 export type { SeatTimerProps } from './ui/components/SeatTimer';

@@ -6,6 +6,8 @@ import type { DropZone } from '@/entities/game-table';
 
 import { haptic } from '@/shared/lib/haptics';
 
+import { MIN_ATTACK_TRAVEL } from '../../../config';
+
 type UseCardDragInput = {
   onDefendWith: (pairIndex: number, card: Card) => void;
 
@@ -60,11 +62,13 @@ export const useCardDrag = ({
   );
 
   const dropMissed = useCallback(
-    (card: Card) => {
+    (card: Card, travelY: number) => {
       end();
 
       if (!isDefending) {
-        onAttackWith(card);
+        if (travelY >= MIN_ATTACK_TRAVEL) {
+          onAttackWith(card);
+        }
 
         return;
       }

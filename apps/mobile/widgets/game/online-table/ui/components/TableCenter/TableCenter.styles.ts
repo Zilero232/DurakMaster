@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -10,5 +10,23 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing[2],
     paddingHorizontal: spacing[2]
+  },
+
+  waiting: {
+    flexDirection: 'column',
+    gap: spacing[1]
+  },
+
+  waitingTitle: {
+    fontSize: fontSize.xl,
+    fontFamily: fontFamily.displayBold,
+    color: colors.onFelt,
+    textAlign: 'center'
+  },
+
+  waitingCount: {
+    fontSize: fontSize.md,
+    fontFamily: fontFamily.sans,
+    color: colors.onFeltMuted
   }
 });

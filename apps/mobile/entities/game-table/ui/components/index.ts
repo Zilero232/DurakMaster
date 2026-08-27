@@ -1,12 +1,13 @@
-export { GameResult } from './GameResult';
-export type { GameResultProps } from './GameResult';
 export { OpponentSeat } from './OpponentSeat';
 export type { OpponentSeatProps } from './OpponentSeat';
 export { PlayerHand } from './PlayerHand';
 export type { PlayerHandProps } from './PlayerHand';
 
+export { RewardBurst } from './RewardBurst';
+export type { RewardBurstProps } from './RewardBurst';
 export { SeatTimer } from './SeatTimer';
 export type { SeatTimerProps } from './SeatTimer';
+
 export { TableField } from './TableField';
 export type { TableFieldProps } from './TableField';
 

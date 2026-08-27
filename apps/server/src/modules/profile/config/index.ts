@@ -1,0 +1,7 @@
+export {
+  AVATAR_DIRECTORY,
+  AVATAR_EXTENSION,
+  AVATAR_MAX_BYTES,
+  AVATAR_MIME_TYPES,
+  AVATAR_ROUTE
+} from './avatar.config';

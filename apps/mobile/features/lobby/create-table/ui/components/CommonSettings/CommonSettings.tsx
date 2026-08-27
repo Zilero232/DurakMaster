@@ -1,3 +1,4 @@
+import { Timer, Users } from 'lucide-react-native';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -19,7 +20,7 @@ export const CommonSettings = ({ control, game }: CommonSettingsProps) => {
         render={({ field }) => <BetPicker value={field.value} onChange={field.onChange} />}
       />
 
-      <SettingsSection title={t('create.players')}>
+      <SettingsSection icon={Users} title={t('create.players')}>
         <Controller
           render={({ field }) => (
             <OptionRow
@@ -33,7 +34,7 @@ export const CommonSettings = ({ control, game }: CommonSettingsProps) => {
         />
       </SettingsSection>
 
-      <SettingsSection title={t('create.speed')}>
+      <SettingsSection icon={Timer} title={t('create.speed')}>
         <Controller
           render={({ field }) => (
             <OptionRow

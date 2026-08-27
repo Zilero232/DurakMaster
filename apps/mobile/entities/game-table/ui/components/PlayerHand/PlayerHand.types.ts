@@ -22,7 +22,7 @@ export type PlayerHandProps = {
 
   onDropOn?: (card: Card, pairIndex: number) => void;
 
-  onDropMiss?: (card: Card) => void;
+  onDropMiss?: (card: Card, travelY: number) => void;
 
   onHover?: (index: number | null) => void;
   onDragStart?: (card: Card) => void;

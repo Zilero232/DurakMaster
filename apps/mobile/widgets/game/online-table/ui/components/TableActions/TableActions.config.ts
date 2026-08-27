@@ -15,3 +15,9 @@ export const BOOST_LABELS: Record<BoostId, ParseKeys> = {
   peekTalon: 'boosts.peekTalon',
   peekHand: 'boosts.peekHand'
 };
+
+export const BOOST_HINTS: Record<BoostId, ParseKeys> = {
+  undoMove: 'boosts.undoMoveHint',
+  peekTalon: 'boosts.peekTalonHint',
+  peekHand: 'boosts.peekHandHint'
+};

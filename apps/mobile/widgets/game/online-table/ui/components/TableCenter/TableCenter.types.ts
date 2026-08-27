@@ -10,6 +10,9 @@ export type TableCenterProps = {
 
   hoveredIndex: number | null;
   cardScale: CardScale;
+  mySeat: number;
+  isWaiting: boolean;
+  maxPlayers: number;
   isInstant: boolean;
   onDefend: (pairIndex: number) => void;
 

@@ -1,30 +1,45 @@
+import type { NestExpressApplication } from '@nestjs/platform-express';
+
 import { NestFactory } from '@nestjs/core';
 import { WsAdapter } from '@nestjs/platform-ws';
+import express from 'express';
 import helmet from 'helmet';
+import { Logger } from 'nestjs-pino';
+import { join } from 'node:path';
 
 import { AppModule } from './app.module';
+import { AllExceptionsFilter } from './common';
+import { parseOrigins, validateEnv } from './config';
+import {
+  AVATAR_DIRECTORY,
+  AVATAR_MAX_BYTES,
+  AVATAR_MIME_TYPES,
+  AVATAR_ROUTE
+} from './modules/profile/config';
 
 import 'reflect-metadata';
 
-const bootstrap = async () => {
-  const app = await NestFactory.create(AppModule);
+const env = validateEnv(process.env);
 
-  app.useWebSocketAdapter(new WsAdapter(app));
+const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true });
 
-  app.use(helmet());
+app.useLogger(app.get(Logger));
 
-  const origins = (process.env.CORS_ORIGINS ?? 'http://localhost:8081')
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean);
+app.useWebSocketAdapter(new WsAdapter(app));
+app.useGlobalFilters(new AllExceptionsFilter());
 
-  app.enableCors({ origin: origins, credentials: true });
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
-  const port = Number(process.env.PORT ?? 4000);
+app.use('/profile/avatar', express.raw({ type: [...AVATAR_MIME_TYPES], limit: AVATAR_MAX_BYTES }));
 
-  await app.listen(port);
+app.use(
+  AVATAR_ROUTE,
+  express.static(join(process.cwd(), AVATAR_DIRECTORY), { index: false, redirect: false })
+);
 
-  console.log(`DurakMaster API: http://localhost:${port}`);
-};
+app.enableCors({ origin: parseOrigins(env.CORS_ORIGINS), credentials: true });
+app.enableShutdownHooks();
 
-void bootstrap();
+await app.listen(env.PORT);
+
+app.get(Logger).log(`DurakMaster API on port ${env.PORT}`);

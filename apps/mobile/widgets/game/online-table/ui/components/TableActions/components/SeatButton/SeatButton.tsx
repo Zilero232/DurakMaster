@@ -2,16 +2,17 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
 import { SeatChatter, SeatTimer } from '@/entities/game-table';
-import { Avatar } from '@/ui-kit';
+import { Avatar, LoserHat } from '@/ui-kit';
 
 import type { SeatButtonProps } from './SeatButton.types';
 
-import { AVATAR_DIAMETER, RING_DIAMETER, styles } from '../../TableActions.styles';
+import { AVATAR_DIAMETER, HAT_SIZE, RING_DIAMETER, styles } from '../../TableActions.styles';
 
 export const SeatButton = ({
   profile,
   chatter,
   isMyTurn,
+  isLoser = false,
   turnDeadline,
   turnSeconds,
   onPress
@@ -26,6 +27,7 @@ export const SeatButton = ({
       onPress={onPress}
     >
       <View style={styles.avatarRing}>
+        {isLoser && <LoserHat size={HAT_SIZE} style={styles.hat} />}
         <Avatar
           name={profile?.name ?? ''}
           size={AVATAR_DIAMETER}

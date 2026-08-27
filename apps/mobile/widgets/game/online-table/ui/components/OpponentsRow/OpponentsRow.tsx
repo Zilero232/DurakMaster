@@ -12,7 +12,8 @@ export const OpponentsRow = ({
   players,
   mySeat,
   phrases,
-  turnSeconds
+  turnSeconds,
+  loserUserId = null
 }: OpponentsRowProps) => {
   const { t } = useTranslation();
 
@@ -30,6 +31,7 @@ export const OpponentsRow = ({
             isActive={player.seat === view.activeSeat}
             isAttacker={player.seat === view.attackerSeat}
             isDefender={player.seat === view.defenderSeat}
+            isLoser={player.userId === loserUserId}
             name={meta?.name ?? t('table.playerFallback', { seat: player.seat + 1 })}
             phrase={phrases[player.userId]}
             player={player}

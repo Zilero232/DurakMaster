@@ -1,13 +1,12 @@
 import { toAvatarUrl } from '@durak-master/schemas';
-import { Pressable } from 'react-native';
+import { Check } from 'lucide-react-native';
+import { Pressable, View } from 'react-native';
 
-import { Avatar } from '@/ui-kit';
+import { Avatar, colors, iconSize } from '@/ui-kit';
 
 import type { AvatarChoiceProps } from './AvatarChoice.types';
 
-import { styles } from './AvatarChoice.styles';
-
-const SIZE = 56;
+import { AVATAR_SIZE, styles } from './AvatarChoice.styles';
 
 export const AvatarChoice = ({ seed, isSelected, onSelect }: AvatarChoiceProps) => (
   <Pressable
@@ -16,6 +15,12 @@ export const AvatarChoice = ({ seed, isSelected, onSelect }: AvatarChoiceProps) 
     accessibilityState={{ selected: isSelected }}
     onPress={() => onSelect(seed)}
   >
-    <Avatar name={seed} size={SIZE} src={toAvatarUrl(seed)} />
+    <Avatar name={seed} size={AVATAR_SIZE} src={toAvatarUrl(seed)} />
+
+    {isSelected && (
+      <View style={styles.check}>
+        <Check color={colors.primaryForeground} size={iconSize.xs} />
+      </View>
+    )}
   </Pressable>
 );

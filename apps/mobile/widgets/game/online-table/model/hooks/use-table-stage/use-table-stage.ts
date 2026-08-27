@@ -2,11 +2,12 @@ import type { GameId, TableSettings, ViewForGame } from '@durak-master/schemas';
 
 import { useSessionStore } from '@/entities/session';
 
+import { createIdleView } from '../../../lib';
+
 type TableStage =
   | { kind: 'absent' }
-  | { kind: 'playing'; settings: TableSettings; view: ViewForGame<'durak'> }
-  | { kind: 'unsupported'; game: GameId }
-  | { kind: 'waiting' };
+  | { kind: 'table'; settings: TableSettings; view: ViewForGame<'durak'>; isWaiting: boolean }
+  | { kind: 'unsupported'; game: GameId };
 
 export const useTableStage = (view: ViewForGame<'durak'> | null): TableStage => {
   const currentTable = useSessionStore((store) => store.currentTable);
@@ -22,8 +23,15 @@ export const useTableStage = (view: ViewForGame<'durak'> | null): TableStage => 
   }
 
   if (!view) {
-    return { kind: 'waiting' };
+    return {
+      kind: 'table',
+      settings,
+      view: createIdleView(currentTable, settings.rules),
+      isWaiting: true
+    };
   }
 
-  return { kind: 'playing', settings, view };
+  const isWaiting = currentTable.status === 'waiting' && view.phase === 'waiting';
+
+  return { kind: 'table', settings, view, isWaiting };
 };

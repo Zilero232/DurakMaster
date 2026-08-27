@@ -11,7 +11,7 @@ import {
   spacing
 } from '@/ui-kit';
 
-export const BACK_SCALE = 0.4;
+export const BACK_SCALE = 0.55;
 
 export const backSize = {
   width: cardSize.width * BACK_SCALE,
@@ -19,6 +19,8 @@ export const backSize = {
 };
 
 export const AVATAR_SIZE = 34;
+
+export const HAT_SIZE = 26;
 const RING_PADDING = 2;
 export const RING_SIZE = AVATAR_SIZE + (RING_PADDING + borderWidth.hairline) * 2;
 
@@ -26,6 +28,14 @@ export const BACK_STEP_X = 11;
 export const BACK_STEP_ANGLE = 3;
 
 export const styles = StyleSheet.create({
+  hat: {
+    position: 'absolute',
+    top: -HAT_SIZE * 0.68,
+    left: -HAT_SIZE * 0.22,
+    zIndex: 3,
+    transform: [{ rotate: '-16deg' }]
+  },
+
   root: {
     alignItems: 'center',
     gap: spacing[1],

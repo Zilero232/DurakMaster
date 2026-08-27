@@ -2,8 +2,29 @@ import type { Card, DurakAction, DurakState, Suit } from '@durak-master/schemas'
 
 import { beats, isLegalAttackCard, rankValue } from './rules';
 
+const TRUMP_PENALTY = 100;
+
+const TRUMP_WASTE_LIMIT = 2;
+
+const ENDGAME_TALON = 4;
+
 function cardCost(card: Card, trump: Suit): number {
-  return rankValue(card.rank) + (card.suit === trump ? 100 : 0);
+  return rankValue(card.rank) + (card.suit === trump ? TRUMP_PENALTY : 0);
+}
+
+function isWorthDefending(state: DurakState, attack: Card, defense: Card): boolean {
+  const isTrumpDefense = defense.suit === state.trump;
+  const isTrumpAttack = attack.suit === state.trump;
+
+  if (!isTrumpDefense || isTrumpAttack) {
+    return true;
+  }
+
+  if (state.talon.length <= ENDGAME_TALON) {
+    return true;
+  }
+
+  return rankValue(defense.rank) - rankValue(attack.rank) <= TRUMP_WASTE_LIMIT;
 }
 
 function decideDefense(state: DurakState, hand: Card[]): DurakAction {
@@ -25,11 +46,22 @@ function decideDefense(state: DurakState, hand: Card[]): DurakAction {
 
   const choice = options[0];
 
-  if (!choice) {
+  if (!choice || !isWorthDefending(state, target.attack, choice)) {
     return { type: 'take' };
   }
 
   return { type: 'defend', pairIndex: targetIndex, card: choice };
+}
+
+function isTrumpWorthThrowingIn(state: DurakState, card: Card): boolean {
+  if (card.suit !== state.trump) {
+    return true;
+  }
+
+  const isOpeningTheBout = state.table.length === 0;
+  const isEndgame = state.talon.length <= ENDGAME_TALON;
+
+  return isOpeningTheBout || isEndgame;
 }
 
 function decideAttack(state: DurakState, hand: Card[]): DurakAction {
@@ -43,7 +75,7 @@ function decideAttack(state: DurakState, hand: Card[]): DurakAction {
     return { type: 'pass' };
   }
 
-  if (state.table.length > 0 && choice.suit === state.trump) {
+  if (!isTrumpWorthThrowingIn(state, choice)) {
     return { type: 'pass' };
   }
 

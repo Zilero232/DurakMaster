@@ -16,22 +16,23 @@ export const styles = StyleSheet.create({
     flex: 1
   },
 
-  sheet: {
+  panel: {
     position: 'absolute',
+    backgroundColor: colors.surface1,
+    ...shadows.panel
+  },
+
+  sheet: {
     right: 0,
     bottom: 0,
     left: 0,
     paddingTop: spacing[2],
     borderTopLeftRadius: radii.xl,
-    borderTopRightRadius: radii.xl,
-    backgroundColor: colors.surface1,
-    ...shadows.panel
+    borderTopRightRadius: radii.xl
   },
 
   dialog: {
     top: '50%',
-    right: undefined,
-    bottom: undefined,
     left: '50%',
     width: '100%',
     maxWidth: 620,
@@ -76,7 +77,8 @@ export const styles = StyleSheet.create({
   },
 
   scroll: {
-    flex: 1
+    flexGrow: 0,
+    flexShrink: 1
   },
 
   content: {

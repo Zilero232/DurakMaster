@@ -1,12 +1,26 @@
 import { Text, View } from 'react-native';
 
+import { colors, iconSize } from '@/ui-kit';
+
 import type { SettingsSectionProps } from './SettingsSection.types';
 
 import { styles } from './SettingsSection.styles';
 
-export const SettingsSection = ({ title, children }: SettingsSectionProps) => (
+export const SettingsSection = ({ title, children, icon: Icon, hint }: SettingsSectionProps) => (
   <View style={styles.root}>
-    <Text style={styles.title}>{title}</Text>
+    <View style={styles.header}>
+      {Icon && (
+        <View style={styles.badge}>
+          <Icon color={colors.accent} size={iconSize.sm} />
+        </View>
+      )}
+
+      <View style={styles.heading}>
+        <Text style={styles.title}>{title}</Text>
+
+        {hint && <Text style={styles.hint}>{hint}</Text>}
+      </View>
+    </View>
 
     {children}
   </View>

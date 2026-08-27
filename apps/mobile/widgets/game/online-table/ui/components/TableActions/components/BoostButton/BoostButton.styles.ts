@@ -1,13 +1,22 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+import { borderWidth, colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit';
 
-const SIZE = 44;
+const SIZE = 36;
 
 export const BOOST_SIZE = SIZE;
 
 export const styles = StyleSheet.create({
   root: {
+    alignItems: 'center'
+  },
+
+  button: {
+    alignItems: 'center',
+    gap: 2
+  },
+
+  icon: {
     alignItems: 'center',
     justifyContent: 'center',
     width: SIZE,
@@ -23,17 +32,41 @@ export const styles = StyleSheet.create({
   },
 
   price: {
-    position: 'absolute',
-    top: -spacing[1],
-    right: -spacing[1],
-    minWidth: 18,
-    paddingHorizontal: spacing[1],
-    borderRadius: radii.pill,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2
+  },
+
+  priceValue: {
     fontSize: fontSize.xs,
     fontFamily: fontFamily.sansBold,
-    lineHeight: 18,
-    color: colors.goldDeep,
-    textAlign: 'center',
-    backgroundColor: colors.gold
+    color: colors.gold
+  },
+
+  hint: {
+    position: 'absolute',
+    bottom: SIZE + spacing[5],
+    zIndex: 20,
+    gap: 2,
+    width: 190,
+    padding: spacing[3],
+    borderWidth: borderWidth.hairline,
+    borderColor: colors.border,
+    borderRadius: radii.md,
+    backgroundColor: colors.surfaceOverlay,
+    ...shadows.panel
+  },
+
+  hintTitle: {
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.sansBold,
+    color: colors.foreground
+  },
+
+  hintText: {
+    fontSize: fontSize.xs,
+    fontFamily: fontFamily.sans,
+    lineHeight: 16,
+    color: colors.mutedForeground
   }
 });

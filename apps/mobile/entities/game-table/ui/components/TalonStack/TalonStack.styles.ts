@@ -2,18 +2,24 @@ import { StyleSheet } from 'react-native';
 
 import { borderWidth, cardSize, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
 
-export const TALON_SCALE = 0.72;
+export const TALON_SCALE = 0.86;
 
 export const talonCard = {
   width: cardSize.width * TALON_SCALE,
   height: cardSize.height * TALON_SCALE
 };
 
-const TRUMP_REVEAL = talonCard.width * 0.62;
+const TRUMP_REVEAL = talonCard.width * 0.92;
 
 const TRUMP_TOP = (talonCard.height - talonCard.width) / 2;
 
 const BADGE_SIZE = 26;
+
+export const SUIT_BADGE_SIZE = 16;
+
+export const EMPTY_BADGE_SIZE = 22;
+
+export const TRUMP_ROTATION = 90;
 
 export const styles = StyleSheet.create({
   root: {
@@ -25,6 +31,23 @@ export const styles = StyleSheet.create({
   stack: {
     width: talonCard.width + TRUMP_REVEAL,
     height: talonCard.height
+  },
+
+  emptyRoot: {
+    flexShrink: 0,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+
+  emptyBadge: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40,
+    height: 40,
+    borderWidth: borderWidth.regular,
+    borderColor: colors.glassBorder,
+    borderRadius: radii.pill,
+    backgroundColor: colors.glass
   },
 
   trumpCard: {
@@ -39,6 +62,21 @@ export const styles = StyleSheet.create({
     zIndex: 1,
     top: 0,
     left: 0
+  },
+
+  suit: {
+    position: 'absolute',
+    zIndex: 2,
+    top: -spacing[2],
+    left: -spacing[2],
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: BADGE_SIZE,
+    height: BADGE_SIZE,
+    borderWidth: borderWidth.regular,
+    borderColor: colors.feltDeep,
+    borderRadius: radii.pill,
+    backgroundColor: colors.onFelt
   },
 
   count: {

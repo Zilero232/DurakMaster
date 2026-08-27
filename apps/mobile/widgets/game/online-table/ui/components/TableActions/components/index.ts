@@ -5,7 +5,6 @@ export { BoostButton } from './BoostButton';
 export type { BoostButtonProps } from './BoostButton';
 
 export { MoveButton } from './MoveButton';
-export type { MoveButtonProps } from './MoveButton';
 
 export { SeatButton } from './SeatButton';
 export type { SeatButtonProps } from './SeatButton';

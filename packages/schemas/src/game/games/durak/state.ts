@@ -6,7 +6,12 @@ import { durakRulesSchema } from './rules';
 
 export const tablePairSchema = z.object({
   attack: cardSchema,
-  defense: cardSchema.nullable()
+  defense: cardSchema.nullable(),
+
+  /** Seat that threw the attack in. Anyone may throw in, not just the attacker. */
+  attackSeat: z.number().int().nonnegative(),
+  /** Seat that beat it, once someone has. */
+  defenseSeat: z.number().int().nonnegative().nullable()
 });
 
 export type TablePair = z.infer<typeof tablePairSchema>;
@@ -43,8 +48,7 @@ export const durakViewSchema = durakStateSchema
   .extend({
     hand: z.array(cardSchema),
     talonCount: z.number().int().nonnegative(),
-    discardCount: z.number().int().nonnegative(),
-    discardPile: z.array(cardSchema)
+    discardCount: z.number().int().nonnegative()
   });
 
 export type DurakView = z.infer<typeof durakViewSchema>;

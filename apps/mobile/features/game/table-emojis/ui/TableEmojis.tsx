@@ -1,48 +1,38 @@
-import { QUICK_PHRASES } from '@durak-master/schemas';
-import { useRef } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { View } from 'react-native';
 
-import { Sheet } from '@/ui-kit';
+import { SegmentedControl, Sheet } from '@/ui-kit';
 
+import type { EmojiTab } from '../config';
 import type { TableEmojisProps } from './TableEmojis.types';
 
-import { EmojiGrid } from './components';
-import { EMOJI_COOLDOWN_MS } from './TableEmojis.config';
+import { EMOJI_TABS } from '../config';
+import { useSendGuard } from '../model';
+import { EmojiGrid, PhraseList } from './components';
 import { styles } from './TableEmojis.styles';
 
 export const TableEmojis = ({ isOpen, onClose, onSendEmoji, onSendPhrase }: TableEmojisProps) => {
   const { t } = useTranslation();
 
-  const cooldownUntilRef = useRef(0);
+  const [tab, setTab] = useState<EmojiTab>('emoji');
 
-  const guard = (send: () => void) => {
-    if (Date.now() < cooldownUntilRef.current) {
-      return;
-    }
-
-    send();
-    cooldownUntilRef.current = Date.now() + EMOJI_COOLDOWN_MS;
-    onClose();
-  };
+  const guard = useSendGuard(onClose);
 
   return (
     <Sheet isOpen={isOpen} title={t('emojis.title')} onClose={onClose}>
       <View style={styles.root}>
-        <EmojiGrid onSelect={(emoji) => guard(() => onSendEmoji(emoji))} />
+        <SegmentedControl
+          options={EMOJI_TABS.map((value) => ({ value, label: t(`emojis.tabs.${value}`) }))}
+          value={tab}
+          onChange={setTab}
+        />
 
-        <View style={styles.phrases}>
-          {QUICK_PHRASES.map((phraseId) => (
-            <Pressable
-              key={phraseId}
-              accessibilityRole='button'
-              style={styles.phrase}
-              onPress={() => guard(() => onSendPhrase(phraseId))}
-            >
-              <Text style={styles.phraseLabel}>{t(`phrases.${phraseId}`)}</Text>
-            </Pressable>
-          ))}
-        </View>
+        {tab === 'emoji' ? (
+          <EmojiGrid onSelect={(emoji) => guard(() => onSendEmoji(emoji))} />
+        ) : (
+          <PhraseList onSelect={(phraseId) => guard(() => onSendPhrase(phraseId))} />
+        )}
       </View>
     </Sheet>
   );

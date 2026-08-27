@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { Avatar, PlayingCard } from '@/ui-kit';
+import { Avatar, LoserHat, PlayingCard } from '@/ui-kit';
 
 import type { OpponentSeatProps } from './OpponentSeat.types';
 
@@ -12,6 +12,7 @@ import {
   BACK_STEP_ANGLE,
   BACK_STEP_X,
   backSize,
+  HAT_SIZE,
   RING_SIZE,
   styles
 } from './OpponentSeat.styles';
@@ -22,6 +23,7 @@ export const OpponentSeat = ({
   player,
   name,
   avatarUrl = null,
+  isLoser = false,
   phrase,
   turnDeadline = null,
   turnSeconds = 0,
@@ -66,6 +68,8 @@ export const OpponentSeat = ({
           )}
 
           <SeatChatter chatter={phrase} size={AVATAR_SIZE} />
+
+          {isLoser && <LoserHat size={HAT_SIZE} style={styles.hat} />}
         </View>
 
         <View style={styles.info}>

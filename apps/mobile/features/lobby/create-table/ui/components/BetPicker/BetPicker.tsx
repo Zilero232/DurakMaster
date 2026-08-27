@@ -1,8 +1,10 @@
 import { BET_STEPS } from '@durak-master/schemas';
+import { Coins } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { formatCredits } from '@/shared/lib/format';
+import { colors, iconSize } from '@/ui-kit';
 
 import type { BetPickerProps } from './BetPicker.types';
 
@@ -26,7 +28,12 @@ export const BetPicker = ({ value, onChange }: BetPickerProps) => {
     <View style={styles.root}>
       <View style={styles.header}>
         <Text style={styles.label}>{t('create.yourBet')}</Text>
-        <Text style={styles.value}>{formatCredits(value)}</Text>
+
+        <View style={styles.amount}>
+          <Coins color={colors.gold} size={iconSize.md} />
+
+          <Text style={styles.value}>{formatCredits(value)}</Text>
+        </View>
       </View>
 
       <View>

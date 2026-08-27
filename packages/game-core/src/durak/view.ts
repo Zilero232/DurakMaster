@@ -7,8 +7,7 @@ export function toPlayerView(state: DurakState, userId: string): DurakView {
     ...rest,
     hand: hands[userId] ?? [],
     talonCount: talon.length,
-    discardCount: discard.length,
-    discardPile: discard
+    discardCount: discard.length
   };
 }
 
@@ -19,7 +18,6 @@ export function toSpectatorView(state: DurakState): DurakView {
     ...rest,
     hand: [],
     talonCount: talon.length,
-    discardCount: discard.length,
-    discardPile: discard
+    discardCount: discard.length
   };
 }

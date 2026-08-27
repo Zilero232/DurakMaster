@@ -115,7 +115,7 @@ function applyAttack(
   const next: DurakState = {
     ...state,
     hands: { ...state.hands, [userId]: removeCard(hand, card) },
-    table: [...state.table, { attack: card, defense: null }],
+    table: [...state.table, { attack: card, defense: null, attackSeat: seat, defenseSeat: null }],
     passedSeats: [],
     activeSeat: state.defenderSeat,
     version: state.version + 1
@@ -160,7 +160,7 @@ function applyDefend(
   }
 
   const table = state.table.map((item, index) =>
-    index === pairIndex ? { ...item, defense: card } : item
+    index === pairIndex ? { ...item, defense: card, defenseSeat: seat } : item
   );
 
   const next: DurakState = {
@@ -212,7 +212,10 @@ function applyTransfer(
     return fail('TRANSFER_TARGET_HAS_TOO_FEW_CARDS');
   }
 
-  const table = [...state.table, { attack: card, defense: null }];
+  const table = [
+    ...state.table,
+    { attack: card, defense: null, attackSeat: seat, defenseSeat: null }
+  ];
 
   const next: DurakState = {
     ...state,

@@ -1,3 +1,4 @@
+import { Gamepad2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text } from 'react-native';
 
@@ -23,7 +24,7 @@ export const CreateTable = ({ onCreate }: CreateTableProps) => {
 
   return (
     <ScrollView contentContainerStyle={styles.root} showsVerticalScrollIndicator={false}>
-      <SettingsSection title={t('games.pick')}>
+      <SettingsSection icon={Gamepad2} title={t('games.pick')}>
         <GamePicker value={game} onChange={selectGame} />
       </SettingsSection>
 

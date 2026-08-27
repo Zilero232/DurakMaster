@@ -29,7 +29,7 @@ type UseCardGestureInput = {
   dropZones: DropZone[];
   onDropOn: (index: number) => void;
 
-  onDropMiss: () => void;
+  onDropMiss: (travelY: number) => void;
   onPlay: () => void;
   onHover: (index: number | null) => void;
   onDragStart: () => void;
@@ -93,7 +93,7 @@ export const useCardGesture = ({
       }
 
       if (index === null) {
-        scheduleOnRN(onDropMiss);
+        scheduleOnRN(onDropMiss, -event.translationY);
 
         return;
       }
