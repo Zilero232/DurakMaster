@@ -1,3 +1,6 @@
+export { LeagueBadge } from './LeagueBadge';
+export type { LeagueBadgeProps } from './LeagueBadge';
+
 export { LoserHat } from './LoserHat';
 export type { LoserHatProps } from './LoserHat';
 

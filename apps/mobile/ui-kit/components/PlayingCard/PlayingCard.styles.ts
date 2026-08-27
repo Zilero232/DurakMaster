@@ -9,7 +9,7 @@ const SELECTED_LIFT_RATIO = 0.09;
 export const getSelectedLift = (width: number): number =>
   -(width / cardTokens.ratio) * SELECTED_LIFT_RATIO;
 
-export const createStyles = (width: number, theme: CardTheme) =>
+const buildStyles = (width: number, theme: CardTheme) =>
   StyleSheet.create({
     root: {
       width,
@@ -40,3 +40,20 @@ export const createStyles = (width: number, theme: CardTheme) =>
       opacity: 0.85
     }
   });
+
+const cache = new Map<string, ReturnType<typeof buildStyles>>();
+
+export const createStyles = (width: number, theme: CardTheme) => {
+  const key = `${width}:${theme.id}`;
+  const cached = cache.get(key);
+
+  if (cached) {
+    return cached;
+  }
+
+  const styles = buildStyles(width, theme);
+
+  cache.set(key, styles);
+
+  return styles;
+};

@@ -45,9 +45,6 @@ export const Sheet = ({ isOpen, title, children, footer, onClose }: SheetProps) 
       </Animated.View>
 
       <Animated.View
-        entering={
-          isDialog ? FadeIn.duration(160) : SlideInDown.springify().damping(26).stiffness(260)
-        }
         style={[
           styles.panel,
           isDialog ? styles.dialog : styles.sheet,
@@ -56,6 +53,7 @@ export const Sheet = ({ isOpen, title, children, footer, onClose }: SheetProps) 
             paddingBottom: isDialog ? 16 : insets.bottom + 16
           }
         ]}
+        entering={isDialog ? FadeIn.duration(160) : SlideInDown.duration(240)}
         exiting={isDialog ? FadeOut.duration(140) : SlideOutDown.duration(180)}
       >
         {!isDialog && <View style={styles.grabber} />}

@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 
 import { fontFamily } from '../../../../theme';
 
-export const createStyles = (width: number) =>
+const buildStyles = (width: number) =>
   StyleSheet.create({
     root: {
       flex: 1,
@@ -30,3 +30,19 @@ export const createStyles = (width: number) =>
       opacity: 0.9
     }
   });
+
+const cache = new Map<number, ReturnType<typeof buildStyles>>();
+
+export const createStyles = (width: number) => {
+  const cached = cache.get(width);
+
+  if (cached) {
+    return cached;
+  }
+
+  const styles = buildStyles(width);
+
+  cache.set(width, styles);
+
+  return styles;
+};

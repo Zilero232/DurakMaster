@@ -4,11 +4,9 @@ import { colors, fontFamily, fontSize, radii, shadows, spacing } from '../../the
 
 export const styles = StyleSheet.create({
   root: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: spacing[5],
-    backgroundColor: colors.background
+    padding: spacing[5]
   },
 
   panel: {

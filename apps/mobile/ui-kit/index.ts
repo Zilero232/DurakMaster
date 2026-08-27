@@ -2,6 +2,7 @@ export {
   CardThemeProvider,
   ContentWidth,
   FeltBackground,
+  LobbyBackground,
   PlayingCard,
   StatRow,
   StatusScreen,
@@ -12,14 +13,15 @@ export {
 export type {
   ContentWidthProps,
   FeltBackgroundProps,
+  LobbyBackgroundProps,
   PlayingCardProps,
   StatRowProps,
   StatusScreenProps
 } from './components';
-export { LoserHat, SuitIcon, TauntIcon } from './icons';
+export { LeagueBadge, LoserHat, SuitIcon, TauntIcon } from './icons';
 export type {} from './icons';
 
-export type { LoserHatProps, SuitIconProps, TauntIconProps } from './icons';
+export type { LeagueBadgeProps, LoserHatProps, SuitIconProps, TauntIconProps } from './icons';
 
 export {
   Avatar,
@@ -61,6 +63,7 @@ export {
   cardSize,
   colors,
   CONTENT_MAX_WIDTH,
+  DESKTOP_MAX_WIDTH,
   duration,
   fontFamily,
   fontSize,

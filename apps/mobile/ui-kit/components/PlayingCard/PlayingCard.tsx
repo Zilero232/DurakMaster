@@ -30,26 +30,21 @@ export const PlayingCard = ({
     ? t('card.label', { rank: t(`card.rank.${card.rank}`), suit: t(`card.suit.${card.suit}`) })
     : t('card.faceDown');
 
-  return (
-    <Pressable
-      style={[
-        styles.root,
-        isSelected && styles.selected,
-        isDimmed && styles.dimmed,
-        {
-          transform: [
-            { rotate: `${rotation}deg` },
-            { translateY: isSelected ? getSelectedLift(width) : 0 }
-          ]
-        },
-        style
-      ]}
-      accessibilityLabel={label}
-      accessibilityRole='button'
-      accessibilityState={{ disabled: !isPlayable, selected: isSelected }}
-      disabled={!isPlayable || !onPress}
-      onPress={onPress}
-    >
+  const rootStyle = [
+    styles.root,
+    isSelected && styles.selected,
+    isDimmed && styles.dimmed,
+    {
+      transform: [
+        { rotate: `${rotation}deg` },
+        { translateY: isSelected ? getSelectedLift(width) : 0 }
+      ]
+    },
+    style
+  ];
+
+  const content = (
+    <>
       {card ? (
         <CardFace card={card} theme={theme} width={width} />
       ) : (
@@ -57,6 +52,27 @@ export const PlayingCard = ({
       )}
 
       {isPlayable && <View style={styles.playableRing} />}
+    </>
+  );
+
+  if (!onPress) {
+    return (
+      <View accessibilityLabel={label} style={rootStyle}>
+        {content}
+      </View>
+    );
+  }
+
+  return (
+    <Pressable
+      accessibilityLabel={label}
+      accessibilityRole='button'
+      accessibilityState={{ disabled: !isPlayable, selected: isSelected }}
+      disabled={!isPlayable}
+      style={rootStyle}
+      onPress={onPress}
+    >
+      {content}
     </Pressable>
   );
 };

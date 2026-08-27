@@ -3,13 +3,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { StatusScreenProps } from './StatusScreen.types';
 
+import { LobbyBackground } from '../LobbyBackground';
 import { styles } from './StatusScreen.styles';
 
 export const StatusScreen = ({ icon, title, description, details, actions }: StatusScreenProps) => {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+    <LobbyBackground
+      style={[styles.root, { paddingTop: insets.top, paddingBottom: insets.bottom }]}
+    >
       <View style={styles.panel}>
         {icon && <View style={styles.icon}>{icon}</View>}
 
@@ -25,6 +28,6 @@ export const StatusScreen = ({ icon, title, description, details, actions }: Sta
 
         {actions && <View style={styles.actions}>{actions}</View>}
       </View>
-    </View>
+    </LobbyBackground>
   );
 };

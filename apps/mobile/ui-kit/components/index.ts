@@ -3,6 +3,8 @@ export type { ContentWidthProps } from './ContentWidth';
 
 export { FeltBackground } from './FeltBackground';
 export type { FeltBackgroundProps } from './FeltBackground';
+export { LobbyBackground } from './LobbyBackground';
+export type { LobbyBackgroundProps } from './LobbyBackground';
 
 export { CardThemeProvider, PlayingCard, useCardTheme, useSetCardTheme } from './PlayingCard';
 export type { PlayingCardProps } from './PlayingCard';

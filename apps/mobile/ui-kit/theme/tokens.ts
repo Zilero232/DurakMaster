@@ -1,63 +1,63 @@
 export const colors = {
-  background: '#191526',
-  backgroundDeep: '#110E1C',
+  background: '#123048',
+  backgroundDeep: '#0B2033',
 
-  backgroundTop: '#241D38',
-  backgroundBottom: '#120F1D',
+  backgroundTop: '#17405E',
+  backgroundBottom: '#0D2438',
 
-  feltCore: '#2A3B33',
-  feltMid: '#233229',
-  feltDeep: '#1B2721',
-  feltEdge: '#141D19',
+  feltCore: '#1B5878',
+  feltMid: '#164863',
+  feltDeep: '#103850',
+  feltEdge: '#0A2438',
 
   foreground: '#F4F1EC',
 
-  surface1: '#241E36',
-  surface2: '#2E2743',
-  surface3: '#3B3255',
-  surfaceOverlay: '#282141',
+  surface1: '#17405E',
+  surface2: '#1D5075',
+  surface3: '#256189',
+  surfaceOverlay: '#143A55',
 
   onFelt: '#F4F1EC',
-  onFeltMuted: '#ABA3C2',
+  onFeltMuted: '#A9C4D8',
 
-  mutedForeground: '#ABA3C2',
-  subtleForeground: '#7C7398',
+  mutedForeground: '#A9C4D8',
+  subtleForeground: '#7B9DB6',
 
-  accent: '#E8543F',
-  accentBright: '#FF6C52',
-  accentDim: '#B83E2C',
+  accent: '#E8B44A',
+  accentBright: '#FFCE76',
+  accentDim: '#B8862C',
 
   gold: '#D9A441',
   goldBright: '#F0BE5C',
   goldDim: '#A87C2C',
   goldDeep: '#3A2A0C',
 
-  danger: '#E0483F',
-  dangerDim: '#A8332C',
-  success: '#47B67D',
+  danger: '#DE3B4F',
+  dangerDim: '#A62838',
+  success: '#3FBF86',
   info: '#4FA3E3',
 
   trump: '#4FA3E3',
-  attack: '#E8543F',
-  defense: '#47B67D',
+  attack: '#E8B44A',
+  defense: '#3FBF86',
   discard: '#7C7398',
 
-  primary: '#E8543F',
-  primaryForeground: '#FFFFFF',
+  primary: '#E8B44A',
+  primaryForeground: '#15304A',
 
   noirAccent: '#C7D2DE',
 
-  border: 'rgba(196, 184, 232, 0.12)',
-  borderStrong: 'rgba(196, 184, 232, 0.22)',
+  border: 'rgba(214, 234, 247, 0.22)',
+  borderStrong: 'rgba(214, 234, 247, 0.38)',
   borderGold: 'rgba(217, 164, 65, 0.55)',
-  borderAccent: 'rgba(232, 84, 63, 0.55)',
+  borderAccent: 'rgba(232, 180, 74, 0.55)',
 
   glass: 'rgba(244, 241, 236, 0.08)',
   glassStrong: 'rgba(244, 241, 236, 0.14)',
   glassBorder: 'rgba(244, 241, 236, 0.16)',
   glassHighlight: 'rgba(244, 241, 236, 0.24)',
 
-  scrim: 'rgba(12, 9, 22, 0.74)',
+  scrim: 'rgba(6, 20, 32, 0.76)',
 
   transparent: 'transparent'
 } as const;
