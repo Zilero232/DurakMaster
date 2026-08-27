@@ -23,7 +23,9 @@
     "name": "Name",
     "namePlaceholder": "Your name",
     "avatar": "Avatar",
-    "editHint": "Change name and avatar"
+    "editHint": "Change name and avatar",
+    "uploadAvatar": "Upload your own photo",
+    "avatarUploadFailed": "Could not upload the image"
   },
   "menu": {
     "news": "News",

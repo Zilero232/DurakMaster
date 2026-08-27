@@ -18,6 +18,7 @@ import type { FinishedPlayer } from '../game/game-history.service';
 import type { RoomEvent } from '../game/game-room';
 
 import { AuthService } from '../../lib/auth/auth.service';
+import { isDevelopment } from '../../lib/env';
 import { GameHistoryService } from '../game/game-history.service';
 import { RoomsService } from '../game/rooms.service';
 import { hashTablePassword, verifyTablePassword } from '../game/table-password';
@@ -476,6 +477,15 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
   }
 
   private handleAddBot(socket: Socket, userId: string): void {
+    if (!isDevelopment) {
+      this.send(socket, {
+        type: 'error',
+        payload: { message: 'Bots are available in development only', code: 'BOTS_DISABLED' }
+      });
+
+      return;
+    }
+
     const room = this.rooms.getRoomOfUser(userId);
 
     if (!room) {

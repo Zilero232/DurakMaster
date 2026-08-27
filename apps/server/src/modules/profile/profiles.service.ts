@@ -140,6 +140,12 @@ export class ProfilesService {
     return this.ensureProfile(userId);
   }
 
+  async setAvatarUrl(userId: string, url: string): Promise<MyProfile> {
+    await this.prisma.user.update({ where: { id: userId }, data: { image: url } });
+
+    return this.ensureProfile(userId);
+  }
+
   async setName(userId: string, name: string): Promise<MyProfile> {
     await this.prisma.user.update({
       where: { id: userId },

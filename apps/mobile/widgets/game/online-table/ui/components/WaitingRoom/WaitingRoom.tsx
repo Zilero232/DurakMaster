@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { ARE_BOTS_ENABLED } from '@/shared/config';
 import { Button } from '@/ui-kit';
 
 import type { WaitingRoomProps } from './WaitingRoom.types';
@@ -54,7 +55,7 @@ export const WaitingRoom = ({ table, mySeat, onReady, onAddBot, onLeave }: Waiti
             {isReady ? t('table.notReady') : t('table.ready')}
           </Button>
 
-          {hasFreeSeat && (
+          {hasFreeSeat && ARE_BOTS_ENABLED && (
             <Button isFullWidth variant='ghost' onPress={onAddBot}>
               {t('table.addBot')}
             </Button>

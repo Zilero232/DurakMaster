@@ -24,7 +24,9 @@
     "name": "Имя",
     "namePlaceholder": "Как вас звать",
     "avatar": "Аватар",
-    "editHint": "Изменить имя и аватар"
+    "editHint": "Изменить имя и аватар",
+    "uploadAvatar": "Загрузить своё фото",
+    "avatarUploadFailed": "Не удалось загрузить изображение"
   },
   "menu": {
     "news": "Новости",

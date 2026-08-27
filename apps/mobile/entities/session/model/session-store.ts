@@ -64,6 +64,7 @@ type SessionStore = {
   sendPhrase: (phraseId: QuickPhraseId) => void;
   sendEmoji: (emoji: string) => void;
   claimBonus: () => void;
+  setProfile: (profile: MyProfile) => void;
   setAvatar: (seed: AvatarSeed) => void;
   setName: (name: string) => void;
 
@@ -260,6 +261,8 @@ export const useSessionStore = create<SessionStore>((set, get) => {
     sendEmoji: (emoji) => socketClient.send({ type: 'table:emoji', payload: { emoji } }),
 
     claimBonus: () => socketClient.send({ type: 'profile:claim-bonus' }),
+
+    setProfile: (profile) => set({ profile }),
 
     setAvatar: (seed) => socketClient.send({ type: 'profile:set-avatar', payload: { seed } }),
 

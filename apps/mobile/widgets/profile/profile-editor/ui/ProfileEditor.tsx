@@ -1,17 +1,16 @@
 import { AVATAR_SEEDS, MAX_NAME_LENGTH, parseAvatarSeed } from '@durak-master/schemas';
-import { useState } from 'react';
+import { ImagePlus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, TextInput, View } from 'react-native';
 
 import { useSessionStore } from '@/entities/session';
-import { Button, colors, Sheet } from '@/ui-kit';
+import { Button, colors, iconSize, Sheet } from '@/ui-kit';
 
 import type { ProfileEditorProps } from './ProfileEditor.types';
 
+import { useAvatarUpload, useNameDraft } from '../model';
 import { AvatarChoice } from './components';
 import { styles } from './ProfileEditor.styles';
-
-const MIN_NAME_LENGTH = 2;
 
 export const ProfileEditor = ({ isOpen, profile, onClose }: ProfileEditorProps) => {
   const { t } = useTranslation();
@@ -19,14 +18,13 @@ export const ProfileEditor = ({ isOpen, profile, onClose }: ProfileEditorProps) 
   const setAvatar = useSessionStore((store) => store.setAvatar);
   const setName = useSessionStore((store) => store.setName);
 
-  const [nameDraft, setNameDraft] = useState(profile.name);
+  const { draft, trimmed, canSave, setDraft } = useNameDraft(profile.name);
+  const { isUploading, pick } = useAvatarUpload();
 
   const currentSeed = parseAvatarSeed(profile.avatarUrl);
-  const trimmed = nameDraft.trim();
-  const canSaveName = trimmed.length >= MIN_NAME_LENGTH && trimmed !== profile.name;
 
   const saveName = () => {
-    if (canSaveName) {
+    if (canSave) {
       setName(trimmed);
     }
   };
@@ -45,12 +43,12 @@ export const ProfileEditor = ({ isOpen, profile, onClose }: ProfileEditorProps) 
               placeholderTextColor={colors.subtleForeground}
               returnKeyType='done'
               style={styles.input}
-              value={nameDraft}
-              onChangeText={setNameDraft}
+              value={draft}
+              onChangeText={setDraft}
               onSubmitEditing={saveName}
             />
 
-            <Button isDisabled={!canSaveName} variant='primary' onPress={saveName}>
+            <Button isDisabled={!canSave} variant='primary' onPress={saveName}>
               {t('common.save')}
             </Button>
           </View>
@@ -58,6 +56,19 @@ export const ProfileEditor = ({ isOpen, profile, onClose }: ProfileEditorProps) 
 
         <View style={styles.section}>
           <Text style={styles.label}>{t('profile.avatar')}</Text>
+
+          <Button
+            isFullWidth
+            isLoading={isUploading}
+            variant='ghost'
+            onPress={() => {
+              void pick();
+            }}
+          >
+            <ImagePlus color={colors.foreground} size={iconSize.sm} />
+
+            {t('profile.uploadAvatar')}
+          </Button>
 
           <View style={styles.grid}>
             {AVATAR_SEEDS.map((seed) => (
