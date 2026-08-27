@@ -22,15 +22,3 @@ export function toPlayerView(state: BurkozelState, userId: string): BurkozelView
     trick: visibleTrick(state)
   };
 }
-
-export function toSpectatorView(state: BurkozelState): BurkozelView {
-  const { hands: _hands, talon: _talon, wonCards: _wonCards, trick: _trick, ...rest } = state;
-
-  return {
-    ...rest,
-    hand: [],
-    talonCount: state.talon.length,
-    myPoints: 0,
-    trick: visibleTrick(state)
-  };
-}

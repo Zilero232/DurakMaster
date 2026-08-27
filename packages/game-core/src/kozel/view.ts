@@ -1,7 +1,7 @@
 import type { KozelState, KozelView } from '@durak-master/schemas';
 
+import { otherTeam, teamOfSeat } from '../shared';
 import { handPoints } from './rules';
-import { otherTeam, teamOfSeat } from './scoring';
 
 const handCountsOf = (state: KozelState): Record<string, number> => {
   const counts: Record<string, number> = {};
@@ -35,7 +35,7 @@ export function toPlayerView(state: KozelState, userId: string): KozelView {
   const { hands: _hands, wonCards: _wonCards, ...rest } = state;
 
   const seat = state.players.find((player) => player.userId === userId)?.seat ?? 0;
-  const myTeam = teamOfSeat(seat);
+  const myTeam = teamOfSeat(seat) as 0 | 1;
 
   return {
     ...rest,
@@ -43,19 +43,6 @@ export function toPlayerView(state: KozelState, userId: string): KozelView {
     handCounts: handCountsOf(state),
     myTeam,
     myTeamPoints: teamPoints(state, myTeam),
-    opponentPoints: teamPoints(state, otherTeam(myTeam))
-  };
-}
-
-export function toSpectatorView(state: KozelState): KozelView {
-  const { hands: _hands, wonCards: _wonCards, ...rest } = state;
-
-  return {
-    ...rest,
-    hand: [],
-    handCounts: handCountsOf(state),
-    myTeam: 0,
-    myTeamPoints: teamPoints(state, 0),
-    opponentPoints: teamPoints(state, 1)
+    opponentPoints: teamPoints(state, otherTeam(myTeam) as 0 | 1)
   };
 }

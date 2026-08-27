@@ -176,8 +176,8 @@ The declarer:
 
 1. **Turns the widow face up** — all three cards are seen by all players.
 2. Takes them into hand (making 10 cards in the three-handed layout).
-3. **Gives one card to each opponent** — one to each of the two defenders, returning
-   to 7 cards.
+3. **Gives one card to each opponent** — one to each of the two defenders, leaving
+   the declarer with 8 cards, the same as everyone else.
 
 > **Sources disagree.** Whether the cards are given to opponents face up or face down:
 > Pagat — "one face-down to each opponent"; 1000cardgame.com — "gives them face up".

@@ -67,6 +67,9 @@ export const burkozelStateSchema = gameCoreStateSchema.extend({
 
   penalties: z.record(z.string(), z.number().int().nonnegative()),
 
+  isDealComplete: z.boolean(),
+  dealNumber: z.number().int().nonnegative(),
+
   loserUserId: z.string().nullable(),
   isDraw: z.boolean()
 });

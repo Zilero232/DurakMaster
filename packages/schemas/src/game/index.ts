@@ -19,6 +19,8 @@ export {
   gameSpeedSchema,
   gameStateSchema,
   LOWEST_RANK_BY_DECK_SIZE,
+  MAX_BET,
+  MIN_BET,
   PLAYER_RANGE_BY_GAME,
   playerActionSchema,
   playerStateSchema,

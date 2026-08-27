@@ -2,7 +2,7 @@ import type { Card, DeckSize, Rank } from '@durak-master/schemas';
 
 import { LOWEST_RANK_BY_DECK_SIZE, RANKS, SUITS } from '@durak-master/schemas';
 
-export function ranksForDeckSize(deckSize: DeckSize): readonly Rank[] {
+function ranksForDeckSize(deckSize: DeckSize): readonly Rank[] {
   const lowest = LOWEST_RANK_BY_DECK_SIZE[deckSize];
 
   return RANKS.slice(RANKS.indexOf(lowest));
@@ -45,4 +45,18 @@ export function shuffle<T>(items: readonly T[], randomInt: (maxExclusive: number
   }
 
   return result;
+}
+
+export function handContains(hand: readonly Card[], card: Card): boolean {
+  return hand.some((item) => cardsEqual(item, card));
+}
+
+export function removeCard(hand: readonly Card[], card: Card): Card[] {
+  const index = hand.findIndex((item) => cardsEqual(item, card));
+
+  if (index === -1) {
+    return [...hand];
+  }
+
+  return [...hand.slice(0, index), ...hand.slice(index + 1)];
 }

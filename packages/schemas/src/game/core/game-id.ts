@@ -10,7 +10,7 @@ export const DEFAULT_GAME: GameId = 'durak';
 
 export const PLAYER_RANGE_BY_GAME: Record<GameId, { min: number; max: number }> = {
   durak: { min: 2, max: 6 },
-  burkozel: { min: 2, max: 6 },
-  kozel: { min: 2, max: 4 },
-  tysyacha: { min: 2, max: 4 }
+  burkozel: { min: 2, max: 4 },
+  kozel: { min: 4, max: 4 },
+  tysyacha: { min: 3, max: 3 }
 };

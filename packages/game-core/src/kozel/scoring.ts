@@ -6,22 +6,11 @@ import {
   KOZEL_WINNING_POINTS
 } from '@durak-master/schemas';
 
+import { otherTeam, teamOfSeat } from '../shared';
+import { DOUBLE_WIN_POINTS, EGGS_POINTS, SPAS_POINTS } from './config';
 import { handPoints } from './rules';
 
 export type TeamIndex = 0 | 1;
-
-/** Partners sit opposite each other, so seats alternate around the circle: A B A B. */
-export const teamOfSeat = (seat: number): TeamIndex => (seat % 2) as TeamIndex;
-
-export const otherTeam = (team: TeamIndex): TeamIndex => (team === 0 ? 1 : 0);
-
-/** A team escapes a double loss by reaching this many points ("spas"). */
-const SPAS_POINTS = 31;
-
-/** From here up the winner takes two pairs instead of one. */
-const DOUBLE_WIN_POINTS = 90;
-
-const EGGS_POINTS = 60;
 
 export type DealOutcome = {
   points: [number, number];
@@ -74,7 +63,7 @@ export const scoreDeal = ({ wonCards, tricksWon, seatByUserId }: ScoreDealInput)
   }
 
   const winnerTeam: TeamIndex = points[0] >= KOZEL_WINNING_POINTS ? 0 : 1;
-  const loserTeam = otherTeam(winnerTeam);
+  const loserTeam = otherTeam(winnerTeam) as TeamIndex;
 
   // "Lyusya": every point and every trick. Resets the opponent, pays nothing.
   if (points[winnerTeam] === KOZEL_TOTAL_POINTS && tricks[winnerTeam] === KOZEL_TRICKS_PER_DEAL) {

@@ -2,7 +2,8 @@ import type { Card, Suit } from '@durak-master/schemas';
 
 import { describe, expect, it } from 'bun:test';
 
-import { scoreDeal, teamOfSeat } from './scoring';
+import { teamOfSeat } from '../shared';
+import { scoreDeal } from './scoring';
 
 const card = (rank: Card['rank'], suit: Suit): Card => ({ rank, suit });
 

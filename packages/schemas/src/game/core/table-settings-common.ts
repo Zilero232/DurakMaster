@@ -13,9 +13,13 @@ export const BET_STEPS = [
   100, 500, 1_000, 5_000, 10_000, 50_000, 100_000, 500_000, 1_000_000, 10_000_000
 ] as const;
 
+export const MIN_BET = BET_STEPS[0];
+
+export const MAX_BET = BET_STEPS[BET_STEPS.length - 1];
+
 export const commonTableSettingsSchema = z.object({
   maxPlayers: z.number().int().min(2).max(6),
-  bet: z.number().int().nonnegative(),
+  bet: z.number().int().min(MIN_BET).max(MAX_BET),
   isPrivate: z.boolean(),
   speed: gameSpeedSchema,
   turnTimeoutSeconds: z.number().int().min(5).max(120)

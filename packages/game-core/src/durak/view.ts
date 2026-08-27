@@ -10,14 +10,3 @@ export function toPlayerView(state: DurakState, userId: string): DurakView {
     discardCount: discard.length
   };
 }
-
-export function toSpectatorView(state: DurakState): DurakView {
-  const { hands: _hands, talon, discard, ...rest } = state;
-
-  return {
-    ...rest,
-    hand: [],
-    talonCount: talon.length,
-    discardCount: discard.length
-  };
-}
