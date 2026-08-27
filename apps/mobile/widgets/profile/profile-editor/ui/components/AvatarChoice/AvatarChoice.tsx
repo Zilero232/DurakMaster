@@ -10,9 +10,9 @@ import { AVATAR_SIZE, styles } from './AvatarChoice.styles';
 
 export const AvatarChoice = ({ seed, isSelected, onSelect }: AvatarChoiceProps) => (
   <Pressable
-    style={({ pressed }) => [styles.root, isSelected && styles.selected, pressed && styles.pressed]}
     accessibilityRole='button'
     accessibilityState={{ selected: isSelected }}
+    style={({ pressed }) => [styles.root, isSelected && styles.selected, pressed && styles.pressed]}
     onPress={() => onSelect(seed)}
   >
     <Avatar name={seed} size={AVATAR_SIZE} src={toAvatarUrl(seed)} />

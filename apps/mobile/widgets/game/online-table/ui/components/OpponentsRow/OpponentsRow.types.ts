@@ -11,4 +11,5 @@ export type OpponentsRowProps = {
   turnSeconds: number;
 
   loserUserId?: string | null;
+  onSelectPlayer?: (userId: string) => void;
 };

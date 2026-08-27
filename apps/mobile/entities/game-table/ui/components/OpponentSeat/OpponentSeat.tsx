@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { Avatar, LoserHat, PlayingCard } from '@/ui-kit';
 
@@ -24,6 +24,7 @@ export const OpponentSeat = ({
   name,
   avatarUrl = null,
   isLoser = false,
+  onPress,
   phrase,
   turnDeadline = null,
   turnSeconds = 0,
@@ -37,7 +38,17 @@ export const OpponentSeat = ({
   const backs = Array.from({ length: visible }, (_, index) => index);
 
   return (
-    <View style={[styles.root, isActive && styles.active, player.isOut && styles.out]}>
+    <Pressable
+      style={({ pressed }) => [
+        styles.root,
+        isActive && styles.active,
+        player.isOut && styles.out,
+        pressed && styles.pressed
+      ]}
+      accessibilityLabel={name}
+      accessibilityRole='button'
+      onPress={onPress}
+    >
       <View style={styles.cards}>
         {backs.map((index) => (
           <View
@@ -87,6 +98,6 @@ export const OpponentSeat = ({
           )}
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 };

@@ -13,7 +13,8 @@ export const OpponentsRow = ({
   mySeat,
   phrases,
   turnSeconds,
-  loserUserId = null
+  loserUserId = null,
+  onSelectPlayer
 }: OpponentsRowProps) => {
   const { t } = useTranslation();
 
@@ -37,6 +38,7 @@ export const OpponentsRow = ({
             player={player}
             turnDeadline={view.turnDeadline}
             turnSeconds={turnSeconds}
+            onPress={() => onSelectPlayer?.(player.userId)}
           />
         );
       })}

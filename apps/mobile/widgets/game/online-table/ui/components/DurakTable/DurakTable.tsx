@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { RewardBurst } from '@/entities/game-table';
 import { useLayout } from '@/shared/model/layout';
 import { ContentWidth, FeltBackground, TABLE_MAX_WIDTH } from '@/ui-kit';
+import { PlayerCard } from '@/widgets/profile/player-card';
 
 import type { DurakTableProps } from './DurakTable.types';
 
@@ -26,6 +28,8 @@ export const DurakTable = ({
 
   const { isWide } = useLayout();
 
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+
   const table = useDurakTable({ game });
 
   const value = createTableValue({ game, table, settings, phrases, isWaiting });
@@ -46,6 +50,7 @@ export const DurakTable = ({
             players={game.players}
             turnSeconds={settings.turnTimeoutSeconds}
             view={view}
+            onSelectPlayer={setSelectedUserId}
           />
 
           <TableCenter
@@ -62,6 +67,12 @@ export const DurakTable = ({
           />
 
           <PlayerZone view={view} />
+
+          <PlayerCard
+            isOpen={selectedUserId !== null}
+            profile={game.players.find((player) => player.userId === selectedUserId) ?? null}
+            onClose={() => setSelectedUserId(null)}
+          />
 
           {game.outcome && (
             <RewardBurst

@@ -2,11 +2,10 @@ import { getRankInfo } from '@durak-master/schemas';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { Sheet } from '@/ui-kit';
+import { Sheet, StatRow } from '@/ui-kit';
 
 import type { PlayerStatsProps } from './PlayerStats.types';
 
-import { StatRow } from './components';
 import { styles } from './PlayerStats.styles';
 
 export const PlayerStats = ({ profile, isOpen, onClose }: PlayerStatsProps) => {

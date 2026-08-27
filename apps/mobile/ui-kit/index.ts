@@ -3,6 +3,7 @@ export {
   ContentWidth,
   FeltBackground,
   PlayingCard,
+  StatRow,
   StatusScreen,
   useCardTheme,
   useSetCardTheme
@@ -12,6 +13,7 @@ export type {
   ContentWidthProps,
   FeltBackgroundProps,
   PlayingCardProps,
+  StatRowProps,
   StatusScreenProps
 } from './components';
 export { LoserHat, SuitIcon, TauntIcon } from './icons';

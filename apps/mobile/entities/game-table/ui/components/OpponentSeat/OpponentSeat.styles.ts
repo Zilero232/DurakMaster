@@ -28,6 +28,10 @@ export const BACK_STEP_X = 11;
 export const BACK_STEP_ANGLE = 3;
 
 export const styles = StyleSheet.create({
+  pressed: {
+    opacity: 0.7
+  },
+
   hat: {
     position: 'absolute',
     top: -HAT_SIZE * 0.68,

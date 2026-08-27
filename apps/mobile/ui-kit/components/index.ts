@@ -7,5 +7,8 @@ export type { FeltBackgroundProps } from './FeltBackground';
 export { CardThemeProvider, PlayingCard, useCardTheme, useSetCardTheme } from './PlayingCard';
 export type { PlayingCardProps } from './PlayingCard';
 
+export { StatRow } from './StatRow';
+export type { StatRowProps } from './StatRow';
+
 export { StatusScreen } from './StatusScreen';
 export type { StatusScreenProps } from './StatusScreen';

@@ -16,4 +16,5 @@ export type OpponentSeatProps = {
   isActive: boolean;
 
   isLoser?: boolean;
+  onPress?: () => void;
 };

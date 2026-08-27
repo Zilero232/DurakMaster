@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, radii, spacing } from '../../theme';
 
 const TRACK_HEIGHT = 6;
 
