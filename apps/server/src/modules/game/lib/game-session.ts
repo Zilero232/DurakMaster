@@ -22,7 +22,7 @@ export type GameSession = {
   readonly state: GameCoreState;
 
   apply: (userId: string, action: GameAction) => GameErrorCode | null;
-  applyBotTurn: (userId: string) => boolean;
+  applyBotTurn: (userId: string) => string | null;
   applyTimeout: (userId: string) => boolean;
   markDisconnected: (userId: string, isDisconnected: boolean) => void;
   setTurnDeadline: (deadline: number) => void;
@@ -68,16 +68,20 @@ class TypedGameSession<G extends GameId> implements GameSession {
     return this.commit(this.module.reduce(this.current, userId, own));
   }
 
-  applyBotTurn(userId: string): boolean {
+  applyBotTurn(userId: string): string | null {
     const action = this.module.decideBotAction(this.current, userId);
 
     if (this.commit(this.module.reduce(this.current, userId, action)) === null) {
-      return true;
+      return action.type;
     }
 
     const timeoutAction = this.module.decideTimeoutAction(this.current, userId);
 
-    return this.commit(this.module.reduce(this.current, userId, timeoutAction)) === null;
+    if (this.commit(this.module.reduce(this.current, userId, timeoutAction)) === null) {
+      return timeoutAction.type;
+    }
+
+    return null;
   }
 
   applyTimeout(userId: string): boolean {

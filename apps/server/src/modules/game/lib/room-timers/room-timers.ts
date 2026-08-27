@@ -2,7 +2,7 @@ import { randomInt } from 'node:crypto';
 
 import type { RoomTimersHandlers } from './room-timers.types';
 
-import { BOT_DELAY_SPREAD_MS, BOT_MIN_DELAY_MS } from '../../config';
+import { BOT_DELAY_SPREAD_MS, BOT_MIN_DELAY_MS, BOT_SILENT_DELAY_MS } from '../../config';
 
 export class RoomTimers {
   private turnTimer: NodeJS.Timeout | null = null;
@@ -16,13 +16,14 @@ export class RoomTimers {
     this.turnTimer = setTimeout(() => this.handlers.onTurnTimeout(), timeoutMs);
   }
 
-  scheduleBot(): void {
+  scheduleBot(isVisible = true, scale = 1): void {
     this.clearBot();
 
-    this.botTimer = setTimeout(
-      () => this.handlers.onBotTurn(),
-      BOT_MIN_DELAY_MS + randomInt(BOT_DELAY_SPREAD_MS)
-    );
+    const delay = isVisible
+      ? BOT_MIN_DELAY_MS + randomInt(BOT_DELAY_SPREAD_MS)
+      : BOT_SILENT_DELAY_MS;
+
+    this.botTimer = setTimeout(() => this.handlers.onBotTurn(), Math.round(delay * scale));
   }
 
   clearTurn(): void {

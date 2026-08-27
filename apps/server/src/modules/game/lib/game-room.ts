@@ -12,11 +12,13 @@ import type {
   TauntId
 } from '@durak-master/schemas';
 
+import { getGameModule } from '@durak-master/game-core';
 import { Logger } from '@nestjs/common';
 import { randomInt, randomUUID } from 'node:crypto';
 
 import type { GameSession } from './game-session';
 
+import { isVisibleBotAction } from '../config';
 import { createGameSession } from './game-session';
 import { nextFreeSeat } from './next-free-seat';
 import { RoomChatter } from './room-chatter';
@@ -157,9 +159,11 @@ export class GameRoom {
   }
 
   private canStart(): boolean {
+    const { minPlayers } = getGameModule(this.settings.game);
+
     return (
       this.status === 'waiting' &&
-      this.members.size >= 2 &&
+      this.members.size >= minPlayers &&
       [...this.members.values()].every((member) => member.isReady)
     );
   }
@@ -209,7 +213,7 @@ export class GameRoom {
     return null;
   }
 
-  private afterStateChange(): void {
+  private afterStateChange(wasVisible = true): void {
     if (!this.session) {
       return;
     }
@@ -238,7 +242,7 @@ export class GameRoom {
     }
 
     this.scheduleTurnTimer();
-    this.scheduleBotTurn();
+    this.scheduleBotTurn(wasVisible);
     this.emit({ type: 'state-changed' });
   }
 
@@ -277,7 +281,7 @@ export class GameRoom {
     }
   }
 
-  private scheduleBotTurn(): void {
+  private scheduleBotTurn(wasVisible = true): void {
     this.timers.clearBot();
 
     if (!this.session || this.session.state.phase === 'finished') {
@@ -288,7 +292,11 @@ export class GameRoom {
       return;
     }
 
-    this.timers.scheduleBot();
+    this.timers.scheduleBot(wasVisible, this.botDelayScale());
+  }
+
+  private botDelayScale(): number {
+    return this.settings.speed === 'fast' ? 0.6 : 1;
   }
 
   private handleBotTurn(): void {
@@ -299,9 +307,10 @@ export class GameRoom {
     }
 
     const userId = activeMember.profile.userId;
+    const botAction = this.session.applyBotTurn(userId);
 
-    if (this.session.applyBotTurn(userId)) {
-      this.afterStateChange();
+    if (botAction !== null) {
+      this.afterStateChange(isVisibleBotAction(botAction));
 
       return;
     }
