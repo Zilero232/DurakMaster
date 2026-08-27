@@ -1,0 +1,97 @@
+{
+  "table": {
+    "waitingTitle": "Ожидание игроков",
+    "waitingCount": "{{current}} из {{max}}",
+    "ready": "Готов",
+    "notReady": "Не готов",
+    "addBot": "Добавить бота",
+    "playerFallback": "Игрок {{seat}}",
+    "readyMark": "готов",
+    "waitingMark": "ждёт",
+    "leave": "Выйти",
+    "yourTurn": "Ваш ход",
+    "defend": "Отбивайтесь",
+    "chooseTarget": "Выберите карту на столе",
+    "opponentTurn": "Ход соперника",
+    "attackerTurn": "Ход за атакующим",
+    "take": "Беру",
+    "pass": "Бито",
+    "transfer": "Перевести",
+    "role": {
+      "attacks": "атакует",
+      "defends": "отбивается",
+      "out": "вышел",
+      "offline": "отключён"
+    },
+    "reaction": "Отправить реакцию {{emoji}}"
+  },
+  "result": {
+    "win": "Победа",
+    "lose": "Вы дурак",
+    "draw": "Ничья",
+    "winHint": "Вы избавились от карт первым",
+    "loseHint": "Соперники разошлись раньше вас",
+    "drawHint": "Карты закончились у всех одновременно",
+    "credits": "{{value}} кредитов",
+    "rating": "+{{value}} рейтинга",
+    "playAgain": "Ещё партию",
+    "toMenu": "В меню",
+    "leaveTable": "Выйти из-за стола"
+  },
+  "discard": {
+    "title": "Отбой",
+    "empty": "Отбой пока пуст",
+    "count_one": "{{count}} карта вышла из игры",
+    "count_few": "{{count}} карты вышли из игры",
+    "count_many": "{{count}} карт вышло из игры",
+    "open": "Сброс"
+  },
+  "phrases": {
+    "title": "Сказать",
+    "hello": "Привет!",
+    "goodGame": "Хорошая игра",
+    "wellPlayed": "Красиво сыграно",
+    "goodLuck": "Удачи!",
+    "thanks": "Спасибо",
+    "sorry": "Извините",
+    "hurryUp": "Ваш ход",
+    "oneMoment": "Минутку",
+    "nice": "Неплохо",
+    "unlucky": "Не повезло",
+    "bye": "Всем пока",
+    "rematch": "Ещё партию?"
+  },
+  "card": {
+    "faceDown": "Карта рубашкой вверх",
+    "label": "{{rank}} {{suit}}",
+    "rank": {
+      "two": "2",
+      "three": "3",
+      "four": "4",
+      "five": "5",
+      "six": "6",
+      "seven": "7",
+      "eight": "8",
+      "nine": "9",
+      "ten": "10",
+      "jack": "валет",
+      "queen": "дама",
+      "king": "король",
+      "ace": "туз"
+    },
+    "suit": {
+      "spades": "пик",
+      "hearts": "червей",
+      "diamonds": "бубён",
+      "clubs": "треф"
+    }
+  },
+  "emojis": {
+    "title": "Подразнить"
+  },
+  "boosts": {
+    "undoMove": "Вернуть ход",
+    "peekTalon": "Заглянуть в колоду",
+    "peekHand": "Подсмотреть руку"
+  }
+}

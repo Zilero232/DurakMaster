@@ -45,6 +45,13 @@ export const styles = StyleSheet.create({
   }
 });
 
+export const VARIANT_SPINNER_COLOR: Record<ButtonVariant, string> = {
+  primary: colors.primaryForeground,
+  secondary: colors.foreground,
+  ghost: colors.onFelt,
+  danger: colors.primaryForeground
+};
+
 export const VARIANT_STYLES: Record<ButtonVariant, StylePair> = {
   primary: {
     container: { backgroundColor: colors.primary },

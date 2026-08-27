@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 
-import { colors } from '@/ui-kit';
+import { colors, iconSize } from '@/ui-kit';
 
 import type { ModeCardProps } from './ModeCard.types';
 
@@ -16,11 +16,15 @@ export const ModeCard = ({ icon: Icon, label, hint, isActive, onPress }: ModeCar
   >
     {isActive && (
       <View style={styles.check}>
-        <Check color={colors.primaryForeground} size={13} strokeWidth={3} />
+        <Check color={colors.primaryForeground} size={iconSize.xs} strokeWidth={3} />
       </View>
     )}
 
-    <Icon color={isActive ? colors.accent : colors.subtleForeground} size={26} strokeWidth={1.6} />
+    <Icon
+      color={isActive ? colors.accent : colors.subtleForeground}
+      size={iconSize.lg}
+      strokeWidth={1.6}
+    />
 
     <Text style={styles.label}>{label}</Text>
     {hint && <Text style={styles.hint}>{hint}</Text>}

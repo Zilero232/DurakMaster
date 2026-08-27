@@ -1,0 +1,1 @@
+export { GameSettingsTab } from './GameSettingsTab';

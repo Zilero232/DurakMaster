@@ -7,7 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#0E2A18",
+    "backgroundColor": "#17151A",
     "newArchEnabled": true,
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -18,7 +18,7 @@
       "package": "com.durakmaster.app",
       "predictiveBackGestureEnabled": false,
       "adaptiveIcon": {
-        "backgroundColor": "#0E2A18",
+        "backgroundColor": "#17151A",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       }
@@ -37,7 +37,7 @@
         "expo-splash-screen",
         {
           "image": "./assets/splash-icon.png",
-          "backgroundColor": "#0E2A18",
+          "backgroundColor": "#17151A",
           "imageWidth": 180
         }
       ]

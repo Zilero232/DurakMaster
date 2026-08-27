@@ -1,16 +1,21 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, lineHeight, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
+  root: {
+    flex: 1
+  },
+
   list: {
     gap: spacing[2],
-    paddingBottom: spacing[4]
+    padding: spacing[4],
+    paddingBottom: spacing[8]
   },
 
   empty: {
     alignItems: 'center',
-    gap: spacing[2],
+    gap: spacing[3],
     paddingVertical: spacing[12],
     paddingHorizontal: spacing[4]
   },
@@ -24,9 +29,17 @@ export const styles = StyleSheet.create({
   },
 
   emptyHint: {
+    marginBottom: spacing[2],
     fontSize: fontSize.sm,
-    lineHeight: 20,
+    fontFamily: fontFamily.sans,
+    lineHeight: lineHeight.relaxed(fontSize.sm),
     color: colors.onFeltMuted,
     textAlign: 'center'
+  },
+
+  emptyAction: {
+    fontSize: fontSize.md,
+    fontFamily: fontFamily.sansBold,
+    color: colors.primaryForeground
   }
 });

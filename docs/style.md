@@ -1,56 +1,56 @@
 # DurakMaster Style Guide
 
-Проектные кодстайл-конвенции для `apps/mobile/`. Архитектурные правила — в [`docs/fsd.md`](./fsd.md).
+Project code style conventions for `apps/mobile/`. Architectural rules are in [`docs/fsd.md`](./fsd.md).
 
-Инструменты:
+Tooling:
 
-- **ESLint** (`bun lint` / `bun lint:fix`) — линтер + сортировка импортов. Конфиг: корневой `eslint.config.mjs` поверх `@siberiacancode/eslint` (`{ typescript: true, react: true, jsxA11y: true }`) плюс локальные блоки правил (`durak/typescript`, `durak/server`, `durak/scripts`, `durak/assets` и др.).
-- **Prettier** (`bun format` / `bun format:check`) — форматтер. Конфиг: `prettier.config.mjs` (реэкспорт `@siberiacancode/prettier` без изменений), исключения — `.prettierignore`.
+- **ESLint** (`bun lint` / `bun lint:fix`) — linter + import sorting. Config: the root `eslint.config.mjs` on top of `@siberiacancode/eslint` (`{ typescript: true, react: true, jsxA11y: true }`) plus local rule blocks (`durak/typescript`, `durak/server`, `durak/scripts`, `durak/assets` and others).
+- **Prettier** (`bun format` / `bun format:check`) — formatter. Config: `prettier.config.mjs` (a re-export of `@siberiacancode/prettier` without changes), exclusions in `.prettierignore`.
 - **TypeScript** strict.
-- FSD-границы и ряд React-конвенций держим руками + ловим на review (линтер не покрывает: порядок хуков, `padding-line-between-statements`, FSD cross-slice imports).
+- FSD boundaries and a number of React conventions are kept by hand + caught at review (the linter does not cover: hook order, `padding-line-between-statements`, FSD cross-slice imports).
 
-Одной командой: `bun run verify` (typecheck + lint + format:check) и `bun run fix` (lint:fix + format).
+In one command: `bun run verify` (typecheck + lint + format:check) and `bun run fix` (lint:fix + format).
 
-**Почему ESLint + Prettier:** общие пресеты `@siberiacancode/*` разделяются с другими проектами компании (Chatovo, GnomeVPN) — одинаковые правила без перенастройки на каждом репозитории. ESLint даёт React-специфичные правила (`react/rules-of-hooks`, `react/exhaustive-deps`) и a11y-проверки (`siberiacancode-jsx-a11y/*`) из коробки. Stylelint не нужен — стилей в CSS в проекте нет, а `StyleSheet.create` проверяется типами.
+**Why ESLint + Prettier:** the shared `@siberiacancode/*` presets are shared with the company's other projects (Chatovo, GnomeVPN) — the same rules without reconfiguring every repository. ESLint gives React-specific rules (`react/rules-of-hooks`, `react/exhaustive-deps`) and a11y checks (`siberiacancode-jsx-a11y/*`) out of the box. Stylelint is not needed — there are no CSS styles in the project, and `StyleSheet.create` is checked by types.
 
 ---
 
-## 1. Структура слайса
+## 1. Slice structure
 
-Каждый слайс — папка с сегментами. Минимум — `ui/` + `index.ts`:
+Every slice is a folder of segments. The minimum is `ui/` + `index.ts`:
 
 ```
-widgets/game/game-table/
+widgets/game/online-table/
   index.ts          ← public API (barrel)
-  ui/               ← React-компоненты
-  model/            ← хуки, Zustand store, схемы форм, типы стейта
-  lib/              ← чистые утилиты слайса
-  api/              ← I/O-граница: подписки, мапперы, сервис-обёртки (если есть)
-  config/           ← константы, конфиг
+  ui/               ← React components
+  model/            ← hooks, Zustand store, form schemas, state types
+  lib/              ← pure utilities of the slice
+  api/              ← I/O boundary: subscriptions, mappers, service wrappers (if any)
+  config/           ← constants, config
 ```
 
 ---
 
-## 2. Структура `ui/` слайса
+## 2. Structure of a slice's `ui/`
 
-**Главный компонент** живёт плоско в `ui/`, файлы рядом:
+**The main component** lives flat in `ui/`, with its files next to it:
 
 ```
-widgets/game/game-table/ui/
-  GameTable.tsx          ← JSX + entry-компонент
-  GameTable.types.ts     ← Props и локальные union-типы
-  GameTable.styles.ts    ← StyleSheet компонента
-  GameTable.config.ts    ← статичные таблицы/константы разметки (если есть)
+widgets/game/online-table/ui/
+  OnlineTable.tsx        ← JSX + entry component
+  OnlineTable.types.ts   ← Props and local union types
+  OnlineTable.styles.ts  ← the component's StyleSheet
+  OnlineTable.config.ts  ← static tables/layout constants (if any)
 ```
 
-**Подкомпоненты** (используются только внутри родителя) — каждый в папке `components/`:
+**Subcomponents** (used only inside the parent) — each in a `components/` folder:
 
 ```
 features/lobby/create-table/ui/
   CreateTable.tsx
   CreateTable.styles.ts
   components/
-    index.ts                   ← barrel: re-exports всех подкомпонентов
+    index.ts                   ← barrel: re-exports of all subcomponents
     BetPicker/
       BetPicker.tsx
       BetPicker.types.ts
@@ -60,46 +60,47 @@ features/lobby/create-table/ui/
       ...
 ```
 
-Родитель импортирует через barrel:
+The parent imports through the barrel:
 
 ```ts
-// ✓ ОК
+// ✓ OK
 import { BetPicker, ModesGrid } from './components';
 
-// ✗ НЕ ОК
+// ✗ NOT OK
 import { BetPicker } from './components/BetPicker';
 ```
 
-**Правила файлов:**
+**File rules:**
 
-- `.types.ts` — создаётся только если есть Props или локальные union-типы.
-- `.styles.ts` — стили компонента (`import { styles } from './Foo.styles'`). Обязательно на всех слоях, где есть разметка.
-- `.config.ts` — неизменяемые таблицы, задающие разметку: список вкладок, набор режимов игры (`TabBar.config.ts`, `ModesGrid.config.ts`). Данные, а не логика.
-- `ui-kit/` — дизайн-система (primitives/components/icons). **Не плоские `button.tsx`** — каждый компонент в PascalCase-папке (§2.1). Снаружи — `@/ui-kit`.
+- `.types.ts` — created only if there are Props or local union types.
+- `.styles.ts` — the component's styles (`import { styles } from './Foo.styles'`). Mandatory on every layer that has markup.
+- `.config.ts` — immutable tables that define the layout: the list of tabs, the set of game modes (`TabBar.config.ts`, `ModesGrid.config.ts`). Data, not logic.
+- `ui-kit/` — the design system (primitives/components/icons). **Not flat `button.tsx`** — every component in a PascalCase folder (§2.1). From the outside — `@/ui-kit`.
 
-### 2.1. Структура `ui-kit`
+### 2.1. Structure of `ui-kit`
 
-`ui-kit/` — отдельный слой рядом с `shared/`: его импортируют все слои, сам он не импортирует ничего, кроме себя (см. [`docs/fsd.md`](./fsd.md) §2). Каждый компонент — отдельная папка в PascalCase.
+`ui-kit/` is a separate layer next to `shared/`: every layer imports it, and it imports nothing but itself (see [`docs/fsd.md`](./fsd.md) §2). Every component is its own PascalCase folder.
 
 ```
 ui-kit/
-  index.ts                    ← единый публичный barrel слоя
-  primitives/                 ← базовые, не зависят от других компонентов
-    index.ts                  ← re-export всех primitives
+  index.ts                    ← the layer's single public barrel
+  primitives/                 ← basic, do not depend on other components
+    index.ts                  ← re-export of all primitives
     Button/
       Button.tsx
       Button.styles.ts
-      Button.types.ts         ← опционально
+      Button.types.ts         ← optional
       index.ts                ← export { Button } from './Button';
     Avatar/
       ...
     Sheet/
       ...
-  components/                 ← составные, собраны из primitives и частей
+  components/                 ← composite, assembled from primitives and parts
     PlayingCard/
       PlayingCard.tsx
       PlayingCard.styles.ts
       PlayingCard.types.ts
+      card-theme-context.ts   ← CardThemeProvider, useCardTheme, useSetCardTheme
       components/
         index.ts
         CardFace/
@@ -112,62 +113,62 @@ ui-kit/
       SuitIcon.tsx
       SuitIcon.types.ts
       index.ts
-  lib/                        ← утилиты и контексты слоя
-    cards/                    ← cardKey, rankLabel, suitSymbol, isRedSuit
-    feedback-context.ts       ← FeedbackProvider, usePressFeedback
-  theme/                      ← tokens, layout, card-themes, card-theme-context
+  theme/                      ← tokens, layout, card-themes, suits
 ```
 
-**Правила:**
+There is no `ui-kit/lib/`. A context lives **next to the component that consumes it** (`Button/feedback-context.ts`, `PlayingCard/card-theme-context.ts`) and reaches the outside through that component's barrel. How a card is drawn — `isRedSuit`, `rankLabel`, `suitSymbol` — is presentation, so it sits in `theme/suits.ts` next to the palettes that colour it. `cardKey` is not: it is the identity of a card in game logic, and it lives in `shared/lib/cards`.
 
-- Имена папок и файлов компонентов — **PascalCase** (`Button/`, `Button.tsx`).
-- **`primitives/` vs `components/`**: примитив не импортирует другие компоненты ui-kit (кроме своих частей); собранный из двух и более примитивов или из собственного `components/` — в `components/`.
-- **Per-component `index.ts` обязателен** — явные именованные реэкспорты компонента и его типов, без `export *`. Агрегирующие barrel (`primitives/index.ts`, `ui-kit/index.ts`) реэкспортят сегменты.
-- Стили — **`*.styles.ts`** с `StyleSheet.create`; значения только из `../../theme`.
-- Примитивы собираются из `react-native` (`View`, `Pressable`, `Text`, `Modal`, `TextInput`). Headless-библиотеки не используем: RN уже даёт доступность через `accessibilityRole` / `accessibilityLabel` / `accessibilityState`.
-- Модальные панели — собственный `Sheet` поверх системного `Modal` (он перехватывает аппаратную кнопку «назад» на Android и рисуется поверх нативных вьюх).
-- Иконки — `lucide-react-native`, размер и цвет пропсами: `<Settings size={18} color={colors.onFelt} />`. Масти рисуем своим `SuitIcon` — в lucide их нет.
-- Типы React — **именованные** (`ComponentProps`, `ReactNode`, …), не `import type * as React`.
-- Внутри `ui-kit` — относительные импорты между сегментами (`../../theme`, `../../lib`). Снаружи — только `@/ui-kit`.
-- **Данные от приложения — через контекст, не импортом.** `ui-kit` не читает сторы и не зовёт `@/shared/lib`: нужное подставляется сверху (§2.2).
+**Rules:**
 
-### 2.2. Контексты `ui-kit`
+- Component folder and file names are **PascalCase** (`Button/`, `Button.tsx`).
+- **`primitives/` vs `components/`**: a primitive does not import other ui-kit components (except its own parts); anything assembled from two or more primitives, or from its own `components/`, goes into `components/`.
+- **A per-component `index.ts` is mandatory** — explicit named re-exports of the component and its types, no `export *`. Aggregating barrels (`primitives/index.ts`, `ui-kit/index.ts`) re-export the segments.
+- Styles are **`*.styles.ts`** with `StyleSheet.create`; values come only from `../../theme`.
+- Primitives are assembled from `react-native` (`View`, `Pressable`, `Text`, `Modal`, `TextInput`). We do not use headless libraries: RN already provides accessibility through `accessibilityRole` / `accessibilityLabel` / `accessibilityState`.
+- Modal panels — our own `Sheet` on top of the system `Modal` (it intercepts the hardware back button on Android and draws above native views).
+- Icons — `lucide-react-native`, size and color as props: `<Settings size={18} color={colors.onFelt} />`. Suits are drawn with our own `SuitIcon` — lucide has none.
+- React types are **named** (`ComponentProps`, `ReactNode`, …), not `import type * as React`.
+- Inside `ui-kit` — relative imports between segments (`../../theme`, `./card-theme-context`). From the outside — only `@/ui-kit`.
+- **Data from the app arrives through context, not through an import.** `ui-kit` does not read stores and does not call `@/shared/lib`: what it needs is supplied from above (§2.2).
 
-Два контекста на `createContext` из `@siberiacancode/reactuse` — так слой получает от приложения то, что не вправе импортировать:
+### 2.2. `ui-kit` contexts
 
-| Контекст | Экспорт | Значение подставляет |
+Two contexts built on `createContext` from `@siberiacancode/reactuse` — this is how the layer gets from the app what it is not allowed to import:
+
+| Context | Export | Who supplies the value |
 |---|---|---|
-| `theme/card-theme-context.ts` | `CardThemeProvider`, `useCardTheme`, `useSetCardTheme` | `app/_layout.tsx` — `initialValue` из стора настроек |
-| `lib/feedback-context.ts` | `FeedbackProvider`, `usePressFeedback` | `app/_layout.tsx` — звук + вибрация из `shared/lib` |
+| `components/PlayingCard/card-theme-context.ts` | `CardThemeProvider`, `useCardTheme`, `useSetCardTheme` | `views/root-layout` — `initialValue` from the settings store |
+| `primitives/Button/feedback-context.ts` | `FeedbackProvider`, `usePressFeedback` | `views/root-layout` — sound + vibration from `shared/lib` |
 
 ```tsx
-// app/_layout.tsx
-const handlePressFeedback = () => {
-  unlockSound();
-  playSound('click');
-  haptic('tap');
+// views/root-layout/config/press-feedback.ts
+export const PRESS_FEEDBACK = {
+  onPress: () => {
+    unlockSound();
+    playSound('click');
+    haptic('tap');
+  }
 };
 
-<FeedbackProvider initialValue={handlePressFeedback}>
-  <CardThemeProvider initialValue={cardTheme}>{/* … */}</CardThemeProvider>
+// views/root-layout/ui/components/AppProviders/AppProviders.tsx
+<FeedbackProvider initialValue={PRESS_FEEDBACK}>
+  <CardThemeProvider initialValue={cardTheme}>{children}</CardThemeProvider>
 </FeedbackProvider>;
 ```
 
-- `Button` зовёт `usePressFeedback()` в `onPress` — щелчок и вибрация без зависимости от `expo-audio` / `expo-haptics`. Дефолт контекста — noop, поэтому примитив работает и без провайдера.
-- `PlayingCard` берёт рубашку из `useCardTheme()`, не читая `useSettingsStore`. Персист остаётся в `entities/settings`, контекст — проекция для отрисовки, поэтому `SettingsPanel` при выборе темы вызывает **и** `setCardTheme` стора, **и** `useSetCardTheme`.
+- `Button` calls `usePressFeedback()` in `onPress` — a click and vibration without depending on `expo-audio` / `expo-haptics`. The context default is a noop, so the primitive works without a provider too.
+- `PlayingCard` takes the card back from `useCardTheme()` instead of reading `useSettingsStore`. Persistence stays in `entities/settings`, and the context is a projection for rendering, which is why `SettingsPanel` calls **both** the store's `setCardTheme` **and** `useSetCardTheme` when a theme is picked.
 
-Новая зависимость от приложения — новый контекст в `ui-kit/lib/` (или `ui-kit/theme/`, если это оформление), а не новый импорт.
+A new dependency on the app is a new context next to its consuming component, not a new import.
 
 ### Slice barrel
 
 ```ts
-// widgets/game/game-table/index.ts
-export { GameTable } from './ui/GameTable';
-
-export type { GameTableProps } from './ui/GameTable.types';
+// widgets/game/online-table/index.ts
+export { OnlineTable } from './ui/OnlineTable';
 ```
 
-### Примеры
+### Examples
 
 **`Button.types.ts`:**
 
@@ -184,7 +185,7 @@ export type ButtonProps = {
   size?: ButtonSize;
   isFullWidth?: boolean;
   isDisabled?: boolean;
-  /** Подпись для читалки экрана, если содержимое — только значок. */
+  /** Label for the screen reader, if the content is an icon only. */
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
@@ -222,7 +223,7 @@ export const styles = StyleSheet.create({
 });
 ```
 
-Варианты (`variant`, `size`) — таблицы стилей рядом в том же файле, не разветвление в JSX:
+Variants (`variant`, `size`) are style tables next to it in the same file, not branching in JSX:
 
 ```ts
 type StylePair = { container: ViewStyle; label: TextStyle };
@@ -264,27 +265,27 @@ export const Button = ({ children, variant = 'secondary', isDisabled, style, onP
 );
 ```
 
-`'use client'` не нужен нигде — это была директива Next.js, в Expo её нет.
+`'use client'` is not needed anywhere — it was a Next.js directive, and Expo has no such thing.
 
 ---
 
-### 2.2. Структура `model/hooks`
+### 2.2. Structure of `model/hooks`
 
-Когда в `model/` несколько хуков со своими типами, **хук со своими типами — в собственной папке**, плоский файл только если типов нет.
+When `model/` holds several hooks with their own types, **a hook with its own types goes into its own folder**; a flat file only if there are no types.
 
 ```
 features/social/friend-chat/model/hooks/
-  index.ts                          ← barrel группы
+  index.ts                          ← barrel of the group
   use-friend-chat-session/
-    use-friend-chat-session.ts      ← хук без типов — папка не обязательна,
-    index.ts                           но единообразие внутри слайса важнее
+    use-friend-chat-session.ts      ← a hook without types — a folder is not required,
+    index.ts                           but uniformity within the slice matters more
   use-friend-chat-unread/
     use-friend-chat-unread.ts
-    use-friend-chat-unread.types.ts ← есть Input/Output-тип → папка обязательна
+    use-friend-chat-unread.types.ts ← there is an Input/Output type → the folder is required
     index.ts
 ```
 
-`index.ts` хука реэкспортит и хук, и типы:
+The hook's `index.ts` re-exports both the hook and the types:
 
 ```ts
 export { useFriendChatUnread } from './use-friend-chat-unread';
@@ -292,34 +293,34 @@ export { useFriendChatUnread } from './use-friend-chat-unread';
 export type * from './use-friend-chat-unread.types';
 ```
 
-Тип входа хука называется `Use<Name>Input` (§5). Если он повторяет пропсы компонента — не дублируй, а выведи: `Pick<GameTableProps, 'tableId' | 'onLeave'>`.
+The hook's input type is named `Use<Name>Input` (§5). If it repeats the component's props — do not duplicate, derive it: `Pick<GameTableProps, 'tableId' | 'onLeave'>`.
 
-Мелким слайсам это не нужно: `widgets/game/online-table/model/` — два плоских файла (`use-latest-phrases.ts`, `use-table-sounds.ts`) без barrel.
+Small slices do not need this: `widgets/game/online-table/model/` is two flat files (`use-latest-phrases.ts`, `use-table-sounds.ts`) without a barrel.
 
 ---
 
-## 3. Стили: `StyleSheet`
+## 3. Styles: `StyleSheet`
 
-| Слой | Формат |
+| Layer | Format |
 |---|---|
-| `ui-kit/**` | `*.styles.ts` + токены из `../../theme` |
+| `ui-kit/**` | `*.styles.ts` + tokens from `../../theme` |
 | widgets / features / views | `*.styles.ts` |
 
-| Случай | Куда |
+| Case | Where |
 |---|---|
-| Стили компонента в `ui-kit` | `<Name>.styles.ts` |
-| Стили подкомпонента слайса | `<Name>.styles.ts` |
-| Склейка нескольких стилей и опционального `style` prop | массив: `style={[styles.root, style]}` |
-| Условные стили | `isActive && styles.active` внутри массива, либо таблица `Record<Variant, ViewStyle>` |
-| Стиль зависит от пропа (ширина, тема) | фабрика `createStyles(width) => StyleSheet.create({...})` |
+| Styles of a component in `ui-kit` | `<Name>.styles.ts` |
+| Styles of a slice's subcomponent | `<Name>.styles.ts` |
+| Combining several styles and an optional `style` prop | array: `style={[styles.root, style]}` |
+| Conditional styles | `isActive && styles.active` inside the array, or a `Record<Variant, ViewStyle>` table |
+| A style depends on a prop (width, theme) | factory `createStyles(width) => StyleSheet.create({...})` |
 
-Массив стилей заменил `clsx`: RN сам склеивает список, `false` и `undefined` игнорируются.
+The style array replaced `clsx`: RN merges the list itself, and `false` and `undefined` are ignored.
 
 ```tsx
 <View style={[styles.slot, index === count - 1 && styles.lastSlot]} />
 ```
 
-**Фабрика стилей.** Значения, зависящие от пропа, нельзя вынести в модульный `StyleSheet.create` — экспортируется функция:
+**Style factory.** Values that depend on a prop cannot be lifted into a module-level `StyleSheet.create` — a function is exported instead:
 
 ```ts
 // PlayingCard.styles.ts
@@ -339,19 +340,19 @@ export const createStyles = (width: number, theme: CardTheme) => {
 const styles = createStyles(width, theme);
 ```
 
-React Compiler кеширует вызов по аргументам, так что пересоздания на каждый рендер нет. Примеры — `ui-kit/components/PlayingCard` и его `components/CardFace`.
+The React Compiler caches the call by its arguments, so there is no recreation on every render. Examples — `ui-kit/components/PlayingCard` and its `components/CardFace`.
 
-### 3.1. `transform` не складывается
+### 3.1. `transform` does not accumulate
 
-**Несколько стилей с `transform` в массиве не суммируются — последний перетирает предыдущие.** Это отличие от CSS, где `transform` каскадится, и источник тихих багов: карта перестаёт поворачиваться, потому что ниже по массиву есть стиль со `scale`.
+**Several styles with `transform` in an array are not summed — the last one overwrites the previous ones.** This differs from CSS, where `transform` cascades, and it is a source of silent bugs: a card stops rotating because there is a style with `scale` further down the array.
 
-Все трансформации одного элемента собираются в **один** массив:
+All transformations of one element are collected into **one** array:
 
 ```tsx
-// ✗ НЕ ОК — rotate потеряется, останется только translateY
+// ✗ NOT OK — rotate will be lost, only translateY remains
 <Pressable style={[{ transform: [{ rotate: '10deg' }] }, { transform: [{ translateY: -8 }] }]} />
 
-// ✓ ОК — один transform
+// ✓ OK — a single transform
 <Pressable
   style={[
     styles.root,
@@ -365,27 +366,27 @@ React Compiler кеширует вызов по аргументам, так ч�
 />
 ```
 
-Cм. `ui-kit/components/PlayingCard/PlayingCard.tsx`.
+See `ui-kit/components/PlayingCard/PlayingCard.tsx`.
 
-### 3.2. Текст только внутри `<Text>`
+### 3.2. Text only inside `<Text>`
 
-RN падает в рантайме на строке, оказавшейся прямым потомком `View`. Любая подпись, число, разделитель — в `<Text>`:
+RN crashes at runtime on a string that ends up as a direct child of `View`. Any label, number or separator goes into `<Text>`:
 
 ```tsx
-// ✗ НЕ ОК — крэш
+// ✗ NOT OK — crash
 <View>{profile.name}</View>
 
-// ✓ ОК
+// ✓ OK
 <View>
   <Text style={styles.name}>{profile.name}</Text>
 </View>
 ```
 
-Стили текста (`fontSize`, `fontFamily`, `color`) применяются к `Text`, не к родительскому `View`: наследования шрифтов, как в CSS, нет.
+Text styles (`fontSize`, `fontFamily`, `color`) are applied to `Text`, not to the parent `View`: there is no font inheritance the way there is in CSS.
 
-### 3.3. Безопасные зоны
+### 3.3. Safe areas
 
-`env(safe-area-inset-*)` заменён хуком:
+`env(safe-area-inset-*)` is replaced by a hook:
 
 ```tsx
 const insets = useSafeAreaInsets();
@@ -393,11 +394,11 @@ const insets = useSafeAreaInsets();
 <View style={[styles.root, { paddingTop: insets.top }]} />;
 ```
 
-Провайдер (`SafeAreaProvider`) поднят в `app/_layout.tsx` — отдельно оборачивать экраны не нужно.
+The provider (`SafeAreaProvider`) is lifted into `views/root-layout` (`AppProviders`) — there is no need to wrap screens separately.
 
-### 3.4. Списки
+### 3.4. Lists
 
-Прокручиваемый список — `FlatList`, а при сотнях элементов `FlashList` из `@shopify/flash-list`. `ScrollView` с `.map()` рендерит все элементы сразу и роняет кадры на первом же скролле.
+A scrollable list is a `FlatList`, and with hundreds of items a `FlashList` from `@shopify/flash-list`. A `ScrollView` with `.map()` renders every item at once and drops frames on the very first scroll.
 
 ```tsx
 <FlashList
@@ -408,129 +409,129 @@ const insets = useSafeAreaInsets();
 />
 ```
 
-`ScrollView` остаётся для короткого заведомо конечного содержимого — тела `Sheet`, формы.
+`ScrollView` remains for short, knowably finite content — the body of a `Sheet`, forms.
 
 ---
 
-## 4. Размер компонента
+## 4. Component size
 
-**100 строк JSX-файла максимум.**
+**100 lines of a JSX file maximum.**
 
-Перевалил — рефактор:
+Over the limit — refactor:
 
-1. Подкомпоненты → `components/`.
-2. Логика → `model/` (хук).
-3. Утилиты → `lib/` слайса.
-4. Статичные таблицы (вкладки, режимы, пресеты) → `<Name>.config.ts`.
+1. Subcomponents → `components/`.
+2. Logic → `model/` (a hook).
+3. Utilities → the slice's `lib/`.
+4. Static tables (tabs, modes, presets) → `<Name>.config.ts`.
 
-**Barrel родственных примитивов — тоже не исключение.** Составной примитив, экспортирующий много мелких частей, держать одним файлом нельзя: каждая часть — в `components/<Name>/`, а `<Name>.tsx` остаётся тонким.
+**A barrel of related primitives is no exception either.** A composite primitive that exports many small parts must not be kept as a single file: every part goes into `components/<Name>/`, and `<Name>.tsx` stays thin.
 
 ```
 ui-kit/components/PlayingCard/
-  PlayingCard.tsx             ← сборка: рубашка или лицо + подсветка
+  PlayingCard.tsx             ← assembly: back or face + highlight
   PlayingCard.types.ts
   PlayingCard.styles.ts
   components/
     index.ts
-    CardFace/CardFace.tsx     ← лицо: ранг, масть, центральный знак
-    CardBack/CardBack.tsx     ← рубашка
+    CardFace/CardFace.tsx     ← face: rank, suit, central mark
+    CardBack/CardBack.tsx     ← back
 ```
 
-Группируй по смыслу, а не «файл на экспорт»: близкие части живут вместе.
+Group by meaning, not "a file per export": closely related parts live together.
 
-**Контекст, который шарят части, — отдельным модулем** рядом с `<Name>.tsx`, не внутри компонента: иначе `components/*` импортируют родителя, а родитель — их.
+**A context shared by the parts is a separate module** next to `<Name>.tsx`, not inside the component: otherwise `components/*` import the parent and the parent imports them.
 
 ---
 
 ## 5. Naming
 
-| Что | Как | Пример |
+| What | How | Example |
 |---|---|---|
-| Слайсы | kebab-case | `game-table`, `create-table` |
-| Сегменты | kebab-case | `ui`, `model`, `lib`, `api`, `config` |
-| Папка компонента | PascalCase | `GameTable/`, `BetPicker/` |
-| Файл компонента | PascalCase + `.tsx` | `GameTable.tsx` |
-| Файл типов | `<Name>.types.ts` | `GameTable.types.ts` |
-| Файл стилей | `<Name>.styles.ts` | `Button.styles.ts` |
-| Файл констант разметки | `<Name>.config.ts` | `TabBar.config.ts` |
-| Файл хука | kebab-case | `use-online-game.ts` |
-| React-компонент (export) | PascalCase | `GameTable` |
-| Хук | `use` + camelCase | `useOnlineGame`, `useSessionStore` |
-| Утилита | camelCase | `sortHand`, `cardKey` |
-| Тип Props | `<Name>Props` | `GameTableProps` |
-| DTO тип | `<Name>Input/Output` | `CredentialsInput` |
+| Slices | kebab-case | `game-table`, `create-table` |
+| Segments | kebab-case | `ui`, `model`, `lib`, `api`, `config` |
+| Component folder | PascalCase | `GameTable/`, `BetPicker/` |
+| Component file | PascalCase + `.tsx` | `GameTable.tsx` |
+| Types file | `<Name>.types.ts` | `GameTable.types.ts` |
+| Styles file | `<Name>.styles.ts` | `Button.styles.ts` |
+| Layout constants file | `<Name>.config.ts` | `TabBar.config.ts` |
+| Hook file | kebab-case | `use-online-game.ts` |
+| React component (export) | PascalCase | `GameTable` |
+| Hook | `use` + camelCase | `useOnlineGame`, `useSessionStore` |
+| Utility | camelCase | `sortHand`, `cardKey` |
+| Props type | `<Name>Props` | `GameTableProps` |
+| DTO type | `<Name>Input/Output` | `CredentialsInput` |
 
-> Канон FSD: kebab-case для всех файлов. DurakMaster отклонение: PascalCase для папок и файлов компонентов, kebab-case для хуков/утилит.
+> FSD canon: kebab-case for all files. DurakMaster deviation: PascalCase for component folders and files, kebab-case for hooks/utilities.
 
 ---
 
-## 6. Импорты
+## 6. Imports
 
-### Алиасы
+### Aliases
 
-`@/` → корень `apps/mobile/`, где лежат слои: `@/ui-kit`, `@/entities/session`. Используем для всего кроме относительных в той же папке.
+`@/` → the `apps/mobile/` root, where the layers live: `@/ui-kit`, `@/entities/session`. Used for everything except relative imports within the same folder.
 
-### Порядок групп
+### Group order
 
-Сортирует `perfectionist/sort-imports` из `@siberiacancode/eslint` (`bun lint:fix`), **с пустой строкой между группами**. Порядок групп:
+Sorted by `perfectionist/sort-imports` from `@siberiacancode/eslint` (`bun lint:fix`), **with a blank line between groups**. Group order:
 
-1. **Внешние типы** — `import type` из пакетов.
-2. **Внешние value-импорты** — `node:`-builtins и пакеты (`react`, `react-native`, `@siberiacancode/*`, `@durak-master/*`).
-3. **Типы из алиасов** — `import type` из `@/`.
-4. **Value-импорты из алиасов** — `@/`-пути (`internalPattern`: `^@/.+`, `^~/.+`).
-5. **Относительные типы** — `import type` из `./` `../`.
-6. **Относительные value-импорты** — `./` `../`, сюда же попадают `*.styles`.
+1. **External types** — `import type` from packages.
+2. **External value imports** — `node:` builtins and packages (`react`, `react-native`, `@siberiacancode/*`, `@durak-master/*`).
+3. **Types from aliases** — `import type` from `@/`.
+4. **Value imports from aliases** — `@/` paths (`internalPattern`: `^@/.+`, `^~/.+`).
+5. **Relative types** — `import type` from `./` `../`.
+6. **Relative value imports** — `./` `../`, including `*.styles`.
 
-Внутри группы — natural-сортировка по возрастанию; именованные импорты внутри скобок сортирует `perfectionist/sort-named-imports`.
+Within a group — natural sorting in ascending order; named imports inside the braces are sorted by `perfectionist/sort-named-imports`.
 
 ```tsx
-// 2. внешние value
+// 2. external values
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-// 3. типы из алиасов
+// 3. types from aliases
 import type { CardThemeId } from '@/ui-kit';
 
-// 4. value из алиасов
+// 4. values from aliases
 import { useSettingsStore } from '@/entities/settings';
 import { CARD_THEMES, Sheet } from '@/ui-kit';
 
-// 5. относительные типы
+// 5. relative types
 import type { SettingsPanelProps } from './SettingsPanel.types';
 
-// 6. относительные value (включая стили)
+// 6. relative values (including styles)
 import { styles } from './SettingsPanel.styles';
 import { SettingsSection } from './components';
 ```
 
-Конфигурация — `perfectionist/sort-imports` в пресете `@siberiacancode/eslint`.
-Пустые строки между группами расставляет `bun lint:fix`; не удаляй их вручную.
+The configuration is `perfectionist/sort-imports` in the `@siberiacancode/eslint` preset.
+The blank lines between groups are inserted by `bun lint:fix`; do not remove them by hand.
 
-### Запреты
+### Prohibitions
 
-Deep import мимо barrel запрещён:
+A deep import bypassing the barrel is forbidden:
 
 ```ts
-// ✗ ЗАПРЕЩЕНО
+// ✗ FORBIDDEN
 import { TableRow } from '@/widgets/lobby/table-list/ui/components/TableRow';
 import { Button } from '@/ui-kit/primitives/Button';
 
-// ✓ ОК
+// ✓ OK
 import { TableList } from '@/widgets/lobby/table-list';
 import { Button } from '@/ui-kit';
 ```
 
-`ui-kit` — единый корневой barrel `@/ui-kit` (сегменты `primitives/`, `components/`, `icons/`, `lib/`, `theme/` под капотом). Токены, утилиты карты и темы колоды приходят оттуда же: `import { colors, cardKey, CARD_THEMES } from '@/ui-kit'`. Внутри `ui-kit` — относительные ОК.
+`ui-kit` has a single root barrel `@/ui-kit` (the `primitives/`, `components/`, `icons/`, `lib/`, `theme/` segments are under the hood). Tokens, card utilities and deck themes come from there too: `import { colors, cardKey, CARD_THEMES } from '@/ui-kit'`. Inside `ui-kit`, relative imports are OK.
 
-Компонент не реэкспортится из корневого barrel — это пробел в barrel, а не разрешение на deep import: добавь строку в `ui-kit/index.ts`, а не путь до папки в место использования.
+A component not re-exported from the root barrel is a gap in the barrel, not permission for a deep import: add the line to `ui-kit/index.ts` rather than a path to the folder at the call site.
 
-ESLint не проверяет FSD-границы — ловим на review.
+ESLint does not check FSD boundaries — we catch them at review.
 
 ---
 
-## 7. Barrel-экспорты (`index.ts`)
+## 7. Barrel exports (`index.ts`)
 
-**Слайс:**
+**Slice:**
 
 ```ts
 // features/lobby/create-table/index.ts
@@ -539,9 +540,9 @@ export { CreateTable } from './ui/CreateTable';
 export type { CreateTableProps } from './ui/CreateTable.types';
 ```
 
-Только то, что нужно снаружи. Внутренние подкомпоненты — не экспортируем.
+Only what is needed from the outside. Internal subcomponents are not exported.
 
-**Папка компонента:**
+**Component folder:**
 
 ```ts
 // ui-kit/primitives/Button/index.ts
@@ -550,7 +551,7 @@ export { Button } from './Button';
 export type { ButtonProps, ButtonSize, ButtonVariant } from './Button.types';
 ```
 
-**Подсистема в `model/`:** если хук собран из нескольких файлов в подпапке, `index.ts` рядом с ними экспортирует только публичную точку входа — Provider и хук. Внутренние модули и типы наружу не идут.
+**A subsystem in `model/`:** if a hook is assembled from several files in a subfolder, the `index.ts` next to them exports only the public entry point — the Provider and the hook. Internal modules and types do not go outside.
 
 ```ts
 // features/lobby/create-table/model/index.ts
@@ -559,29 +560,28 @@ export { CREATE_TABLE_DEFAULTS, createTableFormSchema, toTableSettings } from '.
 export type { CreateTableFormValues } from './create-table-form';
 ```
 
-Wildcard-экспорты (`export * from`) — запрещены. Только явные именованные.
+Wildcard exports (`export * from`) are forbidden. Explicit named ones only.
 
-**Единственное исключение для `export default`** — роут-файлы в `apps/mobile/app/`: Expo Router требует default-экспорт, иначе экран не найдётся.
+**The only exception for `export default`** is route files in `apps/mobile/app/`: Expo Router requires a default export, otherwise the screen is not found.
 
 ---
 
-## 8. Типы
+## 8. Types
 
-- **Всё через `type`** — Props, unions, алиасы, DTO. `interface` запрещён:
-  `ts/consistent-type-definitions: ['error', 'type']` (блок `durak/typescript` в
-  `eslint.config.mjs`), `bun lint:fix` чинит сам.
-  Единственное исключение — аугментация чужого интерфейса (`CustomTypeOptions`
-  в `shared/i18n/i18next.d.ts`), слить с ним можно только `interface`; файл
-  вынесен в `ignores` конфига.
-- Props всегда в `<Name>.types.ts` рядом с компонентом.
-- `import type { ... }` — ESLint enforce (`ts/consistent-type-imports`,
-  `fixStyle: 'separate-type-imports'`), `bun lint:fix` чинит сам. На `apps/server/**`
-  правило выключено: Nest достаёт зависимости из метаданных декораторов, а
-  `import type` их стирает.
-- `export type { ... }` — линтером не покрыт, держим руками на review.
-- `unknown` вместо `any`. Правило `ts/no-explicit-any: error` включено в `eslint.config.mjs` — в пресете оно выключено.
-  запрет держим руками на review.
-- Discriminated unions для вариантов состояния:
+- **Everything through `type`** — Props, unions, aliases, DTOs. `interface` is forbidden:
+  `ts/consistent-type-definitions: ['error', 'type']` (the `durak/typescript` block in
+  `eslint.config.mjs`), `bun lint:fix` fixes it itself.
+  The only exception is augmenting someone else's interface (`CustomTypeOptions`
+  in `shared/i18n/i18next.d.ts`) — it can only be merged with an `interface`; the file
+  is moved into the config's `ignores`.
+- Props always go into `<Name>.types.ts` next to the component.
+- `import type { ... }` — enforced by ESLint (`ts/consistent-type-imports`,
+  `fixStyle: 'separate-type-imports'`), `bun lint:fix` fixes it itself. On `apps/server/**`
+  the rule is off: Nest pulls dependencies out of decorator metadata, and
+  `import type` erases them.
+- `export type { ... }` — not covered by the linter, kept by hand at review.
+- `unknown` instead of `any`. The rule `ts/no-explicit-any: error` is enabled in `eslint.config.mjs` — in the preset it is off.
+- Discriminated unions for state variants:
 
 ```ts
 export type ChatMessage =
@@ -589,18 +589,18 @@ export type ChatMessage =
   | { type: 'file'; url: string; name: string; size: number; mime: string };
 ```
 
-### 8.1 Порядок полей в Props и деструктуризации
+### 8.1 Field order in Props and destructuring
 
-Один порядок во всех трёх местах: **`type Props`**, **деструктуризация параметров**, **JSX-вызов компонента**. Так глаз ищет одно и то же одинаково.
+One order in all three places: **`type Props`**, **parameter destructuring**, **the component's JSX call**. That way the eye looks for the same thing in the same way.
 
-Порядок:
+The order:
 
-1. **Данные** — string, number, boolean, объекты, refs, `children`.
-2. **Идентификаторы / стили** — `accessibilityLabel`, `style`.
-3. **Обработчики событий** — `onPress`, `onChangeText`, `onClose`, любые `on<Event>`.
+1. **Data** — string, number, boolean, objects, refs, `children`.
+2. **Identifiers / styles** — `accessibilityLabel`, `style`.
+3. **Event handlers** — `onPress`, `onChangeText`, `onClose`, any `on<Event>`.
 
 ```ts
-// ✓ ОК
+// ✓ OK
 export type PlayerNameProps = {
   name: string;
   isHost?: boolean;
@@ -618,18 +618,18 @@ export const PlayerName = ({ name, isHost, seat, size = 'sm', style, onPress }: 
 <PlayerName name={player.name} seat={player.seat} isHost={isHost} style={styles.name} onPress={handlePress} />
 ```
 
-Логика: «что показываем» → «как выглядит» → «что делает». Сначала смысл, потом форма, потом поведение.
+The logic: "what we show" → "how it looks" → "what it does". Meaning first, then form, then behaviour.
 
-Внутри каждой группы порядок свободный, но **в трёх местах должен совпадать** (Props ↔ destructuring ↔ JSX). Расхождение ловится на ревью.
+Within each group the order is free, but **it must match in all three places** (Props ↔ destructuring ↔ JSX). A mismatch is caught at review.
 
 ---
 
-## 9. Arrow-функции: тело
+## 9. Arrow functions: the body
 
-**Все объявления (top-level и модульные) — block body с `return`.** Однострочные expression body запрещены: вид `=> { return ... }` единообразен независимо от размера тела, не приходится переписывать когда логика растёт.
+**All declarations (top-level and module-level) use a block body with `return`.** Single-line expression bodies are forbidden: the `=> { return ... }` shape is uniform regardless of the body's size, and there is no need to rewrite it when the logic grows.
 
 ```ts
-// ✓ ОК
+// ✓ OK
 const getSelectedLift = (width: number): number => {
   return -(width / cardTokens.ratio) * SELECTED_LIFT_RATIO;
 };
@@ -638,16 +638,16 @@ const keyExtractor = (table: LobbyTable) => {
   return table.id;
 };
 
-// ✗ НЕ ОК
+// ✗ NOT OK
 const getSelectedLift = (width: number): number => -(width / cardTokens.ratio) * SELECTED_LIFT_RATIO;
 ```
 
-**Исключения — оставляем expression body:**
+**Exceptions — we keep the expression body:**
 
-- **React-компоненты, возвращающие JSX напрямую** — JSX сам по себе является «телом», обёртка `{ return }` визуально дублирует:
+- **React components that return JSX directly** — JSX is a "body" in itself, and a `{ return }` wrapper visually duplicates it:
 
   ```tsx
-  // ✓ ОК
+  // ✓ OK
   export const FormField = ({ label, value, onChangeText }: FormFieldProps) => (
     <View style={styles.root}>
       <Text style={styles.label}>{label}</Text>
@@ -657,24 +657,24 @@ const getSelectedLift = (width: number): number => -(width / cardTokens.ratio) *
   );
   ```
 
-- **Inline-колбэки** (аргументы функций, JSX-пропсы, методы хуков):
+- **Inline callbacks** (function arguments, JSX props, hook methods):
 
   ```ts
-  // ✓ ОК — это аргумент, не объявление
+  // ✓ OK — this is an argument, not a declaration
   cards.map((card) => cardKey(card));
   tables.find((item) => item.id === tableId);
   useSessionStore((store) => store.currentTable);
   match(tab).with('profile', () => t('nav.profile'));
   ```
 
-**Правило для review:** если стрелка справа от `=` (объявление функции) — block body. Если стрелка внутри `(...)` или `{...}` (аргумент) — на усмотрение, обычно expression.
+**Rule for review:** if the arrow is to the right of `=` (a function declaration) — block body. If the arrow is inside `(...)` or `{...}` (an argument) — your call, usually an expression.
 
-### 9.5 `if` / `else` — всегда с фигурными скобками
+### 9.5 `if` / `else` — always with braces
 
-**Тело `if`, `else if`, `else` всегда в `{}`, даже на одну строку.** Однострочный `if (cond) doThing();` запрещён: добавление второго стейтмента в ветку не требует переписывать структуру, диффы чище, нет ловушки «забыл скобки». Enforced биомом (`style/useBlockStatements`, `error`) — `bun lint:fix` чинит автоматически.
+**The body of `if`, `else if`, `else` is always in `{}`, even for a single line.** A single-line `if (cond) doThing();` is forbidden: adding a second statement to a branch does not require rewriting the structure, diffs are cleaner, and there is no "forgot the braces" trap. Enforced by ESLint (`curly: ['error', 'all']`) — `bun lint:fix` fixes it automatically.
 
 ```ts
-// ✓ ОК
+// ✓ OK
 if (!session) {
   return;
 }
@@ -683,41 +683,41 @@ if (isWinner) {
   playSound('win');
 }
 
-// ✗ НЕ ОК
+// ✗ NOT OK
 if (!session) return;
 if (isWinner) playSound('win');
 ```
 
-Тернарник для возврата значения — по-прежнему ОК (это выражение, не стейтмент): `return a ? b : c;`.
+A ternary for returning a value is still OK (it is an expression, not a statement): `return a ? b : c;`.
 
 ---
 
-## 10. React-конвенции
+## 10. React conventions
 
-- Функциональные компоненты, arrow-функции.
-- Разметка — примитивы `react-native`: `View` вместо `div`, `Pressable` вместо `button`, `Text` для любого текста. Картинки — `Image` из `expo-image` (кеш и прогрессивная загрузка из коробки), не `Image` из `react-native`.
-- React Compiler включён — не нужны `useMemo`/`useCallback` для микро-оптимизаций. Оставляем только для семантического stable ref (зависимости `useEffect`, key в Map).
-- Обработчики событий — `on<Event>` camelCase: `onPress`, `onChangeText`, `onSelectTable`.
-- Типы из React — **именованные импорты**: `import type { ComponentProps, ReactNode } from 'react'`. **`import type * as React from 'react'` запрещён.**
-- Доступность — не опциональна: у каждого нажимаемого элемента `accessibilityRole` и, если внутри только значок, `accessibilityLabel`. Состояние — `accessibilityState={{ disabled, selected }}`.
+- Function components, arrow functions.
+- Markup uses `react-native` primitives: `View` instead of `div`, `Pressable` instead of `button`, `Text` for any text. Images — `Image` from `expo-image` (caching and progressive loading out of the box), not `Image` from `react-native`.
+- The React Compiler is enabled — `useMemo`/`useCallback` are not needed for micro-optimizations. We keep them only for a semantically stable ref (`useEffect` dependencies, a key in a Map).
+- Event handlers are `on<Event>` in camelCase: `onPress`, `onChangeText`, `onSelectTable`.
+- Types from React are **named imports**: `import type { ComponentProps, ReactNode } from 'react'`. **`import type * as React from 'react'` is forbidden.**
+- Accessibility is not optional: every pressable element has an `accessibilityRole` and, if it contains only an icon, an `accessibilityLabel`. State — `accessibilityState={{ disabled, selected }}`.
 
-### 9.1 Порядок хуков
+### 9.1 Hook order
 
-Линтер не сортирует хуки — соблюдаем руками + ловим на review.
+The linter does not sort hooks — we follow it by hand + catch it at review.
 
-Порядок групп:
+Group order:
 
-1. **Navigation** — `useRouter`, `useLocalSearchParams`, `usePathname` (из `expo-router`).
+1. **Navigation** — `useRouter`, `useLocalSearchParams`, `usePathname` (from `expo-router`).
 2. **Localization / insets** — `useTranslation`, `useSafeAreaInsets`.
-3. **Store / context** — `useSessionStore`, `useSettingsStore`, любые `use<Name>Store`.
-4. **Data** — `useSession`, TanStack Query/Mutation хуки.
+3. **Store / context** — `useSessionStore`, `useSettingsStore`, any `use<Name>Store`.
+4. **Data** — `useSession`, TanStack Query/Mutation hooks.
 5. **State** — `useState`, `useReducer`.
 6. **Ref / shared values** — `useRef`, `useSharedValue`.
 7. **Memo / callbacks** — `useMemo`, `useCallback`, `useAnimatedProps`, `useId`.
 8. **Effects** — `useEffect`, `useLayoutEffect`.
-9. **Derived const** — распакованные значения хуков.
+9. **Derived const** — unpacked values from hooks.
 
-Между группами — пустая строка. Внутри группы — без пустой.
+Between groups — a blank line. Within a group — none.
 
 ```tsx
 export const AppShell = () => {
@@ -742,30 +742,30 @@ export const AppShell = () => {
 };
 ```
 
-**Правила перестановки:**
+**Reordering rules:**
 
-- Не переставляй хук с data dependency: если значение нужно следующему хуку — оно обязано быть до него. Если порядок групп противоречит — оставь как есть, пометь `// data dep: ... → query`.
-- `if (...) useFoo()` — это баг `rules-of-hooks`, чинить, не сортировать.
+- Do not move a hook with a data dependency: if a value is needed by the next hook — it must come before it. If the group order conflicts — leave it as is and mark it `// data dep: ... → query`.
+- `if (...) useFoo()` is a `rules-of-hooks` bug — fix it, do not sort it.
 
-**Zustand-селекторы** — по одному на значение (`useSessionStore((store) => store.tables)`), не объектом: объектный селектор возвращает новую ссылку каждый рендер и перерисовывает экран на любое изменение стора.
+**Zustand selectors** — one per value (`useSessionStore((store) => store.tables)`), not an object: an object selector returns a new reference on every render and re-renders the screen on any change to the store.
 
-**Кастомные хуки** — по семантике содержимого: `useSession` (запрос) → группа Data; `useSettingsStore` (стор) → Store; `useTableSounds` (эффект) → Effects.
+**Custom hooks** — by the semantics of their contents: `useSession` (a query) → the Data group; `useSettingsStore` (a store) → Store; `useTableSounds` (an effect) → Effects.
 
-### 9.2 Зависимости хуков / Effects
+### 9.2 Hook / Effect dependencies
 
-`deps`-массив `useEffect` — только то, что **реально должно триггерить перезапуск** эффекта. Знаем что эффекту нужен один `tableId` — не добавляем `table`, `router`, объекты мутаций «чтобы линтер молчал».
+The `deps` array of `useEffect` contains only what **should actually trigger a re-run** of the effect. If we know the effect needs a single `tableId` — we do not add `table`, `router` or mutation objects "to keep the linter quiet".
 
-**Стабильные ref не идут в deps.** `router` из `expo-router`, экшены Zustand-стора, `reset`/`mutate` из react-query стабильны между рендерами. `// eslint-disable-next-line react/exhaustive-deps` с явной причиной — нормальная практика, не костыль.
+**Stable refs do not go into deps.** `router` from `expo-router`, Zustand store actions, `reset`/`mutate` from react-query are stable between renders. `// eslint-disable-next-line react/exhaustive-deps` with an explicit reason is normal practice, not a hack.
 
 ```tsx
-// ✗ ПЛОХО — лишние deps, объект мутации меняет ref каждый рендер
+// ✗ BAD — extra deps, the mutation object changes its ref every render
 useEffect(() => {
   if (!tableId) {
     router.replace('/');
   }
 }, [tableId, table, router, joinMutation]);
 
-// ✓ ОК — триггер только tableId, причина зафиксирована
+// ✓ OK — the only trigger is tableId, the reason is recorded
 // eslint-disable-next-line react/exhaustive-deps -- redirect must fire only on tableId change; router is a stable ref
 useEffect(() => {
   if (!tableId) {
@@ -774,136 +774,138 @@ useEffect(() => {
 }, [tableId]);
 ```
 
-### 9.3 Деструктуризация результатов query / mutation
+### 9.3 Destructuring query / mutation results
 
-Результат `useQuery` / кастомного query-хука **деструктурируем сразу**, не носим объект и не лазаем через точку:
+The result of `useQuery` / a custom query hook is **destructured right away**; we do not carry the object around and do not reach through the dot:
 
 ```tsx
-// ✗ ПЛОХО — доступ через точку, объект-обёртка не нужен
+// ✗ BAD — dot access, the wrapper object is not needed
 const sessionQuery = useSession();
 const session = sessionQuery.data;
 
-// ✓ ОК — деструктуризация на месте, переименование под смысл
+// ✓ OK — destructuring on the spot, renamed to something meaningful
 const { data: session, isPending } = useSession();
 ```
 
-`data` почти всегда переименовываем (`data: session`) — голое `data` не несёт смысла.
+`data` is almost always renamed (`data: session`) — a bare `data` carries no meaning.
 
-**Исключение — `useMutation`.** Объект мутации оставляем цельным: нужны и поля (`isPending`, `isError`, `error`, `data`), и методы (`mutateAsync`, `reset`).
+**Exception — `useMutation`.** The mutation object is kept whole: both the fields (`isPending`, `isError`, `error`, `data`) and the methods (`mutateAsync`, `reset`) are needed.
 
-### 9.4 Деструктуризация везде, где упрощает
+### 9.4 Destructure wherever it simplifies
 
-Принцип: **деструктурируй по максимуму** — для читаемости. Если значение используется через точку 2+ раза или приходит вложенным, вытащи его в локальную переменную.
+The principle: **destructure as much as possible** — for readability. If a value is accessed through the dot 2+ times, or arrives nested, pull it out into a local variable.
 
-**Вложенный доступ — деструктурируй родителя:**
+**Nested access — destructure the parent:**
 
 ```ts
-// ✗ ПЛОХО — table.settings.X повторяется
+// ✗ BAD — table.settings.X repeats
 if (table.settings.isPrivate) { /* ... */ }
 const seats = table.settings.maxPlayers;
 const speed = table.settings.speed;
 
-// ✓ ОК — settings вытащен один раз
+// ✓ OK — settings is pulled out once
 const { isPrivate, maxPlayers, speed } = table.settings;
 ```
 
-**Параметры-функции: 3+ аргумента → один объект с деструктуризацией.** Позиционные аргументы (особенно одного типа — `string, string, string`) легко перепутать местами; объект самодокументирует и порядок не важен.
+**Function parameters: 3+ arguments → one object with destructuring.** Positional arguments (especially of the same type — `string, string, string`) are easy to swap by mistake; an object is self-documenting and the order does not matter.
 
 ```ts
-// ✗ ПЛОХО — 4 позиционных, легко перепутать
+// ✗ BAD — 4 positional, easy to mix up
 resolveDisplayName(displayName, name, email, userId);
 
-// ✓ ОК — объект-параметр, деструктуризация в сигнатуре
+// ✓ OK — an object parameter, destructured in the signature
 resolveDisplayName({ displayName, name, email, userId });
 ```
 
-**Когда НЕ деструктурировать:**
+**When NOT to destructure:**
 
-- Одно обращение — `obj.x` один раз, деструктуризация лишняя церемония.
-- Теряется контекст — если `name` без префикса непонятно чьё, оставь `player.name` / переименуй (`const { name: playerName } = ...`).
-- Стабильный неймспейс-объект (`router`, `console`, `Math`) — не трогаем.
+- A single access — `obj.x` once, destructuring is needless ceremony.
+- The context is lost — if `name` without a prefix does not say whose it is, keep `player.name` / rename it (`const { name: playerName } = ...`).
+- A stable namespace object (`router`, `console`, `Math`) — leave it alone.
 
 ---
 
-## 11. Сегменты `model/`, `lib/`, `api/`
+## 11. The `model/`, `lib/`, `api/` segments
 
-**`model/`** — хуки, Zustand store, схемы форм, типы стейта.
+**`model/`** — hooks, Zustand store, form schemas, state types.
 
 ```
 entities/session/model/
-  session-store.ts        ← Zustand: соединение, стол, профиль
-  use-online-game.ts      ← хук поверх стора
+  session-store.ts        ← Zustand: connection, table, profile
+  use-online-game.ts      ← a hook on top of the store
 ```
 
 ```
 features/lobby/create-table/model/
   index.ts                ← barrel
-  create-table-form.ts    ← zod-схема формы, дефолты, маппер в TableSettings
+  create-table-form.ts    ← the form's zod schema, defaults, mapper into TableSettings
 ```
 
-Файлы — kebab-case. Функции внутри — camelCase.
+Files are kebab-case. Functions inside are camelCase.
 
-**Подсистема → папка.** Provider + context + хук (либо хук + 2+ модуля только для него) → отдельная папка с `index.ts`. Совсем плоский `model/` (1-2 файла без подпапок) — норма для мелких слайсов, как в `entities/session` и `widgets/game/online-table`.
+**A subsystem → a folder.** Provider + context + hook (or a hook + 2 or more modules used only by it) → a separate folder with an `index.ts`. A fully flat `model/` (1-2 files without subfolders) is normal for small slices, as in `entities/session` and `widgets/game/online-table`.
 
-**Группировка внутри `model/`.** Когда в слайсе много `model`-файлов, группируй их в подпапки по природе (`model/contexts/`, `model/hooks/`, `model/stores/`). Это организация **внутри** сегмента `model/`, не отдельный top-level сегмент `hooks/` (тот запрещён, см. ниже).
+**Grouping inside `model/`.** When a slice has many `model` files, group them into subfolders by nature (`model/contexts/`, `model/hooks/`, `model/stores/`). This is organization **inside** the `model/` segment, not a separate top-level `hooks/` segment (that one is forbidden, see below).
 
-**Barrel-правило `model/`.** У каждой подпапки `model/` — свой `index.ts`. **Slice-level `model/index.ts` создаём только у плоского `model/`, когда наружу идёт несколько сущностей из одного файла** (как `create-table/model/index.ts`). Если подпапки есть — импорт снаружи через barrel подпапки:
+**The `model/` barrel rule.** Every `model/` subfolder gets its own `index.ts`. **We create a slice-level `model/index.ts` only for a flat `model/`, when several entities from one file go outside** (as in `create-table/model/index.ts`). If there are subfolders — an import from the outside goes through the subfolder's barrel:
 
 ```ts
-// ✓ ОК
+// ✓ OK
 import { useRoomControls } from '../model/hooks';
 import { CREATE_TABLE_DEFAULTS } from '../model';
 
-// ✗ НЕ ОК
-import { useRoomControls } from '../model/hooks/use-room-controls';  // deep мимо barrel
+// ✗ NOT OK
+import { useRoomControls } from '../model/hooks/use-room-controls';  // deep, bypassing the barrel
 ```
 
-Между файлами **внутри одной подпапки** — относительный импорт по файлу (`./use-x`, `../types`), не через свой barrel (самоимпорт). `model/types.ts` — это файл, не папка: импортируется напрямую `../model/types`.
+Between files **within the same subfolder** — a relative import by file (`./use-x`, `../types`), not through its own barrel (a self-import). `model/types.ts` is a file, not a folder: it is imported directly as `../model/types`.
 
-**Типы:**
+**Types:**
 
-- Локальные типы одного хука (`Props`, ввод/вывод, internal unions) — **рядом в том же файле**, не выносить.
-- Публичные типы слайса (используются другими слайсами через barrel) — в `model/types.ts` или рядом со стором, откуда реэкспортятся (`ConnectionStatus`, `GameOutcome` в `session-store.ts`).
-- Если у подсистемы-папки свои внутренние типы — `model/<subsystem>/types.ts`.
+- Local types of a single hook (`Props`, input/output, internal unions) — **right there in the same file**, do not extract them.
+- Public types of the slice (used by other slices through the barrel) — in `model/types.ts` or next to the store they are re-exported from (`ConnectionStatus`, `GameOutcome` in `session-store.ts`).
+- If a subsystem folder has its own internal types — `model/<subsystem>/types.ts`.
 
-Не создавай отдельный сегмент `types/` или `hooks/` — это разделение по форме файла, а не по природе кода (антипаттерн FSD).
+Do not create a separate `types/` or `hooks/` segment — that is a split by the file's shape rather than by the nature of the code (an FSD antipattern).
 
-**`lib/`** — чистые функции без React-зависимостей:
+**`lib/`** — pure functions with no React dependencies:
 
 ```
-entities/game/lib/
-  playable.ts       ← getPlayableKeys / getBeatableIndexes
+widgets/game/online-table/lib/
+  status.ts         ← getStatusKey — the slice's own helper
 
 shared/lib/
-  format/           ← форматирование сумм и времени
-  haptics/          ← обёртка над expo-haptics
-  sound/            ← воспроизведение через expo-audio
-  time/             ← useNow — тикающее «сейчас»
-
-ui-kit/lib/
-  cards/            ← cardKey, rankLabel, suitSymbol, isRedSuit
+  cards/            ← cardKey — a card's identity
+  feedback/         ← PRESS_FEEDBACK — sound + vibration on a press
+  format/           ← formatting of amounts and time
+  games/durak/      ← playable.ts: getPlayableKeys / getBeatableIndexes
+  haptics/          ← a wrapper over expo-haptics
+  sound/            ← playback through expo-audio
+  time/             ← useNow — a ticking "now"
 ```
 
-Утилиты карты живут в `ui-kit/lib/`, а не в `shared/lib/`: их потребитель — `PlayingCard` и `SuitIcon`, а `ui-kit` не вправе импортить `@/shared` (§2.1). Наружу они идут из `@/ui-kit`.
+**Rules of one game go to `shared/lib/games/<game>/`**, not into an entity. They are pure functions over that game's `PlayerView`, several layers read them, and a per-game folder keeps four rule sets from growing into each other.
 
-Если функция возвращает JSX — это компонент, переместить в `ui/`.
+**Card helpers are split by nature, not duplicated.** `cardKey` is identity — React keys, looking a card up in a hand — so it is `shared/lib/`, where the game layers use it. `isRedSuit` / `rankLabel` / `suitSymbol` are how a card is *drawn*; they live in `ui-kit/theme/suits.ts` and go outside from `@/ui-kit`. This is what keeps `ui-kit` free of `@/` imports (§2.1): the design system owns its rendering helpers instead of borrowing them from `shared`.
 
-**Эвристика `lib/` vs `model/`:** функция использует React (`useState`, `useEffect`, стор) → `model/`. Чистая (получает аргументы, возвращает значение) → `lib/`. Класс ошибки, парсеры, мапперы — `lib/`. Набор значений-настроек/констант — `config/`.
+If a function returns JSX — it is a component, move it into `ui/`.
 
-**`api/` в слайсе** — интеграция с внешним сервисом, привязанная к домену слайса: подписки, мапперы, сервис-специфичные обёртки. Отличие от `model/` — `api/` это I/O-граница (сеть, realtime, push-сервис), `model/` — хуки и типы стейта.
+**Heuristic for `lib/` vs `model/`:** the function uses React (`useState`, `useEffect`, a store) → `model/`. Pure (takes arguments, returns a value) → `lib/`. An error class, parsers, mappers — `lib/`. A set of setting values/constants — `config/`.
 
-Эвристика: код **слушает/шлёт** во внешний сервис → `api/`. Код **читает/выводит** доменный стейт → `model/`. Project-agnostic клиент (не привязан к домену) → `shared/api/` (ниже).
+**`api/` in a slice** — integration with an external service tied to the slice's domain: subscriptions, mappers, service-specific wrappers. The difference from `model/` is that `api/` is the I/O boundary (network, realtime, push service), while `model/` is hooks and state types.
 
-**`api/` в `shared/`** — клиенты внешних сервисов:
+Heuristic: code that **listens to / sends to** an external service → `api/`. Code that **reads/derives** domain state → `model/`. A project-agnostic client (not tied to a domain) → `shared/api/` (below).
+
+**`api/` in `shared/`** — clients of external services:
 
 ```text
 shared/api/
-  auth/      ← better-auth клиент (authClient, useSession, getAuthToken, logout)
-  socket/    ← WebSocket-клиент поверх partysocket: очередь, переподключение
+  auth/      ← better-auth client (authClient, useSession, getAuthToken, logout)
+  socket/    ← WebSocket client on top of partysocket: queue, reconnection
   index.ts
 ```
 
-Игровой обмен идёт **через сокет, а не HTTP**: сервер авторитетен, состояние стола живёт в памяти ноды и приходит пушами. Отдельного REST-слоя и axios-инстанса в клиенте нет — самодельный `fetch` для игровых вызовов не нужен и не появляется.
+Game traffic goes **over the socket, not HTTP**: the server is authoritative, the table state lives in node memory and arrives as pushes. There is no separate REST layer or axios instance in the client — a hand-rolled `fetch` for game calls is not needed and does not appear.
 
 ```ts
 import { socketClient } from '@/shared/api';
@@ -915,35 +917,35 @@ export const sendGameAction = (message: ClientMessage): void => {
 };
 ```
 
-Входящие сообщения валидируются `serverMessageSchema` из `@durak-master/schemas` — тем же контрактом, которым сервер их формирует.
+Incoming messages are validated by `serverMessageSchema` from `@durak-master/schemas` — the same contract the server builds them with.
 
 ---
 
-## 12. Тема и токены
+## 12. Theme and tokens
 
-- Токены — TypeScript-объекты в `ui-kit/theme/`, наружу — из `@/ui-kit`: `colors`, `spacing`, `radii`, `fontSize`, `fontFamily`, `shadows`, `card`, `duration`.
-- **Литеральные цвета и отступы в компонентах запрещены.** `backgroundColor: '#436787'` вместо `colors.background` превращает смену оформления в поиск по проекту.
-- Цвета записаны в hex: RN не понимает `oklch()`, а значения уходят в нативные вьюхи, где интерполяция должна работать без парсинга CSS-функций.
-- Шрифты — ключи `fontFamily` совпадают с именами, под которыми шрифты грузятся в `app/_layout.tsx` через `useFonts`. Начертание задаётся **выбором семейства** (`fontFamily.sansBold`), а не только `fontWeight`: на Android `fontWeight` без соответствующего файла шрифта игнорируется.
-- Тени — пресеты `shadows.*`: они собирают несовместимые поля iOS (`shadow*`) и Android (`elevation`) в один объект.
-- Размеры, зависящие от экрана, — в `ui-kit/theme/layout.ts` (`getCardSize`, `cardSize`, `screen`, `MAX_FAN_ANGLE`). Точек останова в RN нет, поэтому размер карты считается долей ширины экрана с зажимом сверху и снизу.
-- Тёмной темы нет — приложение одноцветное по замыслу, `colors` один набор. Переключается только оформление колоды: `CARD_THEMES` / `getCardTheme` в `ui-kit/theme/card-themes.ts`, выбранная тема раздаётся через `CardThemeProvider` (§2.2).
+- Tokens are TypeScript objects in `ui-kit/theme/`, exposed from `@/ui-kit`: `colors`, `spacing`, `radii`, `fontSize`, `fontFamily`, `shadows`, `card`, `duration`.
+- **Literal colors and spacings in components are forbidden.** `backgroundColor: '#436787'` instead of `colors.background` turns a change of appearance into a project-wide search.
+- Colors are written in hex: RN does not understand `oklch()`, and the values go into native views, where interpolation has to work without parsing CSS functions.
+- Fonts — the `fontFamily` keys match the names the fonts are loaded under in `views/root-layout` (`config/fonts.ts`, `useFonts`). Weight is set by **choosing the family** (`fontFamily.sansBold`), not by `fontWeight` alone: on Android, `fontWeight` without a matching font file is ignored.
+- Shadows — the `shadows.*` presets: they gather the incompatible iOS (`shadow*`) and Android (`elevation`) fields into a single object.
+- Screen-dependent sizes are in `ui-kit/theme/layout.ts` (`getCardSize`, `cardSize`, `screen`, `MAX_FAN_ANGLE`). RN has no breakpoints, so the card size is computed as a fraction of the screen width with a clamp at the top and the bottom.
+- There is no dark theme — the app is single-toned by design, `colors` is one set. Only the deck's appearance switches: `CARD_THEMES` / `getCardTheme` in `ui-kit/theme/card-themes.ts`, and the selected theme is distributed through `CardThemeProvider` (§2.2).
 
 ---
 
-## 13. Пустые строки между логическими шагами
+## 13. Blank lines between logical steps
 
-Линтер не автофиксит `padding-line-between-statements`. Соблюдаем руками.
+The linter does not autofix `padding-line-between-statements`. We follow it by hand.
 
-**Пустая строка перед:**
+**A blank line before:**
 
-- `return` (если не первый statement)
+- `return` (if it is not the first statement)
 - `throw`
-- `if` (early-return guard или branching)
-- `await` после которого идёт логически отдельный шаг
+- `if` (an early-return guard or branching)
+- an `await` followed by a logically separate step
 - `try` / `for` / `while` / `switch`
 
-**После `if`-блока** — пустая строка перед следующим statement.
+**After an `if` block** — a blank line before the next statement.
 
 ```ts
 const trimmed = name.trim();
@@ -963,7 +965,7 @@ return locale;
 ```
 
 ```tsx
-// ✓ множественные return
+// ✓ multiple returns
 if (isPending) {
   return <View style={styles.root} />;
 }
@@ -975,16 +977,16 @@ if (!session) {
 return <AppShell />;
 ```
 
-**Исключения** (пустая НЕ нужна):
+**Exceptions** (no blank line needed):
 
-- Один statement в блоке.
-- Последовательные `const` одного смыслового блока (селекторы стора, распаковка пропсов).
+- A single statement in the block.
+- Consecutive `const`s of one semantic block (store selectors, unpacking props).
 
 ---
 
-## 14. Shared схемы — `@durak-master/schemas`
+## 14. Shared schemas — `@durak-master/schemas`
 
-Zod схемы и типы, общие для client/server, — в `packages/schemas`:
+Zod schemas and types shared between client and server go into `packages/schemas`:
 
 ```
 packages/schemas/src/
@@ -998,29 +1000,29 @@ packages/schemas/src/
 ```
 
 ```ts
-// ✓ ОК
+// ✓ OK
 import { tableSettingsSchema, type TableSettings } from '@durak-master/schemas';
 
-// ✗ НЕ ОК — дублирование контракта на клиенте
+// ✗ NOT OK — duplicating the contract on the client
 type TableSettings = { bet: number; maxPlayers: number };
 ```
 
-`@/shared/api` экспортирует только runtime (сокет-клиент, better-auth), не типы домена.
+`@/shared/api` exports only runtime (the socket client, better-auth), not domain types.
 
-**FormValues vs Request типы.** Одна zod-схема даёт два типа — `.default()` / `.transform()` делают `z.input` и `z.output` несовместимыми:
+**FormValues vs Request types.** One zod schema gives two types — `.default()` / `.transform()` make `z.input` and `z.output` incompatible:
 
-- `z.input<typeof schema>` — форма данных **до** валидации, для `defaultValues` формы.
-- `z.output<typeof schema>` — форма **после** валидации (default применён, transform отработал), для submit / отправки на сервер.
+- `z.input<typeof schema>` — the shape of the data **before** validation, for the form's `defaultValues`.
+- `z.output<typeof schema>` — the shape **after** validation (defaults applied, transforms run), for submit / sending to the server.
 
-Это ось «стадия валидации», не «HTTP request/response». Тип сущности из ответа — отдельный (`LobbyTable`), не `z.output` инпут-схемы.
+This is the "validation stage" axis, not "HTTP request/response". The entity type from a response is a separate one (`LobbyTable`), not the `z.output` of an input schema.
 
-Схема формы может **расширять** доменную схему полем, которого нет в снапшоте (пароль стола: сервер принимает его отдельно и никогда не кладёт в состояние стола) — см. `features/lobby/create-table/model/create-table-form.ts`.
+A form schema may **extend** the domain schema with a field that is absent from the snapshot (the table password: the server accepts it separately and never puts it into the table state) — see `features/lobby/create-table/model/create-table-form.ts`.
 
 ---
 
-## 15. Формы — react-hook-form + zodResolver
+## 15. Forms — react-hook-form + zodResolver
 
-`register` в React Native не работает: у `TextInput` нет DOM-события `change`, которое RHF вешает под капотом. **Каждое поле оборачивается в `Controller`.**
+`register` does not work in React Native: `TextInput` has no DOM `change` event, which is what RHF hooks into under the hood. **Every field is wrapped in a `Controller`.**
 
 ```tsx
 import { credentialsSchema } from '@durak-master/schemas';
@@ -1060,21 +1062,21 @@ const {
 />
 ```
 
-- Схема — в `@durak-master/schemas`, не inline в форме. Схема, специфичная для формы, — в `model/` слайса.
-- `control` передаётся в подкомпонент полей типизированным (`Control<CredentialsInput>`), не `any`.
-- Server-side ошибки — `setError('root', { message })`; сообщения better-auth приходят на английском, показываем свой перевод.
-- Форма, доходящая до низа экрана, оборачивается в `KeyboardAvoidingView` с `behavior={Platform.OS === 'ios' ? 'padding' : 'height'}`, а прокрутка — `ScrollView` с `keyboardShouldPersistTaps="handled"`, иначе первое нажатие только убирает клавиатуру.
-- Примеры: `features/auth/sign-in`, `features/lobby/create-table`.
+- The schema goes into `@durak-master/schemas`, not inline in the form. A form-specific schema goes into the slice's `model/`.
+- `control` is passed into the fields subcomponent typed (`Control<CredentialsInput>`), not as `any`.
+- Server-side errors — `setError('root', { message })`; better-auth messages arrive in English, we show our own translation.
+- A form that reaches the bottom of the screen is wrapped in `KeyboardAvoidingView` with `behavior={Platform.OS === 'ios' ? 'padding' : 'height'}`, and scrolling uses a `ScrollView` with `keyboardShouldPersistTaps="handled"`, otherwise the first tap only dismisses the keyboard.
+- Examples: `features/auth/sign-in`, `features/lobby/create-table`.
 
 ---
 
 ## 16. Conditional render — ts-pattern
 
-3+ ветки render → `match`, не вложенные `if (...) return <X />` и не цепочки тернарников в JSX.
+3+ render branches → `match`, not nested `if (...) return <X />` and not chains of ternaries in JSX.
 
-Что матчить — два варианта, оба ОК:
+What to match on — two options, both OK:
 
-**A. На одном значении-дискриминанте:**
+**A. On a single discriminant value:**
 
 ```tsx
 import { match } from 'ts-pattern';
@@ -1086,9 +1088,9 @@ const title = match(tab)
   .exhaustive();
 ```
 
-`.exhaustive()` даёт TS-ошибку если добавили вариант union но забыли case.
+`.exhaustive()` gives a TS error if a union variant was added but the case was forgotten.
 
-**B. На объекте флагов.** `match` прямо на `{ ...поля }`, паттерны через `P.nullish` / `P.string` и т.п. Берём когда веток немного и отдельный хук-слой был бы лишней церемонией:
+**B. On an object of flags.** `match` directly on `{ ...fields }`, with patterns via `P.nullish` / `P.string` and so on. We take this when there are few branches and a separate hook layer would be needless ceremony:
 
 ```tsx
 import { match } from 'ts-pattern';
@@ -1099,60 +1101,60 @@ const tone = match({ isWinner, isDraw })
   .otherwise((): ResultTone => 'lose');
 ```
 
-Порядок `.with` важен — первый совпавший паттерн выигрывает. Узкие значения в хендлерах
-бери из аргумента `match` (он narrowed), не из замыкания и не через `as` — каст обходит
-проверку типов.
+The order of `.with` matters — the first matching pattern wins. Take narrowed values in the handlers
+from the `match` argument (it is narrowed), not from the closure and not through `as` — a cast bypasses
+type checking.
 
-**Запрещено в любом случае** — `if`/тернарник-цепочки, собирающие JSX:
+**Forbidden in any case** — `if`/ternary chains that assemble JSX:
 
 ```tsx
-// ✗ НЕ ОК — condition hell в view
+// ✗ NOT OK — condition hell in the view
 return !tableId ? null : isLoading ? <Loading /> : !table ? <NotFound /> : <Table />;
 ```
 
-**Когда выносить в хук:** сборка state переиспользуется в 2+ местах, либо тело логики
-настолько объёмно, что view перестаёт читаться. Иначе вариант B инлайн в view — норма.
+**When to extract into a hook:** the state assembly is reused in 2+ places, or the body of the logic
+is so large that the view stops being readable. Otherwise option B inline in the view is normal.
 
-### 15.1 Одна ветка — `&&`, не `? : null`
+### 15.1 A single branch — `&&`, not `? : null`
 
-Рендер «есть/нет» (одна ветка, иначе ничего) — `cond && <X />`, не `cond ? <X /> : null`:
+A "present/absent" render (one branch, otherwise nothing) — `cond && <X />`, not `cond ? <X /> : null`:
 
 ```tsx
-// ✗ НЕ ОК — лишний : null
+// ✗ NOT OK — a needless : null
 {footer ? <View style={styles.footer}>{footer}</View> : null}
 
-// ✓ ОК
+// ✓ OK
 {footer && <View style={styles.footer}>{footer}</View>}
 ```
 
-Инверсия `cond ? null : <X />` → `!cond && <X />`.
+The inverse `cond ? null : <X />` → `!cond && <X />`.
 
-**Условие обязано быть `boolean`.** `&&` рендерит левый операнд как есть — для
-не-boolean falsy (`0`, `''`, `NaN`) RN попытается отрисовать его как текст вне `<Text>`
-и **упадёт в рантайме** (в вебе это был бы просто мусорный «0» в разметке).
-Числовые/строковые проверки сначала приводим к boolean:
+**The condition must be a `boolean`.** `&&` renders the left operand as is — for a
+non-boolean falsy value (`0`, `''`, `NaN`) RN will try to draw it as text outside `<Text>`
+and **crash at runtime** (on the web this would just be a stray "0" in the markup).
+Numeric/string checks are converted to boolean first:
 
 ```tsx
-// ✗ ОПАСНО — при пустой руке крэш
+// ✗ DANGEROUS — a crash on an empty hand
 {cards.length && <PlayerHand cards={cards} />}
 
-// ✓ ОК — явная boolean-проверка
+// ✓ OK — an explicit boolean check
 {cards.length > 0 && <PlayerHand cards={cards} />}
-{!isEmpty(cards) && <PlayerHand cards={cards} />}   // isEmpty из remeda
+{!isEmpty(cards) && <PlayerHand cards={cards} />}   // isEmpty from remeda
 ```
 
-Безопасны как условие: boolean-флаги (`isActive`), сравнения (`x === y`),
-`!x`, `!!x`, объект/`undefined` (`errors.email`), `isEmpty()`/`isNonNullish()`.
+Safe as a condition: boolean flags (`isActive`), comparisons (`x === y`),
+`!x`, `!!x`, an object/`undefined` (`errors.email`), `isEmpty()`/`isNonNullish()`.
 
-Тернарник остаётся для **двух** реальных веток (`cond ? <A /> : <B />`).
+The ternary remains for **two** genuine branches (`cond ? <A /> : <B />`).
 
 ---
 
-## 17. Анимации — Reanimated
+## 17. Animations — Reanimated
 
-`react-native-reanimated` v4. Анимации идут на UI-потоке, поэтому не встают вместе с JS.
+`react-native-reanimated` v4. Animations run on the UI thread, so they do not stall along with JS.
 
-**Появление/исчезание/перестановка** — декларативные пресеты на `Animated.View`:
+**Appearance/disappearance/reordering** — declarative presets on `Animated.View`:
 
 ```tsx
 import Animated, { FadeOut, LinearTransition, SlideInRight } from 'react-native-reanimated';
@@ -1165,9 +1167,9 @@ import Animated, { FadeOut, LinearTransition, SlideInRight } from 'react-native-
 />;
 ```
 
-`layout` обязателен там, где элементы меняются местами (рука игрока): без него соседи перепрыгивают скачком.
+`layout` is mandatory wherever elements swap places (the player's hand): without it the neighbours jump abruptly.
 
-**Непрерывное значение** — `useSharedValue` + `withTiming` / `withSpring`, читается в `useAnimatedStyle` / `useAnimatedProps`:
+**A continuous value** — `useSharedValue` + `withTiming` / `withSpring`, read in `useAnimatedStyle` / `useAnimatedProps`:
 
 ```tsx
 const progress = useSharedValue(value);
@@ -1181,15 +1183,15 @@ const animatedProps = useAnimatedProps(() => {
 });
 ```
 
-Длительности — из `duration` в `@/ui-kit`, не литералами.
+Durations come from `duration` in `@/ui-kit`, not as literals.
 
-`key` у анимируемых элементов списка должен быть стабильным и доменным (`cardKey(card)`), не индексом: по индексу Reanimated считает, что карта осталась той же, и анимация перестановки не проигрывается.
+The `key` of animated list elements must be stable and domain-based (`cardKey(card)`), not an index: with an index Reanimated assumes the card stayed the same and the reordering animation does not play.
 
 ---
 
-## 18. Переводы — i18next
+## 18. Translations — i18next
 
-`react-i18next`, один namespace (`translation`), ключ передаётся целиком:
+`react-i18next`, one namespace (`translation`), the key is passed whole:
 
 ```tsx
 const { t } = useTranslation();
@@ -1197,16 +1199,16 @@ const { t } = useTranslation();
 <Text>{t('table.take')}</Text>;
 ```
 
-- **Никакого `useTranslations('namespace')`** — namespace в проекте один, префикс входит в ключ.
-- **Ключи типизированы** по `ru.json` через аугментацию `CustomTypeOptions` (`shared/i18n/i18next.d.ts`): опечатка в ключе — ошибка компиляции, а не сырой идентификатор на экране. Русский файл — источник истины, английский может отставать.
-- **Интерполяция — двойные скобки**: `t('result.rating', { value: ratingDelta })` для `"rating": "Рейтинг +{{value}}"`.
-- **Плюрализация — суффиксы ключей**, не ICU-синтаксис. Формы считает `Intl.PluralRules`:
+- **No `useTranslations('namespace')`** — there is one namespace in the project, the prefix is part of the key.
+- **Keys are typed** from `ru.json` through the `CustomTypeOptions` augmentation (`shared/i18n/i18next.d.ts`): a typo in a key is a compile error rather than a raw identifier on screen. The Russian file is the source of truth; the English one may lag behind.
+- **Interpolation — double braces**: `t('result.rating', { value: ratingDelta })` for `"rating": "Рейтинг +{{value}}"`.
+- **Pluralization — key suffixes**, not ICU syntax. The forms are computed by `Intl.PluralRules`:
 
   ```jsonc
-  // ru.json — три формы
+  // ru.json — three forms
   { "cards": { "count_one": "{{count}} карта", "count_few": "{{count}} карты", "count_many": "{{count}} карт" } }
 
-  // en.json — две
+  // en.json — two
   { "cards": { "count_one": "{{count}} card", "count_other": "{{count}} cards" } }
   ```
 
@@ -1214,48 +1216,48 @@ const { t } = useTranslation();
   <Text>{t('cards.count', { count: hand.length })}</Text>
   ```
 
-- Локали — `apps/mobile/shared/i18n/locales/{ru,en}.json`. Ключ, добавленный только в `ru.json`, типы пропустят, но на английском экран покажет идентификатор — правь оба файла в одном коммите.
-- Язык восстанавливается асинхронно в `app/_layout.tsx` (`restoreLocale`): приложение стартует на языке по умолчанию, первый кадр не ждёт диска. Смена — `changeLocale(locale)`, выбор переживает перезапуск.
-- Ключ, собираемый в конфиге, типизируется `ParseKeys` из `i18next` (`TabBar.config.ts`), не `string`.
+- Locales are in `apps/mobile/shared/i18n/locales/{ru,en}.json`. A key added only to `ru.json` will pass the types, but in English the screen will show the identifier — edit both files in one commit.
+- The language is restored asynchronously in `views/root-layout` (`model/use-app-bootstrap.ts`, `restoreLocale`): the app starts in the default language, and the first frame does not wait on disk. To change it — `changeLocale(locale)`; the choice survives a restart.
+- A key assembled in a config is typed with `ParseKeys` from `i18next` (`TabBar.config.ts`), not `string`.
 
 ---
 
-## 19. Сервер
+## 19. Server
 
-Этот гайд покрывает `apps/mobile/`. Инварианты проекта (авторитетность сервера, криптослучайность, `PlayerView`) — в [`CLAUDE.md`](../CLAUDE.md). Правила игры — в [`docs/game-rules.md`](./game-rules.md), их реализация — `packages/game-core`.
-
----
-
-## 20. Запреты
-
-- `console.log` в коммите. ESLint `no-console: warn` (разрешены `console.warn` / `console.error`; в `**/scripts/**` правило off — там консоль это вывод CLI).
-- `any` — используй `unknown`. Правило `ts/no-explicit-any: error` включено в `eslint.config.mjs`.
-- Non-null assertion `!` без обоснования — `ts/no-non-null-assertion: warn`.
-- Deep imports мимо barrel.
-- Cross-import между слайсами одного слоя.
-- Biome, Stylelint, CSS-in-JS. Только ESLint + Prettier + `StyleSheet`.
-- Литеральные цвета, отступы и длительности в компонентах. Только токены из `@/ui-kit`.
-- Голая строка вне `<Text>` — крэш в рантайме.
-- Несколько стилей с `transform` в одном массиве — сложи в один.
-- `register` из react-hook-form. В RN только `Controller`.
-- Дублирование схем client/server. Только `@durak-master/schemas`.
-- `useState` для form fields. Только `react-hook-form`.
-- Объектный селектор Zustand (`useStore((s) => ({ a: s.a, b: s.b }))`) — новая ссылка каждый рендер.
-- `ScrollView` + `.map()` для длинных списков. `FlatList` / `FlashList`.
-- Вложенные `if (...) return <X />` на 3+ ветки. Используй `ts-pattern match`.
-- Что-либо кроме роут-файлов в `apps/mobile/app/` (см. [`docs/fsd.md`](./fsd.md) §1).
-- `'use client'` — директива Next.js, в Expo не значит ничего.
+This guide covers `apps/mobile/`. The project invariants (server authority, cryptographic randomness, `PlayerView`) are in [`CLAUDE.md`](../CLAUDE.md). The game rules are in [`docs/games/`](./games/), and their implementation is `packages/game-core`.
 
 ---
 
-## 21. Чек-лист перед коммитом
+## 20. Prohibitions
+
+- `console.log` in a commit. ESLint `no-console: warn` (`console.warn` / `console.error` are allowed; in `**/scripts/**` the rule is off — there the console is CLI output).
+- `any` — use `unknown`. The rule `ts/no-explicit-any: error` is enabled in `eslint.config.mjs`.
+- A non-null assertion `!` without justification — `ts/no-non-null-assertion: warn`.
+- Deep imports bypassing the barrel.
+- Cross-imports between slices of the same layer.
+- Biome, Stylelint, CSS-in-JS. Only ESLint + Prettier + `StyleSheet`.
+- Literal colors, spacings and durations in components. Only tokens from `@/ui-kit`.
+- A bare string outside `<Text>` — a runtime crash.
+- Several styles with `transform` in one array — fold them into one.
+- `register` from react-hook-form. In RN it is `Controller` only.
+- Duplicating schemas between client/server. Only `@durak-master/schemas`.
+- `useState` for form fields. Only `react-hook-form`.
+- An object Zustand selector (`useStore((s) => ({ a: s.a, b: s.b }))`) — a new reference on every render.
+- `ScrollView` + `.map()` for long lists. Use `FlatList` / `FlashList`.
+- Nested `if (...) return <X />` for 3+ branches. Use `ts-pattern match`.
+- Anything other than route files in `apps/mobile/app/` (see [`docs/fsd.md`](./fsd.md) §1).
+- `'use client'` — a Next.js directive, it means nothing in Expo.
+
+---
+
+## 21. Checklist before a commit
 
 ```bash
-bun fix          # lint:fix + format — автофиксы ESLint и форматирование Prettier
-bun lint         # должно быть 0 errors/warnings
-bun format:check # форматирование без изменений
-bun typecheck    # типы по всем воркспейсам
-bun verify       # typecheck + lint + format:check одной командой
+bun fix          # lint:fix + format — ESLint autofixes and Prettier formatting
+bun lint         # must be 0 errors/warnings
+bun format:check # formatting unchanged
+bun typecheck    # types across all workspaces
+bun verify       # typecheck + lint + format:check in one command
 ```
 
-`bun fix` не чинит: пустые строки (секция 13), порядок хуков (секция 9.1), FSD-границы импортов (→ [`docs/fsd.md`](./fsd.md)), полноту переводов (секция 18).
+`bun fix` does not fix: blank lines (section 13), hook order (section 9.1), FSD import boundaries (→ [`docs/fsd.md`](./fsd.md)), translation completeness (section 18).

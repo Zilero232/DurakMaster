@@ -1,0 +1,52 @@
+{
+  "profile": {
+    "rating": "Рейтинг",
+    "games_one": "Игра",
+    "games_few": "Игры",
+    "games_many": "Игр",
+    "wins": "Побед",
+    "credits": "{{value}} кредитов",
+    "coins": "{{value}} монет",
+    "premium": "Премиум",
+    "topUpCoins": "Пополнить монеты",
+    "topUpCredits": "Пополнить кредиты",
+    "claimBonus": "Забрать бонус",
+    "bonusHint": "Бесплатные кредиты уже ждут",
+    "leagues": {
+      "silver": "Серебряная",
+      "gold": "Золотая",
+      "ruby": "Рубиновая",
+      "emerald": "Изумрудная",
+      "sapphire": "Сапфировая",
+      "supreme": "Высшая"
+    },
+    "editTitle": "Профиль",
+    "name": "Имя",
+    "namePlaceholder": "Как вас звать",
+    "avatar": "Аватар",
+    "editHint": "Изменить имя и аватар"
+  },
+  "menu": {
+    "news": "Новости",
+    "friends": "Друзья",
+    "items": "Предметы",
+    "leaderboard": "Рейтинг",
+    "achievements": "Достижения",
+    "share": "Поделиться",
+    "rules": "Правила",
+    "soon": "скоро",
+    "stats": "Статистика",
+    "shareMessage": "Играю в DurakMaster — заходи, сыграем"
+  },
+  "stats": {
+    "title": "Статистика",
+    "level": "{{level}} уровень",
+    "nextLevel": "До следующего уровня",
+    "rating": "Рейтинг",
+    "gamesPlayed": "Сыграно партий",
+    "winRate": "Доля побед",
+    "wins": "Побед",
+    "losses": "Поражений",
+    "loginStreak": "Дней подряд"
+  }
+}

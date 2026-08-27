@@ -49,6 +49,8 @@ export default eslint(
       // нужнее всего, а `!` глушит единственное предупреждение о null.
       'ts/no-explicit-any': 'error',
       'ts/no-non-null-assertion': 'warn',
+      // Adding a second statement to a branch should not require rewriting it.
+      curly: ['error', 'all'],
       // Bun и Node дают их глобально; правило требует require(),
       // которому в ESM-воркспейсе не место.
       'node/prefer-global/buffer': 'off',

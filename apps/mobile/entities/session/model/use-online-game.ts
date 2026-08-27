@@ -1,14 +1,14 @@
-import type { Card } from '@durak-master/schemas';
+import type { ActionForGame, Card } from '@durak-master/schemas';
 
-import { getBeatableIndexes, getPlayableKeys } from '@/entities/game';
+import { cardKey } from '@/shared/lib/cards';
+import { getBeatableIndexes, getPlayableKeys } from '@/shared/lib/games/durak';
 import { haptic } from '@/shared/lib/haptics';
 import { playSound } from '@/shared/lib/sound';
-import { cardKey } from '@/ui-kit';
 
 import { sendGameAction, useSessionStore } from './session-store';
 
 export const useOnlineGame = () => {
-  const view = useSessionStore((store) => store.view);
+  const rawView = useSessionStore((store) => store.view);
   const profile = useSessionStore((store) => store.profile);
   const tablePlayers = useSessionStore((store) => store.tablePlayers);
   const mySeat = useSessionStore((store) => store.mySeat);
@@ -16,6 +16,8 @@ export const useOnlineGame = () => {
   const rejectedCode = useSessionStore((store) => store.rejectedCode);
   const selectedKey = useSessionStore((store) => store.selectedTableCardKey);
   const setSelectedKey = useSessionStore((store) => store.selectTableCard);
+
+  const view = rawView?.game === 'durak' ? rawView : null;
 
   const seat = mySeat ?? 0;
   const isMyTurn = Boolean(view) && view?.activeSeat === seat && view?.phase !== 'finished';
@@ -28,12 +30,12 @@ export const useOnlineGame = () => {
 
   const hasUndefended = view?.table.some((pair) => pair.defense === null) ?? false;
 
-  const play = (action: Parameters<typeof sendGameAction>[0]) => {
+  const play = (action: ActionForGame<'durak'>['action']) => {
     if (!view) {
       return;
     }
 
-    sendGameAction(action, view.version);
+    sendGameAction({ game: 'durak', action }, view.version);
   };
 
   const selectCard = (card: Card) => {
@@ -59,6 +61,18 @@ export const useOnlineGame = () => {
     setSelectedKey(null);
   };
 
+  const defendPairWith = (pairIndex: number, card: Card) => {
+    play({ type: 'defend', pairIndex, card });
+    setSelectedKey(null);
+  };
+
+  const attackWith = (card: Card) => {
+    play({ type: 'attack', card });
+    setSelectedKey(null);
+  };
+
+  const beatableWith = (card: Card): Set<number> => getBeatableIndexes(view, card);
+
   return {
     view,
     profile,
@@ -75,7 +89,10 @@ export const useOnlineGame = () => {
     canTake: isMyTurn && isDefending && hasUndefended,
     canPass: isMyTurn && !isDefending && (view?.table.length ?? 0) > 0 && !hasUndefended,
     selectCard,
+    attackWith,
     defendPair,
+    defendPairWith,
+    beatableWith,
 
     take: () => play({ type: 'take' }),
 
@@ -84,3 +101,5 @@ export const useOnlineGame = () => {
     transfer: (card: Card) => play({ type: 'transfer', card })
   };
 };
+
+export type OnlineGame = ReturnType<typeof useOnlineGame>;

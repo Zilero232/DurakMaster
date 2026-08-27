@@ -1,0 +1,51 @@
+{
+  "profile": {
+    "rating": "Rating",
+    "games_one": "Game",
+    "games_other": "Games",
+    "wins": "Wins",
+    "credits": "{{value}} credits",
+    "coins": "{{value}} coins",
+    "premium": "Premium",
+    "topUpCoins": "Top up coins",
+    "topUpCredits": "Top up credits",
+    "claimBonus": "Claim bonus",
+    "bonusHint": "Free credits are waiting",
+    "leagues": {
+      "silver": "Silver",
+      "gold": "Gold",
+      "ruby": "Ruby",
+      "emerald": "Emerald",
+      "sapphire": "Sapphire",
+      "supreme": "Supreme"
+    },
+    "editTitle": "Profile",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "avatar": "Avatar",
+    "editHint": "Change name and avatar"
+  },
+  "menu": {
+    "news": "News",
+    "friends": "Friends",
+    "items": "Items",
+    "leaderboard": "Leaderboard",
+    "achievements": "Achievements",
+    "share": "Share",
+    "rules": "Rules",
+    "soon": "soon",
+    "stats": "Stats",
+    "shareMessage": "I'm playing DurakMaster — come join a table"
+  },
+  "stats": {
+    "title": "Stats",
+    "level": "Level {{level}}",
+    "nextLevel": "To the next level",
+    "rating": "Rating",
+    "gamesPlayed": "Games played",
+    "winRate": "Win rate",
+    "wins": "Wins",
+    "losses": "Losses",
+    "loginStreak": "Day streak"
+  }
+}

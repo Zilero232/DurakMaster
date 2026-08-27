@@ -1,0 +1,96 @@
+{
+  "table": {
+    "waitingTitle": "Waiting for players",
+    "waitingCount": "{{current}} of {{max}}",
+    "ready": "Ready",
+    "notReady": "Not ready",
+    "addBot": "Add a bot",
+    "playerFallback": "Player {{seat}}",
+    "readyMark": "ready",
+    "waitingMark": "waiting",
+    "leave": "Leave",
+    "yourTurn": "Your turn",
+    "defend": "Defend",
+    "chooseTarget": "Pick a card on the table",
+    "opponentTurn": "Opponent's turn",
+    "attackerTurn": "Attacker's turn",
+    "take": "Take",
+    "pass": "Done",
+    "transfer": "Pass on",
+    "role": {
+      "attacks": "attacking",
+      "defends": "defending",
+      "out": "out",
+      "offline": "offline"
+    },
+    "reaction": "Send reaction {{emoji}}"
+  },
+  "result": {
+    "win": "Victory",
+    "lose": "You are the fool",
+    "draw": "Draw",
+    "winHint": "You got rid of your cards first",
+    "loseHint": "Opponents ran out before you",
+    "drawHint": "Everyone ran out at the same time",
+    "credits": "{{value}} credits",
+    "rating": "+{{value}} rating",
+    "playAgain": "Play again",
+    "toMenu": "To menu",
+    "leaveTable": "Leave table"
+  },
+  "discard": {
+    "title": "Discard pile",
+    "empty": "The discard pile is empty",
+    "count_one": "{{count}} card out of play",
+    "count_other": "{{count}} cards out of play",
+    "open": "Discard pile"
+  },
+  "phrases": {
+    "title": "Say",
+    "hello": "Hello!",
+    "goodGame": "Good game",
+    "wellPlayed": "Well played",
+    "goodLuck": "Good luck!",
+    "thanks": "Thanks",
+    "sorry": "Sorry",
+    "hurryUp": "Your turn",
+    "oneMoment": "One moment",
+    "nice": "Nice",
+    "unlucky": "Unlucky",
+    "bye": "Bye all",
+    "rematch": "Another round?"
+  },
+  "card": {
+    "faceDown": "Face-down card",
+    "label": "{{rank}} of {{suit}}",
+    "rank": {
+      "two": "2",
+      "three": "3",
+      "four": "4",
+      "five": "5",
+      "six": "6",
+      "seven": "7",
+      "eight": "8",
+      "nine": "9",
+      "ten": "10",
+      "jack": "jack",
+      "queen": "queen",
+      "king": "king",
+      "ace": "ace"
+    },
+    "suit": {
+      "spades": "spades",
+      "hearts": "hearts",
+      "diamonds": "diamonds",
+      "clubs": "clubs"
+    }
+  },
+  "emojis": {
+    "title": "Taunt"
+  },
+  "boosts": {
+    "undoMove": "Take the move back",
+    "peekTalon": "Peek at the deck",
+    "peekHand": "Peek at a hand"
+  }
+}

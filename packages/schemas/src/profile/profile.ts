@@ -1,17 +1,43 @@
 import { z } from 'zod';
 
 export const LEAGUES = [
-  { id: 'silver', name: 'Серебряная', color: '#b8bcc4' },
-  { id: 'gold', name: 'Золотая', color: '#e0b64a' },
-  { id: 'ruby', name: 'Рубиновая', color: '#d3564f' },
-  { id: 'emerald', name: 'Изумрудная', color: '#4caf7d' },
-  { id: 'sapphire', name: 'Сапфировая', color: '#4a80d3' },
-  { id: 'supreme', name: 'Высшая', color: '#a06ad4' }
+  { id: 'silver', color: '#b8bcc4' },
+  { id: 'gold', color: '#e0b64a' },
+  { id: 'ruby', color: '#d3564f' },
+  { id: 'emerald', color: '#4caf7d' },
+  { id: 'sapphire', color: '#4a80d3' },
+  { id: 'supreme', color: '#a06ad4' }
 ] as const;
 
 export const leagueIdSchema = z.enum(['silver', 'gold', 'ruby', 'emerald', 'sapphire', 'supreme']);
 
 export type LeagueId = z.infer<typeof leagueIdSchema>;
+
+export const AVATAR_SEED_PREFIX = 'dicebear:';
+
+export const AVATAR_SEEDS = [
+  'ace',
+  'trump',
+  'joker',
+  'queen',
+  'king',
+  'jack',
+  'spade',
+  'heart',
+  'club',
+  'diamond',
+  'bluff',
+  'fortune'
+] as const;
+
+export type AvatarSeed = (typeof AVATAR_SEEDS)[number];
+
+export const avatarSeedSchema = z.enum(AVATAR_SEEDS);
+
+export const toAvatarUrl = (seed: AvatarSeed): string => `${AVATAR_SEED_PREFIX}${seed}`;
+
+export const parseAvatarSeed = (value: string | null): string | null =>
+  value?.startsWith(AVATAR_SEED_PREFIX) ? value.slice(AVATAR_SEED_PREFIX.length) : null;
 
 export const LEVELS_PER_LEAGUE = 16;
 export const RATING_PER_LEVEL = 100;

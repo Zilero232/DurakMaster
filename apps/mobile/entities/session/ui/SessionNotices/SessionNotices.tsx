@@ -11,18 +11,24 @@ export const SessionNotices = () => {
   const { t } = useTranslation();
 
   const lastError = useSessionStore((store) => store.lastError);
+  const lastErrorCode = useSessionStore((store) => store.lastErrorCode);
   const rejectedCode = useSessionStore((store) => store.rejectedCode);
   const clearError = useSessionStore((store) => store.clearError);
   const clearRejection = useSessionStore((store) => store.clearRejection);
 
   useEffect(() => {
-    if (!lastError) {
+    if (!lastError && !lastErrorCode) {
       return;
     }
 
-    toast.error(lastError);
+    const key = `error.${lastErrorCode}`;
+    const translated = lastErrorCode && t(key) !== key ? t(key) : lastError;
+
+    playSound('error');
+    haptic('error');
+    toast.error(translated ?? '');
     clearError();
-  }, [lastError, clearError]);
+  }, [lastError, lastErrorCode, t, clearError]);
 
   useEffect(() => {
     if (!rejectedCode) {

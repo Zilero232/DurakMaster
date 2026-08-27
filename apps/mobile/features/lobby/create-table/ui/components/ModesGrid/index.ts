@@ -1,3 +1,8 @@
 export { ModesGrid } from './ModesGrid';
 
-export type { ModesGridProps } from './ModesGrid.types';
+export type {
+  ModeChoiceField,
+  ModeChoiceOption,
+  ModesGridProps,
+  ModeToggleField
+} from './ModesGrid.types';

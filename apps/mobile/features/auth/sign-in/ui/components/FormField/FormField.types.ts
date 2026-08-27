@@ -3,7 +3,10 @@ import type { TextInputProps } from 'react-native';
 export type FormFieldProps = {
   label: string;
   value: string;
-  isInvalid?: boolean;
+
+  error?: string;
+
+  isSecret?: boolean;
   onChangeText: (value: string) => void;
   onBlur: () => void;
 } & Pick<
@@ -15,6 +18,5 @@ export type FormFieldProps = {
   | 'onSubmitEditing'
   | 'placeholder'
   | 'returnKeyType'
-  | 'secureTextEntry'
   | 'textContentType'
 >;

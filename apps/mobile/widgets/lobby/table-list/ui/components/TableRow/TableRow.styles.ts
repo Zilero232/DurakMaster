@@ -1,8 +1,18 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit';
+import {
+  borderWidth,
+  colors,
+  fontFamily,
+  fontSize,
+  lineHeight,
+  radii,
+  shadows,
+  spacing
+} from '@/ui-kit';
 
-const SEAT_DOT = 7;
+const SEAT_DOT = 9;
+const AVATAR_OVERLAP = -8;
 
 export const styles = StyleSheet.create({
   root: {
@@ -11,8 +21,8 @@ export const styles = StyleSheet.create({
     gap: spacing[3],
     paddingVertical: spacing[3],
     paddingHorizontal: spacing[4],
-    borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: colors.transparent,
+    borderWidth: borderWidth.hairline,
+    borderColor: colors.border,
     borderRadius: radii.lg,
     backgroundColor: colors.surface1,
     ...shadows.card
@@ -23,47 +33,47 @@ export const styles = StyleSheet.create({
   },
 
   blocked: {
-    opacity: 0.6
+    opacity: 0.55
   },
 
   pressed: {
-    opacity: 0.85,
+    opacity: 0.9,
     transform: [{ scale: 0.99 }]
   },
 
   betColumn: {
     alignItems: 'flex-start',
-    gap: 4,
+    gap: spacing[1],
     minWidth: 76
   },
 
   bet: {
     fontSize: fontSize.xl,
-    fontWeight: '800',
     fontFamily: fontFamily.displayBold,
-    lineHeight: 24,
-    color: colors.goldDeep
+    lineHeight: lineHeight.tight(fontSize.xl),
+
+    color: colors.gold
   },
 
   seats: {
     flexDirection: 'row',
-    gap: 3
+    gap: spacing[1]
   },
 
   seat: {
     width: SEAT_DOT,
     height: SEAT_DOT,
     borderRadius: radii.pill,
-    backgroundColor: colors.border
+    backgroundColor: colors.surface3
   },
 
   seatTaken: {
-    backgroundColor: colors.accent
+    backgroundColor: colors.success
   },
 
   main: {
     flex: 1,
-    gap: 5,
+    gap: spacing[1],
     minWidth: 0
   },
 
@@ -74,8 +84,8 @@ export const styles = StyleSheet.create({
   },
 
   playerAvatar: {
-    marginRight: -8,
-    borderWidth: 2,
+    marginRight: AVATAR_OVERLAP,
+    borderWidth: borderWidth.regular,
     borderColor: colors.surface1
   },
 
@@ -83,7 +93,6 @@ export const styles = StyleSheet.create({
     flex: 1,
     marginLeft: spacing[3],
     fontSize: fontSize.sm,
-    fontWeight: '600',
     fontFamily: fontFamily.sansSemi,
     color: colors.foreground
   },
@@ -95,8 +104,8 @@ export const styles = StyleSheet.create({
 
   blockedLabel: {
     fontSize: fontSize.xs,
-    fontWeight: '600',
     fontFamily: fontFamily.sansSemi,
-    color: colors.subtleForeground
+    color: colors.subtleForeground,
+    textAlign: 'center'
   }
 });

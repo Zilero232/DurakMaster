@@ -1,159 +1,158 @@
 # Feature-Sliced Design — DurakMaster
 
-FSD-методология для `apps/mobile/`. Этот документ — рабочая справка по архитектуре клиента: иерархия слоёв, правила импортов, публичные API, сегменты.
+The FSD methodology for `apps/mobile/`. This document is a working reference on the client architecture: layer hierarchy, import rules, public APIs, segments.
 
-Полная спецификация: [feature-sliced.design](https://feature-sliced.design). Линтер FSD-правил: [Steiger](https://github.com/feature-sliced/steiger).
+Full specification: [feature-sliced.design](https://feature-sliced.design). Linter for FSD rules: [Steiger](https://github.com/feature-sliced/steiger).
 
-> **Расхождения с каноном FSD в этом проекте** (осознанные, см. причины ниже):
+> **Deviations from canonical FSD in this project** (deliberate, see the reasons below):
 >
-> | Канон FSD | DurakMaster | Почему |
+> | Canonical FSD | DurakMaster | Why |
 > |---|---|---|
-> | Корень `src/` | Слои лежат прямо в `apps/mobile/`, алиас `@/` → `apps/mobile/` | Единая структура с остальными клиентами компании: лишний уровень `src/` не несёт смысла, импорты короче — `@/ui-kit`. |
-> | Слой `pages/` | Слой `views/` | Имя `pages` уже занято смыслом «экран маршрута» в Expo Router; `views/` не путается с каталогом `app/`. |
+> | Root `src/` | Layers sit directly in `apps/mobile/`, alias `@/` → `apps/mobile/` | A single structure shared with the company's other clients: an extra `src/` level carries no meaning, and imports are shorter — `@/ui-kit`. |
+> | `pages/` layer | `views/` layer | The name `pages` is already taken by the meaning "route screen" in Expo Router; `views/` does not get confused with the `app/` directory. |
 >
-> Везде ниже, где канон говорит `pages` или `src/pages` — у нас `views`. Где говорит `src/` — у нас корень `apps/mobile/`.
+> Everywhere below, where the canon says `pages` or `src/pages` — we have `views`. Where it says `src/` — we have the `apps/mobile/` root.
 
 ---
 
-## 1. Иерархия слоёв (сверху вниз)
+## 1. Layer hierarchy (top down)
 
-| # | Слой | Назначение | Слайсы? |
+| # | Layer | Purpose | Slices? |
 |---|---|---|---|
-| 1 | App | Маршруты Expo Router, провайдеры, entrypoint | Нет |
-| 2 | Views *(канон: Pages)* | Целые экраны / композиции уровня маршрута | Да |
-| 3 | Widgets | Крупные самодостаточные UI-блоки (переиспользуемые или независимые) | Да |
-| 4 | Features | Пользовательские интеракции с бизнес-ценностью (формы, действия) | Да |
-| 5 | Entities | Базовые бизнес-понятия (session, settings, game) | Да |
-| 6 | Shared | Сокет-клиент, утилиты, i18n, конфиг, мост к нативному — project-agnostic | Нет |
-| — | UI-kit | Дизайн-система: примитивы, составные компоненты, иконки, токены | Нет |
+| 1 | App | Expo Router routes, providers, entrypoint | No |
+| 2 | Views *(canon: Pages)* | Whole screens / route-level compositions | Yes |
+| 3 | Widgets | Large self-contained UI blocks (reusable or independent) | Yes |
+| 4 | Features | User interactions with business value (forms, actions) | Yes |
+| 5 | Entities | Core business concepts (session, settings, game-table) | Yes |
+| 6 | Shared | Socket client, utilities, i18n, config, bridge to native — project-agnostic | No |
+| — | UI-kit | Design system: primitives, composite components, icons, tokens | No |
 
-Слой `Processes` устарел — его содержимое переносится в `Features` или `App`.
+The `Processes` layer is deprecated — its contents move into `Features` or `App`.
 
-`UI-kit` вне нумерации: он не встроен в цепочку, а лежит **под** ней. Импортировать его вправе
-любой слой — от `App` до `Shared`; сам он не импортирует ни один из них (см. §2).
+`UI-kit` is outside the numbering: it is not built into the chain, it lies **beneath** it. Any layer
+may import it — from `App` down to `Shared`; it imports none of them (see §2).
 
-### Структура директорий
+### Directory structure
 
 ```
 apps/mobile/
-├── app/                # Слой App — каталог маршрутов Expo Router
-│   ├── _layout.tsx     # провайдеры, шрифты, восстановление языка
-│   ├── index.tsx       # единственный экран приложения
-│   └── +not-found.tsx  # несуществующий маршрут
-├── views/              # Слой Views (канон: pages/)
+├── app/                # App layer — Expo Router routes directory
+│   ├── _layout.tsx     # re-export of views/root-layout
+│   ├── index.tsx       # the app's only screen
+│   └── +not-found.tsx  # nonexistent route
+├── views/              # Views layer (canon: pages/)
 │   └── <view-name>/
-├── widgets/            # Слой Widgets
+├── widgets/            # Widgets layer
 │   └── <domain>/       # game | lobby | profile | rules
 │       └── <widget-name>/
-├── features/           # Слой Features
+├── features/           # Features layer
 │   └── <domain>/       # auth | game | lobby | settings
 │       └── <feature-name>/
-├── entities/           # Слой Entities
+├── entities/           # Entities layer
 │   └── <entity-name>/
-├── shared/             # Слой Shared (без слайсов — только сегменты)
-│   ├── api/            # better-auth клиент, WebSocket-клиент
-│   ├── config/         # env, адрес сервера
-│   ├── i18n/           # i18next, локали, типизация ключей
+├── shared/             # Shared layer (no slices — segments only)
+│   ├── api/            # better-auth client, WebSocket client
+│   ├── config/         # env, server address
+│   ├── i18n/           # i18next, locales, key typing
 │   ├── lib/            # format, haptics, sound, time
-│   └── platform/       # мост к @durak-master/platform
-└── ui-kit/             # Дизайн-система (без слайсов — только сегменты)
-    ├── primitives/     # базовые: Button, Avatar, Sheet
-    ├── components/     # составные: PlayingCard, StatusScreen
+│   └── platform/       # bridge to @durak-master/platform
+└── ui-kit/             # Design system (no slices — segments only)
+    ├── primitives/     # basic: Button, Avatar, Sheet
+    ├── components/     # composite: PlayingCard, StatusScreen
     ├── icons/          # SuitIcon
-    ├── lib/            # утилиты карты, контекст отклика на нажатие
-    └── theme/          # токены, размеры от экрана, темы колоды
+    ├── lib/            # card utilities, press feedback context
+    └── theme/          # tokens, screen-derived sizes, deck themes
 ```
 
-> **Доменная группировка слайсов.** В DurakMaster слайсы внутри `features/` и `widgets/` сгруппированы по бизнес-домену (`auth`, `game`, `lobby`, `profile`). Это надстройка поверх FSD-канона (`<layer>/<slice>/`). Импорты: `@/features/auth/sign-in`, `@/widgets/lobby/table-list`. Слой `entities/` пока плоский — слайсов мало (`session`, `settings`, `game`), доменная прослойка была бы лишней.
+> **Domain grouping of slices.** In DurakMaster, slices inside `features/` and `widgets/` are grouped by business domain (`auth`, `game`, `lobby`, `profile`). This is a layer on top of the FSD canon (`<layer>/<slice>/`). Imports: `@/features/auth/sign-in`, `@/widgets/lobby/table-list`. The `entities/` layer is still flat — there are few slices (`session`, `settings`, `game`), and a domain layer would be redundant.
 
-### Каталог `app/` — только маршруты
+### The `app/` directory — routes only
 
-**Expo Router считает маршрутом любой файл в `app/`.** Положенный рядом `AppShell.styles.ts` или `AppShell.types.ts` превратится в экран `/AppShell.styles`, а `_layout.tsx` попытается его отрисовать.
+**Expo Router treats any file in `app/` as a route.** An `AppShell.styles.ts` or `AppShell.types.ts` placed next to a route turns into a `/AppShell.styles` screen, and `_layout.tsx` will try to render it.
 
-Поэтому в `app/` лежат **только** роут-файлы: `_layout.tsx`, `index.tsx`, `+not-found.tsx`. Никаких `.styles.ts`, `.types.ts`, `components/`, хелперов. Всё остальное — в слоях рядом с `app/`, включая стили самого лейаута:
-
-```ts
-// views/root-layout/root-layout.styles.ts
-export const rootLayoutStyles = StyleSheet.create({ root: { flex: 1 } });
-```
+That is why `app/` contains **only** route files: `_layout.tsx`, `index.tsx`, `+not-found.tsx`. No `.styles.ts`, `.types.ts`, `components/` or helpers. Everything else goes into the layers next to `app/` — including the layout itself, which lives as a full slice in `views/root-layout` and reaches the route as a one-line re-export:
 
 ```tsx
-// app/_layout.tsx
-import { rootLayoutStyles } from '@/views/root-layout';
+// app/_layout.tsx — the whole file
+import { RootLayout } from '@/views/root-layout';
+
+export default RootLayout;
 ```
+
+See §6 for what the slice holds.
 
 ---
 
-## 2. Золотое правило: направление импортов
+## 2. The golden rule: direction of imports
 
 ```
 App → Views → Widgets → Features → Entities → Shared
  └──────┴────────┴──────────┴───────────┴──────────┴──→ UI-kit
 ```
 
-Модуль импортирует только из слоёв **строго ниже**. Запрещено:
+A module imports only from layers **strictly below**. Forbidden:
 
-- **Вверх** — Feature не может импортить из Widget или View.
-- **Вбок внутри слоя** — один Feature не может импортить другой Feature.
+- **Upward** — a Feature cannot import from a Widget or a View.
+- **Sideways within a layer** — one Feature cannot import another Feature.
 
-**`ui-kit` — терминальный слой.** Его импортируют все, он — никого:
+**`ui-kit` is a terminal layer.** Everyone imports it, it imports no one:
 
-- Любой слой вправе импортить `@/ui-kit` — это не считается «вбок» и не нарушает направление.
-- `ui-kit` **не импортирует ни `@/shared`, ни `@/entities`, ни любой другой слой** — ни одного `@/`-импорта, кроме себя. Из внешнего у него только npm-пакеты (`react-native`, `react-native-svg`, `lucide-react-native`, `react-i18next`, …) и типы карт из `@durak-master/schemas`.
-- Нужное `ui-kit` от приложения приходит **сверху через контекст**, а не импортом (см. §5.1).
+- Any layer may import `@/ui-kit` — this does not count as "sideways" and does not violate the direction.
+- `ui-kit` **imports neither `@/shared`, nor `@/entities`, nor any other layer** — not a single `@/` import except its own. From the outside it has only npm packages (`react-native`, `react-native-svg`, `lucide-react-native`, `react-i18next`, …) and the card types from `@durak-master/schemas`.
+- What `ui-kit` needs from the app arrives **from above through context**, not through an import (see §5.1).
 
-Правило односторонее не ради чистоты: как только примитив потянет `@/entities`, дизайн-система перестанет быть переносимой и любой её импорт начнёт тащить за собой стор и сокет.
+The rule is one-directional not for the sake of purity: the moment a primitive pulls in `@/entities`, the design system stops being portable and any import of it starts dragging the store and the socket along.
 
-**Исключение — cross-entity ссылки.** Когда Entity A нужен тип из Entity B, используй `@x`-паттерн: `entities/A/@x/B.ts` экспортирует только то, что B нужно от A.
-
----
-
-## 3. Слайсы
-
-Слайс — директория внутри слоя, названная по **бизнес-домену** (не по технической роли).
-
-- ✓ Хорошо: `session`, `settings`, `table-list`, `create-table`, `sign-in`
-- ✗ Плохо: `components`, `hooks`, `helpers`, `utils`
-
-**Правила:**
-
-- Каждый слайс изолирован — ноль связности с соседними слайсами того же слоя.
-- Связанные слайсы можно группировать в подпапки, но они остаются независимыми.
-- Имена слайсов — kebab-case.
-
-**Доменные группы (DurakMaster):** слои `features/` и `widgets/` группируют слайсы по бизнес-домену:
-
-- `auth/` — вход и регистрация (`sign-in`)
-- `game/` — стол, карты, ход партии (`game-table`, `online-table`, `quick-phrases`, `view-discard`)
-- `lobby/` — список столов, создание и вход за стол (`table-list`, `create-table`, `join-table`)
-- `profile/` (только widgets) — кошелёк, меню профиля
-- `settings/` (только features) — панель настроек
-- `rules/` (только widgets) — панель правил
-
-Доменная папка — организационный контейнер, **не публичный API**. Импорт всегда до уровня слайса: `@/features/lobby/create-table`, не `@/features/lobby`.
+**Exception — cross-entity references.** When Entity A needs a type from Entity B, use the `@x` pattern: `entities/A/@x/B.ts` exports only what B needs from A.
 
 ---
 
-## 4. Сегменты
+## 3. Slices
 
-Сегменты организуют код внутри слайса по технической цели:
+A slice is a directory inside a layer, named after a **business domain** (not a technical role).
 
-| Сегмент | Содержит |
+- ✓ Good: `session`, `settings`, `table-list`, `create-table`, `sign-in`
+- ✗ Bad: `components`, `hooks`, `helpers`, `utils`
+
+**Rules:**
+
+- Every slice is isolated — zero coupling with neighbouring slices of the same layer.
+- Related slices may be grouped into subfolders, but they remain independent.
+- Slice names are kebab-case.
+
+**Domain groups (DurakMaster):** the `features/` and `widgets/` layers group slices by business domain:
+
+- `auth/` — sign in and sign up (`sign-in`)
+- `game/` — the course of a round (`online-table`, `quick-phrases`, `view-discard`). The reusable parts of a table — hand, felt, talon, timer, result — are an entity (`entities/game-table`), not a widget: every game composes them, so they must sit below the widget layer.
+- `lobby/` — table list, creating and joining a table (`table-list`, `create-table`, `join-table`)
+- `profile/` (widgets only) — wallet, profile menu
+- `settings/` (features only) — settings panel
+- `rules/` (widgets only) — rules panel
+
+A domain folder is an organizational container, **not a public API**. An import always goes down to the slice level: `@/features/lobby/create-table`, not `@/features/lobby`.
+
+---
+
+## 4. Segments
+
+Segments organize the code inside a slice by technical purpose:
+
+| Segment | Contains |
 |---|---|
-| `ui/` | Компоненты, их стили и типы |
-| `model/` | Типы, Zustand-сторы, схемы форм, хуки, бизнес-логика |
-| `api/` | Запросы и подписки на сервер, мапперы данных |
-| `lib/` | Внутренние утилиты только для этого слайса |
-| `config/` | Фиче-флаги, константы, конфигурация |
+| `ui/` | Components, their styles and types |
+| `model/` | Types, Zustand stores, form schemas, hooks, business logic |
+| `api/` | Requests and subscriptions to the server, data mappers |
+| `lib/` | Internal utilities for this slice only |
+| `config/` | Feature flags, constants, configuration |
 
-Кастомные сегменты допустимы — называй по тому, **что делают**, не что они есть.
-✗ Плохо: `hooks/`, `components/`. ✓ Хорошо: `model/`, `lib/`.
+Custom segments are allowed — name them after **what they do**, not what they are.
+✗ Bad: `hooks/`, `components/`. ✓ Good: `model/`, `lib/`.
 
 ---
 
-## 5. Публичный API (`index.ts`)
+## 5. Public API (`index.ts`)
 
-У каждого слайса — `index.ts` в корне, реэкспортирующий публичный интерфейс.
+Every slice has an `index.ts` at its root re-exporting the public interface.
 
 ```ts
 // entities/session/index.ts
@@ -164,155 +163,177 @@ export { SessionNotices } from './ui/SessionNotices';
 export type { ConnectionStatus, GameOutcome } from './model/session-store';
 ```
 
-**Правила:**
+**Rules:**
 
-- **Без wildcard-экспортов** — `export * from './ui/Foo'` запрещён. Явно.
-- **Минимальная поверхность** — экспортируй только то, что реально нужно другим слоям.
-- **Внешние импорты — только через index слайса** — никогда `@/features/auth/sign-in/ui/SignInForm` напрямую. Всегда `@/features/auth/sign-in`.
-- **Группа домена — не публичный API** — `@/features/auth` не существует, импортируется конкретный слайс. Доменная папка только организует файлы.
-- **`model/` — barrel там, где есть что скрывать.** Плоский `model/` из одного-двух файлов импортируется по файлу (`./model/session-store`). Если внутри `model/` появились подпапки — barrel у каждой (`model/hooks/index.ts`, `model/contexts/index.ts`), slice-level `model/index.ts` не создаём. Подробнее — [`docs/style.md`](./style.md) §11.
-- **Без циклических импортов** — не импортируй из собственного `index.ts` внутри слайса. Внутри — относительные пути.
-- **`ui-kit/` — дизайн-система, отдельный слой рядом с `shared/`.** Сегменты `primitives/` (базовые), `components/` (составные), `icons/`, `lib/` (утилиты и контексты слоя), `theme/` (токены, размеры от экрана, темы колоды). **Каждый компонент — своя PascalCase-папка** (`primitives/Button/`, `components/PlayingCard/`, …) с файлами `Component.tsx`, `Component.styles.ts`, опционально `Component.types.ts` и обязательным barrel `index.ts`. Сегментные barrel (`primitives/index.ts`, …) и корневой `ui-kit/index.ts` реэкспортят всё. Снаружи — только `@/ui-kit`, не `@/ui-kit/primitives/Button`. Примитивы собраны из `react-native` (`View`, `Pressable`, `Text`, `Modal`); стили — `StyleSheet.create`, токены — из собственного `theme/`. Подробнее — [`docs/style.md`](./style.md) §2.1.
+- **No wildcard exports** — `export * from './ui/Foo'` is forbidden. Be explicit.
+- **Minimal surface** — export only what other layers actually need.
+- **External imports go only through the slice index** — never `@/features/auth/sign-in/ui/SignInForm` directly. Always `@/features/auth/sign-in`.
+- **A domain group is not a public API** — `@/features/auth` does not exist, a specific slice is imported. The domain folder only organizes files.
+- **`model/` — a barrel where there is something to hide.** A flat `model/` of one or two files is imported per file (`./model/session-store`). Once subfolders appear inside `model/`, each gets a barrel (`model/hooks/index.ts`, `model/contexts/index.ts`), and we do not create a slice-level `model/index.ts`. More detail — [`docs/style.md`](./style.md) §11.
+- **No circular imports** — do not import from your own `index.ts` inside the slice. Inside, use relative paths.
+- **`ui-kit/` — the design system, a separate layer next to `shared/`.** Segments: `primitives/` (basic), `components/` (composite), `icons/`, `lib/` (utilities and contexts of the layer), `theme/` (tokens, screen-derived sizes, deck themes). **Every component gets its own PascalCase folder** (`primitives/Button/`, `components/PlayingCard/`, …) with the files `Component.tsx`, `Component.styles.ts`, optionally `Component.types.ts`, and a mandatory `index.ts` barrel. Segment barrels (`primitives/index.ts`, …) and the root `ui-kit/index.ts` re-export everything. From the outside — only `@/ui-kit`, not `@/ui-kit/primitives/Button`. Primitives are assembled from `react-native` (`View`, `Pressable`, `Text`, `Modal`); styles use `StyleSheet.create`, tokens come from the layer's own `theme/`. More detail — [`docs/style.md`](./style.md) §2.1.
 
-### 5.1. Контексты `ui-kit` — как слой получает данные, не импортируя слои
+### 5.1. `ui-kit` contexts — how the layer gets data without importing layers
 
-`ui-kit` не может прочитать Zustand-стор или дёрнуть `@/shared/lib/sound`: это импорт вверх (§2). Но и рисовать колоду без выбранной темы или кнопку без щелчка он тоже не должен. Развязка — **инверсия зависимости через контекст**: `ui-kit` объявляет провайдер и хук, приложение подставляет значение сверху.
+`ui-kit` cannot read a Zustand store or call `@/shared/lib/sound`: that would be an upward import (§2). But it also must not draw a deck without a selected theme, or a button without a click. The way out is **dependency inversion through context**: `ui-kit` declares a provider and a hook, and the app supplies the value from above.
 
-Оба контекста построены на `createContext` из `@siberiacancode/reactuse` и экспортируются из `@/ui-kit`:
+Both contexts are built on `createContext` from `@siberiacancode/reactuse` and are exported from `@/ui-kit`:
 
-| Контекст | Провайдер / хуки | Кто подставляет значение |
+| Context | Provider / hooks | Who supplies the value |
 |---|---|---|
-| Тема колоды | `CardThemeProvider`, `useCardTheme`, `useSetCardTheme` | `app/_layout.tsx` — `initialValue` из стора настроек |
-| Отклик на нажатие | `FeedbackProvider`, `usePressFeedback` | `app/_layout.tsx` — звук + вибрация из `shared/lib` |
+| Deck theme | `CardThemeProvider`, `useCardTheme`, `useSetCardTheme` | `views/root-layout` — `initialValue` from the settings store |
+| Press feedback | `FeedbackProvider`, `usePressFeedback` | `views/root-layout` — sound + vibration from `shared/lib` |
 
 ```tsx
-// app/_layout.tsx — приложение знает и про звук, и про стор; ui-kit — ни про что
-const handlePressFeedback = () => {
-  unlockSound();
-  playSound('click');
-  haptic('tap');
+// views/root-layout/config/press-feedback.ts — the app knows about the sound, ui-kit knows nothing
+export const PRESS_FEEDBACK = {
+  onPress: () => {
+    unlockSound();
+    playSound('click');
+    haptic('tap');
+  }
 };
 
-<FeedbackProvider initialValue={handlePressFeedback}>
-  <CardThemeProvider initialValue={cardTheme}>{/* … */}</CardThemeProvider>
+// views/root-layout/ui/components/AppProviders/AppProviders.tsx
+<FeedbackProvider initialValue={PRESS_FEEDBACK}>
+  <CardThemeProvider initialValue={cardTheme}>{children}</CardThemeProvider>
 </FeedbackProvider>;
 ```
 
-Что это даёт по каждому:
+What each one buys:
 
-- **`usePressFeedback`** — `Button` вызывает его в `onPress` и даёт щелчок с вибрацией, ничего не зная про `expo-audio` и `expo-haptics`. Дефолт — noop, так что примитив рендерится и без провайдера (тесты, сторибук).
-- **`useCardTheme`** — `PlayingCard` берёт рубашку из контекста, не читая `useSettingsStore`. Источник истины остаётся в `entities/settings` (там персист), контекст — лишь его проекция для отрисовки, поэтому `SettingsPanel` при смене темы зовёт **и** стор, **и** `useSetCardTheme`.
+- **`usePressFeedback`** — `Button` calls it in `onPress` and produces a click with vibration, knowing nothing about `expo-audio` and `expo-haptics`. The default is a noop, so the primitive renders even without a provider (tests, Storybook).
+- **`useCardTheme`** — `PlayingCard` takes the card back from the context instead of reading `useSettingsStore`. The source of truth stays in `entities/settings` (that is where persistence lives), and the context is only its projection for rendering, which is why `SettingsPanel` calls **both** the store **and** `useSetCardTheme` when the theme changes.
 
-Правило: **новая зависимость `ui-kit` от приложения — это новый контекст, а не новый импорт.** Если примитиву понадобилось что-то из бизнес-слоёв, добавь провайдер в `ui-kit/lib/` (или `ui-kit/theme/`, если это оформление) и подставь значение в `app/_layout.tsx`.
+The rule: **a new dependency of `ui-kit` on the app is a new context, not a new import.** If a primitive needs something from the business layers, declare the provider next to the component that consumes it (`ui-kit/primitives/Button/feedback-context.ts`, `ui-kit/components/PlayingCard/card-theme-context.ts`) and supply the value in `views/root-layout`.
 
 ---
 
-## 6. Интеграция с Expo Router
+## 6. Integration with Expo Router
 
-`app/` — каталог маршрутов, роут-файлы тонкие и делегируют во `views/`:
+`app/` is the routes directory, and **a route file holds nothing but the re-export** — no markup, no hooks, no providers. Every screen, the root layout included, is a slice in `views/`:
 
 ```tsx
-// app/index.tsx
-import { useSessionStore } from '@/entities/session';
-import { AppShell } from '@/views/app-shell';
-import { OnlineTable } from '@/widgets/game/online-table';
-
-const HomeScreen = () => {
-  const currentTable = useSessionStore((store) => store.currentTable);
-
-  return currentTable ? <OnlineTable /> : <AppShell />;
-};
+// app/index.tsx — the whole file
+import { HomeScreen } from '@/views/app-shell';
 
 export default HomeScreen;
 ```
 
-Роут-файлы — **единственное место с `export default`**: Expo Router требует именно его, иначе экран не найдётся. Всё остальное в проекте экспортируется именованно.
+| Route | Slice |
+|---|---|
+| `app/_layout.tsx` | `views/root-layout` |
+| `app/index.tsx` | `views/app-shell` |
+| `app/+not-found.tsx` | `views/not-found` |
 
-`_layout.tsx` держит провайдеры (`GestureHandlerRootView`, `SafeAreaProvider`, `QueryClientProvider`, `Toaster`) и загрузку шрифтов с языком — но не разметку экранов. Стили лейаута лежат во `views/root-layout` (см. §1: файл рядом стал бы маршрутом).
+Route files are the **only place with `export default`**: Expo Router requires exactly that, otherwise the screen is not found. Everything else in the project is exported by name — including the component behind the route, which the slice exports by name and the route file re-exports as the default.
 
-### Path-алиасы
+The reason is the one from §1: anything placed next to a route becomes a route itself. A screen that lives in the route file has nowhere to put its styles, its types or its subcomponents, so it either stays a single bloated file or leaks helpers into the routing table. Kept in `views/`, it is an ordinary slice with the usual segments.
 
-`@/` указывает на `apps/mobile/` — корень воркспейса, где лежат и слои, и `app/`:
+**`views/root-layout` — the app's composition root.** It is the slice that assembles everything the app needs before the first frame:
+
+```
+views/root-layout/
+  index.ts                              ← export { RootLayout }
+  config/
+    fonts.ts                            ← the font map for useFonts
+    press-feedback.ts                   ← the value for the ui-kit FeedbackProvider
+  model/
+    use-app-bootstrap.ts                ← fonts + locale + settings store, splash gate
+  ui/
+    RootLayout.tsx                      ← <AppProviders> + <Stack> + global overlays
+    RootLayout.styles.ts
+    components/
+      AppProviders/                     ← the whole provider ladder in one component
+```
+
+`AppProviders` nests `GestureHandlerRootView`, `SafeAreaProvider`, `QueryClientProvider` and the two `ui-kit` contexts (§5.1); `RootLayout` adds `<Stack>`, `SessionNotices` and `Toaster`. A new global provider is a change inside `AppProviders` — the route file never grows.
+
+The slice's `config/` holds only what the layout itself owns (fonts, the press-feedback value). Client instances are not layout concerns: the `QueryClient` lives in `shared/api` next to the auth and socket clients, and `AppProviders` merely hands it to the provider.
+
+### Path aliases
+
+`@/` points at `apps/mobile/` — the workspace root, where both the layers and `app/` live:
 
 ```jsonc
 // apps/mobile/tsconfig.json
 { "compilerOptions": { "paths": { "@/*": ["./*"] } } }
 ```
 
-Поэтому внутренние импорты начинаются сразу со слоя: `@/ui-kit`, `@/entities/session`.
+That is why internal imports start with the layer right away: `@/ui-kit`, `@/entities/session`.
 
 ---
 
-## 7. Паттерны композиции
+## 7. Composition patterns
 
-**View** *(канон: Page)*:
+**View** *(canon: Page)*:
 
 ```
 View
-├── импортит Widget A (самодостаточный блок)
-├── импортит Widget B
-├── импортит Feature X (интерактивный элемент)
-└── использует примитивы `@/ui-kit` для лейаута
+├── imports Widget A (self-contained block)
+├── imports Widget B
+├── imports Feature X (interactive element)
+└── uses `@/ui-kit` primitives for layout
 ```
 
 **Widget:**
 
 ```
 Widget
-├── импортит Feature(s) для интерактивности
-├── импортит Entity типы/компоненты для отображения
-└── использует примитивы `@/ui-kit`
+├── imports Feature(s) for interactivity
+├── imports Entity types/components for display
+└── uses `@/ui-kit` primitives
 ```
 
 **Feature:**
 
 ```
 Feature
-├── импортит Entity типы/хуки для доменных данных
-└── использует Shared API-клиент и утилиты, примитивы `@/ui-kit`
+├── imports Entity types/hooks for domain data
+└── uses the Shared API client and utilities, `@/ui-kit` primitives
 ```
 
 ---
 
-## 8. Чек-лист (проверять перед каждым изменением)
+## 8. Checklist (check before every change)
 
-- [ ] Файл в правильной директории слоя
-- [ ] В `app/` не появилось ничего, кроме роут-файлов
-- [ ] Импорты идут только вниз — никогда вверх или вбок
-- [ ] У слайса есть публичный `index.ts` с явными именованными экспортами
-- [ ] Нет прямых импортов во внутренности слайса извне
-- [ ] Имена директорий и файлов — kebab-case (исключение — папки компонентов: PascalCase)
-- [ ] Функции-компоненты — именованные PascalCase-экспорты (`export default` только в `app/`)
-- [ ] Сегменты описывают цель (`model/`, `api/`), не техническую роль (`hooks/`, `components/`)
-- [ ] Роут-файлы — тонкие обёртки, делегируют во `views/`
-- [ ] Слой Shared не содержит бизнес-логики — только project-agnostic код
-- [ ] `ui-kit` не импортит другие слои — ни одного `@/shared`, `@/entities`, `@/features`
-- [ ] Слой Entities не содержит UI-логики интеракций — это уровень Features
+- [ ] The file is in the right layer directory
+- [ ] Nothing but route files has appeared in `app/`
+- [ ] Imports go downward only — never upward or sideways
+- [ ] The slice has a public `index.ts` with explicit named exports
+- [ ] There are no direct imports into a slice's internals from the outside
+- [ ] Directory and file names are kebab-case (exception — component folders: PascalCase)
+- [ ] Component functions are named PascalCase exports (`export default` only in `app/`)
+- [ ] Segments describe purpose (`model/`, `api/`), not a technical role (`hooks/`, `components/`)
+- [ ] Route files are thin wrappers that delegate to `views/`
+- [ ] The Shared layer contains no business logic — only project-agnostic code
+- [ ] `ui-kit` does not import other layers — not a single `@/shared`, `@/entities`, `@/features`
+- [ ] The Entities layer contains no interaction UI logic — that is the Features level
 
-> **Naming в DurakMaster:** канон FSD требует kebab-case для всех файлов. DurakMaster-кодстайл (см. [`docs/style.md`](./style.md) §5): kebab-case для слайсов/сегментов, **PascalCase для папок и файлов компонентов** (`GameTable/GameTable.tsx`), camelCase для хуков/утилит. Это локальная конвенция поверх FSD.
+> **Naming in DurakMaster:** the FSD canon requires kebab-case for all files. The DurakMaster code style (see [`docs/style.md`](./style.md) §5): kebab-case for slices/segments, **PascalCase for component folders and files** (`GameTable/GameTable.tsx`), camelCase for hooks/utilities. This is a local convention on top of FSD.
 
 ---
 
-## 9. Частые ошибки
+## 9. Common mistakes
 
-| Ошибка | Фикс |
+| Mistake | Fix |
 |---|---|
-| `.styles.ts` / `.types.ts` рядом с роут-файлом в `app/` | Перенести в слой (`views/`, `widgets/`, …) — иначе Expo Router сделает из файла маршрут |
-| Feature импортит из другого Feature | Вынести общую логику в Entities или Shared |
-| View содержит бизнес-логику напрямую | Вынести в Feature, скомпоновать во View |
-| `shared/lib/use-sign-in.ts` | Auth — бизнес-домен → `features/auth/sign-in/model/use-sign-in.ts` |
-| Widget импортит из View | Инвертировать: View импортит Widget |
-| Слайс экспортит всё через `export *` | Явные именованные реэкспорты |
-| Папка `components/` в корне слоя | Классифицировать: это Widget, Feature, Entity или `ui-kit`? |
-| Примитив в `ui-kit` импортит `@/entities` или `@/shared` | Инвертировать: провайдер в `ui-kit`, значение из `app/_layout.tsx` (§5.1) |
-| `import { Button } from '@/ui-kit/primitives/Button'` | Только `@/ui-kit`; нет в barrel — дописать строку в `ui-kit/index.ts` |
-| Роут-файл содержит полную реализацию экрана | Перенести во `views/<name>/`, роут — тонкая обёртка |
+| `.styles.ts` / `.types.ts` next to a route file in `app/` | Move it into a layer (`views/`, `widgets/`, …) — otherwise Expo Router turns the file into a route |
+| A Feature imports from another Feature | Extract the shared logic into Entities or Shared |
+| A View contains business logic directly | Extract it into a Feature, compose it in the View |
+| `shared/lib/use-sign-in.ts` | Auth is a business domain → `features/auth/sign-in/model/use-sign-in.ts` |
+| A Widget imports from a View | Invert it: the View imports the Widget |
+| A slice exports everything through `export *` | Explicit named re-exports |
+| A `components/` folder at the root of a layer | Classify it: is this a Widget, a Feature, an Entity or `ui-kit`? |
+| A primitive in `ui-kit` imports `@/entities` or `@/shared` | Invert it: a provider in `ui-kit`, the value from `views/root-layout` (§5.1) |
+| `import { Button } from '@/ui-kit/primitives/Button'` | Only `@/ui-kit`; if it is not in the barrel — add the line to `ui-kit/index.ts` |
+| A route file contains a full screen implementation | Move it into `views/<name>/`, the route stays a thin wrapper |
 
 ---
 
-## Дополнительно
+## Additional
 
-- Полная спецификация: [feature-sliced.design](https://feature-sliced.design)
-- Линтер FSD-правил: [Steiger](https://github.com/feature-sliced/steiger)
-- Cross-entity паттерн `@x` — секция 2 выше
-- Кодстайл DurakMaster поверх FSD (структура слайса, naming, стили, размер компонента): [`docs/style.md`](./style.md)
+- Full specification: [feature-sliced.design](https://feature-sliced.design)
+- Linter for FSD rules: [Steiger](https://github.com/feature-sliced/steiger)
+- The `@x` cross-entity pattern — section 2 above
+- DurakMaster code style on top of FSD (slice structure, naming, styles, component size): [`docs/style.md`](./style.md)

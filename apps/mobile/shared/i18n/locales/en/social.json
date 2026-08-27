@@ -1,0 +1,105 @@
+{
+  "friends": {
+    "title": "Friends",
+    "tabs": {
+      "friends": "Friends",
+      "requests": "Requests",
+      "search": "Find"
+    },
+    "online": "Online",
+    "offline": "Offline",
+    "atTable": "At a table",
+    "incoming": "Asked you",
+    "outgoing": "You asked",
+    "emptyFriends": "Nobody yet",
+    "emptyRequests": "No requests",
+    "searchPlaceholder": "Player name",
+    "searchHint": "Type a player name",
+    "nothingFound": "Nobody found",
+    "action": {
+      "add": "Add friend",
+      "accept": "Accept",
+      "invite": "Invite to the table",
+      "remove": "Remove",
+      "decline": "Decline"
+    },
+    "invited": "{{name}} invites you to a table",
+    "emptyFriendsHint": "Find players by name and add them — the table is better with company",
+    "emptyRequestsHint": "Friend invitations will show up here"
+  },
+  "achievements": {
+    "title": "Achievements",
+    "unlocked": "unlocked",
+    "claim": "Claim",
+    "firstGame": {
+      "title": "First deal",
+      "description": "Play one game"
+    },
+    "tenGames": {
+      "title": "Warmed up",
+      "description": "Play 10 games"
+    },
+    "hundredGames": {
+      "title": "Regular",
+      "description": "Play 100 games"
+    },
+    "thousandGames": {
+      "title": "Table veteran",
+      "description": "Play 1000 games"
+    },
+    "firstWin": {
+      "title": "First win",
+      "description": "Win a game"
+    },
+    "tenWins": {
+      "title": "Steady hand",
+      "description": "Win 10 games"
+    },
+    "hundredWins": {
+      "title": "Master",
+      "description": "Win 100 games"
+    },
+    "winStreak3": {
+      "title": "Three in a row",
+      "description": "Win three games in a row"
+    },
+    "winStreak5": {
+      "title": "Five in a row",
+      "description": "Win five games in a row"
+    },
+    "winStreak10": {
+      "title": "Ten in a row",
+      "description": "Win ten games in a row"
+    },
+    "flawless": {
+      "title": "Flawless",
+      "description": "Win without ever picking cards up"
+    },
+    "allTrumps": {
+      "title": "All trumps",
+      "description": "Finish a game holding only trumps"
+    },
+    "loginStreak7": {
+      "title": "A week",
+      "description": "Come back seven days in a row"
+    },
+    "loginStreak30": {
+      "title": "A month",
+      "description": "Come back thirty days in a row"
+    },
+    "allGames": {
+      "title": "Every game",
+      "description": "Play all four games"
+    },
+    "firstFriend": {
+      "title": "Not alone",
+      "description": "Add your first friend"
+    },
+    "unlockedToast": "{{title}} unlocked! +{{reward}} coins"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "yourPlace": "your place",
+    "empty": "The leaderboard is empty"
+  }
+}

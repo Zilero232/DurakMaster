@@ -1,0 +1,1 @@
+export { SocialNotices } from './SocialNotices';

@@ -1,0 +1,47 @@
+{
+  "settings": {
+    "title": "Настройки",
+    "language": "Язык",
+    "cardTheme": "Колода",
+    "sound": "Звук",
+    "volume": "Громкость",
+    "hints": "Подсказывать ходы",
+    "hintsDescription": "Подсвечивать карты, которыми можно сходить",
+    "haptics": "Вибрация",
+    "hapticsDescription": "Отдавать вибрацией ходы и ошибки",
+    "themes": {
+      "classic": "Классика",
+      "fourColour": "Четыре масти",
+      "emerald": "Изумруд",
+      "crimson": "Багрянец",
+      "noir": "Нуар"
+    },
+    "tabs": {
+      "play": "Игра",
+      "look": "Вид",
+      "sound": "Звук"
+    },
+    "sortTitle": "Порядок карт в руке",
+    "sort": {
+      "trumpFirst": "Козыри в конец",
+      "suit": "По масти",
+      "rank": "По старшинству",
+      "manual": "Как раздали"
+    },
+    "speedTitle": "Скорость анимаций",
+    "speed": {
+      "calm": "Спокойно",
+      "normal": "Обычно",
+      "instant": "Мгновенно"
+    },
+    "cardScale": "Размер карт",
+    "scale": {
+      "small": "Мельче",
+      "normal": "Обычный",
+      "large": "Крупнее"
+    },
+    "effects": "Эффекты",
+    "batterySaver": "Экономия батареи",
+    "batterySaverDescription": "Меньше анимаций и эффектов — заряд держится дольше"
+  }
+}

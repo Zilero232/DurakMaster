@@ -1,0 +1,26 @@
+// Achievement progress. The catalogue itself — ids, thresholds, rewards — lives
+// in `@durak-master/schemas`, so the client and the server agree on it without
+// a database round trip.
+
+model AchievementProgress {
+  id String @id @default(cuid())
+
+  userId        String
+  achievementId String
+
+  /** Raw counter — games played, wins in a row, and so on. */
+  progress Int @default(0)
+
+  unlockedAt DateTime?
+  /** Set once the coins have been paid out, so a reward cannot be claimed twice. */
+  claimedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId, unlockedAt])
+  @@map("achievement_progress")
+}

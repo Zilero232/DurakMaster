@@ -1,14 +1,31 @@
-import type { TableSettings } from '@durak-master/schemas';
+import type { GameId, TableSettings } from '@durak-master/schemas';
 
 import {
+  burkozelRulesSchema,
+  commonTableSettingsSchema,
+  DEFAULT_BURKOZEL_RULES,
+  DEFAULT_COMMON_SETTINGS,
+  DEFAULT_DURAK_RULES,
+  DEFAULT_GAME,
+  DEFAULT_KOZEL_RULES,
   DEFAULT_TABLE_SETTINGS,
-  tableSettingsSchema,
+  durakRulesSchema,
+  gameIdSchema,
+  kozelRulesSchema,
+  PLAYER_RANGE_BY_GAME,
   TURN_SECONDS_BY_SPEED
 } from '@durak-master/schemas';
+import { clamp } from 'remeda';
+import { match } from 'ts-pattern';
 import { z } from 'zod';
 
-export const createTableFormSchema = tableSettingsSchema
+export const createTableFormSchema = commonTableSettingsSchema
   .extend({
+    game: gameIdSchema,
+
+    durakRules: durakRulesSchema,
+    burkozelRules: burkozelRulesSchema,
+    kozelRules: kozelRulesSchema,
     password: z.string().max(32)
   })
   .refine((values) => !values.isPrivate || values.password.trim().length > 0, {
@@ -18,13 +35,35 @@ export const createTableFormSchema = tableSettingsSchema
 export type CreateTableFormValues = z.infer<typeof createTableFormSchema>;
 
 export const CREATE_TABLE_DEFAULTS: CreateTableFormValues = {
-  ...DEFAULT_TABLE_SETTINGS,
+  ...DEFAULT_COMMON_SETTINGS,
+  game: DEFAULT_GAME,
   bet: 1_000,
+  durakRules: DEFAULT_DURAK_RULES,
+  burkozelRules: DEFAULT_BURKOZEL_RULES,
+  kozelRules: DEFAULT_KOZEL_RULES,
   password: ''
 };
 
-export const toTableSettings = (values: CreateTableFormValues): TableSettings => {
-  const { password: _password, ...settings } = values;
+export const clampPlayersToGame = (game: GameId, maxPlayers: number): number => {
+  const { min, max } = PLAYER_RANGE_BY_GAME[game];
 
-  return { ...settings, turnTimeoutSeconds: TURN_SECONDS_BY_SPEED[settings.speed] };
+  return clamp(maxPlayers, { min, max });
+};
+
+export const toTableSettings = (values: CreateTableFormValues): TableSettings => {
+  const { game, maxPlayers, bet, isPrivate, speed, durakRules, burkozelRules, kozelRules } = values;
+
+  const common = {
+    maxPlayers: clampPlayersToGame(game, maxPlayers),
+    bet,
+    isPrivate,
+    speed,
+    turnTimeoutSeconds: TURN_SECONDS_BY_SPEED[speed]
+  };
+
+  return match(game)
+    .with('durak', (id) => ({ ...common, game: id, rules: durakRules }))
+    .with('burkozel', (id) => ({ ...common, game: id, rules: burkozelRules }))
+    .with('kozel', (id) => ({ ...common, game: id, rules: kozelRules }))
+    .otherwise((id) => ({ ...DEFAULT_TABLE_SETTINGS[id], ...common }));
 };

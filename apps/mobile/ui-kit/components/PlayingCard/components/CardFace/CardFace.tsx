@@ -3,12 +3,12 @@ import { Text, View } from 'react-native';
 import type { CardFaceProps } from './CardFace.types';
 
 import { SuitIcon } from '../../../../icons';
-import { isRedSuit, rankLabel } from '../../../../lib';
+import { rankLabel, suitColor } from '../../../../theme';
 import { createStyles } from './CardFace.styles';
 
 export const CardFace = ({ card, width, theme }: CardFaceProps) => {
   const styles = createStyles(width);
-  const color = isRedSuit(card.suit) ? theme.red : theme.black;
+  const color = suitColor(theme, card.suit);
 
   return (
     <View style={styles.root}>

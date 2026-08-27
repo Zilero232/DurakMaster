@@ -7,6 +7,7 @@ import { PrismaModule } from './lib/prisma/prisma.module';
 import { GameModule } from './modules/game/game.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { RealtimeModule } from './modules/realtime/realtime.module';
+import { SocialModule } from './modules/social/social.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { RealtimeModule } from './modules/realtime/realtime.module';
     PrismaModule,
     AuthModule,
     ProfileModule,
+    SocialModule,
     GameModule,
     RealtimeModule
   ],

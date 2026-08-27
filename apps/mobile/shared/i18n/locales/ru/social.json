@@ -1,0 +1,105 @@
+{
+  "friends": {
+    "title": "Друзья",
+    "tabs": {
+      "friends": "Друзья",
+      "requests": "Заявки",
+      "search": "Найти"
+    },
+    "online": "В сети",
+    "offline": "Не в сети",
+    "atTable": "За столом",
+    "incoming": "Вам предложили",
+    "outgoing": "Вы предложили",
+    "emptyFriends": "Пока никого",
+    "emptyRequests": "Заявок нет",
+    "searchPlaceholder": "Имя игрока",
+    "searchHint": "Введите имя игрока",
+    "nothingFound": "Никого не нашлось",
+    "action": {
+      "add": "Добавить в друзья",
+      "accept": "Принять",
+      "invite": "Позвать за стол",
+      "remove": "Убрать",
+      "decline": "Отклонить"
+    },
+    "invited": "{{name}} зовёт за стол",
+    "emptyFriendsHint": "Найдите игроков по имени и позовите в друзья — вместе играть веселее",
+    "emptyRequestsHint": "Здесь появятся приглашения в друзья"
+  },
+  "achievements": {
+    "title": "Достижения",
+    "unlocked": "получено",
+    "claim": "Забрать",
+    "firstGame": {
+      "title": "Первая партия",
+      "description": "Сыграйте одну партию"
+    },
+    "tenGames": {
+      "title": "Разыгрался",
+      "description": "Сыграйте 10 партий"
+    },
+    "hundredGames": {
+      "title": "Завсегдатай",
+      "description": "Сыграйте 100 партий"
+    },
+    "thousandGames": {
+      "title": "Ветеран стола",
+      "description": "Сыграйте 1000 партий"
+    },
+    "firstWin": {
+      "title": "Первая победа",
+      "description": "Выиграйте партию"
+    },
+    "tenWins": {
+      "title": "Уверенная рука",
+      "description": "Выиграйте 10 партий"
+    },
+    "hundredWins": {
+      "title": "Мастер",
+      "description": "Выиграйте 100 партий"
+    },
+    "winStreak3": {
+      "title": "Три подряд",
+      "description": "Выиграйте три партии подряд"
+    },
+    "winStreak5": {
+      "title": "Пять подряд",
+      "description": "Выиграйте пять партий подряд"
+    },
+    "winStreak10": {
+      "title": "Десять подряд",
+      "description": "Выиграйте десять партий подряд"
+    },
+    "flawless": {
+      "title": "Чисто",
+      "description": "Выиграйте, ни разу не взяв карты"
+    },
+    "allTrumps": {
+      "title": "Козырная рука",
+      "description": "Закончите партию с одними козырями"
+    },
+    "loginStreak7": {
+      "title": "Неделя",
+      "description": "Заходите семь дней подряд"
+    },
+    "loginStreak30": {
+      "title": "Месяц",
+      "description": "Заходите тридцать дней подряд"
+    },
+    "allGames": {
+      "title": "Все игры",
+      "description": "Сыграйте во все четыре игры"
+    },
+    "firstFriend": {
+      "title": "Не один",
+      "description": "Добавьте первого друга"
+    },
+    "unlockedToast": "{{title}} — получено! +{{reward}} монет"
+  },
+  "leaderboard": {
+    "title": "Рейтинг",
+    "yourPlace": "ваше место",
+    "empty": "Рейтинг пока пуст"
+  }
+}

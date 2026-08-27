@@ -1,0 +1,84 @@
+{
+  "rules": {
+    "title": "Rules",
+    "close": "Got it",
+    "durak": {
+      "deal": {
+        "title": "Deck and deal",
+        "text": "The game uses a 24, 36 or 52 card deck. Everyone gets six cards, the next one is turned face up under the deck — its suit is trump for the whole game. That trump card stays part of the deck and is drawn last."
+      },
+      "firstMove": {
+        "title": "First move",
+        "text": "The holder of the lowest trump leads. If nobody has a trump, the lowest card leads. The player to the attacker's left defends."
+      },
+      "defend": {
+        "title": "Defending",
+        "text": "Beat a card with a higher card of the same suit, or with any trump if the attack is not a trump. A trump can only be beaten by a higher trump — suits never mix."
+      },
+      "throwIn": {
+        "title": "Throwing in",
+        "text": "You may only throw in a rank already on the table — both attacking cards and the ones used to defend count. The number of attacking cards in a bout never exceeds six, nor the defender's hand size at the start of the bout."
+      },
+      "endBout": {
+        "title": "Ending a bout",
+        "text": "If everything is beaten and nobody throws in, all cards go to the discard and the defender becomes the attacker. If the defender takes, they collect everything including their own defending cards, and the turn passes to the next player after them."
+      },
+      "draw": {
+        "title": "Drawing",
+        "text": "After each bout players draw back up to six: the attacker first, then anyone who threw in clockwise, the defender last. Once the deck is empty there is no drawing."
+      },
+      "end": {
+        "title": "End of the game",
+        "text": "A player left with no cards while the deck is empty is out and safe. The fool is the last one holding cards. If everyone runs out at once and draws are enabled, the game is a draw."
+      }
+    },
+    "kozel": {
+      "deal": {
+        "title": "Deck and deal",
+        "text": "32 cards — the sixes come out of the usual 36. Each player is dealt eight cards and the whole deck goes into the hands: there is no talon. A deal is exactly eight tricks."
+      },
+      "teams": {
+        "title": "Teams",
+        "text": "Four players, two against two. Partners sit opposite each other, so players alternate around the circle. The tricks of both partners go into one shared team score."
+      },
+      "trump": {
+        "title": "Trumps",
+        "text": "Trump is not chosen — the rules fix it. There are fourteen trumps: all four queens, all four jacks and the six remaining clubs. The queen of diamonds is a trump, not a diamond: it does not answer a lead in diamonds."
+      },
+      "order": {
+        "title": "Card ranking",
+        "text": "Trumps: 7♣ (shamok) > Q♣ > Q♠ > Q♥ > Q♦ > J♣ > J♠ > J♥ > J♦ > A♣ > 10♣ > K♣ > 9♣ > 8♣. In plain suits: ace > ten > king > 9 > 8 > 7 — the ten beats the king."
+      },
+      "play": {
+        "title": "Playing",
+        "text": "There is exactly one obligation: follow the led suit if you hold it. Beating is not required, and neither is trumping when you are out of the suit. The strongest trump takes the trick; with no trump in it, the highest card of the led suit does."
+      },
+      "points": {
+        "title": "Card values",
+        "text": "Ace 11, ten 10, king 4, queen 3, jack 2, the rest 0 — 120 points in the deck. Strength and value are unrelated: 7♣ is the strongest card and is worth nothing."
+      },
+      "score": {
+        "title": "Scoring",
+        "text": "Winning a deal takes 61 points. The winner scores one \"pair\", or two at 90+ points when the loser missed spas (31 points). Taking every trick and all 120 points is a \"lyusya\": it resets the opponent to zero and pays no pairs. The game runs to six pairs."
+      }
+    },
+    "burkozel": {
+      "deal": {
+        "title": "Deck and deal",
+        "text": "36 cards, four to each player. The trump is set by the card under the deck. After every trick players draw back up to four until the deck runs out."
+      },
+      "order": {
+        "title": "Ranking and values",
+        "text": "The order is ace > ten > king > queen > jack > 9 > 8 > 7 > 6. Values: ace 11, ten 10, king 4, queen 3, jack 2 — 120 points in all."
+      },
+      "play": {
+        "title": "Playing",
+        "text": "You may lead one card or several of one suit. The answer holds the same number of cards: to take the trick, every card must be beaten."
+      },
+      "score": {
+        "title": "Scoring",
+        "text": "At the end of a deal the points in the tricks are counted. Whoever falls short of the threshold takes penalty points, and a player drops out once their penalties pass the table limit."
+      }
+    }
+  }
+}

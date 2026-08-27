@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -12,12 +12,12 @@ export const styles = StyleSheet.create({
     paddingVertical: spacing[4],
     paddingHorizontal: spacing[2],
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.glassBorder,
-    backgroundColor: colors.border
+    borderColor: colors.border,
+    backgroundColor: colors.transparent
   },
 
   pressed: {
-    backgroundColor: colors.glassBorder
+    backgroundColor: colors.glass
   },
 
   locked: {
@@ -28,6 +28,15 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[2]
+  },
+
+  halo: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 44,
+    height: 44,
+    borderRadius: radii.pill,
+    borderWidth: StyleSheet.hairlineWidth
   },
 
   badge: {

@@ -1,61 +1,67 @@
-import { Layers, Settings } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { useBoolean } from '@siberiacancode/reactuse';
+import { View } from 'react-native';
 
-import { QuickPhrases } from '@/features/game/quick-phrases';
-import { Button, colors } from '@/ui-kit';
+import { WalletChip } from '@/entities/game-table';
+import { TableEmojis } from '@/features/game/table-emojis';
+import { useLayout } from '@/shared/model/layout';
 
 import type { TableActionsProps } from './TableActions.types';
 
+import { BoostBar, MoveButton, SeatButton } from './components';
 import { styles } from './TableActions.styles';
 
 export const TableActions = ({
-  discardCount,
+  profile,
+  chatter,
+  isMyTurn,
+  turnDeadline,
+  turnSeconds,
   canTake,
   canPass,
+  onSendEmoji,
   onSendPhrase,
-  onOpenDiscard,
-  onOpenSettings,
+  onUseBoost,
   onTake,
-  onPass
+  onPass,
+  onLeave
 }: TableActionsProps) => {
-  const { t } = useTranslation();
+  const { isWide } = useLayout();
+
+  const [isEmojisOpen, toggleEmojis] = useBoolean(false);
 
   return (
-    <View style={styles.root}>
-      <View style={styles.tools}>
-        <QuickPhrases onSend={onSendPhrase} />
+    <View style={styles.wrap}>
+      {profile && (
+        <View style={styles.walletRow}>
+          <WalletChip coins={profile.coins} credits={profile.credits} />
+        </View>
+      )}
 
-        <Pressable
-          accessibilityLabel={t('discard.open')}
-          accessibilityRole='button'
-          hitSlop={8}
-          style={styles.tool}
-          onPress={onOpenDiscard}
-        >
-          <Layers color={colors.onFelt} size={18} />
-          <Text style={styles.toolCount}>{discardCount}</Text>
-        </Pressable>
+      <View style={styles.root}>
+        <MoveButton canPass={canPass} canTake={canTake} onPass={onPass} onTake={onTake} />
 
-        <Pressable
-          accessibilityLabel={t('settings.title')}
-          accessibilityRole='button'
-          hitSlop={8}
-          style={styles.tool}
-          onPress={onOpenSettings}
-        >
-          <Settings color={colors.onFelt} size={18} />
-        </Pressable>
-      </View>
+        <SeatButton
+          chatter={chatter}
+          isMyTurn={isMyTurn}
+          profile={profile}
+          turnDeadline={turnDeadline}
+          turnSeconds={turnSeconds}
+          onPress={() => toggleEmojis(true)}
+        />
 
-      <View style={styles.moves}>
-        <Button isFullWidth isDisabled={!canTake} variant='danger' onPress={onTake}>
-          {t('table.take')}
-        </Button>
+        <BoostBar
+          coins={profile?.coins ?? 0}
+          hasLeaveButton={isWide}
+          onLeave={onLeave}
+          onUseBoost={onUseBoost}
+        />
 
-        <Button isFullWidth isDisabled={!canPass} variant='primary' onPress={onPass}>
-          {t('table.pass')}
-        </Button>
+        <TableEmojis
+          isOpen={isEmojisOpen}
+          onClose={() => toggleEmojis(false)}
+          onSendEmoji={onSendEmoji}
+          onSendPhrase={onSendPhrase}
+        />
       </View>
     </View>
   );

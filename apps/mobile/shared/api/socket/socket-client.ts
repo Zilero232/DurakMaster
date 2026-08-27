@@ -5,9 +5,14 @@ import { WebSocket as ReconnectingWebSocket } from 'partysocket';
 
 export type SocketHandler = (message: ServerMessage) => void;
 
+export type SocketState = 'closed' | 'connecting' | 'open';
+
+export type SocketStateHandler = (state: SocketState) => void;
+
 export class SocketClient {
   private socket: ReconnectingWebSocket | null = null;
   private readonly handlers = new Set<SocketHandler>();
+  private readonly stateHandlers = new Set<SocketStateHandler>();
   private pending: ClientMessage[] = [];
 
   connect(url: string): void {
@@ -22,6 +27,8 @@ export class SocketClient {
       maxRetries: Number.POSITIVE_INFINITY
     });
 
+    this.notifyState('connecting');
+
     this.socket.addEventListener('open', () => {
       const queued = this.pending;
 
@@ -30,6 +37,16 @@ export class SocketClient {
       for (const message of queued) {
         this.send(message);
       }
+
+      this.notifyState('open');
+    });
+
+    this.socket.addEventListener('close', () => {
+      this.notifyState('closed');
+    });
+
+    this.socket.addEventListener('error', () => {
+      this.notifyState('closed');
     });
 
     this.socket.addEventListener('message', (event) => {
@@ -57,6 +74,7 @@ export class SocketClient {
     this.socket?.close();
     this.socket = null;
     this.pending = [];
+    this.notifyState('closed');
   }
 
   send(message: ClientMessage): void {
@@ -75,8 +93,20 @@ export class SocketClient {
     return () => this.handlers.delete(handler);
   }
 
+  subscribeState(handler: SocketStateHandler): () => void {
+    this.stateHandlers.add(handler);
+
+    return () => this.stateHandlers.delete(handler);
+  }
+
+  private notifyState(state: SocketState): void {
+    for (const handler of this.stateHandlers) {
+      handler(state);
+    }
+  }
+
   get isConnected(): boolean {
-    return this.socket?.readyState === this.socket?.OPEN;
+    return this.socket !== null && this.socket.readyState === this.socket.OPEN;
   }
 }
 

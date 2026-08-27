@@ -13,12 +13,14 @@ export const styles = StyleSheet.create({
   },
 
   option: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     minWidth: 44,
     height: 44,
-    borderRadius: radii.pill
+    borderRadius: radii.pill,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 'auto'
   },
 
   optionActive: {

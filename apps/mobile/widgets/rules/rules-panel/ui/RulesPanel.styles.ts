@@ -1,8 +1,12 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, lineHeight, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
+  root: {
+    gap: spacing[5]
+  },
+
   sections: {
     gap: spacing[5]
   },
@@ -13,14 +17,15 @@ export const styles = StyleSheet.create({
 
   heading: {
     fontSize: fontSize.lg,
-    fontWeight: '700',
     fontFamily: fontFamily.sansBold,
     color: colors.accent
   },
 
   text: {
     fontSize: fontSize.md,
-    lineHeight: 22,
+    fontFamily: fontFamily.sans,
+
+    lineHeight: lineHeight.relaxed(fontSize.md),
     color: colors.mutedForeground
   }
 });

@@ -1,1 +1,1 @@
-export { rootLayoutStyles } from './root-layout.styles';
+export { RootLayout } from './ui/RootLayout';

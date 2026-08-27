@@ -1,7 +1,8 @@
 import type {
   GameAction,
-  GameState,
+  GameErrorCode,
   LobbyTable,
+  PlayerView,
   PublicProfile,
   QuickPhraseId,
   TablePhrase,
@@ -10,14 +11,12 @@ import type {
   TableStatus
 } from '@durak-master/schemas';
 
-import {
-  createGame,
-  decideBotAction,
-  decideTimeoutAction,
-  reduce,
-  toPlayerView
-} from '@durak-master/game-core';
+import { Logger } from '@nestjs/common';
 import { randomInt, randomUUID } from 'node:crypto';
+
+import type { GameSession } from './game-session';
+
+import { createGameSession } from './game-session';
 
 export type RoomMember = {
   profile: PublicProfile;
@@ -37,8 +36,9 @@ export class GameRoom {
   readonly id: string;
   readonly createdAt = Date.now();
 
+  private readonly logger = new Logger(GameRoom.name);
   private members = new Map<string, RoomMember>();
-  private state: GameState | null = null;
+  private session: GameSession | null = null;
   private status: TableStatus = 'waiting';
   private turnTimer: NodeJS.Timeout | null = null;
   private botTimer: NodeJS.Timeout | null = null;
@@ -108,14 +108,7 @@ export class GameRoom {
     if (this.status === 'playing') {
       member.isConnected = false;
 
-      if (this.state) {
-        this.state = {
-          ...this.state,
-          players: this.state.players.map((player) =>
-            player.userId === userId ? { ...player, isDisconnected: true } : player
-          )
-        };
-      }
+      this.session?.markDisconnected(userId, true);
 
       this.emit({ type: 'state-changed' });
 
@@ -135,14 +128,7 @@ export class GameRoom {
 
     member.isConnected = true;
 
-    if (this.state) {
-      this.state = {
-        ...this.state,
-        players: this.state.players.map((player) =>
-          player.userId === userId ? { ...player, isDisconnected: false } : player
-        )
-      };
-    }
+    this.session?.markDisconnected(userId, false);
 
     this.emit({ type: 'state-changed' });
 
@@ -180,7 +166,7 @@ export class GameRoom {
     const members = this.getMembers();
 
     this.status = 'playing';
-    this.state = createGame({
+    this.session = createGameSession({
       tableId: this.id,
       settings: this.settings,
       userIds: members.map((member) => member.profile.userId),
@@ -192,40 +178,41 @@ export class GameRoom {
     this.emit({ type: 'state-changed' });
   }
 
-  applyAction(userId: string, action: GameAction, expectedVersion: number): string | null {
-    if (!this.state || this.status !== 'playing') {
+  applyAction(userId: string, action: GameAction, expectedVersion: number): GameErrorCode | null {
+    if (!this.session || this.status !== 'playing') {
       return 'GAME_NOT_ACTIVE';
     }
 
-    if (expectedVersion !== this.state.version) {
+    if (expectedVersion !== this.session.state.version) {
       return 'VERSION_MISMATCH';
     }
 
-    const result = reduce(this.state, userId, action);
+    const error = this.session.apply(userId, action);
 
-    if (!result.ok) {
-      return result.error;
+    if (error) {
+      return error;
     }
 
-    this.state = result.state;
     this.afterStateChange();
 
     return null;
   }
 
   private afterStateChange(): void {
-    if (!this.state) {
+    if (!this.session) {
       return;
     }
 
-    if (this.state.phase === 'finished') {
+    if (this.session.state.phase === 'finished') {
+      const outcome = this.session.getOutcome();
+
       this.status = 'finished';
       this.clearTimers();
       this.emit({ type: 'state-changed' });
       this.emit({
         type: 'finished',
-        loserUserId: this.state.loserUserId,
-        isDraw: this.state.isDraw
+        loserUserId: outcome.loserUserId,
+        isDraw: outcome.isDraw
       });
 
       return;
@@ -242,11 +229,11 @@ export class GameRoom {
       this.turnTimer = null;
     }
 
-    if (!this.state || this.state.phase === 'finished') {
+    if (!this.session || this.session.state.phase === 'finished') {
       return;
     }
 
-    const activeMember = this.getMembers().find((member) => member.seat === this.state?.activeSeat);
+    const activeMember = this.getActiveMember();
 
     if (!activeMember || activeMember.isBot) {
       return;
@@ -254,27 +241,23 @@ export class GameRoom {
 
     const timeoutMs = this.settings.turnTimeoutSeconds * 1000;
 
-    this.state = { ...this.state, turnDeadline: Date.now() + timeoutMs };
+    this.session.setTurnDeadline(Date.now() + timeoutMs);
 
     this.turnTimer = setTimeout(() => this.handleTurnTimeout(), timeoutMs);
   }
 
   private handleTurnTimeout(): void {
-    if (!this.state || this.status !== 'playing') {
+    if (!this.session || this.status !== 'playing') {
       return;
     }
 
-    const activeMember = this.getMembers().find((member) => member.seat === this.state?.activeSeat);
+    const activeMember = this.getActiveMember();
 
     if (!activeMember) {
       return;
     }
 
-    const action = decideTimeoutAction(this.state, activeMember.profile.userId);
-    const result = reduce(this.state, activeMember.profile.userId, action);
-
-    if (result.ok) {
-      this.state = result.state;
+    if (this.session.applyTimeout(activeMember.profile.userId)) {
       this.afterStateChange();
     }
   }
@@ -285,39 +268,35 @@ export class GameRoom {
       this.botTimer = null;
     }
 
-    if (!this.state || this.state.phase === 'finished') {
+    if (!this.session || this.session.state.phase === 'finished') {
       return;
     }
 
-    const activeMember = this.getMembers().find((member) => member.seat === this.state?.activeSeat);
+    const activeMember = this.getActiveMember();
 
     if (!activeMember?.isBot) {
       return;
     }
 
     this.botTimer = setTimeout(() => {
-      if (!this.state || this.status !== 'playing') {
+      if (!this.session || this.status !== 'playing') {
         return;
       }
 
-      const userId = activeMember.profile.userId;
-      const action = decideBotAction(this.state, userId);
-      const result = reduce(this.state, userId, action);
-
-      if (result.ok) {
-        this.state = result.state;
+      if (this.session.applyBotTurn(activeMember.profile.userId)) {
         this.afterStateChange();
 
         return;
       }
 
-      const fallback = reduce(this.state, userId, { type: 'pass' });
-
-      if (fallback.ok) {
-        this.state = fallback.state;
-        this.afterStateChange();
-      }
+      this.logger.warn(`Bot turn produced no legal action in room ${this.id}`);
     }, 700);
+  }
+
+  private getActiveMember(): RoomMember | undefined {
+    const activeSeat = this.session?.state.activeSeat;
+
+    return this.getMembers().find((member) => member.seat === activeSeat);
   }
 
   sendPhrase(userId: string, phraseId: QuickPhraseId): TablePhrase | null {
@@ -348,12 +327,20 @@ export class GameRoom {
     this.emit({ type: 'emoji', userId, emoji });
   }
 
-  getViewFor(userId: string) {
-    if (!this.state) {
-      return null;
+  getViewFor(userId: string): PlayerView | null {
+    return this.session?.getViewFor(userId) ?? null;
+  }
+
+  updateProfile(userId: string, patch: Pick<PublicProfile, 'avatarUrl' | 'name'>): boolean {
+    const member = this.members.get(userId);
+
+    if (!member) {
+      return false;
     }
 
-    return toPlayerView(this.state, userId);
+    member.profile = { ...member.profile, ...patch };
+
+    return true;
   }
 
   getProfiles(): PublicProfile[] {

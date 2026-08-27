@@ -24,7 +24,6 @@ const bootstrap = async () => {
 
   await app.listen(port);
 
-  // eslint-disable-next-line no-console
   console.log(`DurakMaster API: http://localhost:${port}`);
 };
 

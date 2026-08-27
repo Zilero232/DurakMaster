@@ -9,17 +9,22 @@ import type {
 import type { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit } from '@nestjs/websockets';
 import type { WebSocket } from 'ws';
 
-import { clientMessageSchema, computeRatingGain } from '@durak-master/schemas';
+import { clientMessageSchema, computeRatingGain, INVITE_TTL_MS } from '@durak-master/schemas';
 import { Logger } from '@nestjs/common';
 import { WebSocketGateway } from '@nestjs/websockets';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 
+import type { FinishedPlayer } from '../game/game-history.service';
 import type { RoomEvent } from '../game/game-room';
 
 import { AuthService } from '../../lib/auth/auth.service';
+import { GameHistoryService } from '../game/game-history.service';
 import { RoomsService } from '../game/rooms.service';
 import { hashTablePassword, verifyTablePassword } from '../game/table-password';
 import { ProfilesService } from '../profile/profiles.service';
+import { AchievementsService } from '../social/achievements.service';
+import { FriendsService } from '../social/friends.service';
+import { LeaderboardService } from '../social/leaderboard.service';
 import { SessionsService } from './sessions.service';
 
 type Socket = WebSocket & { userId?: string; isAlive?: boolean };
@@ -40,7 +45,11 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     private readonly rooms: RoomsService,
     private readonly sessions: SessionsService,
     private readonly auth: AuthService,
-    private readonly profiles: ProfilesService
+    private readonly profiles: ProfilesService,
+    private readonly friends: FriendsService,
+    private readonly achievements: AchievementsService,
+    private readonly leaderboard: LeaderboardService,
+    private readonly history: GameHistoryService
   ) {}
 
   private toHeaders(request: {
@@ -96,11 +105,11 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
 
     const dispatch = (raw: Buffer) => {
       this.handleMessage(socket, raw).catch((error) => {
-        this.logger.error(`Ошибка обработки сообщения от ${socket.userId}`, error);
+        this.logger.error(`Failed to handle a message from ${socket.userId}`, error);
 
         this.send(socket, {
           type: 'error',
-          payload: { message: 'Внутренняя ошибка', code: 'INTERNAL_ERROR' }
+          payload: { message: 'Internal error', code: 'INTERNAL_ERROR' }
         });
       });
     };
@@ -124,7 +133,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     if (!userId) {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'Требуется вход', code: 'UNAUTHORIZED' }
+        payload: { message: 'Sign in required', code: 'UNAUTHORIZED' }
       });
       socket.close(4401, 'Unauthorized');
 
@@ -144,6 +153,8 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     this.sockets.set(profile.userId, socket);
 
     this.send(socket, { type: 'connected', payload: { profile } });
+
+    void this.recordVisit(profile.userId, socket);
 
     isReady = true;
 
@@ -188,7 +199,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     } catch {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'Слишком много запросов', code: 'RATE_LIMITED' }
+        payload: { message: 'Too many requests', code: 'RATE_LIMITED' }
       });
 
       return;
@@ -201,7 +212,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     } catch {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'Некорректное сообщение', code: 'BAD_MESSAGE' }
+        payload: { message: 'Malformed message', code: 'BAD_MESSAGE' }
       });
 
       return;
@@ -232,22 +243,115 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
         await this.handleJoinTable(socket, userId, message.payload);
         break;
 
-      case 'table:leave':
+      case 'table:leave': {
+        const room = this.rooms.getRoomOfUser(userId);
+
         this.rooms.leave(userId);
         this.send(socket, { type: 'table:left' });
+
+        if (room) {
+          this.broadcastTable(room.id);
+        }
+
         this.broadcastLobby();
         break;
+      }
 
       case 'table:ready': {
         const room = this.rooms.getRoomOfUser(userId);
 
         room?.setReady(userId, message.payload.isReady);
+
+        if (room) {
+          this.broadcastTable(room.id);
+        }
+
         break;
       }
 
       case 'table:add-bot':
         this.handleAddBot(socket, userId);
         break;
+
+      case 'profile:set-avatar': {
+        const profile = await this.profiles.setAvatar(userId, message.payload.seed);
+
+        this.send(socket, { type: 'profile:updated', payload: { profile } });
+        this.refreshSeatedProfile(userId, profile);
+        break;
+      }
+
+      case 'profile:set-name': {
+        const profile = await this.profiles.setName(userId, message.payload.name);
+
+        this.send(socket, { type: 'profile:updated', payload: { profile } });
+        this.refreshSeatedProfile(userId, profile);
+        break;
+      }
+
+      case 'friends:list':
+        await this.sendFriendList(socket, userId);
+        break;
+
+      case 'friends:search': {
+        const profiles = await this.friends.search(userId, message.payload.query);
+
+        this.send(socket, { type: 'friends:found', payload: { profiles } });
+        break;
+      }
+
+      case 'friends:request':
+        await this.handleFriendAction(socket, userId, message.payload.userId, 'request');
+        break;
+
+      case 'friends:accept':
+        await this.handleFriendAction(socket, userId, message.payload.userId, 'accept');
+        break;
+
+      case 'friends:decline':
+        await this.handleFriendAction(socket, userId, message.payload.userId, 'decline');
+        break;
+
+      case 'friends:remove':
+        await this.handleFriendAction(socket, userId, message.payload.userId, 'remove');
+        break;
+
+      case 'friends:invite':
+        await this.handleInvite(socket, userId, message.payload.userId);
+        break;
+
+      case 'leaderboard:list': {
+        const leaderboard = await this.leaderboard.top(userId);
+
+        this.send(socket, { type: 'leaderboard:list', payload: leaderboard });
+        break;
+      }
+
+      case 'achievements:list': {
+        const achievements = await this.achievements.list(userId);
+
+        this.send(socket, { type: 'achievements:list', payload: { achievements } });
+        break;
+      }
+
+      case 'achievements:claim': {
+        const result = await this.achievements.claim(userId, message.payload.achievementId);
+
+        if ('error' in result) {
+          this.send(socket, {
+            type: 'error',
+            payload: { message: 'That reward is not available', code: result.error }
+          });
+
+          break;
+        }
+
+        this.send(socket, {
+          type: 'profile:updated',
+          payload: { profile: await this.profiles.ensureProfile(userId) }
+        });
+        break;
+      }
 
       case 'profile:claim-bonus':
         await this.handleClaimBonus(socket, userId);
@@ -290,7 +394,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     if (!(await this.profiles.canAfford(userId, payload.settings.bet))) {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'Не хватает кредитов на эту ставку', code: 'NOT_ENOUGH_CREDITS' }
+        payload: { message: 'Not enough credits for this bet', code: 'NOT_ENOUGH_CREDITS' }
       });
 
       return;
@@ -299,7 +403,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     if (payload.settings.isPrivate && !payload.password) {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'Приватный стол требует пароль', code: 'PASSWORD_REQUIRED' }
+        payload: { message: 'A private table needs a password', code: 'PASSWORD_REQUIRED' }
       });
 
       return;
@@ -311,6 +415,9 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     const room = this.rooms.createRoom(payload.settings, passwordHash);
 
     this.rooms.join(room, profile);
+
+    void this.history.ensureTable(room.id, room.settings, passwordHash);
+
     this.sendTableJoined(userId, room.id);
     this.broadcastLobby();
   }
@@ -326,7 +433,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     if (!profile || !room) {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'Стол не найден', code: 'TABLE_NOT_FOUND' }
+        payload: { message: 'Table not found', code: 'TABLE_NOT_FOUND' }
       });
 
       return;
@@ -338,7 +445,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
       if (!payload.password || !verifyTablePassword(payload.password, room.passwordHash)) {
         this.send(socket, {
           type: 'error',
-          payload: { message: 'Неверный пароль стола', code: 'WRONG_PASSWORD' }
+          payload: { message: 'Wrong table password', code: 'WRONG_PASSWORD' }
         });
 
         return;
@@ -348,7 +455,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     if (!(await this.profiles.canAfford(userId, room.settings.bet))) {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'Не хватает кредитов на эту ставку', code: 'NOT_ENOUGH_CREDITS' }
+        payload: { message: 'Not enough credits for this bet', code: 'NOT_ENOUGH_CREDITS' }
       });
 
       return;
@@ -357,13 +464,14 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     if (!this.rooms.join(room, profile)) {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'За столом нет мест', code: 'TABLE_FULL' }
+        payload: { message: 'The table is full', code: 'TABLE_FULL' }
       });
 
       return;
     }
 
     this.sendTableJoined(userId, room.id);
+    this.broadcastTable(room.id);
     this.broadcastLobby();
   }
 
@@ -377,7 +485,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     if (room.isPlaying || room.isFull) {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'За столом нет мест', code: 'TABLE_FULL' }
+        payload: { message: 'The table is full', code: 'TABLE_FULL' }
       });
 
       return;
@@ -388,7 +496,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     room.join(
       {
         userId: `bot:${room.id}:${index}`,
-        name: `Бот ${index}`,
+        name: `Bot ${index}`,
         avatarUrl: null,
         rating: 0,
         seasonRating: 0,
@@ -401,6 +509,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
       true
     );
 
+    this.broadcastTable(room.id);
     this.broadcastLobby();
   }
 
@@ -410,13 +519,27 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     if (!profile) {
       this.send(socket, {
         type: 'error',
-        payload: { message: 'Бонус пока недоступен', code: 'BONUS_NOT_READY' }
+        payload: { message: 'Bonus is not available yet', code: 'BONUS_NOT_READY' }
       });
 
       return;
     }
 
     this.send(socket, { type: 'profile:updated', payload: { profile } });
+  }
+
+  private refreshSeatedProfile(
+    userId: string,
+    profile: { avatarUrl: string | null; name: string }
+  ): void {
+    const room = this.rooms.getRoomOfUser(userId);
+
+    if (!room?.updateProfile(userId, { name: profile.name, avatarUrl: profile.avatarUrl })) {
+      return;
+    }
+
+    this.broadcastTable(room.id);
+    this.broadcastLobby();
   }
 
   private handleGameAction(
@@ -486,6 +609,8 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     const winners = members.filter((member) => member.profile.userId !== loserUserId);
     const prize = isDraw || winners.length === 0 ? 0 : Math.floor(bet / winners.length);
 
+    const played: FinishedPlayer[] = [];
+
     for (const member of members) {
       const userId = member.profile.userId;
       const isLoser = userId === loserUserId;
@@ -500,7 +625,19 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
           isWinner: !isLoser && !isDraw,
           isDraw
         });
+
+        played.push({ userId, seat: member.seat, creditsDelta, ratingDelta, isLoser });
       }
+
+      const unlocked = member.isBot
+        ? []
+        : await this.achievements.recordGame(userId, {
+            isWin: !isLoser && !isDraw,
+
+            isFlawless: false,
+            endedOnTrumps: false,
+            game: room.settings.game
+          });
 
       const socket = this.sockets.get(userId);
 
@@ -513,13 +650,27 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
         payload: { loserUserId, isDraw, creditsDelta, ratingDelta }
       });
 
-      if (!member.isBot) {
-        this.send(socket, {
-          type: 'profile:updated',
-          payload: { profile: await this.sessions.reload(userId) }
-        });
+      if (member.isBot) {
+        continue;
       }
+
+      if (unlocked.length > 0) {
+        this.send(socket, { type: 'achievements:unlocked', payload: { ids: unlocked } });
+      }
+
+      this.send(socket, {
+        type: 'profile:updated',
+        payload: { profile: await this.sessions.reload(userId) }
+      });
     }
+
+    void this.history.recordFinishedGame({
+      tableId: room.id,
+      settings: room.settings,
+      players: played,
+      loserUserId,
+      isDraw
+    });
   }
 
   private sendGameState(roomId: string): void {
@@ -577,6 +728,138 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
         this.send(socket, message);
       }
     }
+  }
+
+  private async recordVisit(userId: string, socket: Socket): Promise<void> {
+    const streak = await this.profiles.recordLogin(userId);
+    const unlocked = await this.achievements.recordLoginStreak(userId, streak);
+
+    if (unlocked.length > 0) {
+      this.send(socket, { type: 'achievements:unlocked', payload: { ids: unlocked } });
+    }
+  }
+
+  private async sendFriendList(socket: Socket, userId: string): Promise<void> {
+    const list = await this.friends.list(userId);
+
+    const withPresence = {
+      friends: list.friends.map((friend) => ({
+        ...friend,
+        profile: {
+          ...friend.profile,
+          isOnline: this.sockets.has(friend.profile.userId)
+        },
+        tableId: this.rooms.getRoomOfUser(friend.profile.userId)?.id ?? null
+      })),
+      incoming: list.incoming,
+      outgoing: list.outgoing
+    };
+
+    this.send(socket, { type: 'friends:list', payload: withPresence });
+  }
+
+  private async handleFriendAction(
+    socket: Socket,
+    userId: string,
+    targetId: string,
+    action: 'accept' | 'decline' | 'remove' | 'request'
+  ): Promise<void> {
+    const result = await this[`friend_${action}`](userId, targetId);
+
+    if ('error' in result) {
+      this.send(socket, {
+        type: 'error',
+        payload: { message: 'Could not update the friend list', code: result.error }
+      });
+
+      return;
+    }
+
+    await this.sendFriendList(socket, userId);
+
+    const otherSocket = this.sockets.get(targetId);
+
+    if (otherSocket) {
+      await this.sendFriendList(otherSocket, targetId);
+    }
+
+    if (action === 'accept') {
+      await this.achievements.recordFriend(userId);
+      await this.achievements.recordFriend(targetId);
+    }
+  }
+
+  private friend_request(userId: string, targetId: string) {
+    return this.friends.request(userId, targetId);
+  }
+
+  private friend_accept(userId: string, targetId: string) {
+    return this.friends.accept(userId, targetId);
+  }
+
+  private friend_decline(userId: string, targetId: string) {
+    return this.friends.decline(userId, targetId);
+  }
+
+  private friend_remove(userId: string, targetId: string) {
+    return this.friends.remove(userId, targetId);
+  }
+
+  private async handleInvite(socket: Socket, userId: string, targetId: string): Promise<void> {
+    const room = this.rooms.getRoomOfUser(userId);
+
+    if (!room) {
+      this.send(socket, {
+        type: 'error',
+        payload: { message: 'You are not at a table', code: 'TABLE_NOT_FOUND' }
+      });
+
+      return;
+    }
+
+    if (!(await this.friends.areFriends(userId, targetId))) {
+      this.send(socket, {
+        type: 'error',
+        payload: { message: 'You are not friends', code: 'NOT_FRIENDS' }
+      });
+
+      return;
+    }
+
+    const targetSocket = this.sockets.get(targetId);
+    const from = await this.profiles.getPublicProfile(userId);
+
+    if (!targetSocket || !from) {
+      this.send(socket, {
+        type: 'error',
+        payload: { message: 'That player is offline', code: 'FRIEND_OFFLINE' }
+      });
+
+      return;
+    }
+
+    this.send(targetSocket, {
+      type: 'friends:invited',
+      payload: {
+        id: `${userId}:${room.id}`,
+        from,
+        tableId: room.id,
+        expiresAt: Date.now() + INVITE_TTL_MS
+      }
+    });
+  }
+
+  private broadcastTable(roomId: string): void {
+    const room = this.rooms.getRoom(roomId);
+
+    if (!room) {
+      return;
+    }
+
+    this.broadcastToRoom(roomId, {
+      type: 'lobby:table-updated',
+      payload: { table: room.toLobbyTable() }
+    });
   }
 
   private broadcastLobby(): void {

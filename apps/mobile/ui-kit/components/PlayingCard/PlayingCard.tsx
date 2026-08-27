@@ -3,7 +3,8 @@ import { Pressable, View } from 'react-native';
 
 import type { PlayingCardProps } from './PlayingCard.types';
 
-import { cardSize, useCardTheme } from '../../theme';
+import { cardSize } from '../../theme';
+import { useCardTheme } from './card-theme-context';
 import { CardBack, CardFace } from './components';
 import { createStyles, getSelectedLift } from './PlayingCard.styles';
 

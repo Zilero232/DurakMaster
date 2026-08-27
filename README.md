@@ -1,95 +1,95 @@
 # DurakMaster
 
-Онлайн-дурак: подкидной и переводной, 2–6 игроков, колоды 24/36/52.
-Android, iOS и веб — из одной кодовой базы.
+Online Durak: throw-in and transfer variants, 2–6 players, 24/36/52-card decks.
+Android, iOS and web — from a single codebase.
 
-## Стек
+## Stack
 
-| Слой               | Технология                                                                    |
-| ------------------ | ----------------------------------------------------------------------------- |
-| Клиент             | Expo SDK 57, React Native 0.86, Expo Router, TanStack Query, Zustand, i18next |
-| Стол               | Нативные вьюхи + Reanimated (без канваса)                                     |
-| Realtime           | `partysocket` ↔ `ws` + `@nestjs/platform-ws`                                  |
-| API                | NestJS 11 на Bun, Prisma 7, PostgreSQL, better-auth, nestjs-zod               |
-| Правила игры       | `packages/game-core` — чистые функции без зависимостей                        |
-| Состояние столов   | В памяти ноды, снапшот в Postgres на границах ходов                           |
-| Директория/pub-sub | Valkey                                                                        |
+| Layer               | Technology                                                                    |
+| ------------------- | ----------------------------------------------------------------------------- |
+| Client              | Expo SDK 57, React Native 0.86, Expo Router, TanStack Query, Zustand, i18next |
+| Table               | Native views + Reanimated (no canvas)                                         |
+| Realtime            | `partysocket` ↔ `ws` + `@nestjs/platform-ws`                                  |
+| API                 | NestJS 11 on Bun, Prisma 7, PostgreSQL, better-auth, nestjs-zod               |
+| Game rules          | `packages/game-core` — pure functions, no dependencies                        |
+| Table state         | In node memory, snapshotted to Postgres at turn boundaries                    |
+| Directory / pub-sub | Valkey                                                                        |
 
-**Почему один клиент на все платформы.** Веб-сборка идёт через
-`react-native-web` из того же кода: отдельный веб-фронтенд означал бы два
-набора экранов, расходящихся при каждой правке. Десктопных сборок нет.
+**Why one client for every platform.** The web build goes through
+`react-native-web` from the same code: a separate web frontend would mean two
+sets of screens that drift apart with every edit. There are no desktop builds.
 
-**Почему стол не на канвасе.** Карты — это два-три десятка простых вьюх,
-их анимирует Reanimated на UI-потоке. Канвас потребовал бы своей системы
-раскладки, своих шрифтов и ручной обработки нажатий.
+**Why the table is not on a canvas.** Cards are two or three dozen simple views,
+animated by Reanimated on the UI thread. A canvas would require its own layout
+system, its own fonts and manual hit handling.
 
-**Почему карты рисуются кодом.** Раньше это были 36 SVG-файлов, а темы
-колоды — CSS-фильтры поверх них. В React Native фильтров нет, поэтому карта
-собирается из вьюх, а тема — набор цветов. Ассеты колоды больше не нужны,
-и карта остаётся резкой на любой плотности экрана.
+**Why cards are drawn in code.** They used to be 36 SVG files, with deck themes
+as CSS filters on top of them. React Native has no filters, so a card is
+assembled from views and a theme is a set of colors. Deck assets are no longer
+needed, and a card stays sharp at any screen density.
 
-**Дизайн-система — отдельный слой `ui-kit/`.** Его импортируют все слои, сам
-он не импортирует ни одного: тема колоды и отклик на нажатие приходят через
-контексты, которые наполняет приложение.
+**The design system is a separate `ui-kit/` layer.** Every layer imports it, it
+imports none of them: the deck theme and press feedback arrive through contexts
+that the app fills in.
 
-## Быстрый старт
+## Quick start
 
 ```bash
-bun install                                  # зависимости
-cp .env.example .env # заполнить BETTER_AUTH_SECRET
+bun install                                  # dependencies
+cp .env.example .env # fill in BETTER_AUTH_SECRET
 bun dev:infra                                # Postgres + Valkey + Mailpit
-bun --filter @durak-master/server db:migrate # схема БД
-bun dev                                      # сервер + Metro
+bun --filter @durak-master/server db:migrate # DB schema
+bun dev                                      # server + Metro
 ```
 
-Дальше — `i` для iOS, `a` для Android, `w` для браузера в терминале Metro.
+Then press `i` for iOS, `a` for Android, `w` for the browser in the Metro terminal.
 
-Почта разработки: http://localhost:8025 (Mailpit).
+Development mail: http://localhost:8025 (Mailpit).
 
-Адрес сервера в отладочной сборке определяется автоматически по хосту, с
-которого Metro раздаёт бандл. Задать вручную — `EXPO_PUBLIC_API_URL` в
+In a debug build the server address is detected automatically from the host that
+Metro serves the bundle from. To set it manually — `EXPO_PUBLIC_API_URL` in
 `apps/mobile/.env`.
 
-## Команды
+## Commands
 
 ```bash
-bun dev            # сервер + клиент
+bun dev            # server + client
 bun android        # Android
 bun ios            # iOS
-bun web            # браузер
-bun typecheck      # типы по всем пакетам
+bun web            # browser
+bun typecheck      # types across all packages
 bun lint:fix       # ESLint
 bun format         # Prettier
-bun verify         # типы + линт + формат
-bun prebuild       # нативные проекты (android/, ios/)
+bun verify         # types + lint + format
+bun prebuild       # native projects (android/, ios/)
 ```
 
-Звуки стола — готовый набор Kenney (CC0) в `apps/mobile/assets/sounds`.
+Table sounds — a ready-made Kenney set (CC0) in `apps/mobile/assets/sounds`.
 
-## Структура
+## Structure
 
 ```text
 apps/
-├── mobile/     Expo-клиент: app/ — маршруты Expo Router, ui-kit/ — дизайн-система, FSD-слои в корне
-└── server/     NestJS API + игровые комнаты
+├── mobile/     Expo client: app/ — Expo Router routes, ui-kit/ — design system, FSD layers at the root
+└── server/     NestJS API + game rooms
 packages/
-├── schemas/    Zod-схемы, общие для клиента и сервера
-├── game-core/  правила дурака — чистые, тестируемые без сети
-└── platform/   абстракция нативного: покупки, пуши, хранилище
+├── schemas/    Zod schemas, shared between client and server
+├── game-core/  Durak rules — pure, testable without the network
+└── platform/   native abstraction: purchases, push, storage
 docs/
-├── game-rules.md   формализованные правила — источник истины
-├── fsd.md          архитектура клиента
-├── style.md        стиль кода
-└── play-store/     релиз в сторы
+├── games/          game rules — source of truth
+├── fsd.md          client architecture
+├── style.md        code style
+└── play-store/     store release
 ```
 
-## Документация
+## Documentation
 
-- [Правила игры](docs/game-rules.md) — читать перед правками `game-core`
-- [FSD](docs/fsd.md) — архитектура клиента
-- [Стиль кода](docs/style.md)
-- [CLAUDE.md](CLAUDE.md) — инварианты проекта
+- [Game rules](docs/games/) — read before editing `game-core`
+- [FSD](docs/fsd.md) — client architecture
+- [Code style](docs/style.md)
+- [CLAUDE.md](CLAUDE.md) — project invariants
 
-## Лицензия
+## License
 
-Проприетарный проект.
+Proprietary project.

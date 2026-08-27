@@ -1,22 +1,37 @@
-import { Crown } from 'lucide-react-native';
+import { Crown, Pencil } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
-import { Avatar, colors } from '@/ui-kit';
+import { Avatar, colors, iconSize } from '@/ui-kit';
 
 import type { PlayerIdentityProps } from './PlayerIdentity.types';
 
 import { styles } from './PlayerIdentity.styles';
 
-export const PlayerIdentity = ({ name, avatarUrl, rank, isPremium }: PlayerIdentityProps) => {
+export const PlayerIdentity = ({
+  name,
+  avatarUrl,
+  rank,
+  isPremium,
+  onEdit
+}: PlayerIdentityProps) => {
   const { t } = useTranslation();
 
   return (
-    <View style={styles.root}>
+    <Pressable
+      accessibilityHint={t('profile.editHint')}
+      accessibilityRole='button'
+      style={({ pressed }) => [styles.root, pressed && styles.pressed]}
+      onPress={onEdit}
+    >
       <View style={styles.avatarWrap}>
         <Avatar name={name} size={52} src={avatarUrl} />
 
         <Text style={styles.level}>{rank.level}</Text>
+
+        <View style={styles.editBadge}>
+          <Pencil color={colors.primaryForeground} size={iconSize.xs} />
+        </View>
       </View>
 
       <View style={styles.info}>
@@ -25,7 +40,7 @@ export const PlayerIdentity = ({ name, avatarUrl, rank, isPremium }: PlayerIdent
         </Text>
 
         <Text numberOfLines={1} style={[styles.league, { color: rank.league.color }]}>
-          {rank.league.name}
+          {t(`profile.leagues.${rank.league.id}`)}
         </Text>
       </View>
 
@@ -33,10 +48,10 @@ export const PlayerIdentity = ({ name, avatarUrl, rank, isPremium }: PlayerIdent
         <Crown
           accessibilityLabel={t('profile.premium')}
           color={colors.gold}
-          size={22}
+          size={iconSize.lg}
           style={styles.premium}
         />
       )}
-    </View>
+    </Pressable>
   );
 };

@@ -1,3 +1,5 @@
 export { ErrorScreen } from './ui/ErrorScreen';
+export type { ErrorScreenProps } from './ui/ErrorScreen';
 
-export type { ErrorScreenProps } from './ui/ErrorScreen.types';
+export { RouteErrorBoundary } from './ui/RouteErrorBoundary';
+export type { RouteErrorBoundaryProps } from './ui/RouteErrorBoundary';

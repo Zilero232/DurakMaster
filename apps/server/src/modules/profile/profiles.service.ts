@@ -1,5 +1,6 @@
-import type { MyProfile, PublicProfile } from '@durak-master/schemas';
+import type { AvatarSeed, MyProfile, PublicProfile } from '@durak-master/schemas';
 
+import { toAvatarUrl } from '@durak-master/schemas';
 import { Injectable, Logger } from '@nestjs/common';
 
 import { PrismaService } from '../../lib/prisma/prisma.service';
@@ -23,7 +24,7 @@ export class ProfilesService {
       })
     ]);
 
-    return this.toMyProfile(userId, user?.name ?? 'Игрок', user?.image ?? null, profile);
+    return this.toMyProfile(userId, user?.name ?? 'Player', user?.image ?? null, profile);
   }
 
   async getPublicProfile(userId: string): Promise<PublicProfile | null> {
@@ -37,6 +38,35 @@ export class ProfilesService {
     }
 
     return this.toPublicProfile(userId, user.name, user.image, user.profile);
+  }
+
+  async getPublicProfiles(userIds: string[]): Promise<Map<string, PublicProfile>> {
+    if (userIds.length === 0) {
+      return new Map();
+    }
+
+    const users = await this.prisma.user.findMany({
+      where: { id: { in: userIds } },
+      include: { profile: true }
+    });
+
+    return new Map(
+      users.map((user) => [
+        user.id,
+        this.toPublicProfile(
+          user.id,
+          user.name,
+          user.image,
+          user.profile ?? {
+            rating: 0,
+            gamesPlayed: 0,
+            gamesWon: 0,
+            gamesLost: 0,
+            premiumUntil: null
+          }
+        )
+      ])
+    );
   }
 
   async applyGameResult(input: {
@@ -63,7 +93,7 @@ export class ProfilesService {
         }
       });
     } catch (error) {
-      this.logger.error(`Не удалось записать итог партии для ${userId}`, error);
+      this.logger.error(`Failed to record the game result for ${userId}`, error);
     }
   }
 
@@ -99,6 +129,53 @@ export class ProfilesService {
     });
 
     return this.ensureProfile(userId);
+  }
+
+  async setAvatar(userId: string, seed: AvatarSeed): Promise<MyProfile> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { image: toAvatarUrl(seed) }
+    });
+
+    return this.ensureProfile(userId);
+  }
+
+  async setName(userId: string, name: string): Promise<MyProfile> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { name: name.trim() }
+    });
+
+    return this.ensureProfile(userId);
+  }
+
+  async recordLogin(userId: string): Promise<number> {
+    const profile = await this.prisma.profile.findUnique({ where: { userId } });
+
+    if (!profile) {
+      return 0;
+    }
+
+    const now = new Date();
+    const today = this.dayNumber(now);
+    const last = profile.lastLoginAt ? this.dayNumber(profile.lastLoginAt) : null;
+
+    if (last === today) {
+      return profile.loginStreak;
+    }
+
+    const loginStreak = last !== null && today - last === 1 ? profile.loginStreak + 1 : 1;
+
+    await this.prisma.profile.update({
+      where: { userId },
+      data: { loginStreak, lastLoginAt: now }
+    });
+
+    return loginStreak;
+  }
+
+  private dayNumber(date: Date): number {
+    return Math.floor(date.getTime() / (24 * 60 * 60 * 1000));
   }
 
   private toPublicProfile(
