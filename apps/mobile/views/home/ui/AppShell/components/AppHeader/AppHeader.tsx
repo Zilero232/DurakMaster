@@ -1,40 +1,25 @@
-import { LogOut, Settings } from 'lucide-react-native';
+import { LogOut } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { match } from 'ts-pattern';
 
-import { useSessionStore } from '@/entities/session';
-import { logout } from '@/shared/api';
 import { colors, iconSize } from '@/ui-kit';
 
 import type { AppHeaderProps } from './AppHeader.types';
 
+import { useSignOut } from '../../../../model';
 import { styles } from './AppHeader.styles';
 
-export const AppHeader = ({ tab, status, onOpenSettings }: AppHeaderProps) => {
+export const AppHeader = ({ tab, status }: AppHeaderProps) => {
   const { t } = useTranslation();
 
-  const disconnect = useSessionStore((store) => store.disconnect);
+  const signOut = useSignOut();
 
   const title = match(tab)
     .with('profile', () => t('nav.profile'))
     .with('tables', () => t('lobby.title'))
     .with('create', () => t('create.title'))
     .exhaustive();
-
-  const handleLogout = () => {
-    Alert.alert(t('auth.signOutTitle'), t('auth.signOutConfirm'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('auth.signOut'),
-        style: 'destructive',
-        onPress: () => {
-          disconnect();
-          void logout();
-        }
-      }
-    ]);
-  };
 
   return (
     <View style={styles.root}>
@@ -50,21 +35,11 @@ export const AppHeader = ({ tab, status, onOpenSettings }: AppHeaderProps) => {
         )}
 
         <Pressable
-          accessibilityLabel={t('settings.title')}
-          accessibilityRole='button'
-          hitSlop={8}
-          style={styles.iconButton}
-          onPress={onOpenSettings}
-        >
-          <Settings color={colors.onFelt} size={iconSize.md} />
-        </Pressable>
-
-        <Pressable
           accessibilityLabel={t('auth.signOut')}
           accessibilityRole='button'
           hitSlop={8}
           style={styles.iconButton}
-          onPress={handleLogout}
+          onPress={signOut}
         >
           <LogOut color={colors.onFelt} size={iconSize.md} />
         </Pressable>

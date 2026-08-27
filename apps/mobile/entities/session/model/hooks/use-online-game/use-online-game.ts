@@ -1,33 +1,21 @@
-import type { ActionForGame, Card } from '@durak-master/schemas';
+import type { Card } from '@durak-master/schemas';
 
 import { cardKey } from '@/shared/lib/cards';
 import { getBeatableIndexes, getPlayableKeys } from '@/shared/lib/games/durak';
 import { haptic } from '@/shared/lib/haptics';
 import { playSound } from '@/shared/lib/sound';
 
-import { sendGameAction, useSessionStore } from '../../store';
+import { useSessionStore } from '../../store';
+import { useGameSeat } from '../use-game-seat';
 
 export const useOnlineGame = () => {
-  const rawView = useSessionStore((store) => store.view);
-  const profile = useSessionStore((store) => store.profile);
-  const tablePlayers = useSessionStore((store) => store.tablePlayers);
-  const mySeat = useSessionStore((store) => store.mySeat);
-  const outcome = useSessionStore((store) => store.outcome);
+  const { view, profile, players, mySeat, isMyTurn, outcome, play } = useGameSeat('durak');
+
   const rejectedCode = useSessionStore((store) => store.rejectedCode);
   const selectedKey = useSessionStore((store) => store.selectedTableCardKey);
   const setSelectedKey = useSessionStore((store) => store.selectTableCard);
 
-  const view = rawView?.game === 'durak' ? rawView : null;
-
-  const currentTable = useSessionStore((store) => store.currentTable);
-
-  const seat =
-    view?.players.find((player) => player.userId === profile?.userId)?.seat ??
-    currentTable?.players.find((player) => player.userId === profile?.userId)?.seat ??
-    mySeat ??
-    0;
-
-  const isMyTurn = Boolean(view) && view?.activeSeat === seat && view?.phase !== 'finished';
+  const seat = mySeat;
   const isDefending = Boolean(view) && view?.defenderSeat === seat;
 
   const selectedCard = view?.hand.find((card) => cardKey(card) === selectedKey) ?? null;
@@ -36,14 +24,6 @@ export const useOnlineGame = () => {
     isDefending && isMyTurn ? getBeatableIndexes(view, selectedCard) : new Set<number>();
 
   const hasUndefended = view?.table.some((pair) => pair.defense === null) ?? false;
-
-  const play = (action: ActionForGame<'durak'>['action']) => {
-    if (!view) {
-      return;
-    }
-
-    sendGameAction({ game: 'durak', action }, view.version);
-  };
 
   const selectCard = (card: Card) => {
     const key = cardKey(card);
@@ -83,7 +63,7 @@ export const useOnlineGame = () => {
   return {
     view,
     profile,
-    players: tablePlayers,
+    players,
     mySeat: seat,
     isMyTurn,
     isDefending,

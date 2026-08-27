@@ -1,22 +1,24 @@
 import { BET_STEPS } from '@durak-master/schemas';
-import { Coins } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { formatCredits } from '@/shared/lib/format';
-import { colors, iconSize } from '@/ui-kit';
 
 import type { BetPickerProps } from './BetPicker.types';
 
 import { styles } from './BetPicker.styles';
-import { BetShortcuts, BetSlider } from './components';
+import { BetInput, BetShortcuts, BetSlider } from './components';
 
 const LAST_INDEX = BET_STEPS.length - 1;
 
 export const BetPicker = ({ value, onChange }: BetPickerProps) => {
   const { t } = useTranslation();
 
-  const index = Math.max(BET_STEPS.indexOf(value as (typeof BET_STEPS)[number]), 0);
+  const index = BET_STEPS.reduce(
+    (best, step, at) =>
+      Math.abs(step - value) < Math.abs((BET_STEPS[best] ?? 0) - value) ? at : best,
+    0
+  );
 
   const label = t('create.betLabel');
 
@@ -29,11 +31,7 @@ export const BetPicker = ({ value, onChange }: BetPickerProps) => {
       <View style={styles.header}>
         <Text style={styles.label}>{t('create.yourBet')}</Text>
 
-        <View style={styles.amount}>
-          <Coins color={colors.gold} size={iconSize.md} />
-
-          <Text style={styles.value}>{formatCredits(value)}</Text>
-        </View>
+        <BetInput key={value} label={label} value={value} onChange={onChange} />
       </View>
 
       <View>

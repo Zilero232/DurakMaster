@@ -24,7 +24,7 @@ export const RewardBurst = ({ creditsDelta, ratingDelta }: RewardBurstProps) => 
   return (
     <View style={styles.root}>
       <Animated.View
-        entering={ZoomIn.springify().damping(24).stiffness(300)}
+        entering={ZoomIn.duration(260)}
         exiting={FadeOut.duration(400)}
         style={styles.card}
       >

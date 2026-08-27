@@ -25,7 +25,8 @@
     },
     "reaction": "Send reaction {{emoji}}",
     "seatFree": "Waiting",
-    "joining": "Taking a seat…"
+    "joining": "Taking a seat…",
+    "deckLeft": "Deck"
   },
   "result": {
     "win": "Victory",

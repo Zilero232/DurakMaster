@@ -3,6 +3,7 @@ import {
   ArrowRightToLine,
   Crown,
   Equal,
+  Eye,
   Handshake,
   RefreshCw,
   Shuffle,
@@ -15,6 +16,7 @@ import type { ModeChoiceField, ModeToggleField } from '../ModesGrid';
 export const DURAK_CHOICE_FIELDS: ModeChoiceField[] = [
   {
     name: 'durakRules.mode',
+    titleKey: 'games.durak.mode.title',
     options: [
       { value: 'throwIn', icon: ArrowRightToLine, labelKey: 'games.durak.mode.throwIn' },
       { value: 'transfer', icon: RefreshCw, labelKey: 'games.durak.mode.transfer' }
@@ -22,6 +24,7 @@ export const DURAK_CHOICE_FIELDS: ModeChoiceField[] = [
   },
   {
     name: 'durakRules.throwInScope',
+    titleKey: 'games.durak.throwInScope.title',
     options: [
       {
         value: 'neighbors',
@@ -39,6 +42,7 @@ export const DURAK_CHOICE_FIELDS: ModeChoiceField[] = [
   },
   {
     name: 'durakRules.fairness',
+    titleKey: 'games.durak.fairness.title',
     options: [
       { value: 'fair', icon: Handshake, labelKey: 'games.durak.fairness.fair' },
       {
@@ -51,6 +55,7 @@ export const DURAK_CHOICE_FIELDS: ModeChoiceField[] = [
   },
   {
     name: 'durakRules.firstMove',
+    titleKey: 'games.durak.firstMove.title',
     options: [
       {
         value: 'lowestTrump',
@@ -67,7 +72,7 @@ export const DURAK_TOGGLE_FIELDS: ModeToggleField[] = [
   { name: 'durakRules.allowDraw', icon: Equal, labelKey: 'games.durak.allowDraw' },
   {
     name: 'durakRules.allowTransferByShowingTrump',
-    icon: RefreshCw,
+    icon: Eye,
     labelKey: 'games.durak.showTrump',
     hintKey: 'games.durak.showTrumpHint'
   }

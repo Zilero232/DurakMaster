@@ -17,6 +17,7 @@ export const ShellContent = ({
   onGoToCreate,
   onClaimBonus,
   onOpenRules,
+  onOpenSettings,
   onOpenStats,
   onOpenFriends,
   onOpenProfileEditor,
@@ -34,6 +35,7 @@ export const ShellContent = ({
           onOpenLeaderboard={onOpenLeaderboard}
           onOpenProfileEditor={onOpenProfileEditor}
           onOpenRules={onOpenRules}
+          onOpenSettings={onOpenSettings}
           onOpenStats={onOpenStats}
         />
       ) : null

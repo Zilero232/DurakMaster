@@ -16,7 +16,8 @@ const FAN_DROP_RATIO = 0.1;
 export const PlayerHand = ({
   cards,
   playableKeys,
-  selectedKey,
+  selectedKey = null,
+  selectedKeys,
   trump,
   hasHints = false,
   sortMode,
@@ -59,7 +60,7 @@ export const PlayerHand = ({
                 dropZones={dropZones}
                 isDimmed={hasHints && playableKeys.size > 0 && !playableKeys.has(key)}
                 isPlayable={playableKeys.has(key)}
-                isSelected={selectedKey === key}
+                isSelected={selectedKeys ? selectedKeys.has(key) : selectedKey === key}
                 rotation={offset * MAX_FAN_ANGLE}
                 width={width}
                 onDragEnd={() => onDragEnd?.()}

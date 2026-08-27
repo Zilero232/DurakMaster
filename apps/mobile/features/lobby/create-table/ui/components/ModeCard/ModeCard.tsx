@@ -1,5 +1,4 @@
-import { Check } from 'lucide-react-native';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text } from 'react-native';
 
 import { colors, iconSize } from '@/ui-kit';
 
@@ -9,24 +8,18 @@ import { styles } from './ModeCard.styles';
 
 export const ModeCard = ({ icon: Icon, label, hint, isActive, onPress }: ModeCardProps) => (
   <Pressable
-    accessibilityRole='button'
-    accessibilityState={{ selected: isActive }}
+    accessibilityRole='radio'
+    accessibilityState={{ checked: isActive }}
     style={({ pressed }) => [styles.root, isActive && styles.active, pressed && styles.pressed]}
     onPress={onPress}
   >
-    {isActive && (
-      <View style={styles.check}>
-        <Check color={colors.primaryForeground} size={iconSize.xs} strokeWidth={3} />
-      </View>
-    )}
-
     <Icon
       color={isActive ? colors.accent : colors.subtleForeground}
       size={iconSize.lg}
       strokeWidth={1.6}
     />
 
-    <Text style={styles.label}>{label}</Text>
+    <Text style={[styles.label, isActive && styles.labelActive]}>{label}</Text>
     {hint && <Text style={styles.hint}>{hint}</Text>}
   </Pressable>
 );

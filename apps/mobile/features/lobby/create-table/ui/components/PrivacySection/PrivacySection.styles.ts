@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit';
+import { borderWidth, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -15,27 +15,41 @@ export const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     gap: spacing[3]
   },
 
   label: {
     flex: 1,
-    fontSize: fontSize.lg,
+    minWidth: 0,
+    fontSize: fontSize.md,
     fontWeight: '700',
     fontFamily: fontFamily.sansBold,
     color: colors.onFelt
   },
 
   password: {
-    height: 50,
+    height: 48,
     paddingHorizontal: spacing[4],
-    borderWidth: 2,
-    borderColor: colors.transparent,
+    borderWidth: borderWidth.hairline,
+    borderColor: colors.borderStrong,
     borderRadius: radii.md,
     fontSize: fontSize.md,
+    fontFamily: fontFamily.sansSemi,
     color: colors.foreground,
-    backgroundColor: colors.surface1,
-    ...shadows.tile
+    backgroundColor: colors.backgroundDeep
+  },
+
+  passwordInvalid: {
+    borderColor: colors.danger
+  },
+
+  passwordFocused: {
+    borderColor: colors.accent
+  },
+
+  error: {
+    fontSize: fontSize.xs,
+    fontFamily: fontFamily.sans,
+    color: colors.danger
   }
 });

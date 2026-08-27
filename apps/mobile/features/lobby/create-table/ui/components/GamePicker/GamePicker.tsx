@@ -1,4 +1,3 @@
-import { implementedGames } from '@durak-master/game-core';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -9,15 +8,12 @@ import type { GamePickerProps } from './GamePicker.types';
 import { GAME_ITEMS } from './GamePicker.config';
 import { styles } from './GamePicker.styles';
 
-const AVAILABLE_GAMES = new Set(implementedGames());
-
 export const GamePicker = ({ value, onChange }: GamePickerProps) => {
   const { t } = useTranslation();
 
   return (
     <View accessibilityRole='radiogroup' style={styles.root}>
       {GAME_ITEMS.map(({ id, icon: Icon }) => {
-        const isAvailable = AVAILABLE_GAMES.has(id);
         const isActive = id === value;
 
         return (
@@ -26,13 +22,11 @@ export const GamePicker = ({ value, onChange }: GamePickerProps) => {
             style={({ pressed }) => [
               styles.card,
               isActive && styles.active,
-              !isAvailable && styles.unavailable,
-              pressed && isAvailable && styles.pressed
+              pressed && styles.pressed
             ]}
             accessibilityLabel={t(`games.${id}.name`)}
             accessibilityRole='radio'
-            accessibilityState={{ checked: isActive, disabled: !isAvailable }}
-            disabled={!isAvailable}
+            accessibilityState={{ checked: isActive }}
             onPress={() => onChange(id)}
           >
             <Icon
@@ -46,7 +40,7 @@ export const GamePicker = ({ value, onChange }: GamePickerProps) => {
             </Text>
 
             <Text numberOfLines={2} style={styles.hint}>
-              {isAvailable ? t(`games.${id}.tagline`) : t('games.soon')}
+              {t(`games.${id}.tagline`)}
             </Text>
           </Pressable>
         );

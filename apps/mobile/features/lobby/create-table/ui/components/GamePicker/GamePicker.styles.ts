@@ -26,10 +26,6 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.surface3
   },
 
-  unavailable: {
-    opacity: 0.45
-  },
-
   pressed: {
     opacity: 0.75
   },

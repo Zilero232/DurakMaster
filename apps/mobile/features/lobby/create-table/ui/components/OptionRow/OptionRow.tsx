@@ -22,9 +22,22 @@ export const OptionRow = <T extends number | string>({
           style={[styles.option, isActive && styles.optionActive]}
           onPress={() => onChange(item.value)}
         >
-          <Text numberOfLines={1} style={[styles.label, isActive && styles.labelActive]}>
+          <Text
+            style={[
+              styles.label,
+              item.hint !== undefined && styles.labelWithHint,
+              isActive && styles.labelActive
+            ]}
+            numberOfLines={1}
+          >
             {item.label}
           </Text>
+
+          {item.hint && (
+            <Text numberOfLines={1} style={styles.hint}>
+              {item.hint}
+            </Text>
+          )}
         </Pressable>
       );
     })}

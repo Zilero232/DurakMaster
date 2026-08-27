@@ -14,6 +14,7 @@ export type ShellContentProps = {
   onGoToCreate: () => void;
   onClaimBonus: () => void;
   onOpenRules: () => void;
+  onOpenSettings: () => void;
   onOpenStats: () => void;
   onOpenFriends: () => void;
   onOpenProfileEditor: () => void;

@@ -28,6 +28,57 @@ export const styles = StyleSheet.create({
     ...shadows.card
   },
 
+  tile: {
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    gap: spacing[3],
+    padding: spacing[4]
+  },
+
+  tileHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing[3]
+  },
+
+  tileBet: {
+    fontSize: fontSize.xxl,
+    fontFamily: fontFamily.displayBold,
+    lineHeight: lineHeight.tight(fontSize.xxl),
+    color: colors.gold
+  },
+
+  tileNames: {
+    marginLeft: spacing[3],
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.sansSemi,
+    color: colors.foreground
+  },
+
+  tileFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing[3]
+  },
+
+  tileJoin: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[1],
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[4],
+    borderRadius: radii.pill,
+    backgroundColor: colors.primary
+  },
+
+  tileJoinLabel: {
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.sansBold,
+    color: colors.primaryForeground
+  },
+
   premium: {
     borderColor: colors.borderGold
   },

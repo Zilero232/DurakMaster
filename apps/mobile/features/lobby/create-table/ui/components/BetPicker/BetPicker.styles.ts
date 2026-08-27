@@ -20,12 +20,13 @@ export const styles = StyleSheet.create({
 
   header: {
     flexDirection: 'row',
-    alignItems: 'baseline',
+    alignItems: 'center',
     justifyContent: 'space-between',
     gap: spacing[3]
   },
 
   label: {
+    flexShrink: 0,
     fontSize: fontSize.md,
     fontWeight: '800',
     fontFamily: fontFamily.sansBold,

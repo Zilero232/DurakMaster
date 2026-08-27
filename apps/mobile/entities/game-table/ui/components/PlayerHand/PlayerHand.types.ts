@@ -1,14 +1,16 @@
-import type { Card, Suit } from '@durak-master/schemas';
+import type { Card } from '@durak-master/schemas';
 
 import type { CardScale, HandSort } from '@/shared/model/preferences';
 
+import type { TrumpTest } from '../../../lib';
 import type { DropZone } from '../../../model';
 
 export type PlayerHandProps = {
   cards: Card[];
   playableKeys: Set<string>;
-  selectedKey: string | null;
-  trump: Suit;
+  selectedKey?: string | null;
+  selectedKeys?: Set<string>;
+  trump: TrumpTest;
 
   hasHints?: boolean;
 

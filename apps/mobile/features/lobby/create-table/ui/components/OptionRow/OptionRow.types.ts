@@ -1,6 +1,7 @@
 export type OptionItem<T> = {
   value: T;
   label: string;
+  hint?: string;
 };
 
 export type OptionRowProps<T extends number | string> = {

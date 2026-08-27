@@ -1,6 +1,3 @@
-import type { GameId } from '@durak-master/schemas';
-
-import { implementedGames } from '@durak-master/game-core';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 
@@ -12,8 +9,6 @@ import {
   createTableFormSchema,
   toTableSettings
 } from '../../create-table-form';
-
-const AVAILABLE_GAMES = new Set<GameId>(implementedGames());
 
 type UseCreateTableFormOptions = {
   onCreate: (settings: ReturnType<typeof toTableSettings>, password?: string) => void;
@@ -41,14 +36,11 @@ export const useCreateTableForm = ({ onCreate }: UseCreateTableFormOptions) => {
     onCreate(toTableSettings(values), values.isPrivate ? password : undefined);
   });
 
-  const isAvailable = AVAILABLE_GAMES.has(game);
-
   return {
     control,
     game,
     isPrivate,
-    isAvailable,
-    canSubmit: formState.isValid && isAvailable,
+    canSubmit: formState.isValid,
     selectGame,
     submit
   };

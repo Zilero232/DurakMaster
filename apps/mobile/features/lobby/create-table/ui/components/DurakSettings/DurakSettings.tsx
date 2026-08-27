@@ -15,7 +15,7 @@ export const DurakSettings = ({ control }: DurakSettingsProps) => {
 
   return (
     <>
-      <SettingsSection icon={Layers} title={t('games.durak.deck')}>
+      <SettingsSection hint={t('games.durak.deckHint')} icon={Layers} title={t('games.durak.deck')}>
         <Controller
           render={({ field }) => (
             <OptionRow items={DECK_SIZE_ITEMS} value={field.value} onChange={field.onChange} />

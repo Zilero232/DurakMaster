@@ -1,10 +1,10 @@
 import { useSessionStore } from '@/entities/session';
-import { OnlineTable } from '@/widgets/game/online-table';
 
 import { AppShell } from '../AppShell';
+import { TableRouter } from '../TableRouter';
 
 export const HomeScreen = () => {
   const currentTable = useSessionStore((store) => store.currentTable);
 
-  return currentTable ? <OnlineTable /> : <AppShell />;
+  return currentTable ? <TableRouter /> : <AppShell />;
 };

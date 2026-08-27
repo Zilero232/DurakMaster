@@ -1,15 +1,15 @@
-import type { GameId, TableSettings, ViewForGame } from '@durak-master/schemas';
+import type { GameId, TableSettings } from '@durak-master/schemas';
 
 import { useSessionStore } from '@/entities/session';
 
-import { createIdleView } from '../../../lib';
-
 type TableStage =
   | { kind: 'absent' }
-  | { kind: 'table'; settings: TableSettings; view: ViewForGame<'durak'>; isWaiting: boolean }
+  | { kind: 'game'; game: Exclude<GameId, 'tysyacha'>; settings: TableSettings }
   | { kind: 'unsupported'; game: GameId };
 
-export const useTableStage = (view: ViewForGame<'durak'> | null): TableStage => {
+const SUPPORTED = new Set<GameId>(['durak', 'kozel', 'burkozel']);
+
+export const useTableStage = (): TableStage => {
   const currentTable = useSessionStore((store) => store.currentTable);
 
   if (!currentTable) {
@@ -18,20 +18,9 @@ export const useTableStage = (view: ViewForGame<'durak'> | null): TableStage => 
 
   const { settings } = currentTable;
 
-  if (settings.game !== 'durak') {
+  if (!SUPPORTED.has(settings.game)) {
     return { kind: 'unsupported', game: settings.game };
   }
 
-  if (!view) {
-    return {
-      kind: 'table',
-      settings,
-      view: createIdleView(currentTable, settings.rules),
-      isWaiting: true
-    };
-  }
-
-  const isWaiting = currentTable.status === 'waiting' && view.phase === 'waiting';
-
-  return { kind: 'table', settings, view, isWaiting };
+  return { kind: 'game', game: settings.game as Exclude<GameId, 'tysyacha'>, settings };
 };

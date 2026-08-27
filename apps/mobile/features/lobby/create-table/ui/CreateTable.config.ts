@@ -1,6 +1,6 @@
 import type { GameId, GameSpeed } from '@durak-master/schemas';
 
-import { PLAYER_RANGE_BY_GAME } from '@durak-master/schemas';
+import { PLAYER_RANGE_BY_GAME, TURN_SECONDS_BY_SPEED } from '@durak-master/schemas';
 
 import type { OptionItem } from './components';
 
@@ -17,7 +17,8 @@ export const playerCountItems = (game: GameId): OptionItem<number>[] => {
 export const SPEED_ITEMS: {
   value: GameSpeed;
   labelKey: 'create.speedFast' | 'create.speedNormal';
+  seconds: number;
 }[] = [
-  { value: 'normal', labelKey: 'create.speedNormal' },
-  { value: 'fast', labelKey: 'create.speedFast' }
+  { value: 'normal', labelKey: 'create.speedNormal', seconds: TURN_SECONDS_BY_SPEED.normal },
+  { value: 'fast', labelKey: 'create.speedFast', seconds: TURN_SECONDS_BY_SPEED.fast }
 ];
