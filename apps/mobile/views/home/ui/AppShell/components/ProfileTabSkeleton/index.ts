@@ -1,0 +1,1 @@
+export { ProfileTabSkeleton } from './ProfileTabSkeleton';

@@ -1,3 +1,4 @@
+import { Volume2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
@@ -27,7 +28,7 @@ export const SoundSettingsTab = () => {
 
   return (
     <View style={styles.root}>
-      <SettingsSection title={t('settings.sound')}>
+      <SettingsSection icon={Volume2} title={t('settings.sound')}>
         <VolumeSlider label={t('settings.effects')} value={volume} onChange={setVolume} />
       </SettingsSection>
 

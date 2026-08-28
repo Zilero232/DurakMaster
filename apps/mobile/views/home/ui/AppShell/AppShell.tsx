@@ -1,24 +1,28 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useSessionStore } from '@/entities/session';
 import { SignInForm } from '@/features/auth/sign-in';
-import { ContentWidth, screenGradient } from '@/ui-kit';
+import { SignOutConfirm, useSignOut } from '@/features/auth/sign-out';
+import { useLayout } from '@/shared/model/layout';
+import { ContentWidth, DESKTOP_MAX_WIDTH, LobbyBackground } from '@/ui-kit';
 
 import type { ShellTab } from './AppShell.types';
 
 import { useLobbyConnection, useShellPanels, useTableJoin } from '../../model';
 import { styles } from './AppShell.styles';
-import { AppHeader, ShellContent, ShellLoading, ShellOverlays, TabBar } from './components';
+import { ShellChrome, ShellContent, ShellLoading, ShellOverlays } from './components';
 
 export const AppShell = () => {
   const insets = useSafeAreaInsets();
 
+  const { isDesktop } = useLayout();
+
   const { isPending, session, status } = useLobbyConnection();
   const { tables, isPasswordPromptOpen, join, confirmPassword, cancelPassword } = useTableJoin();
   const panels = useShellPanels();
+  const signOut = useSignOut();
 
   const profile = useSessionStore((store) => store.profile);
   const createTable = useSessionStore((store) => store.createTable);
@@ -35,13 +39,9 @@ export const AppShell = () => {
   }
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top }]}>
-      <LinearGradient colors={screenGradient} style={styles.wash} />
-
-      <ContentWidth style={styles.column}>
-        <AppHeader status={status} tab={tab} onOpenSettings={panels.open('settings')} />
-
-        <View style={styles.content}>
+    <LobbyBackground style={[styles.root, { paddingTop: insets.top }]}>
+      <ContentWidth maxWidth={isDesktop ? DESKTOP_MAX_WIDTH : undefined} style={styles.column}>
+        <ShellChrome status={status} tab={tab} onChange={setTab} onSignOut={signOut.request}>
           <ShellContent
             profile={profile}
             status={status}
@@ -56,11 +56,10 @@ export const AppShell = () => {
             onOpenLeaderboard={panels.open('leaderboard')}
             onOpenProfileEditor={panels.open('profileEditor')}
             onOpenRules={panels.open('rules')}
+            onOpenSettings={panels.open('settings')}
             onOpenStats={panels.open('stats')}
           />
-        </View>
-
-        <TabBar tab={tab} onChange={setTab} />
+        </ShellChrome>
       </ContentWidth>
 
       <ShellOverlays
@@ -72,7 +71,13 @@ export const AppShell = () => {
         onSubmitPassword={confirmPassword}
       />
 
+      <SignOutConfirm
+        isOpen={signOut.isConfirming}
+        onCancel={signOut.cancel}
+        onConfirm={signOut.confirm}
+      />
+
       <View style={{ height: insets.bottom }} />
-    </View>
+    </LobbyBackground>
   );
 };

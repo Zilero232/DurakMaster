@@ -1,0 +1,1 @@
+export { TableCompact } from './TableCompact';

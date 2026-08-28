@@ -13,6 +13,19 @@ export const styles = StyleSheet.create({
     paddingBottom: spacing[8]
   },
 
+  cell: {
+    flex: 1,
+    minWidth: 0,
+    paddingHorizontal: spacing[1]
+  },
+
+  desktopList: {
+    gap: spacing[2],
+    paddingVertical: spacing[4],
+    paddingHorizontal: spacing[3],
+    paddingBottom: spacing[8]
+  },
+
   empty: {
     alignItems: 'center',
     gap: spacing[3],

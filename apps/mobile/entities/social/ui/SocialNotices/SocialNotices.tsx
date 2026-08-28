@@ -6,7 +6,7 @@ import { toast } from 'sonner-native';
 import { haptic } from '@/shared/lib/haptics';
 import { playSound } from '@/shared/lib/sound';
 
-import { useSocialStore } from '../../model/social-store';
+import { useSocialStore } from '../../model/store';
 
 export const SocialNotices = () => {
   const { t } = useTranslation();

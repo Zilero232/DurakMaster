@@ -33,6 +33,8 @@ export {
   commonTableSettingsSchema,
   DEFAULT_COMMON_SETTINGS,
   gameSpeedSchema,
+  MAX_BET,
+  MIN_BET,
   TURN_SECONDS_BY_SPEED
 } from './table-settings-common';
 export type { CommonTableSettings, GameSpeed } from './table-settings-common';

@@ -1,6 +1,8 @@
+import { Gamepad2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
+import { useLayout } from '@/shared/model/layout';
 import { Button } from '@/ui-kit';
 
 import type { CreateTableProps } from './CreateTable.types';
@@ -18,26 +20,57 @@ import { styles } from './CreateTable.styles';
 export const CreateTable = ({ onCreate }: CreateTableProps) => {
   const { t } = useTranslation();
 
-  const { control, game, isPrivate, isAvailable, canSubmit, selectGame, submit } =
-    useCreateTableForm({ onCreate });
+  const { isDesktop } = useLayout();
+
+  const { control, game, deckSize, isPrivate, canSubmit, selectGame, submit } = useCreateTableForm({
+    onCreate
+  });
+
+  const picker = (
+    <SettingsSection icon={Gamepad2} title={t('games.pick')}>
+      <GamePicker value={game} onChange={selectGame} />
+    </SettingsSection>
+  );
+
+  const common = <CommonSettings control={control} deckSize={deckSize} game={game} />;
+
+  const gameSettings = <GameSettings control={control} game={game} />;
+
+  const privacy = <PrivacySection control={control} isPrivate={isPrivate} />;
+
+  const submitButton = (
+    <Button isFullWidth isDisabled={!canSubmit} size='lg' variant='primary' onPress={submit}>
+      {t('create.submit')}
+    </Button>
+  );
 
   return (
-    <ScrollView contentContainerStyle={styles.root} showsVerticalScrollIndicator={false}>
-      <SettingsSection title={t('games.pick')}>
-        <GamePicker value={game} onChange={selectGame} />
-      </SettingsSection>
+    <ScrollView
+      contentContainerStyle={[styles.root, isDesktop && styles.columns]}
+      showsVerticalScrollIndicator={false}
+    >
+      {isDesktop ? (
+        <>
+          <View style={styles.column}>
+            {picker}
+            {common}
+          </View>
 
-      {!isAvailable && <Text style={styles.notice}>{t('games.comingSoonHint')}</Text>}
-
-      <CommonSettings control={control} game={game} />
-
-      <GameSettings control={control} game={game} />
-
-      <PrivacySection control={control} isPrivate={isPrivate} />
-
-      <Button isFullWidth isDisabled={!canSubmit} size='lg' variant='primary' onPress={submit}>
-        {t('create.submit')}
-      </Button>
+          <View style={styles.column}>
+            {gameSettings}
+            {privacy}
+            {submitButton}
+          </View>
+        </>
+      ) : (
+        <>
+          {picker}
+          {common}
+          {gameSettings}
+          {privacy}
+          {submitButton}
+        </>
+      )}
     </ScrollView>
   );
 };

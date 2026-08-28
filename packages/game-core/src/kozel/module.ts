@@ -1,5 +1,7 @@
 import type { KozelState } from '@durak-master/schemas';
 
+import { PLAYER_RANGE_BY_GAME } from '@durak-master/schemas';
+
 import type { GameModule } from '../module';
 
 import { decideBotAction, decideTimeoutAction } from './bot';
@@ -9,8 +11,8 @@ import { toPlayerView } from './view';
 
 export const kozelModule: GameModule<'kozel'> = {
   id: 'kozel',
-  minPlayers: 4,
-  maxPlayers: 4,
+  minPlayers: PLAYER_RANGE_BY_GAME.kozel.min,
+  maxPlayers: PLAYER_RANGE_BY_GAME.kozel.max,
 
   createGame,
   reduce,

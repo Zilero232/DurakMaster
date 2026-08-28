@@ -1,21 +1,56 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, spacing } from '@/ui-kit';
+import { borderWidth, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+
+const BADGE_SIZE = 30;
 
 export const styles = StyleSheet.create({
   root: {
-    gap: spacing[2],
+    gap: spacing[3],
     minWidth: 0
+  },
+
+  card: {
+    padding: spacing[4],
+    borderRadius: radii.lg,
+    borderWidth: borderWidth.hairline,
+    borderColor: colors.border,
+    backgroundColor: colors.surface1
   },
 
   inRow: {
     flex: 1
   },
 
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[3]
+  },
+
+  badge: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: BADGE_SIZE,
+    height: BADGE_SIZE,
+    borderRadius: radii.md,
+    backgroundColor: colors.glass
+  },
+
+  heading: {
+    flex: 1,
+    gap: 2
+  },
+
   title: {
-    fontSize: fontSize.lg,
-    fontWeight: '800',
+    fontSize: fontSize.md,
     fontFamily: fontFamily.sansBold,
-    color: colors.onFelt
+    color: colors.foreground
+  },
+
+  hint: {
+    fontSize: fontSize.xs,
+    fontFamily: fontFamily.sans,
+    color: colors.mutedForeground
   }
 });

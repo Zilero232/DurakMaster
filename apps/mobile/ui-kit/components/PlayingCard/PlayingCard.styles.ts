@@ -9,7 +9,7 @@ const SELECTED_LIFT_RATIO = 0.09;
 export const getSelectedLift = (width: number): number =>
   -(width / cardTokens.ratio) * SELECTED_LIFT_RATIO;
 
-export const createStyles = (width: number, theme: CardTheme) =>
+const buildStyles = (width: number, theme: CardTheme) =>
   StyleSheet.create({
     root: {
       width,
@@ -27,7 +27,7 @@ export const createStyles = (width: number, theme: CardTheme) =>
     },
 
     dimmed: {
-      opacity: 0.82
+      backgroundColor: theme.faceDimmed
     },
 
     playableRing: {
@@ -36,7 +36,23 @@ export const createStyles = (width: number, theme: CardTheme) =>
       inset: 0,
       borderWidth: 2,
       borderColor: theme.accent,
-      borderRadius: cardTokens.radius,
-      opacity: 0.85
+      borderRadius: cardTokens.radius
     }
   });
+
+const cache = new Map<string, ReturnType<typeof buildStyles>>();
+
+export const createStyles = (width: number, theme: CardTheme) => {
+  const key = `${width}:${theme.id}`;
+  const cached = cache.get(key);
+
+  if (cached) {
+    return cached;
+  }
+
+  const styles = buildStyles(width, theme);
+
+  cache.set(key, styles);
+
+  return styles;
+};

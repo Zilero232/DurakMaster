@@ -11,6 +11,8 @@ export type PairSlotProps = {
   width: number;
   height: number;
 
+  mySeat: number;
+
   isInstant?: boolean;
   onDefend: (pairIndex: number) => void;
   onMeasure: (zone: DropZone) => void;

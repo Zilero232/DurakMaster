@@ -6,6 +6,7 @@ import { TableList } from '@/widgets/lobby/table-list';
 import type { ShellContentProps } from './ShellContent.types';
 
 import { ProfileTab } from '../ProfileTab';
+import { ProfileTabSkeleton } from '../ProfileTabSkeleton';
 
 export const ShellContent = ({
   tab,
@@ -17,6 +18,7 @@ export const ShellContent = ({
   onGoToCreate,
   onClaimBonus,
   onOpenRules,
+  onOpenSettings,
   onOpenStats,
   onOpenFriends,
   onOpenProfileEditor,
@@ -34,9 +36,12 @@ export const ShellContent = ({
           onOpenLeaderboard={onOpenLeaderboard}
           onOpenProfileEditor={onOpenProfileEditor}
           onOpenRules={onOpenRules}
+          onOpenSettings={onOpenSettings}
           onOpenStats={onOpenStats}
         />
-      ) : null
+      ) : (
+        <ProfileTabSkeleton />
+      )
     )
     .with('tables', () => (
       <TableList status={status} tables={tables} onCreate={onGoToCreate} onJoin={onJoin} />

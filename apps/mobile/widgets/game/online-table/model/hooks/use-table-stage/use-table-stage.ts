@@ -1,14 +1,15 @@
-import type { GameId, TableSettings, ViewForGame } from '@durak-master/schemas';
+import type { GameId, TableSettings } from '@durak-master/schemas';
 
 import { useSessionStore } from '@/entities/session';
 
 type TableStage =
   | { kind: 'absent' }
-  | { kind: 'playing'; settings: TableSettings; view: ViewForGame<'durak'> }
-  | { kind: 'unsupported'; game: GameId }
-  | { kind: 'waiting' };
+  | { kind: 'game'; game: GameId; settings: TableSettings }
+  | { kind: 'unsupported'; game: GameId };
 
-export const useTableStage = (view: ViewForGame<'durak'> | null): TableStage => {
+const SUPPORTED = new Set<GameId>(['durak', 'kozel', 'burkozel', 'tysyacha']);
+
+export const useTableStage = (): TableStage => {
   const currentTable = useSessionStore((store) => store.currentTable);
 
   if (!currentTable) {
@@ -17,13 +18,9 @@ export const useTableStage = (view: ViewForGame<'durak'> | null): TableStage => 
 
   const { settings } = currentTable;
 
-  if (settings.game !== 'durak') {
+  if (!SUPPORTED.has(settings.game)) {
     return { kind: 'unsupported', game: settings.game };
   }
 
-  if (!view) {
-    return { kind: 'waiting' };
-  }
-
-  return { kind: 'playing', settings, view };
+  return { kind: 'game', game: settings.game, settings };
 };

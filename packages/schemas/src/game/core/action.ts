@@ -33,6 +33,7 @@ export const gameErrorCodeSchema = z.enum([
   'CARD_NOT_IN_HAND',
   'VERSION_MISMATCH',
   'INVALID_ACTION_FOR_PHASE',
+  'NOT_ENOUGH_COINS',
   'NOT_ENOUGH_CREDITS',
   'WRONG_GAME',
 
@@ -69,7 +70,14 @@ export const gameErrorCodeSchema = z.enum([
   'BIDDING_CLOSED',
   'MARRIAGE_NOT_HELD',
   'MARRIAGE_REQUIRES_LEAD',
-  'MUST_DISCARD_TWO'
+  'MUST_DISCARD_TWO',
+
+  'BONUS_NOT_READY',
+  'BOTS_DISABLED',
+  'PASSWORD_REQUIRED',
+  'TABLE_FULL',
+  'TABLE_NOT_FOUND',
+  'WRONG_PASSWORD'
 ]);
 
 export type GameErrorCode = z.infer<typeof gameErrorCodeSchema>;

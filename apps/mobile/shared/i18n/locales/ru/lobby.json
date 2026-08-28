@@ -26,21 +26,29 @@
       "low": "До 1K",
       "mid": "1K–50K",
       "high": "От 50K"
-    }
+    },
+    "ownTable": "Ваш стол"
   },
   "create": {
     "title": "Создать игру",
     "yourBet": "Ваша ставка",
     "betLabel": "Размер ставки",
+    "customBet": "Своя ставка",
+    "betRange": "От {{min}} до {{max}}",
     "players": "Игроки",
+    "playersFixed_one": "Только {{count}} игрок",
+    "playersFixed_few": "Только {{count}} игрока",
+    "playersFixed_many": "Только {{count}} игроков",
     "speed": "Скорость",
     "speedNormal": "Обычная",
     "speedFast": "Быстрая",
+    "speedHint": "{{seconds}} сек",
     "modes": "Режимы игры",
     "private": "Приватный стол",
     "submit": "Создать",
     "password": "Пароль стола",
-    "passwordPlaceholder": "Придумайте пароль"
+    "passwordPlaceholder": "Придумайте пароль",
+    "passwordRequired": "Введите пароль, иначе к столу никто не сядет"
   },
   "games": {
     "pick": "Игра",
@@ -51,25 +59,30 @@
       "name": "Дурак",
       "tagline": "избавьтесь от карт первым",
       "deck": "Колода",
+      "deckHint": "Чем меньше колода, тем быстрее партия",
       "allowDraw": "Ничья",
       "showTrump": "Перевод козырем",
       "showTrumpHint": "перевести, показав козырь",
       "mode": {
+        "title": "Тип игры",
         "throwIn": "Подкидной",
         "transfer": "Переводной"
       },
       "throwInScope": {
+        "title": "Кто подкидывает",
         "neighbors": "Соседи",
         "neighborsHint": "подкидывают только соседи",
         "all": "Все",
         "allHint": "подкидывают все игроки"
       },
       "fairness": {
+        "title": "Честность",
         "fair": "Честная",
         "cheaters": "С шулерами",
         "cheatersHint": "можно жульничать"
       },
       "firstMove": {
+        "title": "Первый ход",
         "lowestTrump": "Младший козырь",
         "lowestTrumpHint": "ходит младший козырь",
         "random": "Случайно"
@@ -84,10 +97,13 @@
       "combinations": "Комбинации",
       "combinationsHint": "бура, молодка и другие",
       "teamMode": {
+        "title": "Состав",
         "solo": "Каждый сам",
         "pairs": "Парами",
         "pairsHint": "двое на двое"
-      }
+      },
+      "yourPoints": "Ваши очки",
+      "playCards": "Сыграть ({{total}})"
     },
     "kozel": {
       "name": "Козёл",
@@ -98,15 +114,53 @@
       "aceRestriction": "Придержать туза",
       "aceRestrictionHint": "нельзя сбросить туза несыгранной масти",
       "firstLead": {
+        "title": "Первый ход",
         "lowestTrump": "Младший козырь",
         "lowestTrumpHint": "ходит владелец 8♣",
         "leftOfDealer": "Слева от сдающего",
         "dealer": "Сдающий"
-      }
+      },
+      "yourTeam": "Ваша пара",
+      "opponents": "Соперники",
+      "chooseLeaderTitle": "Кто заходит?",
+      "chooseLeaderMe": "Я",
+      "chooseLeaderPartner": "Напарник",
+      "chooseLeaderWait": "Соперники выбирают, кто заходит"
     },
     "tysyacha": {
       "name": "Тысяча",
-      "tagline": "торгуйтесь и наберите 1000"
+      "tagline": "торгуйтесь и наберите 1000",
+      "winningScore": "Играем до",
+      "bidStep": "Шаг торговли",
+      "marriageOnFirstTrick": "Марьяж сразу",
+      "marriageOnFirstTrickHint": "объявлять с первой взятки",
+      "dumpTruck": "Самосвал",
+      "dumpTruckHint": "штраф за проваленный контракт вдвое",
+      "discardVisibility": {
+        "title": "Прикуп",
+        "closed": "Закрытый",
+        "closedHint": "прикуп видит только сдающий",
+        "open": "Открытый",
+        "openHint": "прикуп показывают всем"
+      },
+      "skipBonus": {
+        "title": "Бонус пропускающему",
+        "none": "Без бонуса",
+        "aces": "За тузы",
+        "acesHint": "по 40 за туза в прикупе",
+        "fixed30": "Фикс. 30"
+      },
+      "yourScore": "Ваши очки",
+      "bid": "Ставка",
+      "pass": "Пас",
+      "bidding": "Торговля",
+      "noBids": "Ставок пока нет",
+      "currentBid": "Текущая ставка: {{value}}",
+      "raiseTo": "Поднять до {{value}}",
+      "discarding": "Прикуп",
+      "giveCards": "Раздайте по карте соперникам",
+      "waitingDeclarer": "Заказавший разбирает прикуп",
+      "dealOver": "Сдача сыграна"
     }
   }
 }

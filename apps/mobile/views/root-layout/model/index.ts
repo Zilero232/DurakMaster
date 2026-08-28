@@ -1,1 +1,1 @@
-export { useAppBootstrap } from './use-app-bootstrap';
+export { useAppBootstrap } from './hooks';

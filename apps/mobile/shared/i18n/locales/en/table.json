@@ -23,7 +23,11 @@
       "out": "out",
       "offline": "offline"
     },
-    "reaction": "Send reaction {{emoji}}"
+    "reaction": "Send reaction {{emoji}}",
+    "seatFree": "Waiting",
+    "joining": "Taking a seat…",
+    "deckLeft": "Deck",
+    "emptySeat": "Waiting for a player"
   },
   "result": {
     "win": "Victory",
@@ -36,7 +40,10 @@
     "rating": "+{{value}} rating",
     "playAgain": "Play again",
     "toMenu": "To menu",
-    "leaveTable": "Leave table"
+    "leaveTable": "Leave table",
+    "waitingReady": "Ready: {{current}} of {{max}}",
+    "waitingOthers": "Waiting for others…",
+    "timeoutHint": "Your turn ran out of time"
   },
   "discard": {
     "title": "Discard pile",
@@ -86,11 +93,19 @@
     }
   },
   "emojis": {
-    "title": "Taunt"
+    "title": "Taunt",
+    "tabs": {
+      "emoji": "Emoji",
+      "phrase": "Phrases"
+    }
   },
   "boosts": {
-    "undoMove": "Take the move back",
     "peekTalon": "Peek at the deck",
-    "peekHand": "Peek at a hand"
+    "peekHand": "Peek at a hand",
+    "peekTalonHint": "Look at the top three cards of the deck",
+    "peekHandHint": "Peek at one opponent's hand",
+    "holdForHint": "Hold to learn more",
+    "undoMove": "Take it back",
+    "undoMoveHint": "pull the card back before anyone answers"
   }
 }

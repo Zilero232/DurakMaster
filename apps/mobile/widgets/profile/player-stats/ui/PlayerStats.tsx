@@ -2,11 +2,10 @@ import { getRankInfo } from '@durak-master/schemas';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { Sheet } from '@/ui-kit';
+import { LeagueBadge, Sheet, StatRow } from '@/ui-kit';
 
 import type { PlayerStatsProps } from './PlayerStats.types';
 
-import { StatRow } from './components';
 import { styles } from './PlayerStats.styles';
 
 export const PlayerStats = ({ profile, isOpen, onClose }: PlayerStatsProps) => {
@@ -21,6 +20,8 @@ export const PlayerStats = ({ profile, isOpen, onClose }: PlayerStatsProps) => {
     <Sheet isOpen={isOpen} title={t('stats.title')} onClose={onClose}>
       <View style={styles.root}>
         <View style={styles.league}>
+          <LeagueBadge league={rank.league.id} level={rank.level} size={72} />
+
           <Text style={[styles.leagueName, { color: rank.league.color }]}>
             {t(`profile.leagues.${rank.league.id}`)}
           </Text>

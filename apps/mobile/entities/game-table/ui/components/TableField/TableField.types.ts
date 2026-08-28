@@ -8,6 +8,8 @@ export type TableFieldProps = {
   pairs: TablePair[];
   beatableIndexes: Set<number>;
 
+  mySeat: number;
+
   hoveredIndex?: number | null;
   cardScale?: CardScale;
   isInstant?: boolean;

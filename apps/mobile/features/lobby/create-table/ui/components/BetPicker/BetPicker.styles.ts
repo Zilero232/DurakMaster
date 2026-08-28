@@ -1,21 +1,33 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, spacing } from '@/ui-kit';
+import { borderWidth, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
-    gap: spacing[3]
+    gap: spacing[3],
+    padding: spacing[4],
+    borderRadius: radii.lg,
+    borderWidth: borderWidth.hairline,
+    borderColor: colors.borderGold,
+    backgroundColor: colors.surface1
+  },
+
+  amount: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2]
   },
 
   header: {
     flexDirection: 'row',
-    alignItems: 'baseline',
+    alignItems: 'center',
     justifyContent: 'space-between',
     gap: spacing[3]
   },
 
   label: {
-    fontSize: fontSize.lg,
+    flexShrink: 0,
+    fontSize: fontSize.md,
     fontWeight: '800',
     fontFamily: fontFamily.sansBold,
     color: colors.onFelt

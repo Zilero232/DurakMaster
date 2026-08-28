@@ -4,8 +4,8 @@ import { colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit'
 
 export const styles = StyleSheet.create({
   root: {
-    flexBasis: '48%',
-    flexGrow: 1,
+    flex: 1,
+    minWidth: 0,
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing[1],
@@ -20,7 +20,8 @@ export const styles = StyleSheet.create({
   },
 
   active: {
-    borderColor: colors.accent
+    borderColor: colors.accent,
+    backgroundColor: colors.surface2
   },
 
   pressed: {
@@ -28,16 +29,8 @@ export const styles = StyleSheet.create({
     transform: [{ scale: 0.97 }]
   },
 
-  check: {
-    position: 'absolute',
-    top: spacing[1],
-    right: spacing[1],
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 20,
-    height: 20,
-    borderRadius: radii.pill,
-    backgroundColor: colors.accent
+  labelActive: {
+    color: colors.accent
   },
 
   label: {

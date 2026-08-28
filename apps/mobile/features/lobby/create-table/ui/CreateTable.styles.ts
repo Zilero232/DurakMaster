@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, spacing } from '@/ui-kit';
+import { spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -9,10 +9,19 @@ export const styles = StyleSheet.create({
     paddingBottom: spacing[8]
   },
 
-  notice: {
-    fontSize: fontSize.sm,
-    lineHeight: 20,
-    fontFamily: fontFamily.sans,
-    color: colors.onFeltMuted
+  /**
+   * The form is long enough that a single column means scrolling past the game picker to
+   * reach the submit button. On desktop the two halves sit side by side instead.
+   */
+  columns: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing[5]
+  },
+
+  column: {
+    flex: 1,
+    gap: spacing[5],
+    minWidth: 0
   }
 });

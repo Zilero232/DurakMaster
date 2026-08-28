@@ -1,3 +1,4 @@
+import { Languages, Maximize2, Palette } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
@@ -39,7 +40,7 @@ export const LookSettingsTab = () => {
 
   return (
     <View style={styles.root}>
-      <SettingsSection title={t('settings.cardTheme')}>
+      <SettingsSection icon={Palette} title={t('settings.cardTheme')}>
         <View style={styles.themes}>
           {CARD_THEMES.map((theme) => (
             <ThemeOption
@@ -53,11 +54,11 @@ export const LookSettingsTab = () => {
         </View>
       </SettingsSection>
 
-      <SettingsSection title={t('settings.cardScale')}>
+      <SettingsSection icon={Maximize2} title={t('settings.cardScale')}>
         <SegmentedControl options={scaleOptions} value={cardScale} onChange={setCardScale} />
       </SettingsSection>
 
-      <SettingsSection title={t('settings.language')}>
+      <SettingsSection icon={Languages} title={t('settings.language')}>
         <LocaleOptions value={locale} onChange={setLocale} />
       </SettingsSection>
     </View>

@@ -3,16 +3,21 @@ import { z } from 'zod';
 import type { GameId } from './game-id';
 
 import { burkozelRulesSchema, DEFAULT_BURKOZEL_RULES } from '../games/burkozel';
-import { DEFAULT_DURAK_RULES, durakRulesSchema } from '../games/durak';
+import { DEFAULT_DURAK_RULES, durakRulesSchema, maxDurakPlayers } from '../games/durak';
 import { DEFAULT_KOZEL_RULES, kozelRulesSchema } from '../games/kozel';
 import { DEFAULT_TYSYACHA_RULES, tysyachaRulesSchema } from '../games/tysyacha';
 import { commonTableSettingsSchema, DEFAULT_COMMON_SETTINGS } from './table-settings-common';
 
 export const tableSettingsSchema = z.discriminatedUnion('game', [
-  commonTableSettingsSchema.extend({
-    game: z.literal('durak'),
-    rules: durakRulesSchema
-  }),
+  commonTableSettingsSchema
+    .extend({
+      game: z.literal('durak'),
+      rules: durakRulesSchema
+    })
+    .refine((settings) => settings.maxPlayers <= maxDurakPlayers(settings.rules.deckSize), {
+      message: 'Deck is too small to deal every player a hand',
+      path: ['maxPlayers']
+    }),
   commonTableSettingsSchema.extend({
     game: z.literal('burkozel'),
     rules: burkozelRulesSchema

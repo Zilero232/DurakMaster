@@ -2,14 +2,13 @@ import type { CredentialsInput } from '@durak-master/schemas';
 
 import { credentialsSchema } from '@durak-master/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { authClient } from '@/shared/api';
-import { Button, screenGradient } from '@/ui-kit';
+import { Button, LobbyBackground } from '@/ui-kit';
 
 import type { AuthMode } from './SignInForm.types';
 
@@ -50,32 +49,40 @@ export const SignInForm = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.root}
-    >
-      <LinearGradient colors={screenGradient} style={styles.wash} />
-
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps='handled'>
-        <View style={styles.card}>
-          <Text style={styles.title}>{t(isSignIn ? 'auth.signInTitle' : 'auth.signUpTitle')}</Text>
-          <Text style={styles.subtitle}>{t('auth.subtitle')}</Text>
-
-          <CredentialsFields control={control} errors={errors} mode={mode} onSubmit={submit} />
-
-          {errors.root && <Text style={styles.error}>{errors.root.message}</Text>}
-
-          <Button isFullWidth isLoading={isSubmitting} size='lg' variant='primary' onPress={submit}>
-            {t(isSignIn ? 'auth.signIn' : 'auth.signUp')}
-          </Button>
-
-          <Pressable accessibilityRole='button' onPress={toggleMode}>
-            <Text style={styles.switch}>
-              {t(isSignIn ? 'auth.switchToSignUp' : 'auth.switchToSignIn')}
+    <LobbyBackground>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.root}
+      >
+        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps='handled'>
+          <View style={styles.card}>
+            <Text style={styles.title}>
+              {t(isSignIn ? 'auth.signInTitle' : 'auth.signUpTitle')}
             </Text>
-          </Pressable>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+            <Text style={styles.subtitle}>{t('auth.subtitle')}</Text>
+
+            <CredentialsFields control={control} errors={errors} mode={mode} onSubmit={submit} />
+
+            {errors.root && <Text style={styles.error}>{errors.root.message}</Text>}
+
+            <Button
+              isFullWidth
+              isLoading={isSubmitting}
+              size='lg'
+              variant='primary'
+              onPress={submit}
+            >
+              {t(isSignIn ? 'auth.signIn' : 'auth.signUp')}
+            </Button>
+
+            <Pressable accessibilityRole='button' onPress={toggleMode}>
+              <Text style={styles.switch}>
+                {t(isSignIn ? 'auth.switchToSignUp' : 'auth.switchToSignIn')}
+              </Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LobbyBackground>
   );
 };

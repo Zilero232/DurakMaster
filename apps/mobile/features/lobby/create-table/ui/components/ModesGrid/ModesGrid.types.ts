@@ -15,6 +15,7 @@ export type ModeChoiceOption<T> = {
 
 export type ModeChoiceField = {
   name: ModeFieldName;
+  titleKey: ParseKeys;
   options: ModeChoiceOption<unknown>[];
 };
 

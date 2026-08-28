@@ -2,20 +2,43 @@ import { StyleSheet } from 'react-native';
 
 import { borderWidth, colors, radii, spacing } from '@/ui-kit';
 
+export const AVATAR_SIZE = 48;
+
+const TILE_MIN_WIDTH = 68;
+
 export const styles = StyleSheet.create({
   root: {
-    padding: spacing[1],
-    borderRadius: radii.pill,
-    borderWidth: borderWidth.regular,
-    borderColor: colors.transparent
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexGrow: 1,
+    flexBasis: TILE_MIN_WIDTH,
+    padding: spacing[2],
+    borderRadius: radii.md,
+    borderWidth: borderWidth.hairline,
+    borderColor: colors.border,
+    backgroundColor: colors.surface2
   },
 
   selected: {
     borderColor: colors.accent,
-    backgroundColor: colors.glass
+    backgroundColor: colors.surface3
   },
 
   pressed: {
     opacity: 0.7
+  },
+
+  check: {
+    position: 'absolute',
+    right: -4,
+    bottom: -4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 20,
+    height: 20,
+    borderRadius: radii.pill,
+    borderWidth: borderWidth.regular,
+    borderColor: colors.surface1,
+    backgroundColor: colors.accent
   }
 });

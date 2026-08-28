@@ -15,8 +15,11 @@ export const styles = StyleSheet.create({
   option: {
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 1,
     minWidth: 44,
-    height: 44,
+    minHeight: 44,
+    paddingVertical: spacing[1],
+    paddingHorizontal: spacing[2],
     borderRadius: radii.pill,
     flexGrow: 1,
     flexShrink: 1,
@@ -35,9 +38,19 @@ export const styles = StyleSheet.create({
     color: colors.mutedForeground
   },
 
+  labelWithHint: {
+    fontSize: fontSize.md
+  },
+
   labelActive: {
     fontWeight: '800',
     fontFamily: fontFamily.sansBold,
     color: colors.accent
+  },
+
+  hint: {
+    fontSize: fontSize.xs,
+    fontFamily: fontFamily.sans,
+    color: colors.subtleForeground
   }
 });

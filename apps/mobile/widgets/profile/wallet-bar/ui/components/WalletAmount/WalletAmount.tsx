@@ -20,14 +20,16 @@ export const WalletAmount = ({
 
     <AnimatedNumber style={styles.amount} value={value} />
 
-    <Pressable
-      accessibilityLabel={topUpLabel}
-      accessibilityRole='button'
-      hitSlop={8}
-      style={({ pressed }) => [styles.topUp, pressed && styles.pressed]}
-      onPress={onTopUp}
-    >
-      <Plus color={colors.accent} size={iconSize.sm} />
-    </Pressable>
+    {onTopUp && (
+      <Pressable
+        accessibilityLabel={topUpLabel}
+        accessibilityRole='button'
+        hitSlop={8}
+        style={({ pressed }) => [styles.topUp, pressed && styles.pressed]}
+        onPress={onTopUp}
+      >
+        <Plus color={colors.accent} size={iconSize.sm} />
+      </Pressable>
+    )}
   </View>
 );

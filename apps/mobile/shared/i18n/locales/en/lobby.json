@@ -25,21 +25,28 @@
       "low": "Up to 1K",
       "mid": "1K–50K",
       "high": "50K+"
-    }
+    },
+    "ownTable": "Your table"
   },
   "create": {
     "title": "New game",
     "yourBet": "Your bet",
     "betLabel": "Bet size",
+    "customBet": "Custom bet",
+    "betRange": "From {{min}} to {{max}}",
     "players": "Players",
+    "playersFixed_one": "{{count}} player only",
+    "playersFixed_other": "{{count}} players only",
     "speed": "Speed",
     "speedNormal": "Normal",
     "speedFast": "Fast",
+    "speedHint": "{{seconds}}s",
     "modes": "Game modes",
     "private": "Private table",
     "submit": "Create",
     "password": "Table password",
-    "passwordPlaceholder": "Choose a password"
+    "passwordPlaceholder": "Choose a password",
+    "passwordRequired": "Enter a password, or nobody can join the table"
   },
   "games": {
     "pick": "Game",
@@ -50,25 +57,30 @@
       "name": "Durak",
       "tagline": "be the first to run out of cards",
       "deck": "Deck",
+      "deckHint": "A smaller deck makes for a shorter game",
       "allowDraw": "Draw",
       "showTrump": "Pass by trump",
       "showTrumpHint": "pass by showing a trump",
       "mode": {
+        "title": "Game type",
         "throwIn": "Throw-in",
         "transfer": "Passing"
       },
       "throwInScope": {
+        "title": "Who throws in",
         "neighbors": "Neighbours",
         "neighborsHint": "only neighbours throw in",
         "all": "Everyone",
         "allHint": "all players throw in"
       },
       "fairness": {
+        "title": "Fair play",
         "fair": "Fair",
         "cheaters": "Cheaters",
         "cheatersHint": "cheating allowed"
       },
       "firstMove": {
+        "title": "First move",
         "lowestTrump": "Lowest trump",
         "lowestTrumpHint": "lowest trump leads",
         "random": "Random"
@@ -83,10 +95,13 @@
       "combinations": "Combinations",
       "combinationsHint": "bura, molodka and the rest",
       "teamMode": {
+        "title": "Line-up",
         "solo": "Every player alone",
         "pairs": "In pairs",
         "pairsHint": "two against two"
-      }
+      },
+      "yourPoints": "Your points",
+      "playCards": "Play ({{total}})"
     },
     "kozel": {
       "name": "Kozel",
@@ -97,15 +112,53 @@
       "aceRestriction": "Hold the ace",
       "aceRestrictionHint": "no discarding an ace of an unled suit",
       "firstLead": {
+        "title": "First lead",
         "lowestTrump": "Lowest trump",
         "lowestTrumpHint": "whoever holds 8♣ leads",
         "leftOfDealer": "Left of the dealer",
         "dealer": "The dealer"
-      }
+      },
+      "yourTeam": "Your pair",
+      "opponents": "Opponents",
+      "chooseLeaderTitle": "Who leads?",
+      "chooseLeaderMe": "Me",
+      "chooseLeaderPartner": "Partner",
+      "chooseLeaderWait": "Opponents are choosing who leads"
     },
     "tysyacha": {
       "name": "Tysyacha",
-      "tagline": "bid and race to 1000"
+      "tagline": "bid and race to 1000",
+      "winningScore": "Play up to",
+      "bidStep": "Bidding step",
+      "marriageOnFirstTrick": "Marriage at once",
+      "marriageOnFirstTrickHint": "declare from the first trick",
+      "dumpTruck": "Dump truck",
+      "dumpTruckHint": "a failed contract costs double",
+      "discardVisibility": {
+        "title": "The widow",
+        "closed": "Closed",
+        "closedHint": "only the declarer sees the widow",
+        "open": "Open",
+        "openHint": "the widow is shown to everyone"
+      },
+      "skipBonus": {
+        "title": "Sitting-out bonus",
+        "none": "No bonus",
+        "aces": "For aces",
+        "acesHint": "40 for every ace in the widow",
+        "fixed30": "Flat 30"
+      },
+      "yourScore": "Your points",
+      "bid": "Bid",
+      "pass": "Pass",
+      "bidding": "Bidding",
+      "noBids": "No bids yet",
+      "currentBid": "Current bid: {{value}}",
+      "raiseTo": "Raise to {{value}}",
+      "discarding": "The widow",
+      "giveCards": "Give a card to each opponent",
+      "waitingDeclarer": "The declarer is sorting the widow",
+      "dealOver": "Deal scored"
     }
   }
 }

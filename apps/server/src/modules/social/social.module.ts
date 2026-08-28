@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
 
-import { ProfileModule } from '../profile/profile.module';
-import { AchievementsService } from './achievements.service';
-import { FriendsService } from './friends.service';
-import { LeaderboardService } from './leaderboard.service';
+import { ProfileModule } from '../profile';
+import { AchievementsService, FriendsService, LeaderboardService } from './services';
 
 @Module({
   imports: [ProfileModule],
-  providers: [FriendsService, AchievementsService, LeaderboardService],
-  exports: [FriendsService, AchievementsService, LeaderboardService]
+  providers: [AchievementsService, FriendsService, LeaderboardService],
+  exports: [AchievementsService, FriendsService, LeaderboardService]
 })
 export class SocialModule {}

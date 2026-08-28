@@ -1,4 +1,4 @@
-import { Award, BarChart3, BookOpen, Share2, Trophy, Users } from 'lucide-react-native';
+import { Award, BookOpen, Settings, Share2, Trophy, Users } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Share, View } from 'react-native';
 
@@ -11,7 +11,7 @@ import { styles } from './ProfileMenu.styles';
 
 export const ProfileMenu = ({
   onOpenRules,
-  onOpenStats,
+  onOpenSettings,
   onOpenFriends,
   onOpenAchievements,
   onOpenLeaderboard
@@ -26,8 +26,8 @@ export const ProfileMenu = ({
     { id: 'friends', icon: Users, tint: colors.info, onPress: onOpenFriends },
     { id: 'achievements', icon: Award, tint: colors.gold, onPress: onOpenAchievements },
     { id: 'leaderboard', icon: Trophy, tint: colors.accentBright, onPress: onOpenLeaderboard },
-    { id: 'stats', icon: BarChart3, tint: colors.success, onPress: onOpenStats },
     { id: 'rules', icon: BookOpen, tint: colors.mutedForeground, onPress: onOpenRules },
+    { id: 'settings', icon: Settings, tint: colors.success, onPress: onOpenSettings },
     { id: 'share', icon: Share2, tint: colors.trump, onPress: handleShare }
   ];
 

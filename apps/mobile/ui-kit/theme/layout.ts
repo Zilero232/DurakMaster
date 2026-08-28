@@ -3,10 +3,10 @@ import { clamp } from 'remeda';
 
 import { card } from './tokens';
 
-const MIN_CARD_WIDTH = 52;
-const MAX_CARD_WIDTH = 92;
+const MIN_CARD_WIDTH = 56;
+const MAX_CARD_WIDTH = 124;
 
-const CARD_WIDTH_RATIO = 0.17;
+const CARD_WIDTH_RATIO = 0.175;
 
 export const CARD_SCALE = {
   small: 0.85,
@@ -33,5 +33,7 @@ export const cardSize = getCardSize(screen.width);
 export const MAX_FAN_ANGLE = 18;
 
 export const CONTENT_MAX_WIDTH = 720;
+
+export const DESKTOP_MAX_WIDTH = 1440;
 
 export const TABLE_MAX_WIDTH = 900;

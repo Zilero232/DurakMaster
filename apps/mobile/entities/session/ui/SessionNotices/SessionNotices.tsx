@@ -5,7 +5,7 @@ import { toast } from 'sonner-native';
 import { haptic } from '@/shared/lib/haptics';
 import { playSound } from '@/shared/lib/sound';
 
-import { useSessionStore } from '../../model/session-store';
+import { useSessionStore } from '../../model/store';
 
 export const SessionNotices = () => {
   const { t } = useTranslation();
@@ -35,9 +35,12 @@ export const SessionNotices = () => {
       return;
     }
 
+    const key = `error.${rejectedCode}`;
+    const translated = t(key);
+
     playSound('error');
     haptic('error');
-    toast.error(t(`error.${rejectedCode}`));
+    toast.error(translated === key ? t('error.UNKNOWN') : translated);
     clearRejection();
   }, [rejectedCode, t, clearRejection]);
 

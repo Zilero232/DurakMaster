@@ -1,3 +1,4 @@
+import { Settings2, Target } from 'lucide-react-native';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -17,7 +18,7 @@ export const KozelSettings = ({ control }: KozelSettingsProps) => {
 
   return (
     <>
-      <SettingsSection title={t('games.kozel.targetPairs')}>
+      <SettingsSection icon={Target} title={t('games.kozel.targetPairs')}>
         <Controller
           render={({ field }) => (
             <OptionRow items={TARGET_PAIRS_ITEMS} value={field.value} onChange={field.onChange} />
@@ -27,7 +28,7 @@ export const KozelSettings = ({ control }: KozelSettingsProps) => {
         />
       </SettingsSection>
 
-      <SettingsSection title={t('create.modes')}>
+      <SettingsSection icon={Settings2} title={t('create.modes')}>
         <ModesGrid choices={KOZEL_CHOICE_FIELDS} control={control} toggles={KOZEL_TOGGLE_FIELDS} />
       </SettingsSection>
     </>

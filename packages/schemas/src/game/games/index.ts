@@ -38,6 +38,7 @@ export {
   fairnessSchema,
   firstMoveSchema,
   MAX_ATTACK_CARDS_PER_BOUT,
+  maxDurakPlayers,
   tablePairSchema,
   throwInScopeSchema
 } from './durak';

@@ -1247,6 +1247,13 @@ This guide covers `apps/mobile/`. The project invariants (server authority, cryp
 - Nested `if (...) return <X />` for 3+ branches. Use `ts-pattern match`.
 - Anything other than route files in `apps/mobile/app/` (see [`docs/fsd.md`](./fsd.md) §1).
 - `'use client'` — a Next.js directive, it means nothing in Expo.
+- **Explanatory comments in code.** No `//` notes and no JSDoc blocks describing what
+  the code does or why. Name things so the code reads without them: pull a condition
+  into a named constant, a block into a named function. The exceptions are the two
+  places where a comment is part of an API rather than a note about the code: a
+  `/** ... */` on a field of an exported `type` (it shows up in editor autocomplete,
+  see section 8), and a directive a tool reads (`eslint-disable`, `@ts-expect-error`)
+  — which still needs its reason on the same line.
 
 ---
 
@@ -1260,4 +1267,4 @@ bun typecheck    # types across all workspaces
 bun verify       # typecheck + lint + format:check in one command
 ```
 
-`bun fix` does not fix: blank lines (section 13), hook order (section 9.1), FSD import boundaries (→ [`docs/fsd.md`](./fsd.md)), translation completeness (section 18).
+`bun fix` does not fix: blank lines (section 13), hook order (section 9.1), FSD import boundaries (→ [`docs/fsd.md`](./fsd.md)), translation completeness (section 18), explanatory comments (section 20).

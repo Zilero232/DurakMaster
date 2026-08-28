@@ -14,6 +14,7 @@ import { styles } from './TableField.styles';
 export const TableField = ({
   pairs,
   beatableIndexes,
+  mySeat,
   hoveredIndex = null,
   cardScale = 'normal',
   isInstant = false,
@@ -74,6 +75,7 @@ export const TableField = ({
           index={index}
           isHovered={hoveredIndex === index}
           isInstant={isInstant}
+          mySeat={mySeat}
           pair={pair}
           width={width}
           onDefend={onDefend}

@@ -1,7 +1,7 @@
 import type { LucideIcon } from 'lucide-react-native';
 
 export type ProfileMenuKey =
-  'achievements' | 'friends' | 'leaderboard' | 'rules' | 'share' | 'stats';
+  'achievements' | 'friends' | 'leaderboard' | 'rules' | 'settings' | 'share';
 
 export type ProfileMenuItem = {
   id: ProfileMenuKey;
@@ -18,5 +18,5 @@ export type ProfileMenuProps = {
   onOpenFriends: () => void;
   onOpenLeaderboard: () => void;
   onOpenRules: () => void;
-  onOpenStats: () => void;
+  onOpenSettings: () => void;
 };

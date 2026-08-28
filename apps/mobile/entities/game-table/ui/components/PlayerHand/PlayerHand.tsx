@@ -1,12 +1,12 @@
 import { View } from 'react-native';
-import Animated, { FadeOut, LinearTransition, SlideInRight } from 'react-native-reanimated';
+import Animated, { FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import { cardKey } from '@/shared/lib/cards';
-import { MAX_FAN_ANGLE } from '@/ui-kit';
+import { duration, MAX_FAN_ANGLE } from '@/ui-kit';
 
 import type { PlayerHandProps } from './PlayerHand.types';
 
-import { sortHand } from '../../../lib';
+import { dealFromTalon, sortHand } from '../../../lib';
 import { useCardSize } from '../../../model';
 import { DraggableCard } from './components';
 import { EDGE_PADDING, fanOverlap, styles } from './PlayerHand.styles';
@@ -16,7 +16,8 @@ const FAN_DROP_RATIO = 0.1;
 export const PlayerHand = ({
   cards,
   playableKeys,
-  selectedKey,
+  selectedKey = null,
+  selectedKeys,
   trump,
   hasHints = false,
   sortMode,
@@ -48,9 +49,9 @@ export const PlayerHand = ({
         return (
           <Animated.View
             key={key}
-            entering={isInstant ? undefined : SlideInRight.springify().damping(30).stiffness(380)}
+            entering={isInstant ? undefined : dealFromTalon}
             exiting={isInstant ? undefined : FadeOut.duration(160)}
-            layout={isInstant ? undefined : LinearTransition.springify().damping(30).stiffness(380)}
+            layout={isInstant ? undefined : LinearTransition.duration(duration.layout)}
             style={{ zIndex: index, marginRight: isLast ? 0 : overlap }}
           >
             <View style={{ transform: [{ translateY: Math.abs(offset) * fanDrop }] }}>
@@ -59,12 +60,12 @@ export const PlayerHand = ({
                 dropZones={dropZones}
                 isDimmed={hasHints && playableKeys.size > 0 && !playableKeys.has(key)}
                 isPlayable={playableKeys.has(key)}
-                isSelected={selectedKey === key}
+                isSelected={selectedKeys ? selectedKeys.has(key) : selectedKey === key}
                 rotation={offset * MAX_FAN_ANGLE}
                 width={width}
                 onDragEnd={() => onDragEnd?.()}
                 onDragStart={() => onDragStart?.(card)}
-                onDropMiss={() => onDropMiss?.(card)}
+                onDropMiss={(travelY) => onDropMiss?.(card, travelY)}
                 onDropOn={(pairIndex) => onDropOn?.(card, pairIndex)}
                 onHover={(hovered) => onHover?.(hovered)}
                 onPlay={() => onSelect(card)}

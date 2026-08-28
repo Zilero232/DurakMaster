@@ -7,4 +7,4 @@ export {
 
 export type { CreateTableFormValues } from './create-table-form';
 
-export { useCreateTableForm } from './use-create-table-form';
+export { useCreateTableForm } from './hooks';

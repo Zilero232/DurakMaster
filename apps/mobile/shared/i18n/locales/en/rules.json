@@ -79,6 +79,32 @@
         "title": "Scoring",
         "text": "At the end of a deal the points in the tricks are counted. Whoever falls short of the threshold takes penalty points, and a player drops out once their penalties pass the table limit."
       }
+    },
+    "tysyacha": {
+      "deal": {
+        "title": "The deal",
+        "text": "24 cards, seven to a hand, three to the widow. Three play."
+      },
+      "bidding": {
+        "title": "Bidding",
+        "text": "From the dealer's left, players raise from 100 or pass. The winner takes the widow."
+      },
+      "widow": {
+        "title": "The widow",
+        "text": "The declarer takes three cards and gives one to each opponent."
+      },
+      "marriages": {
+        "title": "Marriages",
+        "text": "A king and queen of a suit score and make it trump: spades 40, clubs 60, diamonds 80, hearts 100."
+      },
+      "play": {
+        "title": "Play",
+        "text": "Follow suit, trumps win. Whoever takes the trick leads next."
+      },
+      "score": {
+        "title": "Scoring",
+        "text": "The declarer must make the contract or lose it. First to 1000 wins."
+      }
     }
   }
 }

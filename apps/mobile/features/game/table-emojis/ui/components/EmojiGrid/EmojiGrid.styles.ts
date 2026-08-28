@@ -1,8 +1,8 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, radii, spacing } from '@/ui-kit';
+import { borderWidth, colors, radii, spacing } from '@/ui-kit';
 
-const TILE = 56;
+const TILE_SIZE = 60;
 
 export const styles = StyleSheet.create({
   root: {
@@ -15,13 +15,16 @@ export const styles = StyleSheet.create({
   tile: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: TILE,
-    height: TILE,
+    width: TILE_SIZE,
+    height: TILE_SIZE,
     borderRadius: radii.md,
+    borderWidth: borderWidth.hairline,
+    borderColor: colors.border,
     backgroundColor: colors.surface2
   },
 
-  emoji: {
-    fontSize: 30
+  pressed: {
+    borderColor: colors.accent,
+    backgroundColor: colors.surface3
   }
 });

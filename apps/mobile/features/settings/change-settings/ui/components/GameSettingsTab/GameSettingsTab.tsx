@@ -1,3 +1,4 @@
+import { ArrowDownWideNarrow, Gauge } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
@@ -38,11 +39,11 @@ export const GameSettingsTab = () => {
 
   return (
     <View style={styles.root}>
-      <SettingsSection title={t('settings.sortTitle')}>
+      <SettingsSection icon={ArrowDownWideNarrow} title={t('settings.sortTitle')}>
         <SegmentedControl options={sortOptions} value={handSort} onChange={setHandSort} />
       </SettingsSection>
 
-      <SettingsSection title={t('settings.speedTitle')}>
+      <SettingsSection icon={Gauge} title={t('settings.speedTitle')}>
         <SegmentedControl
           options={speedOptions}
           value={animationSpeed}

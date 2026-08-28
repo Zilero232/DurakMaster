@@ -11,6 +11,7 @@ export const TARGET_PAIRS_ITEMS: OptionItem<number>[] = [3, 6, 12].map((pairs) =
 export const KOZEL_CHOICE_FIELDS: ModeChoiceField[] = [
   {
     name: 'kozelRules.firstLead',
+    titleKey: 'games.kozel.firstLead.title',
     options: [
       {
         value: 'lowestTrump',

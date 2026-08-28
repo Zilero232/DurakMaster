@@ -12,6 +12,7 @@ export const PENALTY_LIMIT_ITEMS: OptionItem<number>[] = PENALTY_LIMITS.map((lim
 export const BURKOZEL_CHOICE_FIELDS: ModeChoiceField[] = [
   {
     name: 'burkozelRules.teamMode',
+    titleKey: 'games.burkozel.teamMode.title',
     options: [
       { value: 'solo', icon: User, labelKey: 'games.burkozel.teamMode.solo' },
       {

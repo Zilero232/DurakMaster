@@ -10,6 +10,8 @@ import type { DropZone } from '../../drop-zone';
 const LIFT_SCALE = 1.12;
 const SPRING = { damping: 22, stiffness: 320 };
 
+const RETURN_SPRING = { damping: 26, stiffness: 420, overshootClamping: true };
+
 const zoneAt = (zones: DropZone[], x: number, y: number): number | null => {
   'worklet';
 
@@ -29,7 +31,7 @@ type UseCardGestureInput = {
   dropZones: DropZone[];
   onDropOn: (index: number) => void;
 
-  onDropMiss: () => void;
+  onDropMiss: (travelY: number) => void;
   onPlay: () => void;
   onHover: (index: number | null) => void;
   onDragStart: () => void;
@@ -56,14 +58,20 @@ export const useCardGesture = ({
   const offsetY = useSharedValue(0);
   const scale = useSharedValue(1);
   const isDragging = useSharedValue(false);
+  const hoveredZone = useSharedValue<number | null>(null);
 
   const settle = () => {
     'worklet';
 
-    offsetX.value = withSpring(0, SPRING);
-    offsetY.value = withSpring(0, SPRING);
-    scale.value = withSpring(1, SPRING);
+    if (!isDragging.value) {
+      return;
+    }
+
+    offsetX.value = withSpring(0, RETURN_SPRING);
+    offsetY.value = withSpring(0, RETURN_SPRING);
+    scale.value = withSpring(1, RETURN_SPRING);
     isDragging.value = false;
+    hoveredZone.value = null;
   };
 
   const pan = Gesture.Pan()
@@ -78,10 +86,14 @@ export const useCardGesture = ({
       offsetX.value = event.translationX;
       offsetY.value = event.translationY;
 
-      scheduleOnRN(
-        onHover,
-        isPlayable ? zoneAt(zones.value, event.absoluteX, event.absoluteY) : null
-      );
+      const zone = isPlayable ? zoneAt(zones.value, event.absoluteX, event.absoluteY) : null;
+
+      if (zone === hoveredZone.value) {
+        return;
+      }
+
+      hoveredZone.value = zone;
+      scheduleOnRN(onHover, zone);
     })
     .onEnd((event) => {
       const index = isPlayable ? zoneAt(zones.value, event.absoluteX, event.absoluteY) : null;
@@ -93,7 +105,7 @@ export const useCardGesture = ({
       }
 
       if (index === null) {
-        scheduleOnRN(onDropMiss);
+        scheduleOnRN(onDropMiss, -event.translationY);
 
         return;
       }
@@ -114,7 +126,6 @@ export const useCardGesture = ({
   });
 
   const style = useAnimatedStyle(() => ({
-    zIndex: isDragging.value ? 100 : 0,
     transform: [
       { translateX: offsetX.value },
       { translateY: offsetY.value },

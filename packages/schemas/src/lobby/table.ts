@@ -23,6 +23,7 @@ export const lobbyTableSchema = z.object({
   status: tableStatusSchema,
   settings: tableSettingsSchema,
   players: z.array(tablePlayerSchema),
+  ownerId: z.string().nullable(),
   hasPremiumPlayer: z.boolean(),
   createdAt: z.number().int()
 });

@@ -2,10 +2,13 @@ import type { LobbyTable } from '@durak-master/schemas';
 
 import { FlashList } from '@shopify/flash-list';
 import { PlugZap, Plus, SearchX } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { match } from 'ts-pattern';
 
+import { useSessionStore } from '@/entities/session';
+import { useLayout } from '@/shared/model/layout';
 import { Button, colors, iconSize, SuitIcon } from '@/ui-kit';
 
 import type { TableListProps } from './TableList.types';
@@ -14,10 +17,20 @@ import { useLobbyFilters } from '../model';
 import { LobbyFilters, TableListSkeleton, TableRow } from './components';
 import { styles } from './TableList.styles';
 
+const COLUMN_WIDTH = 480;
+
+const columnsFor = (width: number): number => Math.max(1, Math.floor(width / COLUMN_WIDTH));
+
 const keyExtractor = (table: LobbyTable) => table.id;
 
 export const TableList = ({ tables, status, onJoin, onCreate }: TableListProps) => {
   const { t } = useTranslation();
+
+  const { isDesktop } = useLayout();
+
+  const myUserId = useSessionStore((store) => store.profile?.userId);
+
+  const [listWidth, setListWidth] = useState(0);
 
   const filters = useLobbyFilters(tables);
 
@@ -31,10 +44,15 @@ export const TableList = ({ tables, status, onJoin, onCreate }: TableListProps) 
   })
     .with({ hasVisible: true }, () => (
       <FlashList
-        contentContainerStyle={styles.list}
+        renderItem={({ item }) => (
+          <View style={isDesktop && styles.cell}>
+            <TableRow isTile={isDesktop} myUserId={myUserId} table={item} onJoin={onJoin} />
+          </View>
+        )}
+        contentContainerStyle={isDesktop ? styles.desktopList : styles.list}
         data={filters.visible}
         keyExtractor={keyExtractor}
-        renderItem={({ item }) => <TableRow table={item} onJoin={onJoin} />}
+        numColumns={isDesktop ? columnsFor(listWidth) : 1}
         showsVerticalScrollIndicator={false}
       />
     ))
@@ -71,7 +89,7 @@ export const TableList = ({ tables, status, onJoin, onCreate }: TableListProps) 
     ));
 
   return (
-    <View style={styles.root}>
+    <View style={styles.root} onLayout={(event) => setListWidth(event.nativeEvent.layout.width)}>
       {tables.length > 0 && (
         <LobbyFilters
           bet={filters.bet}

@@ -7,7 +7,7 @@ import { colors, iconSize, SuitIcon } from '@/ui-kit';
 
 import type { TabBarProps } from './TabBar.types';
 
-import { TABS } from './TabBar.config';
+import { TABS } from '../../AppShell.config';
 import { styles } from './TabBar.styles';
 
 export const TabBar = ({ tab, onChange }: TabBarProps) => {

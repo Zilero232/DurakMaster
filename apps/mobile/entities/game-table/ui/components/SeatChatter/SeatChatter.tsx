@@ -10,6 +10,8 @@ import Animated, {
   withTiming
 } from 'react-native-reanimated';
 
+import { TauntIcon } from '@/ui-kit';
+
 import type { SeatChatterProps } from './SeatChatter.types';
 
 import { styles } from './SeatChatter.styles';
@@ -20,13 +22,13 @@ const FADE_MS = 320;
 
 const PEAK_RATIO = 0.78;
 
-const isEmoji = (value: string): boolean => !/[\p{L}\p{N}]/u.test(value);
-
 export const SeatChatter = ({ chatter, size }: SeatChatterProps) => {
   const scale = useSharedValue(0);
 
+  const sentAt = chatter?.sentAt;
+
   useEffect(() => {
-    if (!chatter) {
+    if (!sentAt) {
       return;
     }
 
@@ -36,7 +38,7 @@ export const SeatChatter = ({ chatter, size }: SeatChatterProps) => {
       withTiming(1, { duration: HOLD_MS }),
       withTiming(0, { duration: FADE_MS, easing: Easing.in(Easing.quad) })
     );
-  }, [chatter, scale]);
+  }, [sentAt, scale]);
 
   const grow = useAnimatedStyle(() => ({
     opacity: scale.value,
@@ -47,23 +49,23 @@ export const SeatChatter = ({ chatter, size }: SeatChatterProps) => {
     return null;
   }
 
-  if (isEmoji(chatter)) {
+  if (chatter.kind === 'taunt') {
     return (
-      <Animated.View key={chatter} style={[styles.emoji, grow]}>
-        <Text style={{ fontSize: size * PEAK_RATIO }}>{chatter}</Text>
+      <Animated.View key={chatter.sentAt} style={[styles.emoji, grow]}>
+        <TauntIcon size={size * PEAK_RATIO} taunt={chatter.taunt} />
       </Animated.View>
     );
   }
 
   return (
     <Animated.View
-      key={chatter}
+      key={chatter.sentAt}
       entering={FadeIn.duration(160)}
       exiting={FadeOut.duration(240)}
       style={styles.bubble}
     >
       <Text numberOfLines={1} style={styles.bubbleText}>
-        {chatter}
+        {chatter.text}
       </Text>
     </Animated.View>
   );

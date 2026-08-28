@@ -11,6 +11,8 @@ export type LayoutInfo = {
 
   isWide: boolean;
 
+  isDesktop: boolean;
+
   isPortrait: boolean;
 };
 
@@ -18,13 +20,20 @@ export const useLayout = (): LayoutInfo => {
   const { width, height } = useWindowDimensions();
 
   const size: Breakpoint =
-    width >= breakpoint.wide ? 'wide' : width >= breakpoint.medium ? 'medium' : 'compact';
+    width >= breakpoint.desktop
+      ? 'desktop'
+      : width >= breakpoint.wide
+        ? 'wide'
+        : width >= breakpoint.medium
+          ? 'medium'
+          : 'compact';
 
   return {
     width,
     height,
     size,
     isWide: width >= breakpoint.medium,
+    isDesktop: width >= breakpoint.desktop,
     isPortrait: height >= width
   };
 };

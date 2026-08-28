@@ -11,10 +11,7 @@ import { styles } from './Sheet.styles';
 
 const DIALOG_FROM_WIDTH = 768;
 
-const HEIGHT_RATIO = {
-  dialog: { min: 0.55, max: 0.88 },
-  sheet: { min: 0.45, max: 0.92 }
-} as const;
+const MAX_HEIGHT_RATIO = { dialog: 0.88, sheet: 0.92 } as const;
 
 export const Sheet = ({ isOpen, title, children, footer, onClose }: SheetProps) => {
   const { t } = useTranslation();
@@ -25,7 +22,7 @@ export const Sheet = ({ isOpen, title, children, footer, onClose }: SheetProps) 
 
   const isDialog = width >= DIALOG_FROM_WIDTH;
 
-  const ratio = HEIGHT_RATIO[isDialog ? 'dialog' : 'sheet'];
+  const maxHeight = height * MAX_HEIGHT_RATIO[isDialog ? 'dialog' : 'sheet'];
 
   return (
     <Modal
@@ -48,18 +45,15 @@ export const Sheet = ({ isOpen, title, children, footer, onClose }: SheetProps) 
       </Animated.View>
 
       <Animated.View
-        entering={
-          isDialog ? FadeIn.duration(160) : SlideInDown.springify().damping(26).stiffness(260)
-        }
         style={[
-          styles.sheet,
-          isDialog && styles.dialog,
+          styles.panel,
+          isDialog ? styles.dialog : styles.sheet,
           {
-            minHeight: height * ratio.min,
-            maxHeight: height * ratio.max,
+            maxHeight,
             paddingBottom: isDialog ? 16 : insets.bottom + 16
           }
         ]}
+        entering={isDialog ? FadeIn.duration(160) : SlideInDown.duration(240)}
         exiting={isDialog ? FadeOut.duration(140) : SlideOutDown.duration(180)}
       >
         {!isDialog && <View style={styles.grabber} />}

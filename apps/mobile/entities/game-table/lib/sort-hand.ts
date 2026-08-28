@@ -11,16 +11,20 @@ const SUIT_ORDER: Record<Suit, number> = {
   clubs: 3
 };
 
-const byRank = (a: Card, b: Card): number => RANKS.indexOf(a.rank) - RANKS.indexOf(b.rank);
+const RANK_ORDER: Record<string, number> = Object.fromEntries(
+  RANKS.map((rank, index) => [rank, index])
+);
+
+const byRank = (a: Card, b: Card): number => (RANK_ORDER[a.rank] ?? 0) - (RANK_ORDER[b.rank] ?? 0);
 
 const bySuitThenRank = (a: Card, b: Card): number =>
   a.suit === b.suit ? byRank(a, b) : SUIT_ORDER[a.suit] - SUIT_ORDER[b.suit];
 
 const trumpLast =
-  (trump: Suit) =>
+  (isTrump: (card: Card) => boolean) =>
   (a: Card, b: Card): number => {
-    const aTrump = a.suit === trump;
-    const bTrump = b.suit === trump;
+    const aTrump = isTrump(a);
+    const bTrump = isTrump(b);
 
     if (aTrump !== bTrump) {
       return aTrump ? 1 : -1;
@@ -29,7 +33,21 @@ const trumpLast =
     return bySuitThenRank(a, b);
   };
 
-export const sortHand = (cards: Card[], trump: Suit, mode: HandSort = 'trumpFirst'): Card[] => {
+export type TrumpTest = ((card: Card) => boolean) | Suit | null;
+
+const toPredicate = (trump: TrumpTest): ((card: Card) => boolean) => {
+  if (trump === null) {
+    return () => false;
+  }
+
+  return typeof trump === 'function' ? trump : (card) => card.suit === trump;
+};
+
+export const sortHand = (
+  cards: Card[],
+  trump: TrumpTest,
+  mode: HandSort = 'trumpFirst'
+): Card[] => {
   switch (mode) {
     case 'manual': {
       return cards;
@@ -44,7 +62,7 @@ export const sortHand = (cards: Card[], trump: Suit, mode: HandSort = 'trumpFirs
     }
 
     default: {
-      return [...cards].sort(trumpLast(trump));
+      return [...cards].sort(trumpLast(toPredicate(trump)));
     }
   }
 };

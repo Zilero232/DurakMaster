@@ -5,6 +5,7 @@ export {
   CARD_SCALE,
   cardSize,
   CONTENT_MAX_WIDTH,
+  DESKTOP_MAX_WIDTH,
   getCardSize,
   MAX_FAN_ANGLE,
   screen,

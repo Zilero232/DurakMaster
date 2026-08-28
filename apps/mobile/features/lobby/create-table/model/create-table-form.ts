@@ -1,4 +1,4 @@
-import type { GameId, TableSettings } from '@durak-master/schemas';
+import type { DurakDeckSize, GameId, TableSettings } from '@durak-master/schemas';
 
 import {
   burkozelRulesSchema,
@@ -8,12 +8,14 @@ import {
   DEFAULT_DURAK_RULES,
   DEFAULT_GAME,
   DEFAULT_KOZEL_RULES,
-  DEFAULT_TABLE_SETTINGS,
+  DEFAULT_TYSYACHA_RULES,
   durakRulesSchema,
   gameIdSchema,
   kozelRulesSchema,
+  maxDurakPlayers,
   PLAYER_RANGE_BY_GAME,
-  TURN_SECONDS_BY_SPEED
+  TURN_SECONDS_BY_SPEED,
+  tysyachaRulesSchema
 } from '@durak-master/schemas';
 import { clamp } from 'remeda';
 import { match } from 'ts-pattern';
@@ -26,6 +28,7 @@ export const createTableFormSchema = commonTableSettingsSchema
     durakRules: durakRulesSchema,
     burkozelRules: burkozelRulesSchema,
     kozelRules: kozelRulesSchema,
+    tysyachaRules: tysyachaRulesSchema,
     password: z.string().max(32)
   })
   .refine((values) => !values.isPrivate || values.password.trim().length > 0, {
@@ -41,20 +44,37 @@ export const CREATE_TABLE_DEFAULTS: CreateTableFormValues = {
   durakRules: DEFAULT_DURAK_RULES,
   burkozelRules: DEFAULT_BURKOZEL_RULES,
   kozelRules: DEFAULT_KOZEL_RULES,
+  tysyachaRules: DEFAULT_TYSYACHA_RULES,
   password: ''
 };
 
-export const clampPlayersToGame = (game: GameId, maxPlayers: number): number => {
-  const { min, max } = PLAYER_RANGE_BY_GAME[game];
+export const clampPlayersToGame = (
+  game: GameId,
+  maxPlayers: number,
+  deckSize?: DurakDeckSize
+): number => {
+  const { min, max: range } = PLAYER_RANGE_BY_GAME[game];
+
+  const max = game === 'durak' && deckSize ? Math.min(range, maxDurakPlayers(deckSize)) : range;
 
   return clamp(maxPlayers, { min, max });
 };
 
 export const toTableSettings = (values: CreateTableFormValues): TableSettings => {
-  const { game, maxPlayers, bet, isPrivate, speed, durakRules, burkozelRules, kozelRules } = values;
+  const {
+    game,
+    maxPlayers,
+    bet,
+    isPrivate,
+    speed,
+    durakRules,
+    burkozelRules,
+    kozelRules,
+    tysyachaRules
+  } = values;
 
   const common = {
-    maxPlayers: clampPlayersToGame(game, maxPlayers),
+    maxPlayers: clampPlayersToGame(game, maxPlayers, durakRules.deckSize),
     bet,
     isPrivate,
     speed,
@@ -65,5 +85,6 @@ export const toTableSettings = (values: CreateTableFormValues): TableSettings =>
     .with('durak', (id) => ({ ...common, game: id, rules: durakRules }))
     .with('burkozel', (id) => ({ ...common, game: id, rules: burkozelRules }))
     .with('kozel', (id) => ({ ...common, game: id, rules: kozelRules }))
-    .otherwise((id) => ({ ...DEFAULT_TABLE_SETTINGS[id], ...common }));
+    .with('tysyacha', (id) => ({ ...common, game: id, rules: tysyachaRules }))
+    .exhaustive();
 };

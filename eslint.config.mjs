@@ -75,7 +75,9 @@ export default eslint(
       // их стирает — приложение падает с «Nest can't resolve».
       'ts/consistent-type-imports': 'off',
       // main.ts — ESM-точка входа, Bun запускает её напрямую.
-      'antfu/no-top-level-await': 'off'
+      'antfu/no-top-level-await': 'off',
+      // `useFactory` — провайдер Nest, а не React-хук.
+      'react/no-unnecessary-use-prefix': 'off'
     }
   },
 

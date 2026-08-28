@@ -23,7 +23,11 @@
     "name": "Name",
     "namePlaceholder": "Your name",
     "avatar": "Avatar",
-    "editHint": "Change name and avatar"
+    "editHint": "Change name and avatar",
+    "uploadAvatar": "Upload your own photo",
+    "orPick": "or pick a ready one",
+    "photoChosen": "Photo chosen — press Save",
+    "saveFailed": "Could not save the profile"
   },
   "menu": {
     "news": "News",
@@ -34,8 +38,8 @@
     "share": "Share",
     "rules": "Rules",
     "soon": "soon",
-    "stats": "Stats",
-    "shareMessage": "I'm playing DurakMaster — come join a table"
+    "shareMessage": "I'm playing DurakMaster — come join a table",
+    "settings": "Settings"
   },
   "stats": {
     "title": "Stats",

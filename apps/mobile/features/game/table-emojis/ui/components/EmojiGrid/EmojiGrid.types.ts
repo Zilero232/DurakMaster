@@ -1,3 +1,5 @@
+import type { TauntId } from '@durak-master/schemas';
+
 export type EmojiGridProps = {
-  onSelect: (emoji: string) => void;
+  onSelect: (taunt: TauntId) => void;
 };

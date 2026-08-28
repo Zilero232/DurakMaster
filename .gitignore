@@ -57,3 +57,6 @@ firebase-service-account.json
 
 # Superpowers brainstorming artifacts (companion mockups, session state, specs)
 .superpowers/
+
+# Uploaded avatars
+uploads

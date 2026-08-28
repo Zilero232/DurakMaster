@@ -4,6 +4,7 @@ export type ProfileTabProps = {
   profile: MyProfile;
   onClaimBonus: () => void;
   onOpenRules: () => void;
+  onOpenSettings: () => void;
   onOpenStats: () => void;
   onOpenFriends: () => void;
   onOpenProfileEditor: () => void;
