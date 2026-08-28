@@ -28,6 +28,10 @@ function isWorthDefending(state: DurakState, attack: Card, defense: Card): boole
 }
 
 function decideDefense(state: DurakState, hand: Card[]): DurakAction {
+  if (state.isTaking) {
+    return { type: 'pass' };
+  }
+
   const targetIndex = state.table.findIndex((pair) => pair.defense === null);
 
   if (targetIndex === -1) {

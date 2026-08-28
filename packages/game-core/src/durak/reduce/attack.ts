@@ -2,9 +2,9 @@ import type { Card, DurakState } from '@durak-master/schemas';
 
 import type { DurakReduceResult } from './shared';
 
-import { handContains, removeCard } from '../../shared';
+import { removeCard } from '../../shared';
 import { canThrowIn, isLegalAttackCard } from '../rules';
-import { fail, syncHandCounts } from './shared';
+import { fail, nextThrowerSeat, syncHandCounts } from './shared';
 
 export function applyAttack(
   state: DurakState,
@@ -16,9 +16,14 @@ export function applyAttack(
     return fail('INVALID_ACTION_FOR_PHASE');
   }
 
-  const hand = state.hands[userId] ?? [];
+  if (state.table.length === 0 && seat !== state.attackerSeat) {
+    return fail('NOT_YOUR_TURN');
+  }
 
-  if (!handContains(hand, card)) {
+  const hand = state.hands[userId] ?? [];
+  const rest = removeCard(hand, card);
+
+  if (rest === null) {
     return fail('CARD_NOT_IN_HAND');
   }
 
@@ -32,10 +37,12 @@ export function applyAttack(
 
   const next: DurakState = {
     ...state,
-    hands: { ...state.hands, [userId]: removeCard(hand, card) },
+    hands: { ...state.hands, [userId]: rest },
     table: [...state.table, { attack: card, defense: null, attackSeat: seat, defenseSeat: null }],
-    passedSeats: [],
-    activeSeat: state.defenderSeat,
+    passedSeats: state.isTaking ? state.passedSeats : [],
+    activeSeat: state.isTaking
+      ? (nextThrowerSeat(state) ?? state.attackerSeat)
+      : state.defenderSeat,
     version: state.version + 1
   };
 

@@ -18,6 +18,7 @@ export type TableTurn = {
   hasFreeSeat: boolean;
   canPass: boolean;
   canTake: boolean;
+  canUndo: boolean;
   turnSeconds: number;
   playableKeys: Set<string>;
   selectedKey: string | null;
@@ -27,6 +28,7 @@ export type TableDrag = {
   dropZones: DropZone[];
   onDropOn: (card: Card, pairIndex: number) => void;
   onDropMiss: (card: Card, travelY: number) => void;
+  onZonesChange: (zones: DropZone[]) => void;
   onHover: (index: number | null) => void;
   onDragStart: (card: Card) => void;
   onDragEnd: () => void;

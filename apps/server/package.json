@@ -18,7 +18,8 @@
     "db:reset": "prisma migrate reset",
     "db:status": "prisma migrate status",
     "db:studio": "prisma studio",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@durak-master/game-core": "workspace:*",

@@ -1,2 +1,2 @@
 export { kozelModule } from './module';
-export { isTrump } from './rules';
+export { isTrump, legalCards } from './rules';

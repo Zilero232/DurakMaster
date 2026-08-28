@@ -13,12 +13,12 @@ import { OptionRow } from '../OptionRow';
 import { SettingsSection } from '../SettingsSection';
 import { styles } from './CommonSettings.styles';
 
-export const CommonSettings = ({ control, game }: CommonSettingsProps) => {
+export const CommonSettings = ({ control, deckSize, game }: CommonSettingsProps) => {
   const { t } = useTranslation();
 
   const { isWide } = useLayout();
 
-  const seatCounts = playerCountItems(game);
+  const seatCounts = playerCountItems(game, deckSize);
   const isSeatCountFixed = seatCounts.length === 1;
 
   return (

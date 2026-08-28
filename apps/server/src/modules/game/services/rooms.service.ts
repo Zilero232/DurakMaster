@@ -1,19 +1,37 @@
 import type { LobbyTable, PublicProfile, TableSettings } from '@durak-master/schemas';
+import type { OnModuleDestroy } from '@nestjs/common';
 
 import { Injectable, Logger } from '@nestjs/common';
 
 import type { RoomEvent } from '../lib';
 
+import { RECONNECT_GRACE_MS } from '../config';
 import { GameRoom } from '../lib';
 
 export type RoomListener = (roomId: string, event: RoomEvent) => void;
 
 @Injectable()
-export class RoomsService {
+export class RoomsService implements OnModuleDestroy {
   private readonly logger = new Logger(RoomsService.name);
   private readonly rooms = new Map<string, GameRoom>();
   private readonly userRoom = new Map<string, string>();
   private readonly listeners = new Set<RoomListener>();
+  private readonly reconnectTimers = new Map<string, NodeJS.Timeout>();
+
+  onModuleDestroy(): void {
+    for (const timer of this.reconnectTimers.values()) {
+      clearTimeout(timer);
+    }
+
+    this.reconnectTimers.clear();
+
+    for (const room of this.rooms.values()) {
+      room.clearTimers();
+    }
+
+    this.rooms.clear();
+    this.userRoom.clear();
+  }
 
   onEvent(listener: RoomListener): () => void {
     this.listeners.add(listener);
@@ -72,16 +90,26 @@ export class RoomsService {
       return;
     }
 
+    this.clearReconnectTimer(userId);
     room.leave(userId);
 
-    if (room.memberCount === 0) {
-      room.clearTimers();
-      this.rooms.delete(room.id);
-      this.notify(room.id, { type: 'state-changed' });
-      this.logger.log(`Room removed: ${room.id}`);
+    this.userRoom.delete(userId);
+
+    if (room.isAbandoned) {
+      this.dropRoom(room);
+    }
+  }
+
+  private dropRoom(room: GameRoom): void {
+    for (const member of room.getMembers()) {
+      this.userRoom.delete(member.profile.userId);
+      this.clearReconnectTimer(member.profile.userId);
     }
 
-    this.userRoom.delete(userId);
+    room.clearTimers();
+    this.rooms.delete(room.id);
+    this.notify(room.id, { type: 'state-changed' });
+    this.logger.log(`Room removed: ${room.id}`);
   }
 
   handleDisconnect(userId: string): void {
@@ -91,13 +119,45 @@ export class RoomsService {
       return;
     }
 
-    if (room.isInMatch) {
-      room.leave(userId);
+    if (!room.isInMatch) {
+      this.leave(userId);
 
       return;
     }
 
-    this.leave(userId);
+    room.suspend(userId);
+    this.notify(room.id, { type: 'state-changed' });
+
+    if (room.getMembers().every((member) => member.isBot || !member.isConnected)) {
+      this.dropRoom(room);
+
+      return;
+    }
+
+    this.clearReconnectTimer(userId);
+    this.reconnectTimers.set(
+      userId,
+      setTimeout(() => {
+        this.reconnectTimers.delete(userId);
+
+        if (this.getRoomOfUser(userId) === room) {
+          this.leave(userId);
+        }
+      }, RECONNECT_GRACE_MS)
+    );
+  }
+
+  handleReconnect(userId: string): void {
+    this.clearReconnectTimer(userId);
+  }
+
+  private clearReconnectTimer(userId: string): void {
+    const timer = this.reconnectTimers.get(userId);
+
+    if (timer) {
+      clearTimeout(timer);
+      this.reconnectTimers.delete(userId);
+    }
   }
 
   listTables(): LobbyTable[] {

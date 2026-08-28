@@ -18,37 +18,32 @@ export const createConnection = ({
   getStatus,
   isLobbySubscribed
 }: ConnectionHandlers) => {
-  let unsubscribeMessages: (() => void) | null = null;
-  let unsubscribeState: (() => void) | null = null;
+  socketClient.subscribe(onMessage);
+
+  socketClient.subscribeState((state) => {
+    if (state === 'closed') {
+      onStatus('error');
+
+      return;
+    }
+
+    if (state === 'connecting') {
+      onStatus('connecting');
+
+      return;
+    }
+
+    onStatus('connected');
+
+    if (isLobbySubscribed()) {
+      socketClient.send({ type: 'lobby:subscribe' });
+    }
+  });
 
   const open = async () => {
-    unsubscribeMessages?.();
-    unsubscribeMessages = socketClient.subscribe(onMessage);
-
-    unsubscribeState?.();
-    unsubscribeState = socketClient.subscribeState((state) => {
-      if (state === 'closed') {
-        onStatus('error');
-
-        return;
-      }
-
-      if (state === 'connecting') {
-        onStatus('connecting');
-
-        return;
-      }
-
-      onStatus('connected');
-
-      if (isLobbySubscribed()) {
-        socketClient.send({ type: 'lobby:subscribe' });
-      }
-    });
-
     const token = await getAuthToken();
 
-    if (getStatus() !== 'connecting') {
+    if (getStatus() === 'idle') {
       return;
     }
 
@@ -56,11 +51,6 @@ export const createConnection = ({
   };
 
   const close = () => {
-    unsubscribeMessages?.();
-    unsubscribeMessages = null;
-    unsubscribeState?.();
-    unsubscribeState = null;
-
     socketClient.disconnect();
   };
 

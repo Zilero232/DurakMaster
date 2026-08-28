@@ -12,7 +12,7 @@ import { styles } from '../../TableRow.styles';
 
 const VISIBLE_AVATARS = 4;
 
-export const TableTile = ({ table, isBlocked, isPlaying }: TableViewProps) => {
+export const TableTile = ({ table, isMine, isBlocked, isPlaying }: TableViewProps) => {
   const { t } = useTranslation();
 
   const { players, settings, hasPremiumPlayer } = table;
@@ -20,7 +20,11 @@ export const TableTile = ({ table, isBlocked, isPlaying }: TableViewProps) => {
   return (
     <>
       <View style={styles.tileHeader}>
-        <Text style={styles.tileBet}>{formatCredits(settings.bet)}</Text>
+        <View style={styles.tileBetGroup}>
+          <Text style={styles.tileBet}>{formatCredits(settings.bet)}</Text>
+
+          {isMine && <Text style={styles.ownBadge}>{t('lobby.ownTable')}</Text>}
+        </View>
 
         <View style={styles.seats}>
           {Array.from({ length: settings.maxPlayers }, (_, seat) => (

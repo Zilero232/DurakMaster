@@ -32,8 +32,8 @@ export const PlayingCard = ({
 
   const rootStyle = [
     styles.root,
-    isSelected && styles.selected,
     isDimmed && styles.dimmed,
+    isSelected && styles.selected,
     {
       transform: [
         { rotate: `${rotation}deg` },

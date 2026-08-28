@@ -6,13 +6,17 @@ export const createIdleView = (table: LobbyTable, rules: DurakRules): ViewForGam
   game: 'durak',
   tableId: table.id,
   rules,
-  players: table.players.map((player) => ({
-    userId: player.userId,
-    seat: player.seat,
-    handCount: 0,
-    isOut: false,
-    isDisconnected: false
-  })),
+  players: Array.from({ length: table.settings.maxPlayers }, (_, seat) => {
+    const taken = table.players.find((player) => player.seat === seat);
+
+    return {
+      userId: taken?.userId ?? `seat-${seat}`,
+      seat,
+      handCount: 0,
+      isOut: false,
+      isDisconnected: false
+    };
+  }),
   hand: [],
   talonCount: 0,
   discardCount: 0,

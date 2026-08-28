@@ -33,6 +33,7 @@ export const gameErrorCodeSchema = z.enum([
   'CARD_NOT_IN_HAND',
   'VERSION_MISMATCH',
   'INVALID_ACTION_FOR_PHASE',
+  'NOT_ENOUGH_COINS',
   'NOT_ENOUGH_CREDITS',
   'WRONG_GAME',
 

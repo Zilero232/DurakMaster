@@ -1,5 +1,7 @@
 import type {
   AvatarSeed,
+  BoostId,
+  Card,
   GameErrorCode,
   LobbyTable,
   MyProfile,
@@ -42,8 +44,15 @@ export type SessionState = {
   lastErrorCode: string | null;
   lastError: string | null;
   rejectedCode: GameErrorCode | null;
+  revealed: RevealedCards | null;
 
   selectedTableCardKey: string | null;
+};
+
+export type RevealedCards = {
+  boost: BoostId;
+  cards: Card[];
+  targetUserId: string | null;
 };
 
 export type SessionActions = {
@@ -53,11 +62,14 @@ export type SessionActions = {
   disconnect: () => void;
 
   subscribeLobby: () => void;
+  requestProfile: () => void;
   createTable: (settings: TableSettings, password?: string) => void;
   joinTable: (tableId: string, password?: string) => void;
   leaveTable: () => void;
   setReady: (isReady: boolean) => void;
   addBot: () => void;
+  applyBoost: (boost: BoostId, targetUserId?: string) => void;
+  clearRevealed: () => void;
 
   sendPhrase: (phraseId: QuickPhraseId) => void;
   sendEmoji: (emoji: TauntId) => void;

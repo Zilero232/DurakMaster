@@ -2,7 +2,7 @@ import type { Card, TysyachaState } from '@durak-master/schemas';
 
 import type { TysyachaReduceResult } from './shared';
 
-import { cardKey, handContains, removeCard, userIdAtSeat } from '../../shared';
+import { cardKey, removeCards, userIdAtSeat } from '../../shared';
 import { HAND_SIZE, WIDOW_SIZE } from '../config';
 import { fail } from './shared';
 
@@ -19,10 +19,6 @@ export function applyDiscard(
 
   const hand = state.hands[userId] ?? [];
 
-  if (!cards.every((card) => handContains(hand, card))) {
-    return fail('CARD_NOT_IN_HAND');
-  }
-
   if (gifts.length !== state.players.length - 1 || cards.length !== gifts.length) {
     return fail('CARD_COUNT_MISMATCH');
   }
@@ -31,9 +27,15 @@ export function applyDiscard(
     return fail('CARD_NOT_IN_HAND');
   }
 
+  const rest = removeCards(hand, cards);
+
+  if (rest === null) {
+    return fail('CARD_NOT_IN_HAND');
+  }
+
   const hands = { ...state.hands };
 
-  hands[userId] = cards.reduce((rest, card) => removeCard(rest, card), hand);
+  hands[userId] = rest;
 
   for (const gift of gifts) {
     const target = userIdAtSeat(state.players, gift.seat);

@@ -1,17 +1,23 @@
+import type { TablePhrase, TauntId } from '@durak-master/schemas';
+
 import { useTranslation } from 'react-i18next';
 
-import { useSessionStore } from '@/entities/session';
 import { useNow } from '@/shared/model/time';
 
 import type { Chatter } from '../../../ui/components/SeatChatter';
 
 const LIFETIME_MS = 3400;
 
-export const useTableChatter = (): Record<string, Chatter> => {
-  const { t } = useTranslation();
+type TableChatterInput = {
+  phrases: readonly TablePhrase[];
+  emojis: Record<string, { emoji: TauntId; at: number }>;
+};
 
-  const phrases = useSessionStore((store) => store.phrases);
-  const emojis = useSessionStore((store) => store.emojis);
+export const useTableChatter = ({
+  phrases,
+  emojis
+}: TableChatterInput): Record<string, Chatter> => {
+  const { t } = useTranslation();
 
   const now = useNow(LIFETIME_MS / 4);
 

@@ -1,11 +1,17 @@
-import type { GameId, GameSpeed } from '@durak-master/schemas';
+import type { DurakDeckSize, GameId, GameSpeed } from '@durak-master/schemas';
 
-import { PLAYER_RANGE_BY_GAME, TURN_SECONDS_BY_SPEED } from '@durak-master/schemas';
+import {
+  maxDurakPlayers,
+  PLAYER_RANGE_BY_GAME,
+  TURN_SECONDS_BY_SPEED
+} from '@durak-master/schemas';
 
 import type { OptionItem } from './components';
 
-export const playerCountItems = (game: GameId): OptionItem<number>[] => {
-  const { min, max } = PLAYER_RANGE_BY_GAME[game];
+export const playerCountItems = (game: GameId, deckSize?: DurakDeckSize): OptionItem<number>[] => {
+  const { min, max: range } = PLAYER_RANGE_BY_GAME[game];
+
+  const max = game === 'durak' && deckSize ? Math.min(range, maxDurakPlayers(deckSize)) : range;
 
   return Array.from({ length: max - min + 1 }, (_, index) => {
     const count = min + index;

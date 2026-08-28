@@ -75,6 +75,11 @@ ANSI art Expo draws its QR code with.
 
 ## How to work
 
+**No explanatory comments in code.** Not `//` notes, not JSDoc describing what the code
+does or why — name things so it reads without them. Only two exceptions: `/** ... */` on
+a field of an exported `type` (editor autocomplete), and tool directives
+(`eslint-disable`, `@ts-expect-error`) with their reason. See `docs/style.md` §20.
+
 Game rules are a source of frequent and expensive bugs. Before changing `game-core`,
 read `docs/games/`: the wording is fixed there, including the places where sources
 disagree, and the typical implementation mistakes.

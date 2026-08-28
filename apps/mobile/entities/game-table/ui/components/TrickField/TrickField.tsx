@@ -2,7 +2,7 @@ import { View } from 'react-native';
 import Animated, { FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import { cardKey } from '@/shared/lib/cards';
-import { PlayingCard } from '@/ui-kit';
+import { duration, PlayingCard } from '@/ui-kit';
 
 import type { TrickFieldProps, TrickPlay } from './TrickField.types';
 
@@ -32,7 +32,7 @@ export const TrickField = ({
           key={playKey(play)}
           entering={isInstant ? undefined : slideFrom(play.seat === mySeat)}
           exiting={isInstant ? undefined : FadeOut.duration(200)}
-          layout={isInstant ? undefined : LinearTransition.springify().damping(28).stiffness(420)}
+          layout={isInstant ? undefined : LinearTransition.duration(duration.layout)}
           style={[styles.play, index === bestIndex && styles.best]}
         >
           {play.cards.map((card, cardIndex) => (

@@ -22,7 +22,7 @@ export const CreateTable = ({ onCreate }: CreateTableProps) => {
 
   const { isDesktop } = useLayout();
 
-  const { control, game, isPrivate, canSubmit, selectGame, submit } = useCreateTableForm({
+  const { control, game, deckSize, isPrivate, canSubmit, selectGame, submit } = useCreateTableForm({
     onCreate
   });
 
@@ -32,7 +32,7 @@ export const CreateTable = ({ onCreate }: CreateTableProps) => {
     </SettingsSection>
   );
 
-  const common = <CommonSettings control={control} game={game} />;
+  const common = <CommonSettings control={control} deckSize={deckSize} game={game} />;
 
   const gameSettings = <GameSettings control={control} game={game} />;
 

@@ -24,6 +24,12 @@ export type DurakDeckSize = z.infer<typeof durakDeckSizeSchema>;
 
 export const MAX_ATTACK_CARDS_PER_BOUT = 6;
 
+export const DURAK_HAND_SIZE = 6;
+
+export function maxDurakPlayers(deckSize: DurakDeckSize): number {
+  return Math.floor(deckSize / DURAK_HAND_SIZE);
+}
+
 export const durakRulesSchema = z.object({
   mode: durakModeSchema,
   deckSize: durakDeckSizeSchema,

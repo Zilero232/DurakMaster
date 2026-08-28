@@ -1,4 +1,5 @@
 import type {
+  Card,
   GameAction,
   GameErrorCode,
   LobbyTable,
@@ -18,7 +19,7 @@ import { randomInt, randomUUID } from 'node:crypto';
 
 import type { GameSession } from './game-session';
 
-import { isVisibleBotAction } from '../config';
+import { isVisibleBotAction, MISSED_TURNS_LIMIT } from '../config';
 import { createGameSession } from './game-session';
 import { nextFreeSeat } from './next-free-seat';
 import { RoomChatter } from './room-chatter';
@@ -30,11 +31,12 @@ export type RoomMember = {
   isReady: boolean;
   isBot: boolean;
   isConnected: boolean;
+  missedTurns: number;
 };
 
 export type RoomEvent =
   | { type: 'emoji'; userId: string; emoji: TauntId }
-  | { type: 'finished'; loserUserId: string | null; isDraw: boolean }
+  | { type: 'finished'; loserUserId: string | null; isDraw: boolean; members: RoomMember[] }
   | { type: 'phrase'; phrase: TablePhrase }
   | { type: 'state-changed' };
 
@@ -44,6 +46,7 @@ export class GameRoom {
 
   private readonly logger = new Logger(GameRoom.name);
   private members = new Map<string, RoomMember>();
+  private ownerId: string | null = null;
   private session: GameSession | null = null;
   private status: TableStatus = 'waiting';
 
@@ -75,6 +78,10 @@ export class GameRoom {
     return this.members.size;
   }
 
+  get isAbandoned(): boolean {
+    return ![...this.members.values()].some((member) => !member.isBot);
+  }
+
   get isFull(): boolean {
     return this.members.size >= this.settings.maxPlayers;
   }
@@ -97,10 +104,16 @@ export class GameRoom {
       seat: nextFreeSeat(this.getMembers().map((item) => item.seat)),
       isReady: isBot,
       isBot,
-      isConnected: true
+      isConnected: true,
+      missedTurns: 0
     };
 
     this.members.set(profile.userId, member);
+
+    if (!isBot) {
+      this.ownerId ??= profile.userId;
+    }
+
     this.emit({ type: 'state-changed' });
 
     return member;
@@ -114,17 +127,53 @@ export class GameRoom {
     }
 
     if (this.status === 'playing') {
-      member.isConnected = false;
-
-      this.session?.markDisconnected(userId, true);
-
-      this.emit({ type: 'state-changed' });
+      this.forfeit(userId);
 
       return;
     }
 
     this.members.delete(userId);
+    this.passOwnership(userId);
     this.emit({ type: 'state-changed' });
+  }
+
+  private passOwnership(leavingUserId: string): void {
+    if (this.ownerId !== leavingUserId) {
+      return;
+    }
+
+    const next = this.getMembers().find((member) => !member.isBot);
+
+    this.ownerId = next?.profile.userId ?? null;
+  }
+
+  suspend(userId: string): void {
+    const member = this.members.get(userId);
+
+    if (!member) {
+      return;
+    }
+
+    member.isConnected = false;
+    this.session?.markDisconnected(userId, true);
+    this.emit({ type: 'state-changed' });
+  }
+
+  private forfeit(userId: string): void {
+    const played = this.getMembers();
+
+    this.members.delete(userId);
+    this.passOwnership(userId);
+    this.clearTimers();
+
+    this.status = 'waiting';
+    this.session = null;
+
+    for (const member of this.members.values()) {
+      member.isReady = member.isBot;
+    }
+
+    this.emit({ type: 'finished', loserUserId: userId, isDraw: false, members: played });
   }
 
   reconnect(userId: string): boolean {
@@ -135,8 +184,13 @@ export class GameRoom {
     }
 
     member.isConnected = true;
+    member.missedTurns = 0;
 
     this.session?.markDisconnected(userId, false);
+
+    if (this.isPlaying && this.getActiveMember()?.profile.userId === userId) {
+      this.scheduleTurnTimer();
+    }
 
     this.emit({ type: 'state-changed' });
 
@@ -160,10 +214,11 @@ export class GameRoom {
 
   private canStart(): boolean {
     const { minPlayers } = getGameModule(this.settings.game);
+    const required = Math.max(minPlayers, this.settings.maxPlayers);
 
     return (
       this.status === 'waiting' &&
-      this.members.size >= minPlayers &&
+      this.members.size >= required &&
       [...this.members.values()].every((member) => member.isReady)
     );
   }
@@ -220,14 +275,9 @@ export class GameRoom {
 
     if (this.session.state.phase === 'finished') {
       const outcome = this.session.getOutcome();
+      const played = this.getMembers();
 
       this.clearTimers();
-
-      this.emit({
-        type: 'finished',
-        loserUserId: outcome.loserUserId,
-        isDraw: outcome.isDraw
-      });
 
       this.status = 'waiting';
       this.session = null;
@@ -236,7 +286,12 @@ export class GameRoom {
         member.isReady = member.isBot;
       }
 
-      this.emit({ type: 'state-changed' });
+      this.emit({
+        type: 'finished',
+        loserUserId: outcome.loserUserId,
+        isDraw: outcome.isDraw,
+        members: played
+      });
 
       return;
     }
@@ -276,6 +331,22 @@ export class GameRoom {
       return;
     }
 
+    activeMember.missedTurns += 1;
+
+    if (activeMember.isBot) {
+      if (this.session.applyTimeout(activeMember.profile.userId)) {
+        this.afterStateChange();
+      }
+
+      return;
+    }
+
+    if (activeMember.missedTurns >= MISSED_TURNS_LIMIT) {
+      this.forfeit(activeMember.profile.userId);
+
+      return;
+    }
+
     if (this.session.applyTimeout(activeMember.profile.userId)) {
       this.afterStateChange();
     }
@@ -288,11 +359,29 @@ export class GameRoom {
       return;
     }
 
-    if (!this.getActiveMember()?.isBot) {
+    if (!this.nextBot()) {
       return;
     }
 
     this.timers.scheduleBot(wasVisible, this.botDelayScale());
+  }
+
+  private nextBot(): RoomMember | undefined {
+    const session = this.session;
+
+    if (!session) {
+      return undefined;
+    }
+
+    const active = this.getActiveMember();
+
+    if (active?.isBot && session.hasPendingMove(active.profile.userId)) {
+      return active;
+    }
+
+    return this.getMembers().find(
+      (member) => member.isBot && session.hasPendingMove(member.profile.userId)
+    );
   }
 
   private botDelayScale(): number {
@@ -300,13 +389,13 @@ export class GameRoom {
   }
 
   private handleBotTurn(): void {
-    const activeMember = this.getActiveMember();
+    const bot = this.nextBot();
 
-    if (!this.session || this.status !== 'playing' || !activeMember) {
+    if (!this.session || this.status !== 'playing' || !bot) {
       return;
     }
 
-    const userId = activeMember.profile.userId;
+    const userId = bot.profile.userId;
     const botAction = this.session.applyBotTurn(userId);
 
     if (botAction !== null) {
@@ -370,6 +459,39 @@ export class GameRoom {
     return true;
   }
 
+  undoLastMove(userId: string): boolean {
+    if (!this.session || this.status !== 'playing') {
+      return false;
+    }
+
+    if (!this.session.undoLast(userId)) {
+      return false;
+    }
+
+    this.scheduleTurnTimer();
+    this.scheduleBotTurn();
+
+    return true;
+  }
+
+  peekTalon(): Card[] | null {
+    const state = this.session?.state;
+
+    return state && 'talon' in state ? [...(state.talon as Card[])] : null;
+  }
+
+  peekHand(userId: string): Card[] | null {
+    const state = this.session?.state;
+
+    if (!state || !('hands' in state)) {
+      return null;
+    }
+
+    const hands = state.hands as Record<string, Card[]>;
+
+    return hands[userId] ? [...hands[userId]] : null;
+  }
+
   getProfiles(): PublicProfile[] {
     return this.getMembers().map((member) => member.profile);
   }
@@ -389,6 +511,7 @@ export class GameRoom {
       status: this.status,
       settings: this.settings,
       players,
+      ownerId: this.ownerId,
       hasPremiumPlayer: this.getMembers().some((member) => member.profile.isPremium),
       createdAt: this.createdAt
     };

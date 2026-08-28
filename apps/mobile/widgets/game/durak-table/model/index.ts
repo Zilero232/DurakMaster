@@ -1,4 +1,4 @@
-export { useBoostHint, useCardDrag, useDurakTable } from './hooks';
+export { useCardDrag, useDurakTable } from './hooks';
 export type { UseDurakTableInput } from './hooks';
 
 export { useTableSounds } from './hooks';

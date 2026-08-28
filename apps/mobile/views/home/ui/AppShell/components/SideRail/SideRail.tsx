@@ -6,15 +6,12 @@ import { colors, iconSize } from '@/ui-kit';
 
 import type { SideRailProps } from './SideRail.types';
 
-import { useSignOut } from '../../../../model';
 import { TABS } from '../../AppShell.config';
 import { RailItem } from './components';
 import { styles } from './SideRail.styles';
 
-export const SideRail = ({ tab, status, onChange }: SideRailProps) => {
+export const SideRail = ({ tab, status, onChange, onSignOut }: SideRailProps) => {
   const { t } = useTranslation();
-
-  const signOut = useSignOut();
 
   return (
     <View accessibilityRole='tablist' style={styles.root}>
@@ -45,7 +42,7 @@ export const SideRail = ({ tab, status, onChange }: SideRailProps) => {
         <Pressable
           accessibilityRole='button'
           style={({ pressed }) => [styles.signOut, pressed && styles.signOutPressed]}
-          onPress={signOut}
+          onPress={onSignOut}
         >
           <LogOut color={colors.onFelt} size={iconSize.md} />
 

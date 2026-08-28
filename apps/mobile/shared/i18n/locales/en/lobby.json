@@ -25,7 +25,8 @@
       "low": "Up to 1K",
       "mid": "1K–50K",
       "high": "50K+"
-    }
+    },
+    "ownTable": "Your table"
   },
   "create": {
     "title": "New game",
@@ -118,7 +119,11 @@
         "dealer": "The dealer"
       },
       "yourTeam": "Your pair",
-      "opponents": "Opponents"
+      "opponents": "Opponents",
+      "chooseLeaderTitle": "Who leads?",
+      "chooseLeaderMe": "Me",
+      "chooseLeaderPartner": "Partner",
+      "chooseLeaderWait": "Opponents are choosing who leads"
     },
     "tysyacha": {
       "name": "Tysyacha",
@@ -145,7 +150,15 @@
       },
       "yourScore": "Your points",
       "bid": "Bid",
-      "pass": "Pass"
+      "pass": "Pass",
+      "bidding": "Bidding",
+      "noBids": "No bids yet",
+      "currentBid": "Current bid: {{value}}",
+      "raiseTo": "Raise to {{value}}",
+      "discarding": "The widow",
+      "giveCards": "Give a card to each opponent",
+      "waitingDeclarer": "The declarer is sorting the widow",
+      "dealOver": "Deal scored"
     }
   }
 }

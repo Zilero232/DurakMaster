@@ -5,3 +5,4 @@ export {
   isVisibleBotAction
 } from './bot.config';
 export { PHRASE_HISTORY_LIMIT } from './chatter.config';
+export { MISSED_TURNS_LIMIT, RECONNECT_GRACE_MS } from './reconnect.config';

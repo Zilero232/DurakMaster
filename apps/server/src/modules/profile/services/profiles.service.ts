@@ -69,6 +69,24 @@ export class ProfilesService {
     );
   }
 
+  async spendCoins(userId: string, amount: number): Promise<number | null> {
+    const updated = await this.prisma.profile.updateMany({
+      where: { userId, coins: { gte: amount } },
+      data: { coins: { decrement: amount } }
+    });
+
+    if (updated.count === 0) {
+      return null;
+    }
+
+    const profile = await this.prisma.profile.findUnique({
+      where: { userId },
+      select: { coins: true }
+    });
+
+    return profile?.coins ?? null;
+  }
+
   async applyGameResult(input: {
     userId: string;
     creditsDelta: number;
@@ -95,6 +113,30 @@ export class ProfilesService {
     } catch (error) {
       this.logger.error(`Failed to record the game result for ${userId}`, error);
     }
+  }
+
+  async reserveStake(userId: string, bet: number): Promise<boolean> {
+    if (bet <= 0) {
+      return true;
+    }
+
+    const held = await this.prisma.profile.updateMany({
+      where: { userId, credits: { gte: BigInt(bet) } },
+      data: { credits: { decrement: BigInt(bet) } }
+    });
+
+    return held.count > 0;
+  }
+
+  async releaseStake(userId: string, bet: number): Promise<void> {
+    if (bet <= 0) {
+      return;
+    }
+
+    await this.prisma.profile.updateMany({
+      where: { userId },
+      data: { credits: { increment: BigInt(bet) } }
+    });
   }
 
   async canAfford(userId: string, bet: number): Promise<boolean> {

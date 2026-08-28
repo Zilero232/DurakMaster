@@ -103,6 +103,7 @@ export {
   kozelViewSchema,
   MARRIAGE_POINTS,
   MAX_ATTACK_CARDS_PER_BOUT,
+  maxDurakPlayers,
   MIN_BID,
   PENALTY_FREE_THRESHOLD,
   PENALTY_LIMITS,

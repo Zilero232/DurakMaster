@@ -10,7 +10,48 @@ export const styles = StyleSheet.create({
 
   table: {
     flex: 1,
-    justifyContent: 'space-between'
+    gap: spacing[2],
+    paddingHorizontal: spacing[3],
+    paddingBottom: spacing[2]
+  },
+
+  footer: {
+    gap: spacing[2],
+    paddingBottom: spacing[2]
+  },
+
+  choiceArea: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+
+  choice: {
+    alignItems: 'center',
+    gap: spacing[3],
+    paddingVertical: spacing[4],
+    paddingHorizontal: spacing[5],
+    borderRadius: radii.lg,
+    borderWidth: borderWidth.hairline,
+    borderColor: colors.glassBorder,
+    backgroundColor: colors.glass
+  },
+
+  choiceTitle: {
+    fontSize: fontSize.lg,
+    fontFamily: fontFamily.displayBold,
+    color: colors.onFelt
+  },
+
+  choiceHint: {
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.sans,
+    color: colors.onFeltMuted
+  },
+
+  choiceButtons: {
+    flexDirection: 'row',
+    gap: spacing[2]
   },
 
   score: {

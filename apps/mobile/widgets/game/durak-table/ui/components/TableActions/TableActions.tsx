@@ -1,14 +1,18 @@
+import type { BoostId } from '@durak-master/schemas';
+
 import { useBoolean } from '@siberiacancode/reactuse';
 import { View } from 'react-native';
 
-import { WalletChip } from '@/entities/game-table';
+import { BoostBar, WalletChip } from '@/entities/game-table';
 import { TableEmojis } from '@/features/game/table-emojis';
 
 import type { TableActionsProps } from './TableActions.types';
 
 import { useTableContext } from '../../../model';
-import { BoostBar, MoveButton, SeatButton } from './components';
+import { MoveButton, SeatButton } from './components';
 import { styles } from './TableActions.styles';
+
+const UNDO_BLOCKED = new Set<BoostId>(['undoMove']);
 
 export const TableActions = ({ turnDeadline }: TableActionsProps) => {
   const { profile, chatter, turn, moves } = useTableContext();
@@ -36,8 +40,15 @@ export const TableActions = ({ turnDeadline }: TableActionsProps) => {
           onPress={() => toggleEmojis(true)}
         />
 
-        {/* Boosts act on a hand in play, so they have nothing to do while seats fill up. */}
-        {!turn.isWaiting && <BoostBar coins={profile?.coins ?? 0} onUseBoost={moves.onUseBoost} />}
+        <View style={styles.boosts}>
+          {!turn.isWaiting && (
+            <BoostBar
+              coins={profile?.coins ?? 0}
+              unavailable={turn.canUndo ? undefined : UNDO_BLOCKED}
+              onUseBoost={moves.onUseBoost}
+            />
+          )}
+        </View>
 
         <TableEmojis
           isOpen={isEmojisOpen}

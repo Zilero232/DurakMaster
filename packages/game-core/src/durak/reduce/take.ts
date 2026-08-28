@@ -2,7 +2,8 @@ import type { DurakState } from '@durak-master/schemas';
 
 import type { DurakReduceResult } from './shared';
 
-import { fail } from './shared';
+import { finishBout } from './finish-bout';
+import { fail, nextThrowerSeat } from './shared';
 
 export function applyTake(state: DurakState, seat: number): DurakReduceResult {
   if (seat !== state.defenderSeat) {
@@ -13,13 +14,20 @@ export function applyTake(state: DurakState, seat: number): DurakReduceResult {
     return fail('NOTHING_TO_TAKE');
   }
 
-  const next: DurakState = {
-    ...state,
-    isTaking: true,
-    activeSeat: state.attackerSeat,
-    passedSeats: [],
-    version: state.version + 1
-  };
+  if (state.isTaking) {
+    return fail('INVALID_ACTION_FOR_PHASE');
+  }
 
-  return { ok: true, state: next };
+  const waiting = nextThrowerSeat(state);
+
+  const taking: DurakState = { ...state, isTaking: true };
+
+  if (waiting === undefined) {
+    return { ok: true, state: finishBout(taking, { defenderTook: true }) };
+  }
+
+  return {
+    ok: true,
+    state: { ...taking, activeSeat: waiting, version: state.version + 1 }
+  };
 }

@@ -1,5 +1,6 @@
 import type { Card } from '@durak-master/schemas';
 
+import { isLegalBurkozelLead } from '@durak-master/game-core';
 import { useState } from 'react';
 
 import { cardKey } from '@/shared/lib/cards';
@@ -7,7 +8,22 @@ import { cardKey } from '@/shared/lib/cards';
 import { useGameSeat } from '../use-game-seat';
 
 export const useBurkozelGame = () => {
-  const { view, profile, players, mySeat, isMyTurn, outcome, play } = useGameSeat('burkozel');
+  const {
+    view,
+    profile,
+    players,
+    seats,
+    readyUserIds,
+    isWaiting,
+    isReady,
+    hasFreeSeat,
+    mySeat,
+    isMyTurn,
+    outcome,
+    play,
+    setReady,
+    addBot
+  } = useGameSeat('burkozel');
 
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const [trickId, setTrickId] = useState('');
@@ -44,6 +60,13 @@ export const useBurkozelGame = () => {
     view,
     profile,
     players,
+    seats,
+    readyUserIds,
+    isWaiting,
+    isReady,
+    hasFreeSeat,
+    setReady,
+    addBot,
     mySeat,
     isMyTurn,
     isLeading,
@@ -52,7 +75,11 @@ export const useBurkozelGame = () => {
     selectedKeys: new Set(liveKeys),
     playableKeys: new Set(isMyTurn ? hand.map(cardKey) : []),
     canPlay:
-      isMyTurn && selectedCards.length > 0 && (isLeading || selectedCards.length === requiredCount),
+      isMyTurn &&
+      selectedCards.length > 0 &&
+      (isLeading
+        ? view !== null && isLegalBurkozelLead(selectedCards, view.rules)
+        : selectedCards.length === requiredCount),
     toggleCard,
     playSelected: () => {
       play({ type: 'play', cards: selectedCards });

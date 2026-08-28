@@ -1,17 +1,24 @@
 import type { Card, ViewForGame } from '@durak-master/schemas';
 
-import { beats, isLegalAttackCard } from '@durak-master/game-core';
+import { beats, canThrowIn, isLegalAttackCard } from '@durak-master/game-core';
 
 import { cardKey } from '@/shared/lib/cards';
 
 export const getPlayableKeys = (
   view: ViewForGame<'durak'> | null,
   isMyTurn: boolean,
-  isDefending: boolean
+  isDefending: boolean,
+  mySeat = -1
 ): Set<string> => {
   const keys = new Set<string>();
 
-  if (!view || !isMyTurn) {
+  if (!view || view.phase !== 'playing') {
+    return keys;
+  }
+
+  const mayThrowIn = !isDefending && canThrowIn(mySeat, view);
+
+  if (isDefending ? !isMyTurn || view.isTaking : !mayThrowIn) {
     return keys;
   }
 

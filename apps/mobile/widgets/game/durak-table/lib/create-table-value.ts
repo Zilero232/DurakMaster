@@ -30,6 +30,7 @@ export const createTableValue = ({
     hasFreeSeat: seatCount < settings.maxPlayers,
     canPass: game.canPass,
     canTake: game.canTake,
+    canUndo: game.canUndo,
     turnSeconds: settings.turnTimeoutSeconds,
     playableKeys: game.playableKeys,
     selectedKey: game.selectedKey
@@ -37,6 +38,7 @@ export const createTableValue = ({
 
   const dragHandlers = {
     dropZones: drag.dropZones,
+    onZonesChange: drag.setDropZones,
     onDropOn: drag.dropOn,
     onDropMiss: drag.dropMissed,
     onHover: drag.hover,

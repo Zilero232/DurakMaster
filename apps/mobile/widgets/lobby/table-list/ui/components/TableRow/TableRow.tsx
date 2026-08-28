@@ -5,7 +5,7 @@ import type { TableRowProps } from './TableRow.types';
 import { TableCompact, TableTile } from './components';
 import { styles } from './TableRow.styles';
 
-export const TableRow = ({ table, isTile = false, onJoin }: TableRowProps) => {
+export const TableRow = ({ table, isTile = false, myUserId, onJoin }: TableRowProps) => {
   const { players, settings, hasPremiumPlayer } = table;
 
   const isPlaying = table.status === 'playing';
@@ -27,7 +27,12 @@ export const TableRow = ({ table, isTile = false, onJoin }: TableRowProps) => {
       disabled={isBlocked}
       onPress={() => onJoin(table.id)}
     >
-      <View isBlocked={isBlocked} isPlaying={isPlaying} table={table} />
+      <View
+        isBlocked={isBlocked}
+        isMine={table.ownerId === myUserId}
+        isPlaying={isPlaying}
+        table={table}
+      />
     </Pressable>
   );
 };

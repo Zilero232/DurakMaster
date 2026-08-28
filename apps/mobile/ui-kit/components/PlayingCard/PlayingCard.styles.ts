@@ -27,7 +27,7 @@ const buildStyles = (width: number, theme: CardTheme) =>
     },
 
     dimmed: {
-      opacity: 0.82
+      backgroundColor: theme.faceDimmed
     },
 
     playableRing: {
@@ -36,8 +36,7 @@ const buildStyles = (width: number, theme: CardTheme) =>
       inset: 0,
       borderWidth: 2,
       borderColor: theme.accent,
-      borderRadius: cardTokens.radius,
-      opacity: 0.85
+      borderRadius: cardTokens.radius
     }
   });
 

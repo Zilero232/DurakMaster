@@ -1,4 +1,12 @@
-export { buildDeck, cardKey, cardsEqual, handContains, removeCard, shuffle } from './deck';
+export {
+  buildDeck,
+  cardKey,
+  cardsEqual,
+  handContains,
+  removeCard,
+  removeCards,
+  shuffle
+} from './deck';
 
 export { cardPointsIn, sumPoints } from './points';
 

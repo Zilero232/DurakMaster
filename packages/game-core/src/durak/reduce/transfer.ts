@@ -26,8 +26,9 @@ export function applyTransfer(
   }
 
   const hand = state.hands[userId] ?? [];
+  const rest = removeCard(hand, card);
 
-  if (!handContains(hand, card)) {
+  if (rest === null) {
     return fail('CARD_NOT_IN_HAND');
   }
 
@@ -51,7 +52,7 @@ export function applyTransfer(
 
   const next: DurakState = {
     ...state,
-    hands: { ...state.hands, [userId]: removeCard(hand, card) },
+    hands: { ...state.hands, [userId]: rest },
     table,
     attackerSeat: state.defenderSeat,
     defenderSeat: nextDefenderSeat,

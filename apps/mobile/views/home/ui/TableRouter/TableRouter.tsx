@@ -6,6 +6,7 @@ import { BurkozelTable } from '@/widgets/game/burkozel-table';
 import { DurakTable } from '@/widgets/game/durak-table';
 import { KozelTable } from '@/widgets/game/kozel-table';
 import { SwipeToLeave, UnsupportedGame, useTableStage } from '@/widgets/game/online-table';
+import { TysyachaTable } from '@/widgets/game/tysyacha-table';
 import { PlayerCard } from '@/widgets/profile/player-card';
 
 export const TableRouter = () => {
@@ -33,6 +34,7 @@ export const TableRouter = () => {
           ))
           .with('kozel', () => <KozelTable settings={settings} onLeave={leaveTable} />)
           .with('burkozel', () => <BurkozelTable settings={settings} onLeave={leaveTable} />)
+          .with('tysyacha', () => <TysyachaTable settings={settings} onLeave={leaveTable} />)
           .exhaustive()}
 
         <PlayerCard

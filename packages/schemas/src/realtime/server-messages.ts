@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { gameErrorCodeSchema, playerViewSchema } from '../game';
+import { boostIdSchema, cardSchema, gameErrorCodeSchema, playerViewSchema } from '../game';
 import { lobbyTableSchema } from '../lobby/table';
 import { myProfileSchema, publicProfileSchema } from '../profile/profile';
 import { achievementIdSchema, achievementStateSchema } from '../social/achievements';
@@ -30,6 +30,16 @@ export const serverMessageSchema = z.discriminatedUnion('type', [
     payload: z.object({ table: lobbyTableSchema })
   }),
 
+  z.object({
+    type: z.literal('table:boost-used'),
+    payload: z.object({
+      boost: boostIdSchema,
+      coins: z.number().int().nonnegative(),
+      talon: z.array(cardSchema).optional(),
+      hand: z.array(cardSchema).optional(),
+      targetUserId: z.string().optional()
+    })
+  }),
   z.object({
     type: z.literal('lobby:table-removed'),
     payload: z.object({ tableId: z.string() })

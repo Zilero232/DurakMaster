@@ -4,7 +4,7 @@ import type { DurakReduceResult } from './shared';
 
 import { canThrowIn, hasUndefendedCards } from '../rules';
 import { finishBout } from './finish-bout';
-import { fail } from './shared';
+import { fail, nextThrowerSeat } from './shared';
 
 export function applyPass(state: DurakState, seat: number): DurakReduceResult {
   if (seat === state.defenderSeat) {
@@ -15,9 +15,11 @@ export function applyPass(state: DurakState, seat: number): DurakReduceResult {
     return fail('INVALID_ACTION_FOR_PHASE');
   }
 
-  const passedSeats = state.passedSeats.includes(seat)
-    ? state.passedSeats
-    : [...state.passedSeats, seat];
+  if (state.passedSeats.includes(seat)) {
+    return fail('INVALID_ACTION_FOR_PHASE');
+  }
+
+  const passedSeats = [...state.passedSeats, seat];
 
   const attackers = state.players.filter((item) => canThrowIn(item.seat, state));
   const everyonePassed = attackers.every((item) => passedSeats.includes(item.seat));
@@ -25,7 +27,12 @@ export function applyPass(state: DurakState, seat: number): DurakReduceResult {
   if (!everyonePassed) {
     return {
       ok: true,
-      state: { ...state, passedSeats, activeSeat: state.attackerSeat, version: state.version + 1 }
+      state: {
+        ...state,
+        passedSeats,
+        activeSeat: nextThrowerSeat(state, passedSeats) ?? state.attackerSeat,
+        version: state.version + 1
+      }
     };
   }
 

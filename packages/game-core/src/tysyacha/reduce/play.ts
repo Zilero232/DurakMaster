@@ -2,7 +2,7 @@ import type { Card, TysyachaState } from '@durak-master/schemas';
 
 import type { TysyachaReduceResult } from './shared';
 
-import { cardKey, handContains, nextSeat, removeCard } from '../../shared';
+import { cardKey, nextSeat, removeCard } from '../../shared';
 import { legalPlays, marriageSuits } from '../rules';
 import { finishTrick } from './finish-trick';
 import { fail } from './shared';
@@ -70,8 +70,9 @@ function playCard(
   trump: TysyachaState['trump']
 ): TysyachaReduceResult {
   const hand = state.hands[userId] ?? [];
+  const rest = removeCard(hand, card);
 
-  if (!handContains(hand, card)) {
+  if (rest === null) {
     return fail('CARD_NOT_IN_HAND');
   }
 
@@ -80,7 +81,7 @@ function playCard(
   }
 
   const trick = [...state.trick, { seat, card }];
-  const hands = { ...state.hands, [userId]: removeCard(hand, card) };
+  const hands = { ...state.hands, [userId]: rest };
 
   if (trick.length < state.players.length) {
     return {

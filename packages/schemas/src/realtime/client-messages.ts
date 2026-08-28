@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { MAX_NAME_LENGTH } from '../auth/credentials';
-import { gameActionSchema } from '../game';
+import { gameActionSchema, useBoostInputSchema } from '../game';
 import { createTableInputSchema, joinTableInputSchema } from '../lobby/table';
 import { avatarSeedSchema } from '../profile/profile';
 import { achievementIdSchema } from '../social/achievements';
@@ -18,6 +18,7 @@ export const clientMessageSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('table:ready'), payload: z.object({ isReady: z.boolean() }) }),
 
   z.object({ type: z.literal('table:add-bot') }),
+  z.object({ type: z.literal('table:boost'), payload: useBoostInputSchema }),
 
   z.object({
     type: z.literal('profile:set-avatar'),
@@ -27,6 +28,8 @@ export const clientMessageSchema = z.discriminatedUnion('type', [
     type: z.literal('profile:set-name'),
     payload: z.object({ name: z.string().trim().min(2).max(MAX_NAME_LENGTH) })
   }),
+
+  z.object({ type: z.literal('profile:get') }),
 
   z.object({ type: z.literal('friends:list') }),
   z.object({ type: z.literal('friends:search'), payload: z.object({ query: z.string() }) }),

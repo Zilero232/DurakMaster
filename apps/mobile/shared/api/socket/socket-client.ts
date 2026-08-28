@@ -11,14 +11,21 @@ export type SocketStateHandler = (state: SocketState) => void;
 
 export class SocketClient {
   private socket: ReconnectingWebSocket | null = null;
+  private url: string | null = null;
   private readonly handlers = new Set<SocketHandler>();
   private readonly stateHandlers = new Set<SocketStateHandler>();
   private pending: ClientMessage[] = [];
 
   connect(url: string): void {
     if (this.socket) {
-      return;
+      if (this.url === url) {
+        return;
+      }
+
+      this.disconnect();
     }
+
+    this.url = url;
 
     this.socket = new ReconnectingWebSocket(url, [], {
       maxReconnectionDelay: 8000,
@@ -73,6 +80,7 @@ export class SocketClient {
   disconnect(): void {
     this.socket?.close();
     this.socket = null;
+    this.url = null;
     this.pending = [];
     this.notifyState('closed');
   }

@@ -35,9 +35,12 @@ export const SessionNotices = () => {
       return;
     }
 
+    const key = `error.${rejectedCode}`;
+    const translated = t(key);
+
     playSound('error');
     haptic('error');
-    toast.error(t(`error.${rejectedCode}`));
+    toast.error(translated === key ? t('error.UNKNOWN') : translated);
     clearRejection();
   }, [rejectedCode, t, clearRejection]);
 

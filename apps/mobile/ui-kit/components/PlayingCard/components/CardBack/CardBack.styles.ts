@@ -31,8 +31,7 @@ const buildStyles = (width: number, theme: CardTheme) => {
       width: diamond,
       height: diamond,
       borderWidth: StyleSheet.hairlineWidth * 2,
-      borderColor: theme.backPattern,
-      opacity: 0.45,
+      borderColor: theme.backPatternSoft,
       transform: [{ rotate: '45deg' }]
     },
 
@@ -41,9 +40,8 @@ const buildStyles = (width: number, theme: CardTheme) => {
       position: 'absolute',
       inset: inset * 0.5,
       borderWidth: StyleSheet.hairlineWidth * 2,
-      borderColor: theme.backPattern,
-      borderRadius: radii.card * 0.7,
-      opacity: 0.55
+      borderColor: theme.backPatternSoft,
+      borderRadius: radii.card * 0.7
     }
   });
 };

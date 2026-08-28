@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { match } from 'ts-pattern';
 
+import { useSessionStore } from '@/entities/session';
 import { useLayout } from '@/shared/model/layout';
 import { Button, colors, iconSize, SuitIcon } from '@/ui-kit';
 
@@ -27,6 +28,8 @@ export const TableList = ({ tables, status, onJoin, onCreate }: TableListProps) 
 
   const { isDesktop } = useLayout();
 
+  const myUserId = useSessionStore((store) => store.profile?.userId);
+
   const [listWidth, setListWidth] = useState(0);
 
   const filters = useLobbyFilters(tables);
@@ -43,7 +46,7 @@ export const TableList = ({ tables, status, onJoin, onCreate }: TableListProps) 
       <FlashList
         renderItem={({ item }) => (
           <View style={isDesktop && styles.cell}>
-            <TableRow isTile={isDesktop} table={item} onJoin={onJoin} />
+            <TableRow isTile={isDesktop} myUserId={myUserId} table={item} onJoin={onJoin} />
           </View>
         )}
         contentContainerStyle={isDesktop ? styles.desktopList : styles.list}

@@ -2,10 +2,10 @@ import type { BurkozelState, Card } from '@durak-master/schemas';
 
 import type { BurkozelReduceResult } from './shared';
 
-import { nextSeat, withHandCounts } from '../../shared';
+import { nextSeat, removeCards, withHandCounts } from '../../shared';
 import { isLegalLead, setBeatsSet } from '../rules';
 import { resolveTrick } from './resolve-trick';
-import { fail, removeCards } from './shared';
+import { fail } from './shared';
 
 export function playCards(
   state: BurkozelState,

@@ -1,7 +1,8 @@
-import type { ClientMessage, MyProfile } from '@durak-master/schemas';
+import type { ClientMessage, MyProfile, UseBoostInput } from '@durak-master/schemas';
+import type { OnModuleDestroy } from '@nestjs/common';
 import type { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit } from '@nestjs/websockets';
 
-import { clientMessageSchema } from '@durak-master/schemas';
+import { BOOST_PRICE, clientMessageSchema } from '@durak-master/schemas';
 import { Logger } from '@nestjs/common';
 import { WebSocketGateway } from '@nestjs/websockets';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
@@ -23,7 +24,12 @@ import {
 } from './services';
 
 @WebSocketGateway({ path: '/ws' })
-export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class RealtimeGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, OnModuleDestroy
+{
+  private heartbeat: NodeJS.Timeout | null = null;
+  private unsubscribe: (() => void) | null = null;
+
   private readonly logger = new Logger(RealtimeGateway.name);
 
   private readonly rateLimiter = new RateLimiterMemory(RATE_LIMIT);
@@ -43,9 +49,11 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
   ) {}
 
   afterInit(): void {
-    this.rooms.onEvent((roomId, event) => this.games.handleRoomEvent(roomId, event));
+    this.unsubscribe = this.rooms.onEvent((roomId, event) =>
+      this.games.handleRoomEvent(roomId, event)
+    );
 
-    setInterval(() => {
+    this.heartbeat = setInterval(() => {
       for (const socket of this.registry.all()) {
         if (socket.isAlive === false) {
           socket.terminate();
@@ -107,6 +115,18 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     buffered.length = 0;
 
     this.connection.restoreTable(userId);
+
+    this.games.deliverPendingResult(userId);
+  }
+
+  onModuleDestroy(): void {
+    if (this.heartbeat) {
+      clearInterval(this.heartbeat);
+      this.heartbeat = null;
+    }
+
+    this.unsubscribe?.();
+    this.unsubscribe = null;
   }
 
   handleDisconnect(socket: Socket): void {
@@ -177,6 +197,10 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
         this.setReady(userId, message.payload.isReady);
         break;
 
+      case 'table:boost':
+        await this.useBoost(socket, userId, message.payload);
+        break;
+
       case 'table:add-bot':
         this.tables.addBot(socket, userId);
         break;
@@ -187,6 +211,10 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
 
       case 'table:emoji':
         this.rooms.getRoomOfUser(userId)?.sendEmoji(userId, message.payload.emoji);
+        break;
+
+      case 'profile:get':
+        await this.connection.sendProfile(socket, userId);
         break;
 
       case 'profile:set-avatar':
@@ -266,14 +294,75 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
   private leaveTable(socket: Socket, userId: string): void {
     const room = this.rooms.getRoomOfUser(userId);
 
+    if (room && !room.isInMatch) {
+      void this.profiles.releaseStake(userId, room.settings.bet).catch((error: unknown) => {
+        this.logger.error(`Failed to release the stake for ${userId}`, error);
+      });
+    }
+
     this.rooms.leave(userId);
     this.registry.send(socket, { type: 'table:left' });
 
     if (room) {
       this.broadcast.table(room.id);
+      this.broadcast.gameState(room.id);
     }
 
     this.broadcast.lobby();
+  }
+
+  private async useBoost(socket: Socket, userId: string, input: UseBoostInput): Promise<void> {
+    const room = this.rooms.getRoomOfUser(userId);
+
+    if (!room?.isPlaying) {
+      this.registry.send(socket, {
+        type: 'error',
+        payload: { message: 'No game in progress', code: 'GAME_NOT_ACTIVE' }
+      });
+
+      return;
+    }
+
+    if (input.boost === 'undoMove' && !room.undoLastMove(userId)) {
+      this.registry.send(socket, {
+        type: 'error',
+        payload: { message: 'Nothing to take back', code: 'INVALID_ACTION_FOR_PHASE' }
+      });
+
+      return;
+    }
+
+    const coins = await this.profiles.spendCoins(userId, BOOST_PRICE[input.boost]);
+
+    if (coins === null) {
+      this.registry.send(socket, {
+        type: 'error',
+        payload: { message: 'Not enough coins', code: 'NOT_ENOUGH_COINS' }
+      });
+
+      return;
+    }
+
+    this.registry.send(socket, {
+      type: 'table:boost-used',
+      payload: {
+        boost: input.boost,
+        coins,
+        ...(input.boost === 'peekTalon' ? { talon: room.peekTalon() ?? [] } : {}),
+        ...(input.boost === 'peekHand' && input.targetUserId
+          ? { hand: room.peekHand(input.targetUserId) ?? [], targetUserId: input.targetUserId }
+          : {})
+      }
+    });
+
+    this.registry.send(socket, {
+      type: 'profile:updated',
+      payload: { profile: await this.profiles.ensureProfile(userId) }
+    });
+
+    if (input.boost === 'undoMove') {
+      this.broadcast.gameState(room.id);
+    }
   }
 
   private setReady(userId: string, isReady: boolean): void {

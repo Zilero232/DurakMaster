@@ -9,13 +9,13 @@ import { SideRail } from '../SideRail';
 import { TabBar } from '../TabBar';
 import { styles } from './ShellChrome.styles';
 
-export const ShellChrome = ({ children, tab, status, onChange }: ShellChromeProps) => {
+export const ShellChrome = ({ children, tab, status, onChange, onSignOut }: ShellChromeProps) => {
   const { isDesktop } = useLayout();
 
   if (isDesktop) {
     return (
       <View style={styles.desktopRoot}>
-        <SideRail status={status} tab={tab} onChange={onChange} />
+        <SideRail status={status} tab={tab} onChange={onChange} onSignOut={onSignOut} />
 
         <View style={styles.content}>{children}</View>
       </View>
@@ -24,7 +24,7 @@ export const ShellChrome = ({ children, tab, status, onChange }: ShellChromeProp
 
   return (
     <View style={styles.root}>
-      <AppHeader status={status} tab={tab} />
+      <AppHeader status={status} tab={tab} onSignOut={onSignOut} />
 
       <View style={styles.content}>{children}</View>
 

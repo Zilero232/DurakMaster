@@ -26,8 +26,7 @@ const buildStyles = (width: number) =>
     center: {
       position: 'absolute',
       right: width * 0.08,
-      bottom: width * 0.08,
-      opacity: 0.9
+      bottom: width * 0.08
     }
   });
 

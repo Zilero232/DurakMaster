@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
-import { PlayingCard } from '@/ui-kit';
+import { duration, PlayingCard } from '@/ui-kit';
 
 import type { PairSlotProps } from './PairSlot.types';
 
@@ -33,7 +33,7 @@ export const PairSlot = ({
 
   return (
     <Animated.View
-      layout={isInstant ? undefined : LinearTransition.springify().damping(28).stiffness(420)}
+      layout={isInstant ? undefined : LinearTransition.duration(duration.layout)}
       style={pairStyles.pair}
     >
       <Animated.View

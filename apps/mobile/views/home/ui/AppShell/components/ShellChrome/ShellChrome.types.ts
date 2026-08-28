@@ -9,4 +9,5 @@ export type ShellChromeProps = {
   tab: ShellTab;
   status: ConnectionStatus;
   onChange: (tab: ShellTab) => void;
+  onSignOut: () => void;
 };

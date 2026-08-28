@@ -2,20 +2,30 @@ import { Circle, Path, Svg } from 'react-native-svg';
 
 import type { LoserHatProps } from './LoserHat.types';
 
-const HAT = '#E8543F';
+const LEFT = '#E8543F';
 
-const BAND = '#F4D03F';
+const MIDDLE = '#F4D03F';
 
-const POMPOM = '#F4F1EC';
+const RIGHT = '#4FA3E3';
+
+const BELL = '#F7E7A1';
+
+const BAND = '#2B2340';
 
 export const LoserHat = ({ size = 28, style }: LoserHatProps) => (
   <Svg height={size} style={style} viewBox='0 0 100 100' width={size}>
-    <Path d='M50 6 L78 74 L22 74 Z' fill={HAT} />
+    <Path d='M50 64 C30 62 16 46 14 26 C26 24 40 38 50 64 Z' fill={LEFT} />
 
-    <Path d='M50 6 L62 36 L38 36 Z' fill={BAND} opacity={0.45} />
+    <Path d='M50 64 C70 62 84 46 86 26 C74 24 60 38 50 64 Z' fill={RIGHT} />
 
-    <Path d='M20 74 L80 74 L80 86 L20 86 Z' fill={BAND} />
+    <Path d='M50 64 C42 44 44 24 50 10 C56 24 58 44 50 64 Z' fill={MIDDLE} />
 
-    <Circle cx={50} cy={8} fill={POMPOM} r={9} />
+    <Circle cx={14} cy={24} fill={BELL} r={8} />
+    <Circle cx={86} cy={24} fill={BELL} r={8} />
+    <Circle cx={50} cy={9} fill={BELL} r={7} />
+
+    <Path d='M22 62 L78 62 L78 78 L22 78 Z' fill={BAND} />
+
+    <Path d='M22 62 L78 62 L78 68 L22 68 Z' fill={MIDDLE} opacity={0.5} />
   </Svg>
 );

@@ -8,9 +8,11 @@ import { DurakTable as DurakPlayfield } from './components';
 
 export const DurakTable = ({ settings, onLeave, onSelectPlayer }: DurakTableProps) => {
   const currentTable = useSessionStore((store) => store.currentTable);
+  const tablePhrases = useSessionStore((store) => store.phrases);
+  const tableEmojis = useSessionStore((store) => store.emojis);
 
   const game = useOnlineGame();
-  const phrases = useTableChatter();
+  const phrases = useTableChatter({ emojis: tableEmojis, phrases: tablePhrases });
 
   useTableSounds(game.view, game.isMyTurn);
 

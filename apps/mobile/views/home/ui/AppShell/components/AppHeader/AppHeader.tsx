@@ -7,13 +7,10 @@ import { colors, iconSize } from '@/ui-kit';
 
 import type { AppHeaderProps } from './AppHeader.types';
 
-import { useSignOut } from '../../../../model';
 import { styles } from './AppHeader.styles';
 
-export const AppHeader = ({ tab, status }: AppHeaderProps) => {
+export const AppHeader = ({ tab, status, onSignOut }: AppHeaderProps) => {
   const { t } = useTranslation();
-
-  const signOut = useSignOut();
 
   const title = match(tab)
     .with('profile', () => t('nav.profile'))
@@ -39,7 +36,7 @@ export const AppHeader = ({ tab, status }: AppHeaderProps) => {
           accessibilityRole='button'
           hitSlop={8}
           style={styles.iconButton}
-          onPress={signOut}
+          onPress={onSignOut}
         >
           <LogOut color={colors.onFelt} size={iconSize.md} />
         </Pressable>

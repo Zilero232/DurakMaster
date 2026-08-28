@@ -10,7 +10,8 @@ export const styles = StyleSheet.create({
 
   table: {
     flex: 1,
-    justifyContent: 'space-between'
+    gap: spacing[2],
+    paddingBottom: spacing[2]
   },
 
   score: {

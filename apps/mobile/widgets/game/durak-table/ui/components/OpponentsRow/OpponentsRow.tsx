@@ -10,6 +10,7 @@ import { styles } from './OpponentsRow.styles';
 export const OpponentsRow = ({
   view,
   players,
+  readyUserIds,
   mySeat,
   phrases,
   turnSeconds,
@@ -20,20 +21,25 @@ export const OpponentsRow = ({
 
   const opponents = view.players.filter((player) => player.seat !== mySeat);
 
+  const isDealt = view.phase === 'playing';
+
   return (
     <View style={styles.root}>
       {opponents.map((player) => {
         const meta = players.find((item) => item.userId === player.userId);
+        const isEmpty = !meta;
 
         return (
           <OpponentSeat
             key={player.userId}
             avatarUrl={meta?.avatarUrl ?? null}
             isActive={player.seat === view.activeSeat}
-            isAttacker={player.seat === view.attackerSeat}
-            isDefender={player.seat === view.defenderSeat}
+            isAttacker={isDealt && player.seat === view.attackerSeat}
+            isDefender={isDealt && player.seat === view.defenderSeat}
+            isEmpty={isEmpty}
             isLoser={player.userId === loserUserId}
-            name={meta?.name ?? t('table.playerFallback', { seat: player.seat + 1 })}
+            isReady={readyUserIds.has(player.userId)}
+            name={meta?.name ?? t('table.emptySeat')}
             phrase={phrases[player.userId]}
             player={player}
             turnDeadline={view.turnDeadline}

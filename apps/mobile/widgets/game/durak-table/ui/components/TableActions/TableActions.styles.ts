@@ -54,6 +54,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing[2],
     flex: 1,
+    flexBasis: 0,
     minWidth: 0
   },
 
@@ -79,8 +80,9 @@ export const styles = StyleSheet.create({
   },
 
   boosts: {
-    flexGrow: 0,
-    flexShrink: 0,
+    flex: 1,
+    flexBasis: 0,
+    minWidth: 0,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',

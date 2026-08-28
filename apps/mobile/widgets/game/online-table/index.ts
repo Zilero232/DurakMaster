@@ -1,3 +1,3 @@
 export { useTableStage } from './model';
-export { SwipeToLeave, UnsupportedGame, WaitingTable } from './ui';
-export type { SwipeToLeaveProps, UnsupportedGameProps, WaitingTableProps } from './ui';
+export { SwipeToLeave, UnsupportedGame } from './ui';
+export type { SwipeToLeaveProps, UnsupportedGameProps } from './ui';

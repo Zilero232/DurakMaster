@@ -3,6 +3,7 @@ export type { AppHeaderProps } from './AppHeader';
 
 export { ProfileTab } from './ProfileTab';
 export type { ProfileTabProps } from './ProfileTab';
+export { ProfileTabSkeleton } from './ProfileTabSkeleton';
 
 export { ShellChrome } from './ShellChrome';
 export type { ShellChromeProps } from './ShellChrome';

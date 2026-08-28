@@ -26,7 +26,8 @@
     "reaction": "Send reaction {{emoji}}",
     "seatFree": "Waiting",
     "joining": "Taking a seat…",
-    "deckLeft": "Deck"
+    "deckLeft": "Deck",
+    "emptySeat": "Waiting for a player"
   },
   "result": {
     "win": "Victory",
@@ -41,7 +42,8 @@
     "toMenu": "To menu",
     "leaveTable": "Leave table",
     "waitingReady": "Ready: {{current}} of {{max}}",
-    "waitingOthers": "Waiting for others…"
+    "waitingOthers": "Waiting for others…",
+    "timeoutHint": "Your turn ran out of time"
   },
   "discard": {
     "title": "Discard pile",
@@ -98,12 +100,12 @@
     }
   },
   "boosts": {
-    "undoMove": "Take the move back",
     "peekTalon": "Peek at the deck",
     "peekHand": "Peek at a hand",
-    "undoMoveHint": "Return the last card you played to your hand",
     "peekTalonHint": "Look at the top three cards of the deck",
     "peekHandHint": "Peek at one opponent's hand",
-    "holdForHint": "Hold to learn more"
+    "holdForHint": "Hold to learn more",
+    "undoMove": "Take it back",
+    "undoMoveHint": "pull the card back before anyone answers"
   }
 }

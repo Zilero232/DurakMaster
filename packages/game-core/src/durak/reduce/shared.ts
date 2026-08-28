@@ -2,6 +2,8 @@ import type { DurakState, GameErrorCode, PlayerState } from '@durak-master/schem
 
 import type { ReduceResult } from '../../module';
 
+import { canThrowIn } from '../rules';
+
 export type DurakReduceResult = ReduceResult<'durak'>;
 
 export const fail = (error: GameErrorCode): DurakReduceResult => ({ ok: false, error });
@@ -22,3 +24,11 @@ export const syncHandCounts = (state: DurakState): DurakState => ({
     handCount: state.hands[player.userId]?.length ?? 0
   }))
 });
+
+export const nextThrowerSeat = (
+  state: DurakState,
+  passedSeats: readonly number[] = state.passedSeats
+): number | undefined =>
+  state.players.find(
+    (player) => canThrowIn(player.seat, state) && !passedSeats.includes(player.seat)
+  )?.seat;

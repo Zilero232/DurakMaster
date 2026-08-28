@@ -155,6 +155,7 @@ export const card = {
 
 export const duration = {
   fast: 140,
+  layout: 180,
   card: 220,
   panel: 280
 } as const;

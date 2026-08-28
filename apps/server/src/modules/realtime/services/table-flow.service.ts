@@ -45,12 +45,6 @@ export class TableFlowService {
       return;
     }
 
-    if (!(await this.profiles.canAfford(userId, payload.settings.bet))) {
-      this.fail(socket, 'Not enough credits for this bet', 'NOT_ENOUGH_CREDITS');
-
-      return;
-    }
-
     if (payload.settings.isPrivate && !payload.password) {
       this.fail(socket, 'A private table needs a password', 'PASSWORD_REQUIRED');
 
@@ -58,6 +52,12 @@ export class TableFlowService {
     }
 
     this.rooms.leave(userId);
+
+    if (!(await this.profiles.reserveStake(userId, payload.settings.bet))) {
+      this.fail(socket, 'Not enough credits for this bet', 'NOT_ENOUGH_CREDITS');
+
+      return;
+    }
 
     const passwordHash = payload.password ? hashTablePassword(payload.password) : null;
     const room = this.rooms.createRoom(payload.settings, passwordHash);
@@ -93,13 +93,14 @@ export class TableFlowService {
       }
     }
 
-    if (!(await this.profiles.canAfford(userId, room.settings.bet))) {
+    if (!(await this.profiles.reserveStake(userId, room.settings.bet))) {
       this.fail(socket, 'Not enough credits for this bet', 'NOT_ENOUGH_CREDITS');
 
       return;
     }
 
     if (!this.rooms.join(room, profile)) {
+      await this.profiles.releaseStake(userId, room.settings.bet);
       this.fail(socket, 'The table is full', 'TABLE_FULL');
 
       return;

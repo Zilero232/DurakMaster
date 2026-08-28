@@ -37,7 +37,9 @@ export const reduceServerMessage = (
         currentTable: message.payload.table,
         mySeat: message.payload.seat,
         outcome: null,
-        phrases: []
+        phrases: [],
+        emojis: {},
+        revealed: null
       };
 
     case 'table:left':
@@ -46,18 +48,40 @@ export const reduceServerMessage = (
         mySeat: null,
         view: null,
         outcome: null,
-        phrases: []
+        phrases: [],
+        emojis: {},
+        revealed: null,
+        tablePlayers: [],
+        selectedTableCardKey: null
       };
 
-    case 'game:state':
+    case 'table:boost-used':
       return {
-        view: message.payload.view,
+        profile: state.profile ? { ...state.profile, coins: message.payload.coins } : state.profile,
+        revealed: {
+          boost: message.payload.boost,
+          cards: message.payload.talon ?? message.payload.hand ?? [],
+          targetUserId: message.payload.targetUserId ?? null
+        }
+      };
+
+    case 'game:state': {
+      const { view } = message.payload;
+
+      const stillHeld =
+        state.selectedTableCardKey !== null &&
+        'hand' in view &&
+        view.hand.some((card) => `${card.rank}:${card.suit}` === state.selectedTableCardKey);
+
+      return {
+        view,
         tablePlayers: message.payload.players,
-        selectedTableCardKey: null,
+        selectedTableCardKey: stillHeld ? state.selectedTableCardKey : null,
         rejectedCode: null,
 
-        outcome: message.payload.view.phase === 'playing' ? null : state.outcome
+        outcome: view.phase === 'playing' ? null : state.outcome
       };
+    }
 
     case 'game:rejected':
       return { rejectedCode: message.payload.code };

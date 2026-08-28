@@ -26,7 +26,8 @@
       "low": "До 1K",
       "mid": "1K–50K",
       "high": "От 50K"
-    }
+    },
+    "ownTable": "Ваш стол"
   },
   "create": {
     "title": "Создать игру",
@@ -120,7 +121,11 @@
         "dealer": "Сдающий"
       },
       "yourTeam": "Ваша пара",
-      "opponents": "Соперники"
+      "opponents": "Соперники",
+      "chooseLeaderTitle": "Кто заходит?",
+      "chooseLeaderMe": "Я",
+      "chooseLeaderPartner": "Напарник",
+      "chooseLeaderWait": "Соперники выбирают, кто заходит"
     },
     "tysyacha": {
       "name": "Тысяча",
@@ -147,7 +152,15 @@
       },
       "yourScore": "Ваши очки",
       "bid": "Ставка",
-      "pass": "Пас"
+      "pass": "Пас",
+      "bidding": "Торговля",
+      "noBids": "Ставок пока нет",
+      "currentBid": "Текущая ставка: {{value}}",
+      "raiseTo": "Поднять до {{value}}",
+      "discarding": "Прикуп",
+      "giveCards": "Раздайте по карте соперникам",
+      "waitingDeclarer": "Заказавший разбирает прикуп",
+      "dealOver": "Сдача сыграна"
     }
   }
 }

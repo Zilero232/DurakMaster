@@ -6,4 +6,5 @@ export type SideRailProps = {
   tab: ShellTab;
   status: ConnectionStatus;
   onChange: (tab: ShellTab) => void;
+  onSignOut: () => void;
 };

@@ -2,7 +2,7 @@ import { View } from 'react-native';
 import Animated, { FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import { cardKey } from '@/shared/lib/cards';
-import { MAX_FAN_ANGLE } from '@/ui-kit';
+import { duration, MAX_FAN_ANGLE } from '@/ui-kit';
 
 import type { PlayerHandProps } from './PlayerHand.types';
 
@@ -51,7 +51,7 @@ export const PlayerHand = ({
             key={key}
             entering={isInstant ? undefined : dealFromTalon}
             exiting={isInstant ? undefined : FadeOut.duration(160)}
-            layout={isInstant ? undefined : LinearTransition.springify().damping(30).stiffness(380)}
+            layout={isInstant ? undefined : LinearTransition.duration(duration.layout)}
             style={{ zIndex: index, marginRight: isLast ? 0 : overlap }}
           >
             <View style={{ transform: [{ translateY: Math.abs(offset) * fanDrop }] }}>

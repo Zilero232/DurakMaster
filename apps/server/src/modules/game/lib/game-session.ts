@@ -23,6 +23,8 @@ export type GameSession = {
 
   apply: (userId: string, action: GameAction) => GameErrorCode | null;
   applyBotTurn: (userId: string) => string | null;
+  undoLast: (userId: string) => boolean;
+  hasPendingMove: (userId: string) => boolean;
   applyTimeout: (userId: string) => boolean;
   markDisconnected: (userId: string, isDisconnected: boolean) => void;
   setTurnDeadline: (deadline: number) => void;
@@ -41,6 +43,7 @@ type ModuleAction<G extends GameId> = Parameters<GameModule<G>['reduce']>[2];
 
 class TypedGameSession<G extends GameId> implements GameSession {
   private current: StateForGame<G>;
+  private undoable: { userId: string; state: StateForGame<G> } | null = null;
 
   constructor(
     private readonly module: GameModule<G>,
@@ -64,8 +67,36 @@ class TypedGameSession<G extends GameId> implements GameSession {
     }
 
     const own = action.action as ModuleAction<G>;
+    const before = this.current;
 
-    return this.commit(this.module.reduce(this.current, userId, own));
+    const error = this.commit(this.module.reduce(this.current, userId, own));
+
+    if (error === null) {
+      this.undoable = { userId, state: before };
+    }
+
+    return error;
+  }
+
+  undoLast(userId: string): boolean {
+    if (this.undoable?.userId !== userId) {
+      return false;
+    }
+
+    if (this.undoable.state.version + 1 !== this.current.version) {
+      return false;
+    }
+
+    this.current = { ...this.undoable.state, version: this.current.version + 1 };
+    this.undoable = null;
+
+    return true;
+  }
+
+  hasPendingMove(userId: string): boolean {
+    const action = this.module.decideBotAction(this.current, userId);
+
+    return this.module.reduce(this.current, userId, action).ok;
   }
 
   applyBotTurn(userId: string): string | null {

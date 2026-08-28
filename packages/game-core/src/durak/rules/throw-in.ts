@@ -28,6 +28,10 @@ export function canThrowIn(
     return false;
   }
 
+  if (seat === state.attackerSeat) {
+    return true;
+  }
+
   if (state.rules.throwInScope === 'all') {
     return true;
   }

@@ -153,6 +153,23 @@ export const styles = StyleSheet.create({
     justifyContent: 'center'
   },
 
+  tileBetGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2]
+  },
+
+  ownBadge: {
+    flexShrink: 0,
+    paddingVertical: 2,
+    paddingHorizontal: spacing[2],
+    borderRadius: radii.pill,
+    fontSize: fontSize.xs,
+    fontFamily: fontFamily.sansBold,
+    color: colors.goldDeep,
+    backgroundColor: colors.gold
+  },
+
   blockedLabel: {
     fontSize: fontSize.xs,
     fontFamily: fontFamily.sansSemi,

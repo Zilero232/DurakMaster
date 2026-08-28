@@ -1,7 +1,7 @@
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { LeaveCorner, RewardBurst } from '@/entities/game-table';
-import { useLayout } from '@/shared/model/layout';
+import { LeaveCorner, RevealedCards, RewardBurst } from '@/entities/game-table';
+import { useSessionStore } from '@/entities/session';
 import { ContentWidth, FeltBackground, TABLE_MAX_WIDTH } from '@/ui-kit';
 
 import type { DurakTableProps } from './DurakTable.types';
@@ -24,7 +24,8 @@ export const DurakTable = ({
 }: DurakTableProps) => {
   const insets = useSafeAreaInsets();
 
-  const { isWide } = useLayout();
+  const revealed = useSessionStore((store) => store.revealed);
+  const clearRevealed = useSessionStore((store) => store.clearRevealed);
 
   const table = useDurakTable({ game });
 
@@ -37,13 +38,14 @@ export const DurakTable = ({
           maxWidth={TABLE_MAX_WIDTH}
           style={[styles.table, { paddingTop: insets.top, paddingBottom: insets.bottom }]}
         >
-          {isWide && <LeaveCorner onLeave={onLeave} />}
+          <LeaveCorner onLeave={onLeave} />
 
           <OpponentsRow
             loserUserId={game.outcome?.loserUserId ?? null}
             mySeat={game.mySeat}
             phrases={phrases}
             players={game.players}
+            readyUserIds={game.readyUserIds}
             turnSeconds={settings.turnTimeoutSeconds}
             view={view}
             onSelectPlayer={onSelectPlayer}
@@ -54,15 +56,18 @@ export const DurakTable = ({
             cardScale={table.cardScale}
             hoveredIndex={table.drag.hoveredIndex}
             isInstant={table.isInstant}
-            isWaiting={isWaiting}
-            maxPlayers={settings.maxPlayers}
             mySeat={game.mySeat}
             view={view}
             onDefend={game.defendPair}
-            onZonesChange={table.drag.setDropZones}
           />
 
           <PlayerZone view={view} />
+
+          <RevealedCards
+            boost={revealed?.boost ?? null}
+            cards={revealed?.cards ?? []}
+            onClose={clearRevealed}
+          />
 
           {game.outcome && (
             <RewardBurst

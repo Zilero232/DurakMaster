@@ -12,7 +12,8 @@
     "prebuild": "expo prebuild",
     "build:web": "expo export --platform web",
     "typecheck": "tsc --noEmit",
-    "url": "node -e \"const os=require('os');const ip=Object.values(os.networkInterfaces()).flat().find(i=>i&&i.family==='IPv4'&&!i.internal);console.log('\\nExpo Go → exp://'+(ip?ip.address:'localhost')+':8081\\n')\""
+    "url": "node -e \"const os=require('os');const ip=Object.values(os.networkInterfaces()).flat().find(i=>i&&i.family==='IPv4'&&!i.internal);console.log('\\nExpo Go \u2192 exp://'+(ip?ip.address:'localhost')+':8081\\n')\"",
+    "test": "vitest run"
   },
   "dependencies": {
     "@better-auth/expo": "^1.7.2",
@@ -69,7 +70,11 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^14.0.1",
     "@types/react": "~19.2.18",
+    "jsdom": "^30.0.1",
+    "react-test-renderer": "^19.2.8",
     "typescript": "6.0.3"
   }
 }

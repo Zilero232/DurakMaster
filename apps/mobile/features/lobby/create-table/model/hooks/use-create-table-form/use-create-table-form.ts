@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
 import type { CreateTableFormValues } from '../../create-table-form';
@@ -23,11 +24,22 @@ export const useCreateTableForm = ({ onCreate }: UseCreateTableFormOptions) => {
 
   const game = useWatch({ control, name: 'game' });
   const maxPlayers = useWatch({ control, name: 'maxPlayers' });
+  const deckSize = useWatch({ control, name: 'durakRules.deckSize' });
   const isPrivate = useWatch({ control, name: 'isPrivate' });
+
+  const seats = clampPlayersToGame(game, maxPlayers, deckSize);
+
+  useEffect(() => {
+    if (seats !== maxPlayers) {
+      setValue('maxPlayers', seats, { shouldValidate: true });
+    }
+  }, [maxPlayers, seats, setValue]);
 
   const selectGame = (nextGame: CreateTableFormValues['game']) => {
     setValue('game', nextGame, { shouldValidate: true });
-    setValue('maxPlayers', clampPlayersToGame(nextGame, maxPlayers), { shouldValidate: true });
+    setValue('maxPlayers', clampPlayersToGame(nextGame, maxPlayers, deckSize), {
+      shouldValidate: true
+    });
   };
 
   const submit = handleSubmit((values) => {
@@ -39,6 +51,7 @@ export const useCreateTableForm = ({ onCreate }: UseCreateTableFormOptions) => {
   return {
     control,
     game,
+    deckSize,
     isPrivate,
     canSubmit: formState.isValid,
     selectGame,

@@ -1,4 +1,4 @@
-import type { GameId, TableSettings } from '@durak-master/schemas';
+import type { DurakDeckSize, GameId, TableSettings } from '@durak-master/schemas';
 
 import {
   burkozelRulesSchema,
@@ -12,6 +12,7 @@ import {
   durakRulesSchema,
   gameIdSchema,
   kozelRulesSchema,
+  maxDurakPlayers,
   PLAYER_RANGE_BY_GAME,
   TURN_SECONDS_BY_SPEED,
   tysyachaRulesSchema
@@ -47,8 +48,14 @@ export const CREATE_TABLE_DEFAULTS: CreateTableFormValues = {
   password: ''
 };
 
-export const clampPlayersToGame = (game: GameId, maxPlayers: number): number => {
-  const { min, max } = PLAYER_RANGE_BY_GAME[game];
+export const clampPlayersToGame = (
+  game: GameId,
+  maxPlayers: number,
+  deckSize?: DurakDeckSize
+): number => {
+  const { min, max: range } = PLAYER_RANGE_BY_GAME[game];
+
+  const max = game === 'durak' && deckSize ? Math.min(range, maxDurakPlayers(deckSize)) : range;
 
   return clamp(maxPlayers, { min, max });
 };
@@ -67,7 +74,7 @@ export const toTableSettings = (values: CreateTableFormValues): TableSettings =>
   } = values;
 
   const common = {
-    maxPlayers: clampPlayersToGame(game, maxPlayers),
+    maxPlayers: clampPlayersToGame(game, maxPlayers, durakRules.deckSize),
     bet,
     isPrivate,
     speed,

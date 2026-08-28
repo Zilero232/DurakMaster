@@ -1,37 +1,22 @@
-import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
 import { DiscardStack, TableField, TalonStack } from '@/entities/game-table';
 
 import type { TableCenterProps } from './TableCenter.types';
 
+import { useTableContext } from '../../../model';
 import { styles } from './TableCenter.styles';
 
 export const TableCenter = ({
   view,
   beatableIndexes,
-  hoveredIndex,
   cardScale,
   mySeat,
-  isWaiting,
-  maxPlayers,
   isInstant,
-  onDefend,
-  onZonesChange
+  hoveredIndex,
+  onDefend
 }: TableCenterProps) => {
-  const { t } = useTranslation();
-
-  if (isWaiting) {
-    return (
-      <View style={[styles.root, styles.waiting]}>
-        <Text style={styles.waitingTitle}>{t('table.waitingTitle')}</Text>
-
-        <Text style={styles.waitingCount}>
-          {t('table.waitingCount', { current: view.players.length, max: maxPlayers })}
-        </Text>
-      </View>
-    );
-  }
+  const { drag } = useTableContext();
 
   return (
     <View style={styles.root}>
@@ -45,7 +30,7 @@ export const TableCenter = ({
         mySeat={mySeat}
         pairs={view.table}
         onDefend={onDefend}
-        onZonesChange={onZonesChange}
+        onZonesChange={drag.onZonesChange}
       />
 
       <DiscardStack count={view.discardCount} />

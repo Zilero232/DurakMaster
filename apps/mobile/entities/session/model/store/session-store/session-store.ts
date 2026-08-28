@@ -35,7 +35,7 @@ export const useSessionStore = create<SessionStore>((set, get) => {
     selectTableCard: (key) => set({ selectedTableCardKey: key }),
 
     connect: async () => {
-      if (get().status !== 'idle') {
+      if (get().status === 'connecting' || get().status === 'connected') {
         return;
       }
 
@@ -47,14 +47,10 @@ export const useSessionStore = create<SessionStore>((set, get) => {
     disconnect: () => {
       connection.close();
 
-      set({
-        status: 'idle',
-        profile: null,
-        currentTable: null,
-        view: null,
-        isLobbySubscribed: false
-      });
+      set({ ...INITIAL_STATE });
     },
+
+    requestProfile: () => socketClient.send({ type: 'profile:get' }),
 
     subscribeLobby: () => {
       set({ isLobbySubscribed: true });
@@ -73,6 +69,9 @@ export const useSessionStore = create<SessionStore>((set, get) => {
 
     addBot: () => socketClient.send({ type: 'table:add-bot' }),
 
+    applyBoost: (boost, targetUserId) =>
+      socketClient.send({ type: 'table:boost', payload: { boost, targetUserId } }),
+
     sendPhrase: (phraseId) => socketClient.send({ type: 'table:phrase', payload: { phraseId } }),
 
     sendEmoji: (emoji) => socketClient.send({ type: 'table:emoji', payload: { emoji } }),
@@ -88,6 +87,8 @@ export const useSessionStore = create<SessionStore>((set, get) => {
     clearOutcome: () => set({ outcome: null }),
 
     clearRejection: () => set({ rejectedCode: null }),
+
+    clearRevealed: () => set({ revealed: null }),
 
     clearError: () => set({ lastError: null, lastErrorCode: null })
   };

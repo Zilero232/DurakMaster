@@ -1,9 +1,9 @@
 import type { GameAction, GameErrorCode } from '@durak-master/schemas';
 
 import { computeRatingGain } from '@durak-master/schemas';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
-import type { FinishedPlayer, RoomEvent } from '../../game';
+import type { FinishedPlayer, RoomEvent, RoomMember } from '../../game';
 import type { Socket } from '../realtime.types';
 
 import { GameHistoryService, RoomsService } from '../../game';
@@ -12,8 +12,17 @@ import { BroadcastService } from './broadcast.service';
 import { SessionsService } from './sessions.service';
 import { SocketRegistryService } from './socket-registry.service';
 
+const PENDING_RESULTS_LIMIT = 500;
+
 @Injectable()
 export class GameFlowService {
+  private readonly logger = new Logger(GameFlowService.name);
+
+  private readonly pendingResults = new Map<
+    string,
+    { loserUserId: string | null; isDraw: boolean; creditsDelta: number; ratingDelta: number }
+  >();
+
   constructor(
     private readonly rooms: RoomsService,
     private readonly sessions: SessionsService,
@@ -53,7 +62,9 @@ export class GameFlowService {
         break;
 
       case 'finished':
-        void this.finish(roomId, event.loserUserId, event.isDraw);
+        void this.finish(roomId, event).catch((error: unknown) => {
+          this.logger.error(`Failed to settle game in room ${roomId}`, error);
+        });
         break;
 
       case 'phrase':
@@ -86,40 +97,46 @@ export class GameFlowService {
     this.broadcast.lobby();
   }
 
-  private async finish(roomId: string, loserUserId: string | null, isDraw: boolean): Promise<void> {
+  private async finish(
+    roomId: string,
+    event: { loserUserId: string | null; isDraw: boolean; members: RoomMember[] }
+  ): Promise<void> {
     const room = this.rooms.getRoom(roomId);
 
     if (!room) {
       return;
     }
 
-    const members = room.getMembers();
+    const { loserUserId, isDraw, members } = event;
     const { bet } = room.settings;
-    const winners = members.filter((member) => member.profile.userId !== loserUserId);
-    const prize = isDraw || winners.length === 0 ? 0 : Math.floor(bet / winners.length);
+
+    const winners = members.filter(
+      (member) => member.profile.userId !== loserUserId && !member.isBot
+    );
+
+    const humans = members.filter((member) => !member.isBot);
+    const prize = isDraw || winners.length === 0 ? 0 : bet + Math.floor(bet / winners.length);
 
     const played: FinishedPlayer[] = [];
 
-    for (const member of members) {
+    for (const member of humans) {
       const { userId } = member.profile;
       const isLoser = userId === loserUserId;
       const isWinner = !isLoser && !isDraw;
-      const creditsDelta = isDraw ? 0 : isLoser ? -bet : prize;
+      const creditsDelta = isDraw ? 0 : isLoser ? -bet : prize - bet;
       const ratingDelta = isWinner ? computeRatingGain(prize, member.profile.rating) : 0;
 
-      if (!member.isBot) {
-        await this.sessions.applyGameResult({
-          userId,
-          creditsDelta,
-          ratingDelta,
-          isWinner,
-          isDraw
-        });
+      await this.sessions.applyGameResult({
+        userId,
+        creditsDelta,
+        ratingDelta,
+        isWinner,
+        isDraw
+      });
 
-        played.push({ userId, seat: member.seat, creditsDelta, ratingDelta, isLoser });
-      }
+      played.push({ userId, seat: member.seat, creditsDelta, ratingDelta, isLoser });
 
-      await this.notifyPlayer(member.isBot, userId, room.settings.game, {
+      await this.notifyPlayer(false, userId, room.settings.game, {
         loserUserId,
         isDraw,
         isWinner,
@@ -135,6 +152,10 @@ export class GameFlowService {
       loserUserId,
       isDraw
     });
+
+    this.broadcast.gameState(roomId);
+    this.broadcast.table(roomId);
+    this.broadcast.lobby();
   }
 
   private async notifyPlayer(
@@ -161,15 +182,25 @@ export class GameFlowService {
         });
 
     const socket = this.registry.get(userId);
+    const result = { loserUserId, isDraw, creditsDelta, ratingDelta };
 
     if (!socket) {
+      if (!isBot) {
+        if (this.pendingResults.size >= PENDING_RESULTS_LIMIT) {
+          const oldest = this.pendingResults.keys().next().value;
+
+          if (oldest !== undefined) {
+            this.pendingResults.delete(oldest);
+          }
+        }
+
+        this.pendingResults.set(userId, result);
+      }
+
       return;
     }
 
-    this.registry.send(socket, {
-      type: 'game:finished',
-      payload: { loserUserId, isDraw, creditsDelta, ratingDelta }
-    });
+    this.registry.send(socket, { type: 'game:finished', payload: result });
 
     if (isBot) {
       return;
@@ -183,5 +214,22 @@ export class GameFlowService {
       type: 'profile:updated',
       payload: { profile: await this.sessions.reload(userId) }
     });
+  }
+
+  deliverPendingResult(userId: string): void {
+    const result = this.pendingResults.get(userId);
+
+    if (!result) {
+      return;
+    }
+
+    const socket = this.registry.get(userId);
+
+    if (!socket) {
+      return;
+    }
+
+    this.pendingResults.delete(userId);
+    this.registry.send(socket, { type: 'game:finished', payload: result });
   }
 }

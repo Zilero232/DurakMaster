@@ -51,12 +51,28 @@ export function handContains(hand: readonly Card[], card: Card): boolean {
   return hand.some((item) => cardsEqual(item, card));
 }
 
-export function removeCard(hand: readonly Card[], card: Card): Card[] {
+export function removeCard(hand: readonly Card[], card: Card): Card[] | null {
   const index = hand.findIndex((item) => cardsEqual(item, card));
 
   if (index === -1) {
-    return [...hand];
+    return null;
   }
 
   return [...hand.slice(0, index), ...hand.slice(index + 1)];
+}
+
+export function removeCards(hand: readonly Card[], cards: readonly Card[]): Card[] | null {
+  let rest: Card[] = [...hand];
+
+  for (const card of cards) {
+    const next = removeCard(rest, card);
+
+    if (next === null) {
+      return null;
+    }
+
+    rest = next;
+  }
+
+  return rest;
 }

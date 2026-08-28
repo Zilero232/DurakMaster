@@ -2,7 +2,7 @@ import type { Card, DurakState } from '@durak-master/schemas';
 
 import type { DurakReduceResult } from './shared';
 
-import { handContains, removeCard } from '../../shared';
+import { removeCard } from '../../shared';
 import { beats } from '../rules';
 import { fail, syncHandCounts } from './shared';
 
@@ -32,8 +32,9 @@ export function applyDefend(
   }
 
   const hand = state.hands[userId] ?? [];
+  const rest = removeCard(hand, card);
 
-  if (!handContains(hand, card)) {
+  if (rest === null) {
     return fail('CARD_NOT_IN_HAND');
   }
 
@@ -47,7 +48,7 @@ export function applyDefend(
 
   const next: DurakState = {
     ...state,
-    hands: { ...state.hands, [userId]: removeCard(hand, card) },
+    hands: { ...state.hands, [userId]: rest },
     table,
     passedSeats: [],
     activeSeat: state.attackerSeat,

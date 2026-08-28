@@ -88,6 +88,13 @@ export class ConnectionService {
     void this.recordVisit(profile.userId, socket);
   }
 
+  async sendProfile(socket: Socket, userId: string): Promise<void> {
+    this.registry.send(socket, {
+      type: 'profile:updated',
+      payload: { profile: await this.sessions.reload(userId) }
+    });
+  }
+
   restoreTable(userId: string): void {
     const room = this.rooms.getRoomOfUser(userId);
 
@@ -95,6 +102,7 @@ export class ConnectionService {
       return;
     }
 
+    this.rooms.handleReconnect(userId);
     room.reconnect(userId);
 
     this.broadcast.tableJoined(userId, room.id);

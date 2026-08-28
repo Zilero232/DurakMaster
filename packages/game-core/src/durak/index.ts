@@ -1,2 +1,2 @@
 export { durakModule } from './module';
-export { beats, isLegalAttackCard } from './rules';
+export { beats, canThrowIn, isLegalAttackCard } from './rules';

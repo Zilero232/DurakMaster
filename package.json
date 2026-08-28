@@ -19,13 +19,16 @@
     "prebuild": "bun --filter @durak-master/mobile prebuild",
     "build": "bun --filter @durak-master/server build && bun --filter @durak-master/mobile build:web",
     "typecheck": "bun --filter @durak-master/schemas typecheck && bun --filter @durak-master/game-core typecheck && bun --filter @durak-master/platform typecheck && bun --filter @durak-master/server typecheck && bun --filter @durak-master/mobile typecheck",
-    "test": "bun --filter @durak-master/game-core test",
+    "test": "vitest run",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "verify": "bun run typecheck && bun run test && bun run lint && bun run format:check",
-    "fix": "bun run lint:fix && bun run format"
+    "verify": "bun run typecheck && bun run test && bun run lint && bun run lint:fsd && bun run format:check",
+    "fix": "bun run lint:fix && bun run format",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint:fsd": "steiger ./apps/mobile"
   },
   "lint-staged": {
     "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": [
@@ -35,14 +38,18 @@
     "*.{json,md,yml,yaml}": "prettier --write"
   },
   "devDependencies": {
+    "@feature-sliced/steiger-plugin": "^0.7.0",
     "@siberiacancode/eslint": "^2.18.1",
     "@siberiacancode/prettier": "^1.9.0",
     "@siberiacancode/tsconfig": "^1.2.0",
+    "@vitest/coverage-v8": "^4.1.11",
     "eslint": "^10.9.1",
     "fkill-cli": "^9.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.3.0",
     "prettier": "^3.9.6",
-    "typescript": "6.0.3"
+    "steiger": "^0.6.0",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.11"
   }
 }

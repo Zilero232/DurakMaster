@@ -17,5 +17,6 @@ export const INITIAL_STATE: SessionState = {
   lastErrorCode: null,
   lastError: null,
   rejectedCode: null,
+  revealed: null,
   selectedTableCardKey: null
 };

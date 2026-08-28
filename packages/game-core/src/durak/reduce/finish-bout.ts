@@ -39,7 +39,7 @@ export function finishBout(state: DurakState, options: FinishBoutOptions): Durak
         continue;
       }
 
-      const drawn = talon.pop();
+      const drawn = talon.shift();
 
       if (drawn) {
         hand.push(drawn);

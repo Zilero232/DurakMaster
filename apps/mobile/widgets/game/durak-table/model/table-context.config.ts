@@ -13,12 +13,14 @@ export const EMPTY_TABLE_CONTEXT: TableContextValue = {
     hasFreeSeat: false,
     canPass: false,
     canTake: false,
+    canUndo: false,
     turnSeconds: 0,
     playableKeys: new Set(),
     selectedKey: null
   },
   drag: {
     dropZones: [],
+    onZonesChange: noop,
     onDropOn: noop,
     onDropMiss: noop,
     onHover: noop,

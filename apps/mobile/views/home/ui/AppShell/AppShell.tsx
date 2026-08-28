@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useSessionStore } from '@/entities/session';
 import { SignInForm } from '@/features/auth/sign-in';
+import { SignOutConfirm, useSignOut } from '@/features/auth/sign-out';
 import { useLayout } from '@/shared/model/layout';
 import { ContentWidth, DESKTOP_MAX_WIDTH, LobbyBackground } from '@/ui-kit';
 
@@ -21,6 +22,7 @@ export const AppShell = () => {
   const { isPending, session, status } = useLobbyConnection();
   const { tables, isPasswordPromptOpen, join, confirmPassword, cancelPassword } = useTableJoin();
   const panels = useShellPanels();
+  const signOut = useSignOut();
 
   const profile = useSessionStore((store) => store.profile);
   const createTable = useSessionStore((store) => store.createTable);
@@ -39,7 +41,7 @@ export const AppShell = () => {
   return (
     <LobbyBackground style={[styles.root, { paddingTop: insets.top }]}>
       <ContentWidth maxWidth={isDesktop ? DESKTOP_MAX_WIDTH : undefined} style={styles.column}>
-        <ShellChrome status={status} tab={tab} onChange={setTab}>
+        <ShellChrome status={status} tab={tab} onChange={setTab} onSignOut={signOut.request}>
           <ShellContent
             profile={profile}
             status={status}
@@ -67,6 +69,12 @@ export const AppShell = () => {
         onClosePanel={panels.close}
         onClosePasswordPrompt={cancelPassword}
         onSubmitPassword={confirmPassword}
+      />
+
+      <SignOutConfirm
+        isOpen={signOut.isConfirming}
+        onCancel={signOut.cancel}
+        onConfirm={signOut.confirm}
       />
 
       <View style={{ height: insets.bottom }} />

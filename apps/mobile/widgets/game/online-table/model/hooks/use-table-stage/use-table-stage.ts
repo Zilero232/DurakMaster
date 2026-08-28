@@ -4,10 +4,10 @@ import { useSessionStore } from '@/entities/session';
 
 type TableStage =
   | { kind: 'absent' }
-  | { kind: 'game'; game: Exclude<GameId, 'tysyacha'>; settings: TableSettings }
+  | { kind: 'game'; game: GameId; settings: TableSettings }
   | { kind: 'unsupported'; game: GameId };
 
-const SUPPORTED = new Set<GameId>(['durak', 'kozel', 'burkozel']);
+const SUPPORTED = new Set<GameId>(['durak', 'kozel', 'burkozel', 'tysyacha']);
 
 export const useTableStage = (): TableStage => {
   const currentTable = useSessionStore((store) => store.currentTable);
@@ -22,5 +22,5 @@ export const useTableStage = (): TableStage => {
     return { kind: 'unsupported', game: settings.game };
   }
 
-  return { kind: 'game', game: settings.game as Exclude<GameId, 'tysyacha'>, settings };
+  return { kind: 'game', game: settings.game, settings };
 };

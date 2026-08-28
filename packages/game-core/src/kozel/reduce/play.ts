@@ -2,11 +2,11 @@ import type { Card, KozelState } from '@durak-master/schemas';
 
 import type { KozelReduceResult } from './shared';
 
-import { cardsEqual, seatOf, withHandCounts } from '../../shared';
+import { cardsEqual, removeCard, seatOf, withHandCounts } from '../../shared';
 import { KOZEL_SEATS } from '../config';
 import { effectiveSuit, isTrump, legalCards } from '../rules';
 import { closeTrick } from './close-trick';
-import { fail, removeCard } from './shared';
+import { fail } from './shared';
 
 export const playCard = (state: KozelState, userId: string, card: Card): KozelReduceResult => {
   const seat = seatOf(state.players, userId);
