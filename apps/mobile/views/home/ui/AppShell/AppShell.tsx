@@ -51,13 +51,7 @@ export const AppShell = () => {
             onCreateTable={createTable}
             onGoToCreate={() => setTab('create')}
             onJoin={join}
-            onOpenAchievements={panels.open('achievements')}
-            onOpenFriends={panels.open('friends')}
-            onOpenLeaderboard={panels.open('leaderboard')}
-            onOpenProfileEditor={panels.open('profileEditor')}
-            onOpenRules={panels.open('rules')}
-            onOpenSettings={panels.open('settings')}
-            onOpenStats={panels.open('stats')}
+            onOpenPanel={panels.open}
           />
         </ShellChrome>
       </ContentWidth>

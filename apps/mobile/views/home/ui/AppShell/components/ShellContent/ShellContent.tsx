@@ -17,28 +17,12 @@ export const ShellContent = ({
   onCreateTable,
   onGoToCreate,
   onClaimBonus,
-  onOpenRules,
-  onOpenSettings,
-  onOpenStats,
-  onOpenFriends,
-  onOpenProfileEditor,
-  onOpenAchievements,
-  onOpenLeaderboard
+  onOpenPanel
 }: ShellContentProps) =>
   match(tab)
     .with('profile', () =>
       profile ? (
-        <ProfileTab
-          profile={profile}
-          onClaimBonus={onClaimBonus}
-          onOpenAchievements={onOpenAchievements}
-          onOpenFriends={onOpenFriends}
-          onOpenLeaderboard={onOpenLeaderboard}
-          onOpenProfileEditor={onOpenProfileEditor}
-          onOpenRules={onOpenRules}
-          onOpenSettings={onOpenSettings}
-          onOpenStats={onOpenStats}
-        />
+        <ProfileTab profile={profile} onClaimBonus={onClaimBonus} onOpenPanel={onOpenPanel} />
       ) : (
         <ProfileTabSkeleton />
       )

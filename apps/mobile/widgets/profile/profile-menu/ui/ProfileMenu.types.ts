@@ -1,22 +1,17 @@
 import type { LucideIcon } from 'lucide-react-native';
 
-export type ProfileMenuKey =
-  'achievements' | 'friends' | 'leaderboard' | 'rules' | 'settings' | 'share';
+export type ProfileMenuPanel = 'achievements' | 'friends' | 'leaderboard' | 'rules' | 'settings';
 
-export type ProfileMenuItem = {
+export type ProfileMenuKey = 'share' | ProfileMenuPanel;
+
+export type ProfileMenuEntry = {
   id: ProfileMenuKey;
   icon: LucideIcon;
-
   tint: string;
   badge?: string;
   isLocked?: boolean;
-  onPress?: () => void;
 };
 
 export type ProfileMenuProps = {
-  onOpenAchievements: () => void;
-  onOpenFriends: () => void;
-  onOpenLeaderboard: () => void;
-  onOpenRules: () => void;
-  onOpenSettings: () => void;
+  onOpenPanel: (panel: ProfileMenuPanel) => void;
 };

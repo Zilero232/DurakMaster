@@ -1,3 +1,8 @@
 export { ProfileMenu } from './ui/ProfileMenu';
 
-export type { ProfileMenuItem, ProfileMenuKey, ProfileMenuProps } from './ui/ProfileMenu.types';
+export type {
+  ProfileMenuEntry,
+  ProfileMenuKey,
+  ProfileMenuPanel,
+  ProfileMenuProps
+} from './ui/ProfileMenu.types';

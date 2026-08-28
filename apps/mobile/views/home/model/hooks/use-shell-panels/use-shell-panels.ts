@@ -8,8 +8,7 @@ export const useShellPanels = () => {
 
   return {
     panel,
-    open: (next: ShellPanel) => () => setPanel(next),
-    close: () => setPanel(null),
-    isOpen: (name: ShellPanel) => panel === name
+    open: (next: ShellPanel) => setPanel(next),
+    close: () => setPanel(null)
   };
 };

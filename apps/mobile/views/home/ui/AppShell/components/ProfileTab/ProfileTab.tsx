@@ -9,34 +9,20 @@ import type { ProfileTabProps } from './ProfileTab.types';
 
 import { styles } from './ProfileTab.styles';
 
-export const ProfileTab = ({
-  profile,
-  onClaimBonus,
-  onOpenRules,
-  onOpenSettings,
-  onOpenStats,
-  onOpenFriends,
-  onOpenProfileEditor,
-  onOpenAchievements,
-  onOpenLeaderboard
-}: ProfileTabProps) => {
+export const ProfileTab = ({ profile, onClaimBonus, onOpenPanel }: ProfileTabProps) => {
   const { isDesktop } = useLayout();
 
   const wallet = (
-    <WalletBar profile={profile} onClaimBonus={onClaimBonus} onEdit={onOpenProfileEditor} />
-  );
-
-  const summary = <ProfileSummary profile={profile} onOpenStats={onOpenStats} />;
-
-  const menu = (
-    <ProfileMenu
-      onOpenAchievements={onOpenAchievements}
-      onOpenFriends={onOpenFriends}
-      onOpenLeaderboard={onOpenLeaderboard}
-      onOpenRules={onOpenRules}
-      onOpenSettings={onOpenSettings}
+    <WalletBar
+      profile={profile}
+      onClaimBonus={onClaimBonus}
+      onEdit={() => onOpenPanel('profileEditor')}
     />
   );
+
+  const summary = <ProfileSummary profile={profile} onOpenStats={() => onOpenPanel('stats')} />;
+
+  const menu = <ProfileMenu onOpenPanel={onOpenPanel} />;
 
   return (
     <ScrollView

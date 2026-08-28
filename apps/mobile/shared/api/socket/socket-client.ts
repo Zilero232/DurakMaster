@@ -104,6 +104,10 @@ export class SocketClient {
   subscribeState(handler: SocketStateHandler): () => void {
     this.stateHandlers.add(handler);
 
+    if (this.socket) {
+      handler(this.socket.readyState === this.socket.OPEN ? 'open' : 'connecting');
+    }
+
     return () => this.stateHandlers.delete(handler);
   }
 

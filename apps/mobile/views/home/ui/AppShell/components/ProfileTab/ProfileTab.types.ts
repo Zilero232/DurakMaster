@@ -1,13 +1,9 @@
 import type { MyProfile } from '@durak-master/schemas';
 
+import type { ShellPanel } from '../../../../model';
+
 export type ProfileTabProps = {
   profile: MyProfile;
   onClaimBonus: () => void;
-  onOpenRules: () => void;
-  onOpenSettings: () => void;
-  onOpenStats: () => void;
-  onOpenFriends: () => void;
-  onOpenProfileEditor: () => void;
-  onOpenAchievements: () => void;
-  onOpenLeaderboard: () => void;
+  onOpenPanel: (panel: ShellPanel) => void;
 };
