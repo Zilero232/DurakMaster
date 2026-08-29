@@ -1,7 +1,7 @@
 {
   "name": "durak-master",
   "version": "1.0.0",
-  "description": "Online Durak — throw-in and transfer variants, 2-6 players, Android and web from one codebase",
+  "description": "Online Durak — throw-in and transfer variants, 2-6 players, Android, iOS and web from one codebase",
   "author": "Alexandr Artemev <zilero@dev.ru>",
   "repository": {
     "type": "git",

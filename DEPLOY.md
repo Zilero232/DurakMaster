@@ -2,12 +2,13 @@
 
 ## What runs where
 
-| Component     | Where       | Updated by        |
-| ------------- | ----------- | ----------------- |
-| Web client    | VPS, Caddy  | CI: `deploy.yml`  |
-| API + sockets | VPS, Docker | CI: `deploy.yml`  |
-| Database      | VPS, Docker | the same job      |
-| Android       | Google Play | CI: `release.yml` |
+| Component     | Where       | Updated by                                     |
+| ------------- | ----------- | ---------------------------------------------- |
+| Web client    | VPS, Caddy  | CI: `deploy.yml`                               |
+| API + sockets | VPS, Docker | CI: `deploy.yml`                               |
+| Database      | VPS, Docker | the same job                                   |
+| Android       | Google Play | CI: `release.yml`                              |
+| iOS           | App Store   | planned — EAS builds it, no submit profile yet |
 
 Everything is built in GitHub Actions and pushed to ghcr.io. **The VPS builds
 nothing** — it only pulls ready images.

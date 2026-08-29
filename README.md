@@ -1,7 +1,7 @@
 # DurakMaster
 
 Online Durak — throw-in and transfer variants, 2–6 players, 24/36/52-card decks.
-Android and web from a single codebase.
+Android, iOS and web from a single codebase.
 
 ## Stack
 
