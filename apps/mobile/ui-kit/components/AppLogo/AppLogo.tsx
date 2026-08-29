@@ -13,7 +13,7 @@ export const AppLogo = ({ size = 40, style }: AppLogoProps) => {
     <View style={[styles.root, style]}>
       <View style={styles.card} />
 
-      <SuitIcon color={colors.goldBright} size={size * 0.58} suit='spades' />
+      <SuitIcon color={colors.goldDeep} size={size * 0.58} style={styles.suit} suit='spades' />
     </View>
   );
 };

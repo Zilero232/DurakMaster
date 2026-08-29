@@ -14,11 +14,14 @@ export const createStyles = (size: number) =>
     },
 
     card: {
-      position: 'absolute',
       width: size * 0.62,
       height: size * 0.84,
       borderRadius: radii.xs,
       backgroundColor: colors.onFelt,
       transform: [{ rotate: CARD_TILT }, { translateX: size * 0.06 }]
+    },
+
+    suit: {
+      position: 'absolute'
     }
   });
