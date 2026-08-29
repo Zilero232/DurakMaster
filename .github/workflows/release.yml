@@ -13,11 +13,20 @@ on:
         type: boolean
         default: false
 
+# Never run two releases at once: EAS increments versionCode remotely, so a
+# parallel build would claim a number the other one expects.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 # prisma.config.ts resolves DIRECT_URL through env(), which throws when unset —
 # and bun install fires the server postinstall that runs prisma generate.
 env:
   DATABASE_URL: postgresql://placeholder
   DIRECT_URL: postgresql://placeholder
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -35,6 +44,13 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Cache the Bun store
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
 
       - name: Install dependencies
         run: bun install --frozen-lockfile

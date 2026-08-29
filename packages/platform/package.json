@@ -1,7 +1,9 @@
 {
   "name": "@durak-master/platform",
   "version": "0.0.0",
+  "description": "Native abstraction: purchases, push notifications, storage",
   "private": true,
+  "license": "UNLICENSED",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"

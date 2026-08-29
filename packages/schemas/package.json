@@ -2,7 +2,9 @@
   "name": "@durak-master/schemas",
   "type": "module",
   "version": "0.0.0",
+  "description": "Zod schemas shared by the client and the server",
   "private": true,
+  "license": "UNLICENSED",
   "main": "src/index.ts",
   "exports": {
     ".": "./src/index.ts"

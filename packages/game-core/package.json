@@ -2,7 +2,9 @@
   "name": "@durak-master/game-core",
   "type": "module",
   "version": "0.0.0",
+  "description": "Durak rules as pure functions — no transport, no database, no vendors",
   "private": true,
+  "license": "UNLICENSED",
   "main": "src/index.ts",
   "exports": {
     ".": "./src/index.ts"

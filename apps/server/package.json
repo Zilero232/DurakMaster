@@ -1,7 +1,9 @@
 {
   "name": "@durak-master/server",
   "version": "0.0.0",
+  "description": "NestJS API and the WebSocket gateway that owns every table",
   "private": true,
+  "license": "UNLICENSED",
   "type": "module",
   "main": "src/main.ts",
   "scripts": {

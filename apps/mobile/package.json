@@ -1,7 +1,9 @@
 {
   "name": "@durak-master/mobile",
   "version": "0.0.0",
+  "description": "Expo client — the same code ships to Android and the browser",
   "private": true,
+  "license": "UNLICENSED",
   "main": "expo-router/entry",
   "scripts": {
     "predev": "fkill :8081 --force --silent",

@@ -4,6 +4,8 @@ import { colors, radii } from '../../theme';
 
 const CARD_TILT = '-12deg';
 
+const CARD_SHIFT = 0.06;
+
 export const createStyles = (size: number) =>
   StyleSheet.create({
     root: {
@@ -18,10 +20,11 @@ export const createStyles = (size: number) =>
       height: size * 0.84,
       borderRadius: radii.xs,
       backgroundColor: colors.onFelt,
-      transform: [{ rotate: CARD_TILT }, { translateX: size * 0.06 }]
+      transform: [{ rotate: CARD_TILT }, { translateX: size * CARD_SHIFT }]
     },
 
     suit: {
-      position: 'absolute'
+      position: 'absolute',
+      transform: [{ translateX: size * CARD_SHIFT }]
     }
   });
