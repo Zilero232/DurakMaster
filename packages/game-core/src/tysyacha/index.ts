@@ -1,1 +1,0 @@
-export { tysyachaModule } from './module';

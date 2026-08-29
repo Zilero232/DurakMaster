@@ -1,8 +1,6 @@
 export { PROFILE_QUERY_KEY, useMyProfile } from './api';
 
-export { sendGameAction, useSessionStore } from './model';
-export type { ConnectionStatus, GameOutcome, SessionState } from './model';
-export { useBurkozelGame, useKozelGame, useOnlineGame, useTysyachaGame } from './model';
-export type { BurkozelGame, KozelGame, OnlineGame } from './model';
+export { sendGameAction, useOnlineGame, useSessionStore } from './model';
+export type { ConnectionStatus, GameOutcome, OnlineGame, SessionState } from './model';
 
 export { SessionNotices } from './ui/SessionNotices';

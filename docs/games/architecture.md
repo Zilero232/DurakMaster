@@ -1,13 +1,13 @@
 # Multi-game: how it works
 
-How four games live in one app without turning `game-core` into a dump of
+How several games live in one app without turning `game-core` into a dump of
 conditionals. Read before adding a new game.
 
 ---
 
 ## 1. What is shared and what is specific
 
-Shared by all four games:
+Shared by every game:
 
 | Shared | Where |
 |---|---|

@@ -1,5 +1,7 @@
 import type { GameId, TableSettings } from '@durak-master/schemas';
 
+import { GAME_IDS } from '@durak-master/schemas';
+
 import { useSessionStore } from '@/entities/session';
 
 type TableStage =
@@ -7,7 +9,7 @@ type TableStage =
   | { kind: 'game'; game: GameId; settings: TableSettings }
   | { kind: 'unsupported'; game: GameId };
 
-const SUPPORTED = new Set<GameId>(['durak', 'kozel', 'burkozel', 'tysyacha']);
+const SUPPORTED = new Set<GameId>(GAME_IDS);
 
 export const useTableStage = (): TableStage => {
   const currentTable = useSessionStore((store) => store.currentTable);

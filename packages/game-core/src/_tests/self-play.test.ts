@@ -1,6 +1,6 @@
 import type { GameCoreState, GameId } from '@durak-master/schemas';
 
-import { DEFAULT_TABLE_SETTINGS, PLAYER_RANGE_BY_GAME } from '@durak-master/schemas';
+import { DEFAULT_TABLE_SETTINGS, GAME_IDS, PLAYER_RANGE_BY_GAME } from '@durak-master/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { getGameModule } from '../registry';
@@ -74,7 +74,7 @@ const playOut = (game: GameId, players: number, seed: number): PlayResult => {
   return { isFinished: false, steps: STEP_LIMIT, stalledAt: state };
 };
 
-describe.each(['durak', 'burkozel', 'kozel', 'tysyacha'] as const)('%s self-play', (game) => {
+describe.each(GAME_IDS)('%s self-play', (game) => {
   const { min, max } = PLAYER_RANGE_BY_GAME[game];
 
   const seatCounts = Array.from({ length: max - min + 1 }, (_, index) => min + index);
@@ -91,7 +91,7 @@ describe.each(['durak', 'burkozel', 'kozel', 'tysyacha'] as const)('%s self-play
   });
 });
 
-describe.each(['durak', 'burkozel', 'kozel', 'tysyacha'] as const)('%s timeouts', (game) => {
+describe.each(GAME_IDS)('%s timeouts', (game) => {
   const { min, max } = PLAYER_RANGE_BY_GAME[game];
 
   const seatCounts = Array.from({ length: max - min + 1 }, (_, index) => min + index);

@@ -10,19 +10,14 @@ ones in the project: players notice them, not tests.
 | Game | Document | Rules | Table screen |
 |---|---|---|---|
 | Durak | [durak.md](./durak.md) | implemented | implemented |
-| Burkozel | [burkozel.md](./burkozel.md) | implemented | — |
-| Kozel | [kozel.md](./kozel.md) | implemented, [tested](../../packages/game-core/src/kozel) | — |
-| Tysyacha | [tysyacha.md](./tysyacha.md) | described | — |
 
-A game with implemented rules is playable through `game-core` and appears in the
-lobby, but until its table screen exists the client shows a placeholder.
 
-How the multi-game setup works — [architecture.md](./architecture.md): how four
+How the multi-game setup works — [architecture.md](./architecture.md): how several
 games live in one app without turning `game-core` into a dump of conditionals.
 
 ## What is shared
 
-All four games share one skeleton in `packages/game-core`:
+Every game shares one skeleton in `packages/game-core`:
 
 - deck, shuffle, rank comparison — `deck.ts`
 - cryptographic randomness arrives from outside as the `randomInt` parameter
@@ -48,7 +43,7 @@ What differs is the rules of the turn, tricks and scoring. What is shared goes i
 The first two steps are mandatory before any code. Implementing rules that are not
 on paper leads to arguments with players that there is no way to settle.
 
-**Games that run over several deals** (kozel, burkozel, tysyacha) finish a deal in
-the middle of a session and must deal again. A reducer stays pure and has no
-randomness, so the module exposes `startNextDeal(state, randomInt)` instead and
-the server calls it after every accepted action.
+A game that runs over several deals finishes a deal in the middle of a session and
+must deal again. A reducer stays pure and has no randomness, so the module exposes
+`startNextDeal(state, randomInt)` instead and the server calls it after every
+accepted action.

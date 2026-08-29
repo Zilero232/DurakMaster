@@ -2,11 +2,8 @@ import { useState } from 'react';
 import { match } from 'ts-pattern';
 
 import { useSessionStore } from '@/entities/session';
-import { BurkozelTable } from '@/widgets/game/burkozel-table';
 import { DurakTable } from '@/widgets/game/durak-table';
-import { KozelTable } from '@/widgets/game/kozel-table';
 import { SwipeToLeave, UnsupportedGame, useTableStage } from '@/widgets/game/online-table';
-import { TysyachaTable } from '@/widgets/game/tysyacha-table';
 import { PlayerCard } from '@/widgets/profile/player-card';
 
 export const TableRouter = () => {
@@ -22,20 +19,9 @@ export const TableRouter = () => {
     .with({ kind: 'unsupported' }, ({ game }) => (
       <UnsupportedGame game={game} onLeave={leaveTable} />
     ))
-    .with({ kind: 'game' }, ({ game, settings }) => (
+    .with({ kind: 'game' }, ({ settings }) => (
       <SwipeToLeave onLeave={leaveTable}>
-        {match(game)
-          .with('durak', () => (
-            <DurakTable
-              settings={settings}
-              onLeave={leaveTable}
-              onSelectPlayer={setSelectedUserId}
-            />
-          ))
-          .with('kozel', () => <KozelTable settings={settings} onLeave={leaveTable} />)
-          .with('burkozel', () => <BurkozelTable settings={settings} onLeave={leaveTable} />)
-          .with('tysyacha', () => <TysyachaTable settings={settings} onLeave={leaveTable} />)
-          .exhaustive()}
+        <DurakTable settings={settings} onLeave={leaveTable} onSelectPlayer={setSelectedUserId} />
 
         <PlayerCard
           isOpen={selectedUserId !== null}

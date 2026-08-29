@@ -27,7 +27,7 @@ packages/
 docs/
 ├── fsd.md           # Client architecture — read before structural edits
 ├── style.md         # Code style, import order, naming
-├── games/           # Game rules — source of truth for game-core (durak, burkozel, kozel, tysyacha)
+├── games/           # Game rules — source of truth for game-core (durak)
 └── play-store/      # Store release: listing, privacy, signing
 infra/               # Infrastructure configs
 ```

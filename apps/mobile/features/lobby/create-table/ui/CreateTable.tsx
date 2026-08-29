@@ -1,4 +1,3 @@
-import { Gamepad2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
 
@@ -8,13 +7,7 @@ import { Button } from '@/ui-kit';
 import type { CreateTableProps } from './CreateTable.types';
 
 import { useCreateTableForm } from '../model';
-import {
-  CommonSettings,
-  GamePicker,
-  GameSettings,
-  PrivacySection,
-  SettingsSection
-} from './components';
+import { CommonSettings, DurakSettings, PrivacySection } from './components';
 import { styles } from './CreateTable.styles';
 
 export const CreateTable = ({ onCreate }: CreateTableProps) => {
@@ -22,19 +15,13 @@ export const CreateTable = ({ onCreate }: CreateTableProps) => {
 
   const { isDesktop } = useLayout();
 
-  const { control, game, deckSize, isPrivate, canSubmit, selectGame, submit } = useCreateTableForm({
+  const { control, game, deckSize, isPrivate, canSubmit, submit } = useCreateTableForm({
     onCreate
   });
 
-  const picker = (
-    <SettingsSection icon={Gamepad2} title={t('games.pick')}>
-      <GamePicker value={game} onChange={selectGame} />
-    </SettingsSection>
-  );
-
   const common = <CommonSettings control={control} deckSize={deckSize} game={game} />;
 
-  const gameSettings = <GameSettings control={control} game={game} />;
+  const gameSettings = <DurakSettings control={control} />;
 
   const privacy = <PrivacySection control={control} isPrivate={isPrivate} />;
 
@@ -51,10 +38,7 @@ export const CreateTable = ({ onCreate }: CreateTableProps) => {
     >
       {isDesktop ? (
         <>
-          <View style={styles.column}>
-            {picker}
-            {common}
-          </View>
+          <View style={styles.column}>{common}</View>
 
           <View style={styles.column}>
             {gameSettings}
@@ -64,7 +48,6 @@ export const CreateTable = ({ onCreate }: CreateTableProps) => {
         </>
       ) : (
         <>
-          {picker}
           {common}
           {gameSettings}
           {privacy}

@@ -2,16 +2,10 @@ import { z } from 'zod';
 
 import type { GameId } from './game-id';
 
-import { burkozelActionSchema } from '../games/burkozel';
 import { durakActionSchema } from '../games/durak';
-import { kozelActionSchema } from '../games/kozel';
-import { tysyachaActionSchema } from '../games/tysyacha';
 
 export const gameActionSchema = z.discriminatedUnion('game', [
-  z.object({ game: z.literal('durak'), action: durakActionSchema }),
-  z.object({ game: z.literal('burkozel'), action: burkozelActionSchema }),
-  z.object({ game: z.literal('kozel'), action: kozelActionSchema }),
-  z.object({ game: z.literal('tysyacha'), action: tysyachaActionSchema })
+  z.object({ game: z.literal('durak'), action: durakActionSchema })
 ]);
 
 export type GameAction = z.infer<typeof gameActionSchema>;
@@ -49,9 +43,6 @@ export const gameErrorCodeSchema = z.enum([
   'NOTHING_TO_TAKE',
   'CANNOT_PASS_AS_DEFENDER',
 
-  'MUST_FOLLOW_SUIT',
-  'MUST_LEAD_PLAIN_SUIT',
-
   'ALREADY_FRIENDS',
   'ALREADY_CLAIMED',
   'CANNOT_FRIEND_SELF',
@@ -61,16 +52,6 @@ export const gameErrorCodeSchema = z.enum([
   'NOT_UNLOCKED',
   'REQUEST_NOT_FOUND',
   'USER_NOT_FOUND',
-  'NOT_YOUR_TEAM',
-  'SET_DOES_NOT_BEAT',
-  'CARD_COUNT_MISMATCH',
-  'COMBINATION_NOT_HELD',
-
-  'BID_TOO_LOW',
-  'BIDDING_CLOSED',
-  'MARRIAGE_NOT_HELD',
-  'MARRIAGE_REQUIRES_LEAD',
-  'MUST_DISCARD_TWO',
 
   'BONUS_NOT_READY',
   'BOTS_DISABLED',
