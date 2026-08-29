@@ -12,8 +12,7 @@ Run through this before every submission. Anything unticked is a reason not to s
 
 ## Before the first release
 
-- [ ] The domains in `apps/mobile/eas.json` are real and reachable — `api.durakmaster.com` and
-      `staging.durakmaster.com` are placeholders until they resolve
+- [ ] DNS for `durakmaster.ru`, `www` and `api` points at the VPS, and both resolve
 - [ ] The API is served over HTTPS; Android blocks cleartext HTTP by default
 - [ ] A Play Console app entry exists with package `com.durakmaster.app`
 - [ ] `EXPO_TOKEN` and `PLAY_SERVICE_ACCOUNT` are set as repository secrets

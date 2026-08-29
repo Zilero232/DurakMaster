@@ -1,0 +1,151 @@
+name: deploy
+
+# Builds the two images, pushes them to ghcr, then tells the VPS to pull and
+# restart. The VPS holds no clone of the repository — only docker-compose.yml
+# and a hand-written .env — so the compose file is copied on every deploy.
+#
+# Repository secrets — Settings → Secrets and variables → Actions:
+#   EXPO_PUBLIC_API_URL       baked into the web bundle at build time
+#   DEPLOY_SSH_HOST           the VPS
+#   DEPLOY_SSH_USER
+#   DEPLOY_SSH_KEY            private key — preferred
+#   DEPLOY_SSH_PASSWORD       only used when no key is set
+#   DEPLOY_PATH               where docker-compose.yml lives, e.g. /opt/durakmaster
+#
+# Actions are pinned to a commit SHA, not a tag: a moved tag would run unknown
+# code against the production host.
+
+# Manual only: production goes out when someone decides it does, not on every
+# commit that lands. Run it from Actions → deploy → Run workflow, on a commit
+# whose verify is already green.
+on:
+  workflow_dispatch:
+
+# Never cancel a half-finished deploy.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+# prisma.config.ts resolves DIRECT_URL through env(), which throws when unset.
+env:
+  DATABASE_URL: postgresql://placeholder
+  DIRECT_URL: postgresql://placeholder
+
+permissions: {}
+
+jobs:
+  images:
+    permissions:
+      contents: read
+      packages: write
+
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    outputs:
+      owner: ${{ steps.owner.outputs.value }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      # ghcr rejects an image name with capitals, and the owner may have them.
+      - name: Lowercase the image prefix
+        id: owner
+        run: echo "value=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4
+
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push the web image
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
+        with:
+          context: .
+          file: apps/mobile/Dockerfile
+          push: true
+          tags: ghcr.io/${{ steps.owner.outputs.value }}/durakmaster-web:latest
+          build-args: EXPO_PUBLIC_API_URL=${{ secrets.EXPO_PUBLIC_API_URL }}
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
+
+      - name: Build and push the server image
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
+        with:
+          context: .
+          file: apps/server/Dockerfile
+          push: true
+          tags: ghcr.io/${{ steps.owner.outputs.value }}/durakmaster-server:latest
+          cache-from: type=gha,scope=server
+          cache-to: type=gha,mode=max,scope=server
+
+  vps:
+    needs: images
+
+    permissions:
+      contents: read
+
+    # Attach protection rules and scope the deploy secrets to this environment.
+    environment: production
+
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Copy docker-compose.yml
+        uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1
+        with:
+          host: ${{ secrets.DEPLOY_SSH_HOST }}
+          username: ${{ secrets.DEPLOY_SSH_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
+          source: docker-compose.yml
+          target: ${{ secrets.DEPLOY_PATH }}
+
+      # The path travels as an env var rather than being interpolated into the
+      # script — expression interpolation inside a shell body is how injection
+      # gets in.
+      - name: Pull, restart, migrate
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        with:
+          host: ${{ secrets.DEPLOY_SSH_HOST }}
+          username: ${{ secrets.DEPLOY_SSH_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
+          envs: DEPLOY_PATH
+          script: |
+            set -euo pipefail
+            cd "$DEPLOY_PATH"
+            docker compose pull web server
+            docker compose up -d
+            docker image prune -f
+
+            # `up -d` returns as soon as the container starts, not once the app
+            # inside answers. The compose healthcheck already knows when the API
+            # is up, so wait on that before touching the database.
+            for attempt in $(seq 1 30); do
+              state=$(docker inspect -f '{{.State.Health.Status}}' durakmaster-server 2>/dev/null || echo missing)
+
+              [ "$state" = healthy ] && break
+
+              if [ "$attempt" = 30 ]; then
+                echo "server never became healthy (last state: $state)" >&2
+                docker compose logs --tail 50 server >&2
+                exit 1
+              fi
+
+              sleep 5
+            done
+
+            docker compose exec -T server bunx prisma migrate deploy

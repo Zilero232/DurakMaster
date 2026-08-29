@@ -1,0 +1,101 @@
+# DurakMaster production stack.
+#
+#   web       — the exported Expo bundle behind Caddy (serves the site, proxies
+#               the API subdomain, terminates HTTPS); the only public container
+#   server    — NestJS API and the WebSocket gateway, on Bun
+#   postgres  — self-hosted database
+#
+# The web and server images are built by CI and pushed to ghcr.io. The VPS builds
+# nothing — it pulls ready images and must be logged in to ghcr.io once
+# (see docs/deploy.md).
+#
+# The VPS does NOT hold a clone of the repository. Two files live side by side:
+#   docker-compose.yml  — copied here by CI on every deploy
+#   .env                — created once by hand with production values
+#
+# Pull latest & restart: docker compose pull && docker compose up -d
+# Logs:                  docker compose logs -f
+# Stop:                  docker compose down
+
+services:
+  web:
+    image: ghcr.io/zilero232/durakmaster-web:latest
+    container_name: durakmaster-web
+    restart: always
+    depends_on:
+      - server
+    ports:
+      # 80 is required for the Let's Encrypt HTTP challenge; 443 serves HTTPS.
+      - '80:80'
+      - '443:443'
+    volumes:
+      # Persists issued TLS certificates across restarts.
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - durakmaster
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: durakmaster-postgres
+    restart: always
+    # The postgres entrypoint reads POSTGRES_* directly from the env file.
+    env_file:
+      - ./.env
+    # Bound to loopback, never to 0.0.0.0: the server reaches Postgres over the
+    # compose network, and an external client tunnels in over SSH:
+    #   ssh -L 5433:localhost:5433 <vps>
+    # Publishing this on a public interface would not be covered by UFW — Docker
+    # writes its rules into FORWARD, so the port would stay open to the internet.
+    ports:
+      - '127.0.0.1:5433:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - durakmaster
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  server:
+    image: ghcr.io/zilero232/durakmaster-server:latest
+    container_name: durakmaster-server
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      # Sits next to this compose file on the VPS. Create it once from the root
+      # .env.example with production values.
+      - ./.env
+    expose:
+      - '4000'
+    volumes:
+      # Uploaded avatars are written to disk, so they must outlive the container.
+      - avatars:/app/apps/server/uploads
+    networks:
+      - durakmaster
+    healthcheck:
+      test:
+        - CMD
+        - bun
+        - -e
+        - "fetch('http://localhost:4000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  caddy_data:
+  caddy_config:
+  pgdata:
+  avatars:
+
+networks:
+  durakmaster:
+    driver: bridge

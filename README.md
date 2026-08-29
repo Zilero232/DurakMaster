@@ -1,87 +1,109 @@
 # DurakMaster
 
-Online Durak: throw-in and transfer variants, 2–6 players, 24/36/52-card decks.
-Android, iOS and web — from a single codebase.
+Online Durak — throw-in and transfer variants, 2–6 players, 24/36/52-card decks.
+Android and web from a single codebase.
 
 ## Stack
 
-| Layer               | Technology                                                                    |
-| ------------------- | ----------------------------------------------------------------------------- |
-| Client              | Expo SDK 57, React Native 0.86, Expo Router, TanStack Query, Zustand, i18next |
-| Table               | Native views + Reanimated (no canvas)                                         |
-| Realtime            | `partysocket` ↔ `ws` + `@nestjs/platform-ws`                                  |
-| API                 | NestJS 11 on Bun, Prisma 7, PostgreSQL, better-auth, nestjs-zod               |
-| Game rules          | `packages/game-core` — pure functions, no dependencies                        |
-| Table state         | In node memory, snapshotted to Postgres at turn boundaries                    |
-| Directory / pub-sub | Valkey                                                                        |
+| Layer       | Technology                                                                    |
+| ----------- | ----------------------------------------------------------------------------- |
+| Client      | Expo SDK 57, React Native 0.86, Expo Router, TanStack Query, Zustand, i18next |
+| Table       | Native views + Reanimated (no canvas)                                         |
+| Realtime    | `partysocket` ↔ `ws` + `@nestjs/platform-ws`                                  |
+| API         | NestJS 12 on Bun, Prisma 7, PostgreSQL, better-auth                           |
+| Game rules  | `packages/game-core` — pure functions, no dependencies                        |
+| Table state | In node memory, snapshotted to Postgres at turn boundaries                    |
 
-**Why one client for every platform.** The web build goes through
-`react-native-web` from the same code: a separate web frontend would mean two
-sets of screens that drift apart with every edit. There are no desktop builds.
+**One client for every platform.** The web build goes through `react-native-web`
+from the same source: a separate web frontend would mean two sets of screens that
+drift apart with every edit.
 
-**Why the table is not on a canvas.** Cards are two or three dozen simple views,
-animated by Reanimated on the UI thread. A canvas would require its own layout
-system, its own fonts and manual hit handling.
+**The table is not a canvas.** Cards are a few dozen plain views animated by
+Reanimated on the UI thread. A canvas would need its own layout system, its own
+fonts and manual hit testing.
 
-**Why cards are drawn in code.** They used to be 36 SVG files, with deck themes
-as CSS filters on top of them. React Native has no filters, so a card is
-assembled from views and a theme is a set of colors. Deck assets are no longer
-needed, and a card stays sharp at any screen density.
+**Cards are drawn in code.** They used to be 36 SVG files with deck themes as CSS
+filters. React Native has no filters, so a card is assembled from views and a
+theme is a set of colours — no deck assets, and a card stays sharp at any density.
 
-**The design system is a separate `ui-kit/` layer.** Every layer imports it, it
-imports none of them: the deck theme and press feedback arrive through contexts
-that the app fills in.
+**`ui-kit/` is a terminal layer.** Every layer imports it, it imports none of
+them: the deck theme and press feedback arrive through contexts the app fills in.
 
 ## Quick start
 
 ```bash
-bun install                                  # dependencies
-cp .env.example .env # fill in BETTER_AUTH_SECRET
-bun dev:infra                                # Postgres + Valkey + Mailpit
-bun --filter @durak-master/server db:migrate # DB schema
-bun dev                                      # server + Metro
+bun install
+cp .env.example .env                          # fill in BETTER_AUTH_SECRET
+bun dev:infra                                 # Postgres in Docker
+bun --filter @durak-master/server db:migrate  # database schema
+
+bun dev:server                                # API — one terminal
+bun dev:mobile                                # Expo — another, the QR code lives here
 ```
 
-Then press `i` for iOS, `a` for Android, `w` for the browser in the Metro terminal.
+Then press `a` for Android or `w` for the browser in the Metro terminal.
 
-Development mail: http://localhost:8025 (Mailpit).
+The two dev servers run separately on purpose: `bun --filter --parallel` prefixes
+every line with the package name, which mangles the ANSI art Expo draws its QR
+code with.
 
-In a debug build the server address is detected automatically from the host that
-Metro serves the bundle from. To set it manually — `EXPO_PUBLIC_API_URL` in
-`apps/mobile/.env`.
+In a debug build the API address is derived from the host serving the bundle. To
+pin it, set `EXPO_PUBLIC_API_URL`.
 
 ## Commands
 
 ```bash
-bun dev            # server + client
-bun android        # Android
-bun ios            # iOS
-bun web            # browser
-bun typecheck      # types across all packages
-bun lint:fix       # ESLint
-bun format         # Prettier
-bun verify         # types + lint + format
-bun prebuild       # native projects (android/, ios/)
+bun verify              # typecheck + tests + ESLint + Steiger + Prettier
+bun fix                 # ESLint --fix + Prettier --write
+
+bun test                # unit tests
+bun test:e2e            # Playwright against a running client and API
+bun test:e2e:shots      # walk every screen, save shots to e2e/.shots/
+
+bun android             # Android (needs an emulator or a device)
+bun ios                 # iOS
+bun web                 # browser
+bun prebuild            # native projects (android/, ios/)
 ```
 
-Table sounds — a ready-made Kenney set (CC0) in `apps/mobile/assets/sounds`.
+`bun verify` is what CI runs — keep it green.
 
 ## Structure
 
 ```text
 apps/
-├── mobile/     Expo client: app/ — Expo Router routes, ui-kit/ — design system, FSD layers at the root
+├── mobile/     Expo client: app/ — routes, ui-kit/ — design system, FSD layers at the root
 └── server/     NestJS API + game rooms
 packages/
-├── schemas/    Zod schemas, shared between client and server
-├── game-core/  Durak rules — pure, testable without the network
+├── schemas/    Zod schemas shared by client and server
+├── game-core/  Durak rules — pure, testable without a network
 └── platform/   native abstraction: purchases, push, storage
+e2e/            Playwright specs and the screenshot walk
+infra/          Caddy config for the production VPS
 docs/
-├── games/          game rules — source of truth
-├── fsd.md          client architecture
-├── style.md        code style
-└── play-store/     store release
+├── games/      game rules — the source of truth
+├── fsd.md      client architecture
+├── style.md    code style
+└── play-store/ store release
 ```
+
+## Testing
+
+| Level | Where                              | What it covers                            |
+| ----- | ---------------------------------- | ----------------------------------------- |
+| Rules | `packages/game-core/**/_tests`     | Beating, throw-ins, transfers, exit order |
+| Rules | `durak/_tests/rule-matrix.test.ts` | Every mode × deck × scope combination     |
+| Unit  | `apps/*/src/**/_tests`             | Pot splitting, room lifecycle, socket     |
+| E2E   | `e2e/*.spec.ts`                    | Sign-up, lobby, creating a table, a deal  |
+
+Game rules are where bugs cost the most — read [docs/games/durak.md](docs/games/durak.md)
+before touching `game-core`. Its checklist of typical mistakes is what the rule
+tests are built from.
+
+## Deployment
+
+- **Web and API** — [DEPLOY.md](DEPLOY.md): images to ghcr, a VPS behind Caddy
+- **Android** — [docs/play-store/](docs/play-store/README.md): EAS build, Google Play
 
 ## Documentation
 
@@ -89,7 +111,11 @@ docs/
 - [FSD](docs/fsd.md) — client architecture
 - [Code style](docs/style.md)
 - [CLAUDE.md](CLAUDE.md) — project invariants
+- [CONTRIBUTING.md](CONTRIBUTING.md) — how to work in this repository
+- [SECURITY.md](SECURITY.md) — reporting a vulnerability
+
+Table sounds are a Kenney set (CC0) in `apps/mobile/assets/sounds`.
 
 ## License
 
-Proprietary project.
+Proprietary — all rights reserved. See [LICENSE](LICENSE).

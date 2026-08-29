@@ -1,0 +1,72 @@
+# DurakMaster — Caddy config (runs on the VPS).
+#
+# Two site blocks share this VPS:
+#   durakmaster.ru      — the web client, an Expo export
+#   api.durakmaster.ru  — the NestJS API and its WebSocket gateway
+#
+# The client and the API live on different origins, so the server's CORS
+# middleware must allow https://durakmaster.ru (see CORS_ORIGINS in the server
+# .env). The same value gates the WebSocket handshake.
+#
+# Caddy obtains and renews a Let's Encrypt certificate automatically. For that:
+#   - A-records for durakmaster.ru, www.durakmaster.ru and api.durakmaster.ru
+#     point at this VPS
+#   - ports 80 and 443 are open on the firewall
+
+www.durakmaster.ru {
+	redir https://durakmaster.ru{uri} permanent
+}
+
+api.durakmaster.ru {
+	# The server container is not published to the host: it is reachable only
+	# inside the compose network, by service name.
+
+	# The game runs over this socket. Caddy upgrades it automatically, but the
+	# connection must never be buffered or compressed.
+	@ws path /ws*
+	reverse_proxy @ws server:4000 {
+		flush_interval -1
+	}
+
+	reverse_proxy server:4000
+
+	@compressible not path /ws*
+	encode @compressible gzip zstd
+
+	log {
+		output stdout
+		format console
+	}
+}
+
+durakmaster.ru {
+	root * /srv/www
+
+	encode gzip zstd
+
+	# Expo Router exports a single-page app: every unknown path is a client-side
+	# route and must fall back to index.html, or a refresh on /table 404s.
+	try_files {path} /index.html
+	file_server
+
+	# Hashed bundles never change under the same name; HTML must revalidate so a
+	# deploy is picked up on the next load.
+	@immutable path /_expo/static/*
+	header @immutable Cache-Control "public, max-age=31536000, immutable"
+
+	@html path *.html /
+	header @html Cache-Control "no-cache"
+
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}

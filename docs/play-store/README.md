@@ -5,7 +5,8 @@ Everything needed to publish DurakMaster on Google Play, in the order it is need
 | Document | What it holds |
 |---|---|
 | [listing.md](./listing.md) | Store listing copy, screenshots, graphic assets |
-| [privacy.md](./privacy.md) | Data safety answers and the privacy policy source |
+| [privacy.md](./privacy.md) | Data safety answers for the console |
+| [privacy-policy.md](./privacy-policy.md) | The policy text to publish at a public URL |
 | [signing.md](./signing.md) | Keystore, Play App Signing, service account |
 | [release-checklist.md](./release-checklist.md) | The pass to run before every submission |
 
