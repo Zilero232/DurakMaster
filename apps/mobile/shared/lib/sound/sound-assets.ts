@@ -6,6 +6,7 @@ export type SoundName =
   | 'lose'
   | 'pass'
   | 'play'
+  | 'ready'
   | 'shuffle'
   | 'take'
   | 'turn'
@@ -31,6 +32,7 @@ export const SOUND_SOURCES: Record<SoundName, number[]> = {
     require('../../../assets/sounds/play-2.ogg'),
     require('../../../assets/sounds/play-3.ogg')
   ],
+  ready: [require('../../../assets/sounds/ready.wav')],
   shuffle: [require('../../../assets/sounds/shuffle.ogg')],
   take: [require('../../../assets/sounds/take.ogg')],
   turn: [require('../../../assets/sounds/turn.ogg')],

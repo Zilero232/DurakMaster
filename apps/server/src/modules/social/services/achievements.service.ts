@@ -2,6 +2,7 @@ import type { AchievementId, AchievementState } from '@durak-master/schemas';
 
 import { ACHIEVEMENTS, getAchievement } from '@durak-master/schemas';
 import { Injectable, Logger } from '@nestjs/common';
+import { err, ok, Result } from 'neverthrow';
 
 import { PrismaService } from '../../../lib/prisma/prisma.service';
 
@@ -14,7 +15,9 @@ export type GameOutcomeFacts = {
   game: string;
 };
 
-export type ClaimResult = { coins: number } | { error: 'ALREADY_CLAIMED' | 'NOT_UNLOCKED' };
+export type ClaimError = 'ALREADY_CLAIMED' | 'NOT_UNLOCKED';
+
+export type ClaimResult = Result<{ coins: number }, ClaimError>;
 
 const ALREADY_CLAIMED = Symbol('ALREADY_CLAIMED');
 
@@ -95,7 +98,7 @@ export class AchievementsService {
     const entry = getAchievement(id);
 
     if (!entry) {
-      return { error: 'NOT_UNLOCKED' };
+      return err('NOT_UNLOCKED');
     }
 
     const row = await this.prisma.achievementProgress.findUnique({
@@ -103,11 +106,11 @@ export class AchievementsService {
     });
 
     if (!row?.unlockedAt) {
-      return { error: 'NOT_UNLOCKED' };
+      return err('NOT_UNLOCKED');
     }
 
     if (row.claimedAt) {
-      return { error: 'ALREADY_CLAIMED' };
+      return err('ALREADY_CLAIMED');
     }
 
     try {
@@ -128,15 +131,15 @@ export class AchievementsService {
       });
     } catch (error) {
       if (error === ALREADY_CLAIMED) {
-        return { error: 'ALREADY_CLAIMED' };
+        return err('ALREADY_CLAIMED');
       }
 
       this.logger.error(`Failed to pay out ${id} for ${userId}`, error);
 
-      return { error: 'NOT_UNLOCKED' };
+      return err('NOT_UNLOCKED');
     }
 
-    return { coins: entry.reward };
+    return ok({ coins: entry.reward });
   }
 
   private async increment(userId: string, id: AchievementId, by: number): Promise<boolean> {

@@ -33,7 +33,9 @@ export const TableCenter = ({
         onZonesChange={drag.onZonesChange}
       />
 
-      <DiscardStack count={view.discardCount} />
+      <View style={styles.discard}>
+        <DiscardStack count={view.discardCount} />
+      </View>
     </View>
   );
 };

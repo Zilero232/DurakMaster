@@ -1,6 +1,6 @@
 export { createIdleView } from './lib';
 export type { CardMetrics, DropZone } from './model';
-export { useCardSize, useTableChatter } from './model';
+export { useCardSize, useReadyPrompt, useTableChatter } from './model';
 export { BoostBar } from './ui/components/BoostBar';
 
 export type { BoostBarProps } from './ui/components/BoostBar';
@@ -27,21 +27,13 @@ export type { Chatter, SeatChatterProps } from './ui/components/SeatChatter';
 export { SeatTimer } from './ui/components/SeatTimer';
 
 export type { SeatTimerProps } from './ui/components/SeatTimer';
-export { TableBar } from './ui/components/TableBar';
 
-export type { TableBarProps } from './ui/components/TableBar';
 export { TableField } from './ui/components/TableField';
 
 export type { TableFieldProps } from './ui/components/TableField';
 export { TalonStack } from './ui/components/TalonStack';
 
 export type { TalonStackProps } from './ui/components/TalonStack';
-
-export { TrickField } from './ui/components/TrickField';
-export type { TrickFieldProps, TrickPlay } from './ui/components/TrickField';
-
-export { TrickSeats } from './ui/components/TrickSeats';
-export type { TrickSeatsProps } from './ui/components/TrickSeats';
 
 export { WalletChip } from './ui/components/WalletChip';
 export type { WalletChipProps } from './ui/components/WalletChip';

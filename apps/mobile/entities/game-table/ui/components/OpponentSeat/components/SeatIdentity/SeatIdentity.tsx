@@ -41,7 +41,7 @@ export const SeatIdentity = ({
           <SeatTimer deadline={turnDeadline} size={seat.ring} totalSeconds={turnSeconds} />
         )}
 
-        <SeatChatter chatter={phrase} size={seat.avatar} />
+        <SeatChatter chatter={phrase} placement='below' size={seat.avatar} />
 
         {isLoser && <LoserHat size={seat.hat} style={styles.hat} />}
 

@@ -254,21 +254,25 @@ export class RealtimeGateway
       return;
     }
 
-    if (input.boost === 'undoMove' && !room.undoLastMove(userId)) {
-      this.registry.send(socket, {
-        type: 'error',
-        payload: { message: 'Nothing to take back', code: 'INVALID_ACTION_FOR_PHASE' }
-      });
+    const price = BOOST_PRICE[input.boost];
 
-      return;
-    }
-
-    const coins = await this.profiles.spendCoins(userId, BOOST_PRICE[input.boost]);
+    const coins = await this.profiles.spendCoins(userId, price);
 
     if (coins === null) {
       this.registry.send(socket, {
         type: 'error',
         payload: { message: 'Not enough coins', code: 'NOT_ENOUGH_COINS' }
+      });
+
+      return;
+    }
+
+    if (input.boost === 'undoMove' && !room.undoLastMove(userId)) {
+      await this.profiles.refundCoins(userId, price);
+
+      this.registry.send(socket, {
+        type: 'error',
+        payload: { message: 'Nothing to take back', code: 'INVALID_ACTION_FOR_PHASE' }
       });
 
       return;

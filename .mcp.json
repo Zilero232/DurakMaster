@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "bunx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest",
+        "--browser",
+        "chromium",
+        "--allowed-origins",
+        "http://localhost:8081;http://localhost:4000"
+      ]
+    }
+  }
+}

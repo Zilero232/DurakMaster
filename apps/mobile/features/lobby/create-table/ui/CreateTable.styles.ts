@@ -4,7 +4,7 @@ import { spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
-    gap: spacing[5],
+    gap: spacing[3],
     padding: spacing[4],
     paddingBottom: spacing[8]
   },
@@ -16,12 +16,12 @@ export const styles = StyleSheet.create({
   columns: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: spacing[5]
+    gap: spacing[4]
   },
 
   column: {
     flex: 1,
-    gap: spacing[5],
+    gap: spacing[3],
     minWidth: 0
   }
 });

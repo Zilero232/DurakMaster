@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { COUNT_UP_MS, COUNT_UP_STEPS } from '../../../config';
 
 export const useCountUp = (target: number): number => {
-  const [value, setValue] = useState(target === 0 ? 0 : 0);
+  const [value, setValue] = useState(0);
   const [source, setSource] = useState(target);
 
   if (source !== target) {

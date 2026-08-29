@@ -8,6 +8,9 @@
     "playerFallback": "Игрок {{seat}}",
     "readyMark": "готов",
     "waitingMark": "ждёт",
+    "surrender": "Сдаться",
+    "surrenderTitle": "Сдаться?",
+    "surrenderHint": "Партия будет засчитана как поражение, ставка не вернётся",
     "leave": "Выйти",
     "yourTurn": "Ваш ход",
     "defend": "Отбивайтесь",
@@ -16,6 +19,7 @@
     "attackerTurn": "Ход за атакующим",
     "take": "Беру",
     "pass": "Бито",
+    "calledPass": "Пас",
     "transfer": "Перевести",
     "role": {
       "attacks": "атакует",

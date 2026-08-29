@@ -6,8 +6,10 @@ import type { CardTheme } from '../../theme';
 export type PlayingCardProps = {
   card: Card | null;
   isPlayable?: boolean;
+
+  /** Draws the accent ring — the move-hint setting decides whether the caller sets it. */
+  hasHint?: boolean;
   isSelected?: boolean;
-  isDimmed?: boolean;
   rotation?: number;
   width?: number;
   theme?: CardTheme;

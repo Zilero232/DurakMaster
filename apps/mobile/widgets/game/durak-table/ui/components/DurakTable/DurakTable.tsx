@@ -38,7 +38,7 @@ export const DurakTable = ({
           maxWidth={TABLE_MAX_WIDTH}
           style={[styles.table, { paddingTop: insets.top, paddingBottom: insets.bottom }]}
         >
-          <LeaveCorner onLeave={onLeave} />
+          <LeaveCorner isPlaying={!isWaiting} onLeave={onLeave} />
 
           <OpponentsRow
             loserUserId={game.outcome?.loserUserId ?? null}
@@ -71,6 +71,7 @@ export const DurakTable = ({
 
           {game.outcome && (
             <RewardBurst
+              key={`${game.outcome.creditsDelta}:${game.outcome.ratingDelta}`}
               creditsDelta={game.outcome.creditsDelta}
               ratingDelta={game.outcome.ratingDelta}
             />

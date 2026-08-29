@@ -62,12 +62,16 @@ bun install                # dependencies for all workspaces
 bun dev:infra              # Postgres + Valkey in Docker
 bun dev:server             # API — one terminal
 bun dev:mobile             # Expo — another terminal, this is where the QR code is
-bun typecheck              # type check across all packages
-bun lint:fix               # ESLint
+bun verify                 # typecheck + tests + ESLint + Steiger + Prettier
+bun fix                    # ESLint --fix + Prettier --write
+bun test:e2e               # Playwright against a running client and API
+bun test:e2e:shots         # walk every screen and save shots to e2e/.shots/
 bun android                # Android (needs a running emulator or device)
 bun ios                    # iOS
 bun web                    # browser
 ```
+
+Releasing to Google Play — [docs/play-store/](./docs/play-store/README.md).
 
 The two dev servers run in separate terminals on purpose: `bun --filter
 --parallel` prefixes every output line with the package name, which mangles the

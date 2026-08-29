@@ -5,11 +5,13 @@ import { borderWidth, colors, fontFamily, fontSize, radii, shadows, spacing } fr
 export const styles = StyleSheet.create({
   root: {
     position: 'absolute',
-    top: '38%',
-    left: 0,
+    top: 0,
     right: 0,
+    bottom: 0,
+    left: 0,
     zIndex: 20,
     alignItems: 'center',
+    justifyContent: 'center',
     pointerEvents: 'none'
   },
 

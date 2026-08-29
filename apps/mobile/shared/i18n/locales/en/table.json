@@ -8,6 +8,9 @@
     "playerFallback": "Player {{seat}}",
     "readyMark": "ready",
     "waitingMark": "waiting",
+    "surrender": "Surrender",
+    "surrenderTitle": "Surrender?",
+    "surrenderHint": "The deal counts as a loss and the bet is not returned",
     "leave": "Leave",
     "yourTurn": "Your turn",
     "defend": "Defend",
@@ -16,6 +19,7 @@
     "attackerTurn": "Attacker's turn",
     "take": "Take",
     "pass": "Done",
+    "calledPass": "Pass",
     "transfer": "Pass on",
     "role": {
       "attacks": "attacking",

@@ -54,9 +54,13 @@ apps/mobile/ios
 google-services.json
 GoogleService-Info.plist
 firebase-service-account.json
+infra/play-store/
 
 # Superpowers brainstorming artifacts (companion mockups, session state, specs)
 .superpowers/
 
 # Uploaded avatars
 uploads
+
+e2e/.shots/
+e2e/.results/

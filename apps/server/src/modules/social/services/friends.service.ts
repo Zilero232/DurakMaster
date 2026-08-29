@@ -2,6 +2,7 @@ import type { Friend, FriendList, PublicProfile } from '@durak-master/schemas';
 
 import { MAX_FRIENDS } from '@durak-master/schemas';
 import { Injectable } from '@nestjs/common';
+import { err, ok, Result } from 'neverthrow';
 
 import type { FriendshipStatus } from '../../../../generated/prisma/enums';
 
@@ -15,7 +16,7 @@ export type FriendError =
   | 'REQUEST_NOT_FOUND'
   | 'USER_NOT_FOUND';
 
-export type FriendResult = { error: FriendError } | { ok: true };
+export type FriendResult = Result<void, FriendError>;
 
 @Injectable()
 export class FriendsService {
@@ -97,23 +98,23 @@ export class FriendsService {
 
   async request(userId: string, targetId: string): Promise<FriendResult> {
     if (userId === targetId) {
-      return { error: 'CANNOT_FRIEND_SELF' };
+      return err('CANNOT_FRIEND_SELF');
     }
 
     const target = await this.prisma.user.findUnique({ where: { id: targetId } });
 
     if (!target) {
-      return { error: 'USER_NOT_FOUND' };
+      return err('USER_NOT_FOUND');
     }
 
     if ((await this.countFriends(userId)) >= MAX_FRIENDS) {
-      return { error: 'FRIEND_LIMIT_REACHED' };
+      return err('FRIEND_LIMIT_REACHED');
     }
 
     const existing = await this.findBetween(userId, targetId);
 
     if (existing?.status === 'ACCEPTED') {
-      return { error: 'ALREADY_FRIENDS' };
+      return err('ALREADY_FRIENDS');
     }
 
     if (existing && existing.addresseeId === userId) {
@@ -133,7 +134,7 @@ export class FriendsService {
           });
 
           if (concurrent?.status === 'ACCEPTED') {
-            return { error: 'ALREADY_FRIENDS' } as const;
+            return err('ALREADY_FRIENDS');
           }
 
           if (concurrent && concurrent.addresseeId === userId) {
@@ -142,7 +143,7 @@ export class FriendsService {
               data: { status: 'ACCEPTED', acceptedAt: new Date() }
             });
 
-            return { ok: true } as const;
+            return ok();
           }
 
           await tx.friendship.upsert({
@@ -151,11 +152,11 @@ export class FriendsService {
             update: { status: 'PENDING' }
           });
 
-          return { ok: true } as const;
+          return ok();
         },
         { isolationLevel: 'Serializable' }
       )
-      .catch(() => ({ ok: true }) as const);
+      .catch(() => ok());
   }
 
   async accept(userId: string, requesterId: string): Promise<FriendResult> {
@@ -164,7 +165,7 @@ export class FriendsService {
     });
 
     if (!row || row.status !== 'PENDING') {
-      return { error: 'REQUEST_NOT_FOUND' };
+      return err('REQUEST_NOT_FOUND');
     }
 
     await this.prisma.friendship.update({
@@ -172,7 +173,7 @@ export class FriendsService {
       data: { status: 'ACCEPTED', acceptedAt: new Date() }
     });
 
-    return { ok: true };
+    return ok();
   }
 
   async decline(userId: string, otherId: string): Promise<FriendResult> {
@@ -186,7 +187,7 @@ export class FriendsService {
       }
     });
 
-    return removed.count === 0 ? { error: 'REQUEST_NOT_FOUND' } : { ok: true };
+    return removed.count === 0 ? err('REQUEST_NOT_FOUND') : ok();
   }
 
   async remove(userId: string, otherId: string): Promise<FriendResult> {
@@ -200,7 +201,7 @@ export class FriendsService {
       }
     });
 
-    return removed.count === 0 ? { error: 'REQUEST_NOT_FOUND' } : { ok: true };
+    return removed.count === 0 ? err('REQUEST_NOT_FOUND') : ok();
   }
 
   async areFriends(userId: string, otherId: string): Promise<boolean> {

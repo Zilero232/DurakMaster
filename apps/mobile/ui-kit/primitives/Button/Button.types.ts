@@ -13,6 +13,9 @@ export type ButtonProps = {
 
   isLoading?: boolean;
   accessibilityLabel?: string;
+
+  /** Stable hook for end-to-end tests; labels move with the locale, this does not. */
+  testID?: string;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
 };

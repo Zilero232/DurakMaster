@@ -51,7 +51,7 @@ export class TableFlowService {
       return;
     }
 
-    this.rooms.leave(userId);
+    await this.leaveCurrentRoom(userId);
 
     if (!(await this.profiles.reserveStake(userId, payload.settings.bet))) {
       this.fail(socket, 'Not enough credits for this bet', 'NOT_ENOUGH_CREDITS');
@@ -141,16 +141,14 @@ export class TableFlowService {
     this.broadcast.lobby();
   }
 
-  async claimBonus(socket: Socket, userId: string): Promise<void> {
-    const profile = await this.profiles.claimFreeCredits(userId);
+  private async leaveCurrentRoom(userId: string): Promise<void> {
+    const room = this.rooms.getRoomOfUser(userId);
 
-    if (!profile) {
-      this.fail(socket, 'Bonus is not available yet', 'BONUS_NOT_READY');
-
-      return;
+    if (room && !room.isInMatch) {
+      await this.profiles.releaseStake(userId, room.settings.bet);
     }
 
-    this.registry.send(socket, { type: 'profile:updated', payload: { profile } });
+    this.rooms.leave(userId);
   }
 
   private fail(socket: Socket, message: string, code: GameErrorCode): void {

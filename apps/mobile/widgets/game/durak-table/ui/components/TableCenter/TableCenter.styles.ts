@@ -2,6 +2,8 @@ import { StyleSheet } from 'react-native';
 
 import { colors, fontFamily, fontSize, spacing } from '@/ui-kit';
 
+const DISCARD_PEEK = 52;
+
 export const styles = StyleSheet.create({
   root: {
     flex: 1,
@@ -10,6 +12,12 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing[2],
     paddingHorizontal: spacing[2]
+  },
+
+  discard: {
+    position: 'absolute',
+    right: -DISCARD_PEEK,
+    zIndex: 1
   },
 
   waiting: {

@@ -1,4 +1,5 @@
 import { Coins } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import Animated, { FadeOut, ZoomIn } from 'react-native-reanimated';
@@ -8,6 +9,7 @@ import { colors, iconSize } from '@/ui-kit';
 import type { RewardBurstProps } from './RewardBurst.types';
 
 import { useCountUp } from '../../../model';
+import { VISIBLE_MS } from './RewardBurst.config';
 import { styles } from './RewardBurst.styles';
 
 export const RewardBurst = ({ creditsDelta, ratingDelta }: RewardBurstProps) => {
@@ -15,7 +17,15 @@ export const RewardBurst = ({ creditsDelta, ratingDelta }: RewardBurstProps) => 
 
   const credits = useCountUp(creditsDelta);
 
-  if (creditsDelta === 0 && ratingDelta === 0) {
+  const [isHidden, setIsHidden] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(setIsHidden, VISIBLE_MS, true);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isHidden || (creditsDelta === 0 && ratingDelta === 0)) {
     return null;
   }
 

@@ -34,6 +34,10 @@ export const MAX_FAN_ANGLE = 18;
 
 export const CONTENT_MAX_WIDTH = 720;
 
+export const ICON_BUTTON_SIZE = 36;
+
+export const CONFIRM_MAX_WIDTH = 380;
+
 export const TOAST_MAX_WIDTH = 420;
 
 export const DESKTOP_MAX_WIDTH = 1440;

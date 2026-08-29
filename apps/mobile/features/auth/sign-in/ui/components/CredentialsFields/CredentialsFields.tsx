@@ -2,6 +2,8 @@ import { MAX_NAME_LENGTH } from '@durak-master/schemas';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { TEST_ID } from '@/shared/config';
+
 import type { CredentialsFieldsProps } from './CredentialsFields.types';
 
 import { FormField } from '../FormField';
@@ -41,6 +43,7 @@ export const CredentialsFields = ({ control, errors, mode, onSubmit }: Credentia
             error={errors.email?.message && t(errors.email.message as never)}
             keyboardType='email-address'
             label={t('auth.email')}
+            testID={TEST_ID.auth.email}
             textContentType='emailAddress'
             value={field.value}
             onBlur={field.onBlur}
@@ -60,6 +63,7 @@ export const CredentialsFields = ({ control, errors, mode, onSubmit }: Credentia
             error={errors.password?.message && t(errors.password.message as never)}
             label={t('auth.password')}
             returnKeyType='go'
+            testID={TEST_ID.auth.password}
             textContentType={isSignIn ? 'password' : 'newPassword'}
             value={field.value}
             onBlur={field.onBlur}

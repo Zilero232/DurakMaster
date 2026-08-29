@@ -1,5 +1,7 @@
 import type { ServerMessage } from '@durak-master/schemas';
 
+import { cardKey } from '@durak-master/game-core';
+
 import type { SessionState } from './session-store.types';
 
 import { PHRASE_HISTORY_LIMIT } from './session-store.config';
@@ -67,7 +69,7 @@ export const reduceServerMessage = (
       const stillHeld =
         state.selectedTableCardKey !== null &&
         'hand' in view &&
-        view.hand.some((card) => `${card.rank}:${card.suit}` === state.selectedTableCardKey);
+        view.hand.some((card) => cardKey(card) === state.selectedTableCardKey);
 
       return {
         view,

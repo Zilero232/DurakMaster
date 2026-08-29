@@ -48,7 +48,14 @@ export const styles = StyleSheet.create({
     color: colors.onFeltMuted
   },
 
+  footerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2]
+  },
+
   signOut: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[3],

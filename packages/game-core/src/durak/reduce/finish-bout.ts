@@ -79,12 +79,17 @@ export function finishBout(state: DurakState, options: FinishBoutOptions): Durak
   if (active.length === 0) {
     const lastDefender = state.players.find((player) => player.seat === state.defenderSeat);
 
+    const loserUserId = state.rules.allowDraw ? null : (lastDefender?.userId ?? null);
+
     return {
       ...base,
       phase: 'finished',
       isTaking: false,
       isDraw: state.rules.allowDraw,
-      loserUserId: state.rules.allowDraw ? null : (lastDefender?.userId ?? null),
+      loserUserId,
+      players: players.map((player) =>
+        player.userId === loserUserId ? { ...player, outPlace: null } : player
+      ),
       trumpCard: talon.length > 0 ? base.trumpCard : null
     };
   }

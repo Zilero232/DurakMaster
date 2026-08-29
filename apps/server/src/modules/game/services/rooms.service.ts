@@ -171,24 +171,4 @@ export class RoomsService implements OnModuleDestroy {
         return b.createdAt - a.createdAt;
       });
   }
-
-  listAllRooms(): GameRoom[] {
-    return [...this.rooms.values()];
-  }
-
-  removeRoom(roomId: string): void {
-    const room = this.rooms.get(roomId);
-
-    if (!room) {
-      return;
-    }
-
-    room.clearTimers();
-
-    for (const member of room.getMembers()) {
-      this.userRoom.delete(member.profile.userId);
-    }
-
-    this.rooms.delete(roomId);
-  }
 }

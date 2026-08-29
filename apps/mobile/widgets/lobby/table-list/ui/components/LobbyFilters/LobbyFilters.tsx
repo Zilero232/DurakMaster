@@ -4,7 +4,7 @@ import { ScrollView, Text, View } from 'react-native';
 
 import type { LobbyFiltersProps } from './LobbyFilters.types';
 
-import { GAME_ICONS } from '../TableBadges/TableBadges.config';
+import { GAME_ICONS } from '../TableBadges';
 import { FilterChip } from './components';
 import { BET_OPTIONS, GAME_OPTIONS } from './LobbyFilters.config';
 import { styles } from './LobbyFilters.styles';

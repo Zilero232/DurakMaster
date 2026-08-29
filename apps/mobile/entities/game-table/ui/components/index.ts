@@ -17,11 +17,5 @@ export type { TableFieldProps } from './TableField';
 export { TalonStack } from './TalonStack';
 export type { TalonStackProps } from './TalonStack';
 
-export { TrickField } from './TrickField';
-export type { TrickFieldProps, TrickPlay } from './TrickField';
-
-export { TrickSeats } from './TrickSeats';
-export type { TrickSeatsProps } from './TrickSeats';
-
 export { WalletChip } from './WalletChip';
 export type { WalletChipProps } from './WalletChip';

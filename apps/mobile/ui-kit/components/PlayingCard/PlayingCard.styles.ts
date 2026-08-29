@@ -26,10 +26,6 @@ const buildStyles = (width: number, theme: CardTheme) =>
       borderColor: theme.accent
     },
 
-    dimmed: {
-      backgroundColor: theme.faceDimmed
-    },
-
     playableRing: {
       pointerEvents: 'none',
       position: 'absolute',

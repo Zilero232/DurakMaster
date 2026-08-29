@@ -18,7 +18,6 @@ export const CARD_THEMES = [
     backPattern: '#6C5B96',
     backPatternSoft: '#4C3F6B',
     face: '#F7F4EF',
-    faceDimmed: '#D8D4CD',
     edge: '#8E8A83',
     accent: '#6C5B96',
     suits: twoColour('#C8102E', '#1A1A22')
@@ -29,7 +28,6 @@ export const CARD_THEMES = [
     backPattern: '#4FA3E3',
     backPatternSoft: '#376C94',
     face: '#F7F4EF',
-    faceDimmed: '#D8D4CD',
     edge: '#8E8A83',
     accent: '#4FA3E3',
 
@@ -46,7 +44,6 @@ export const CARD_THEMES = [
     backPattern: '#56D38E',
     backPatternSoft: '#35845C',
     face: '#F4FAF6',
-    faceDimmed: '#D5DED8',
     edge: '#8AA694',
     accent: '#56D38E',
     suits: twoColour('#C8102E', '#14342A')
@@ -57,7 +54,6 @@ export const CARD_THEMES = [
     backPattern: '#E0808F',
     backPatternSoft: '#954A58',
     face: '#FBF4F4',
-    faceDimmed: '#DCD3D3',
     edge: '#A98F8F',
     accent: '#E8543F',
     suits: twoColour('#B01029', '#2A1418')
@@ -68,7 +64,6 @@ export const CARD_THEMES = [
     backPattern: '#7C8894',
     backPatternSoft: '#4B535C',
     face: '#EEF1F4',
-    faceDimmed: '#D2D6DA',
     edge: '#8B949D',
     accent: colors.noirAccent,
 

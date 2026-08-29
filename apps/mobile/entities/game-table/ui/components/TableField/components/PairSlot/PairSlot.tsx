@@ -46,6 +46,7 @@ export const PairSlot = ({
         <View style={[styles.attack, canBeat && styles.beatable, isHovered && styles.hovered]}>
           <PlayingCard
             card={pair.attack}
+            hasHint={canBeat}
             isPlayable={canBeat}
             width={width}
             onPress={() => onDefend(index)}

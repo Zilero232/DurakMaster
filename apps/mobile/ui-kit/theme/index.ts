@@ -4,9 +4,11 @@ export type { CardTheme, CardThemeId, SuitPalette } from './card-themes';
 export {
   CARD_SCALE,
   cardSize,
+  CONFIRM_MAX_WIDTH,
   CONTENT_MAX_WIDTH,
   DESKTOP_MAX_WIDTH,
   getCardSize,
+  ICON_BUTTON_SIZE,
   MAX_FAN_ANGLE,
   screen,
   TABLE_MAX_WIDTH,

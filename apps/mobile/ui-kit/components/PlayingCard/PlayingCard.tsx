@@ -11,8 +11,8 @@ import { createStyles, getSelectedLift } from './PlayingCard.styles';
 export const PlayingCard = ({
   card,
   isPlayable = false,
+  hasHint = false,
   isSelected = false,
-  isDimmed = false,
   rotation = 0,
   width = cardSize.width,
   theme: themeOverride,
@@ -32,7 +32,6 @@ export const PlayingCard = ({
 
   const rootStyle = [
     styles.root,
-    isDimmed && styles.dimmed,
     isSelected && styles.selected,
     {
       transform: [
@@ -51,7 +50,7 @@ export const PlayingCard = ({
         <CardBack theme={theme} width={width} />
       )}
 
-      {isPlayable && <View style={styles.playableRing} />}
+      {hasHint && <View style={styles.playableRing} />}
     </>
   );
 

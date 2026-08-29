@@ -8,7 +8,7 @@ export type DraggableCardProps = {
 
   width: number;
   isPlayable: boolean;
-  isDimmed: boolean;
+  hasHint: boolean;
   isSelected: boolean;
 
   dropZones: DropZone[];

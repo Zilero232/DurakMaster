@@ -106,6 +106,17 @@ export class ProfilesService {
     return profile?.coins ?? null;
   }
 
+  async refundCoins(userId: string, amount: number): Promise<void> {
+    if (amount <= 0) {
+      return;
+    }
+
+    await this.prisma.profile.updateMany({
+      where: { userId },
+      data: { coins: { increment: amount } }
+    });
+  }
+
   async applyGameResult(input: {
     userId: string;
     creditsDelta: number;
@@ -156,15 +167,6 @@ export class ProfilesService {
       where: { userId },
       data: { credits: { increment: BigInt(bet) } }
     });
-  }
-
-  async canAfford(userId: string, bet: number): Promise<boolean> {
-    const profile = await this.prisma.profile.findUnique({
-      where: { userId },
-      select: { credits: true }
-    });
-
-    return profile !== null && profile.credits >= BigInt(bet);
   }
 
   async claimFreeCredits(userId: string): Promise<MyProfile | null> {

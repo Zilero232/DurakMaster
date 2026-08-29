@@ -14,9 +14,8 @@ export const styles = StyleSheet.create({
   bubble: {
     pointerEvents: 'none',
     position: 'absolute',
-    bottom: '100%',
     alignSelf: 'center',
-    marginBottom: spacing[2],
+    zIndex: 5,
 
     minWidth: 120,
     maxWidth: 260,
@@ -25,6 +24,16 @@ export const styles = StyleSheet.create({
     borderRadius: radii.md,
     backgroundColor: colors.surface1,
     ...shadows.cardRaised
+  },
+
+  above: {
+    bottom: '100%',
+    marginBottom: spacing[2]
+  },
+
+  below: {
+    top: '100%',
+    marginTop: spacing[2]
   },
 
   bubbleText: {

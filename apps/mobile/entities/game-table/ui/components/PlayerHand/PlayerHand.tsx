@@ -58,7 +58,7 @@ export const PlayerHand = ({
               <DraggableCard
                 card={card}
                 dropZones={dropZones}
-                isDimmed={hasHints && playableKeys.size > 0 && !playableKeys.has(key)}
+                hasHint={hasHints && playableKeys.has(key)}
                 isPlayable={playableKeys.has(key)}
                 isSelected={selectedKeys ? selectedKeys.has(key) : selectedKey === key}
                 rotation={offset * MAX_FAN_ANGLE}

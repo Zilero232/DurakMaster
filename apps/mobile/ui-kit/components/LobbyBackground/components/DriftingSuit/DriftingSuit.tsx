@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import Animated, {
+  cancelAnimation,
   Easing,
   useAnimatedStyle,
   useSharedValue,
@@ -13,16 +14,17 @@ import type { DriftingSuitProps } from './DriftingSuit.types';
 
 import { SuitIcon } from '../../../../icons';
 import { colors } from '../../../../theme';
-import { DRIFT_DISTANCE, DRIFT_MS, TILT_DEGREES } from './DriftingSuit.config';
+import { DRIFT_DISTANCE, DRIFT_MS, DRIFT_SWAY, TILT_DEGREES } from './DriftingSuit.config';
 import { styles } from './DriftingSuit.styles';
-
-const AnimatedSuit = Animated.createAnimatedComponent(SuitIcon);
 
 export const DriftingSuit = ({ mark, top, left, isStatic }: DriftingSuitProps) => {
   const progress = useSharedValue(0);
 
   useEffect(() => {
     if (isStatic) {
+      cancelAnimation(progress);
+      progress.value = withTiming(0, { duration: DRIFT_MS / 4 });
+
       return;
     }
 
@@ -42,22 +44,20 @@ export const DriftingSuit = ({ mark, top, left, isStatic }: DriftingSuitProps) =
   }, [isStatic, mark.delay, mark.speed, progress]);
 
   const drift = useAnimatedStyle(() => {
-    const shift = progress.value * DRIFT_DISTANCE * mark.direction;
+    const eased = progress.value * mark.direction;
 
     return {
       transform: [
-        { translateY: shift },
-        { rotate: `${mark.rotate + progress.value * TILT_DEGREES * mark.direction}deg` }
+        { translateY: eased * DRIFT_DISTANCE },
+        { translateX: eased * DRIFT_SWAY },
+        { rotate: `${mark.rotate + eased * TILT_DEGREES}deg` }
       ]
     };
   });
 
   return (
-    <AnimatedSuit
-      color={colors.foreground}
-      size={mark.size}
-      style={[styles.mark, { top, left, opacity: mark.opacity }, drift]}
-      suit={mark.suit}
-    />
+    <Animated.View style={[styles.mark, { top, left, opacity: mark.opacity }, drift]}>
+      <SuitIcon color={colors.foreground} size={mark.size} suit={mark.suit} />
+    </Animated.View>
   );
 };

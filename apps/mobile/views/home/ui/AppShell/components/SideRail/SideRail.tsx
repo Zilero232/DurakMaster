@@ -2,6 +2,7 @@ import { LogOut } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
+import { TEST_ID } from '@/shared/config';
 import { LanguageSwitch } from '@/shared/i18n';
 import { colors, iconSize } from '@/ui-kit';
 
@@ -28,6 +29,7 @@ export const SideRail = ({ tab, status, onChange, onSignOut }: SideRailProps) =>
             isActive={tab === id}
             label={t(labelKey)}
             suit={suit}
+            testID={TEST_ID.nav.tab(id)}
             onPress={() => onChange(id)}
           />
         ))}
@@ -40,17 +42,19 @@ export const SideRail = ({ tab, status, onChange, onSignOut }: SideRailProps) =>
           </Text>
         )}
 
-        <LanguageSwitch />
+        <View style={styles.footerRow}>
+          <Pressable
+            accessibilityRole='button'
+            style={({ pressed }) => [styles.signOut, pressed && styles.signOutPressed]}
+            onPress={onSignOut}
+          >
+            <LogOut color={colors.onFelt} size={iconSize.md} />
 
-        <Pressable
-          accessibilityRole='button'
-          style={({ pressed }) => [styles.signOut, pressed && styles.signOutPressed]}
-          onPress={onSignOut}
-        >
-          <LogOut color={colors.onFelt} size={iconSize.md} />
+            <Text style={styles.signOutLabel}>{t('auth.signOut')}</Text>
+          </Pressable>
 
-          <Text style={styles.signOutLabel}>{t('auth.signOut')}</Text>
-        </Pressable>
+          <LanguageSwitch isSquared />
+        </View>
       </View>
     </View>
   );

@@ -13,7 +13,7 @@ const DIALOG_FROM_WIDTH = 768;
 
 const MAX_HEIGHT_RATIO = { dialog: 0.88, sheet: 0.92 } as const;
 
-export const Sheet = ({ isOpen, title, children, footer, onClose }: SheetProps) => {
+export const Sheet = ({ isOpen, title, children, footer, maxWidth, onClose }: SheetProps) => {
   const { t } = useTranslation();
 
   const insets = useSafeAreaInsets();
@@ -48,6 +48,7 @@ export const Sheet = ({ isOpen, title, children, footer, onClose }: SheetProps) 
         style={[
           styles.panel,
           isDialog ? styles.dialog : styles.sheet,
+          isDialog && maxWidth ? { maxWidth } : null,
           {
             maxHeight,
             paddingBottom: isDialog ? 16 : insets.bottom + 16

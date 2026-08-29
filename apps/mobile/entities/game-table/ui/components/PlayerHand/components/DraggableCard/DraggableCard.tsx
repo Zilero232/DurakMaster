@@ -13,7 +13,7 @@ export const DraggableCard = ({
   rotation,
   width,
   isPlayable,
-  isDimmed,
+  hasHint,
   isSelected,
   dropZones,
   onDropOn,
@@ -42,7 +42,7 @@ export const DraggableCard = ({
       <Animated.View style={[styles.root, dragStyle]}>
         <PlayingCard
           card={card}
-          isDimmed={isDimmed}
+          hasHint={hasHint}
           isPlayable={isPlayable}
           isSelected={isSelected}
           rotation={rotation}

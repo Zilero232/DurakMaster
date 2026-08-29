@@ -74,6 +74,12 @@ export class GameFlowService {
         });
         break;
 
+      case 'idle-removed':
+        void this.releaseIdlePlayers(roomId, event.userIds).catch((error: unknown) => {
+          this.logger.error(`Failed to release idle players in room ${roomId}`, error);
+        });
+        break;
+
       case 'phrase':
         this.broadcast.toRoom(roomId, {
           type: 'table:phrase',
@@ -104,6 +110,23 @@ export class GameFlowService {
     this.broadcast.lobby();
   }
 
+  private async releaseIdlePlayers(roomId: string, userIds: string[]): Promise<void> {
+    const bet = this.rooms.getRoom(roomId)?.settings.bet ?? 0;
+
+    for (const userId of userIds) {
+      await this.profiles.releaseStake(userId, bet);
+
+      const socket = this.registry.get(userId);
+
+      if (socket) {
+        this.registry.send(socket, { type: 'table:left' });
+      }
+    }
+
+    this.broadcast.table(roomId);
+    this.broadcast.lobby();
+  }
+
   private async finish(
     roomId: string,
     event: {
@@ -111,6 +134,7 @@ export class GameFlowService {
       isDraw: boolean;
       members: RoomMember[];
       outPlaces: Record<string, number>;
+      removedUserId?: string;
     }
   ): Promise<void> {
     const room = this.rooms.getRoom(roomId);
@@ -119,7 +143,7 @@ export class GameFlowService {
       return;
     }
 
-    const { loserUserId, isDraw, members, outPlaces } = event;
+    const { loserUserId, isDraw, members, outPlaces, removedUserId } = event;
     const { bet } = room.settings;
 
     const winners = members.filter(
@@ -179,6 +203,14 @@ export class GameFlowService {
       loserUserId,
       isDraw
     });
+
+    if (removedUserId) {
+      const socket = this.registry.get(removedUserId);
+
+      if (socket) {
+        this.registry.send(socket, { type: 'table:left' });
+      }
+    }
 
     this.broadcast.gameState(roomId);
     this.broadcast.table(roomId);

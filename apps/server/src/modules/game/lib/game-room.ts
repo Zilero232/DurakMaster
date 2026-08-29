@@ -20,7 +20,7 @@ import { randomInt, randomUUID } from 'node:crypto';
 
 import type { GameSession } from './game-session';
 
-import { isVisibleBotAction, MISSED_TURNS_LIMIT } from '../config';
+import { isVisibleBotAction, MISSED_TURNS_LIMIT, READY_TIMEOUT_MS } from '../config';
 import { createGameSession } from './game-session';
 import { nextFreeSeat } from './next-free-seat';
 import { RoomChatter } from './room-chatter';
@@ -55,7 +55,9 @@ export type RoomEvent =
       isDraw: boolean;
       members: RoomMember[];
       outPlaces: Record<string, number>;
+      removedUserId?: string;
     }
+  | { type: 'idle-removed'; userIds: string[] }
   | { type: 'phrase'; phrase: TablePhrase }
   | { type: 'state-changed' };
 
@@ -74,7 +76,8 @@ export class GameRoom {
 
   private readonly timers = new RoomTimers({
     onTurnTimeout: () => this.handleTurnTimeout(),
-    onBotTurn: () => this.handleBotTurn()
+    onBotTurn: () => this.handleBotTurn(),
+    onReadyTimeout: () => this.handleReadyTimeout()
   });
 
   constructor(
@@ -128,6 +131,8 @@ export class GameRoom {
     };
 
     this.members.set(profile.userId, member);
+
+    this.scheduleReadyTimer();
 
     if (!isBot) {
       this.ownerId ??= profile.userId;
@@ -192,12 +197,15 @@ export class GameRoom {
       member.isReady = member.isBot;
     }
 
+    this.scheduleReadyTimer();
+
     this.emit({
       type: 'finished',
       loserUserId: userId,
       isDraw: false,
       members: played,
-      outPlaces: {}
+      outPlaces: {},
+      removedUserId: userId
     });
   }
 
@@ -235,6 +243,38 @@ export class GameRoom {
     if (this.canStart()) {
       this.start();
     }
+  }
+
+  private scheduleReadyTimer(): void {
+    this.timers.clearReady();
+
+    const hasHumans = this.getMembers().some((member) => !member.isBot);
+
+    if (this.status === 'waiting' && hasHumans) {
+      this.timers.scheduleReady(READY_TIMEOUT_MS);
+    }
+  }
+
+  private handleReadyTimeout(): void {
+    if (this.status !== 'waiting') {
+      return;
+    }
+
+    const idle = this.getMembers().filter((member) => !member.isBot && !member.isReady);
+
+    if (idle.length === 0) {
+      return;
+    }
+
+    for (const member of idle) {
+      this.members.delete(member.profile.userId);
+      this.passOwnership(member.profile.userId);
+    }
+
+    this.emit({ type: 'idle-removed', userIds: idle.map((member) => member.profile.userId) });
+    this.emit({ type: 'state-changed' });
+
+    this.scheduleReadyTimer();
   }
 
   private canStart(): boolean {

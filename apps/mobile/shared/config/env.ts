@@ -29,7 +29,7 @@ const resolveApiUrl = (): string => {
   }
 
   if (!__DEV__) {
-    console.error('EXPO_PUBLIC_API_URL is not set for a release build — the server is unreachable');
+    throw new Error('EXPO_PUBLIC_API_URL is not set — a release build cannot reach the server');
   }
 
   return `http://localhost:${SERVER_PORT}`;

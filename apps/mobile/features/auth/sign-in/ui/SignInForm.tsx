@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useSettingsStore } from '@/entities/settings';
 import { authClient } from '@/shared/api';
+import { TEST_ID } from '@/shared/config';
 import { LanguageSwitch } from '@/shared/i18n';
 import { Button, LobbyBackground } from '@/ui-kit';
 
@@ -80,6 +81,7 @@ export const SignInForm = () => {
               isFullWidth
               isLoading={isSubmitting}
               size='lg'
+              testID={TEST_ID.auth.submit}
               variant='primary'
               onPress={submit}
             >

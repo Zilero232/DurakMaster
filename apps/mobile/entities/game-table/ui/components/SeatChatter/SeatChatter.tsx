@@ -22,7 +22,7 @@ const FADE_MS = 320;
 
 const PEAK_RATIO = 0.78;
 
-export const SeatChatter = ({ chatter, size }: SeatChatterProps) => {
+export const SeatChatter = ({ chatter, size, placement = 'above' }: SeatChatterProps) => {
   const scale = useSharedValue(0);
 
   const sentAt = chatter?.sentAt;
@@ -62,7 +62,7 @@ export const SeatChatter = ({ chatter, size }: SeatChatterProps) => {
       key={chatter.sentAt}
       entering={FadeIn.duration(160)}
       exiting={FadeOut.duration(240)}
-      style={styles.bubble}
+      style={[styles.bubble, placement === 'above' ? styles.above : styles.below]}
     >
       <Text numberOfLines={1} style={styles.bubbleText}>
         {chatter.text}

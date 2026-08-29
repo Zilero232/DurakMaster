@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, colors, radii, spacing } from '@/ui-kit';
+import { borderWidth, colors, fontFamily, fontSize, lineHeight, radii, spacing } from '@/ui-kit';
 
 const SIZE = 40;
 
@@ -22,5 +22,26 @@ export const styles = StyleSheet.create({
 
   pressed: {
     backgroundColor: colors.glass
+  },
+
+  dialog: {
+    gap: spacing[4],
+    paddingBottom: spacing[2]
+  },
+
+  hint: {
+    fontSize: fontSize.md,
+    lineHeight: lineHeight.normal(fontSize.md),
+    fontFamily: fontFamily.sans,
+    color: colors.mutedForeground
+  },
+
+  actions: {
+    flexDirection: 'row',
+    gap: spacing[3]
+  },
+
+  action: {
+    flex: 1
   }
 });

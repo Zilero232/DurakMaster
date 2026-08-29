@@ -8,11 +8,12 @@ import type { RailItemProps } from './RailItem.types';
 
 import { styles } from './RailItem.styles';
 
-export const RailItem = ({ label, suit, isActive, onPress }: RailItemProps) => (
+export const RailItem = ({ label, suit, isActive, testID, onPress }: RailItemProps) => (
   <Pressable
     accessibilityRole='tab'
     accessibilityState={{ selected: isActive }}
     style={({ pressed }) => [styles.root, isActive && styles.active, pressed && styles.pressed]}
+    testID={testID}
     onPress={() => {
       playSound('click');
       haptic('tap');

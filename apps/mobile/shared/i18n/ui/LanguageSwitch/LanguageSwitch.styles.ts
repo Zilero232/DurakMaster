@@ -1,36 +1,25 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, ICON_BUTTON_SIZE, radii } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
-    flexDirection: 'row',
-    alignSelf: 'center',
-    gap: spacing[1],
-    padding: spacing[1],
-    borderRadius: radii.pill,
-    borderWidth: borderWidth.hairline,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: ICON_BUTTON_SIZE,
+    height: ICON_BUTTON_SIZE,
+    borderWidth: StyleSheet.hairlineWidth * 2,
     borderColor: colors.glassBorder,
+    borderRadius: radii.pill,
     backgroundColor: colors.glass
   },
 
-  option: {
-    paddingVertical: spacing[1],
-    paddingHorizontal: spacing[3],
-    borderRadius: radii.pill
+  squared: {
+    borderRadius: radii.md
   },
 
-  optionActive: {
-    backgroundColor: colors.glassStrong
-  },
-
-  label: {
+  code: {
     fontSize: fontSize.xs,
-    fontFamily: fontFamily.sans,
-    color: colors.mutedForeground
-  },
-
-  labelActive: {
     fontFamily: fontFamily.sansBold,
     color: colors.onFelt
   }

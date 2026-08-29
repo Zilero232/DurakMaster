@@ -19,7 +19,6 @@ export type {
   StatusScreenProps
 } from './components';
 export { LeagueBadge, LoserHat, SuitIcon, TauntIcon } from './icons';
-export type {} from './icons';
 
 export type { LeagueBadgeProps, LoserHatProps, SuitIconProps, TauntIconProps } from './icons';
 
@@ -65,6 +64,7 @@ export {
   CARD_SCALE,
   cardSize,
   colors,
+  CONFIRM_MAX_WIDTH,
   CONTENT_MAX_WIDTH,
   DESKTOP_MAX_WIDTH,
   duration,
@@ -72,6 +72,7 @@ export {
   fontSize,
   getCardSize,
   glow,
+  ICON_BUTTON_SIZE,
   iconSize,
   lineHeight,
   MAX_FAN_ANGLE,

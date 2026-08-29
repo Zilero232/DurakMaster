@@ -3,6 +3,7 @@ import { useOnlineGame, useSessionStore } from '@/entities/session';
 
 import type { DurakTableProps } from './DurakTable.types';
 
+import { isWaitingForPlayers } from '../lib';
 import { useTableSounds } from '../model';
 import { DurakTable as DurakPlayfield } from './components';
 
@@ -12,7 +13,7 @@ export const DurakTable = ({ settings, onLeave, onSelectPlayer }: DurakTableProp
   const tableEmojis = useSessionStore((store) => store.emojis);
 
   const game = useOnlineGame();
-  const phrases = useTableChatter({ emojis: tableEmojis, phrases: tablePhrases });
+  const phrases = useTableChatter({ emojis: tableEmojis, phrases: tablePhrases, view: game.view });
 
   useTableSounds(game.view, game.isMyTurn);
 
@@ -21,7 +22,7 @@ export const DurakTable = ({ settings, onLeave, onSelectPlayer }: DurakTableProp
   }
 
   const view = game.view ?? createIdleView(currentTable, settings.rules);
-  const isWaiting = !game.view || (currentTable.status === 'waiting' && view.phase === 'waiting');
+  const isWaiting = isWaitingForPlayers(currentTable, game.view);
 
   return (
     <DurakPlayfield

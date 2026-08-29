@@ -4,7 +4,7 @@ export type { BetPickerProps } from './BetPicker';
 export { CommonSettings } from './CommonSettings';
 export type { CommonSettingsProps } from './CommonSettings';
 
-export { DurakSettings } from './DurakSettings';
+export { DurakDeckSection, DurakModesSection } from './DurakSettings';
 export type { DurakSettingsProps } from './DurakSettings';
 
 export { ModeCard } from './ModeCard';

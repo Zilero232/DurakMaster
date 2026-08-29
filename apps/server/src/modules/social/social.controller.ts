@@ -15,7 +15,7 @@ import { AppBadRequestException, AuthGuard, CurrentUserId } from '../../common';
 import { AchievementsService, FriendsService, LeaderboardService } from './services';
 
 const ensureOk = (result: FriendResult): void => {
-  if ('error' in result) {
+  if (result.isErr()) {
     throw new AppBadRequestException('BAD_REQUEST', result.error);
   }
 };
@@ -88,11 +88,11 @@ export class SocialController {
 
     const result = await this.achievements.claim(userId, achievementId);
 
-    if ('error' in result) {
+    if (result.isErr()) {
       throw new AppBadRequestException('BAD_REQUEST', result.error);
     }
 
-    return result;
+    return result.value;
   }
 
   @Get('leaderboard')

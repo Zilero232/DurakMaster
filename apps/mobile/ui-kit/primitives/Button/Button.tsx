@@ -15,6 +15,7 @@ export const Button = ({
   isDisabled = false,
   isLoading = false,
   accessibilityLabel,
+  testID,
   style,
   onPress
 }: ButtonProps) => {
@@ -45,6 +46,7 @@ export const Button = ({
       accessibilityRole='button'
       accessibilityState={{ busy: isLoading, disabled: isBlocked }}
       disabled={isBlocked}
+      testID={testID}
       onPress={handlePress}
     >
       {isLoading ? (

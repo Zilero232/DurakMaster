@@ -7,6 +7,7 @@ import { BOT_DELAY_SPREAD_MS, BOT_MIN_DELAY_MS, BOT_SILENT_DELAY_MS } from '../.
 export class RoomTimers {
   private turnTimer: NodeJS.Timeout | null = null;
   private botTimer: NodeJS.Timeout | null = null;
+  private readyTimer: NodeJS.Timeout | null = null;
 
   constructor(private readonly handlers: RoomTimersHandlers) {}
 
@@ -26,6 +27,12 @@ export class RoomTimers {
     this.botTimer = setTimeout(() => this.handlers.onBotTurn(), Math.round(delay * scale));
   }
 
+  scheduleReady(timeoutMs: number): void {
+    this.clearReady();
+
+    this.readyTimer = setTimeout(() => this.handlers.onReadyTimeout(), timeoutMs);
+  }
+
   clearTurn(): void {
     if (this.turnTimer) {
       clearTimeout(this.turnTimer);
@@ -40,8 +47,16 @@ export class RoomTimers {
     }
   }
 
+  clearReady(): void {
+    if (this.readyTimer) {
+      clearTimeout(this.readyTimer);
+      this.readyTimer = null;
+    }
+  }
+
   clearAll(): void {
     this.clearTurn();
     this.clearBot();
+    this.clearReady();
   }
 }

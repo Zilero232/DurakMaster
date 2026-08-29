@@ -1,13 +1,12 @@
-import { Maximize2, Palette } from 'lucide-react-native';
+import { Palette } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import type { CardScale } from '@/entities/settings';
 import type { CardThemeId } from '@/ui-kit';
 
 import { useSettingsStore } from '@/entities/settings';
 import { playSound } from '@/shared/lib/sound';
-import { CARD_THEMES, SegmentedControl, useSetCardTheme } from '@/ui-kit';
+import { CARD_THEMES, useSetCardTheme } from '@/ui-kit';
 
 import { SettingsSection } from '../SettingsSection';
 import { ThemeOption } from '../ThemeOption';
@@ -19,20 +18,12 @@ export const LookSettingsTab = () => {
   const cardTheme = useSettingsStore((store) => store.cardTheme);
   const setCardTheme = useSettingsStore((store) => store.setCardTheme);
   const applyCardTheme = useSetCardTheme();
-  const cardScale = useSettingsStore((store) => store.cardScale);
-  const setCardScale = useSettingsStore((store) => store.setCardScale);
 
   const handleSelectTheme = (id: CardThemeId) => {
     setCardTheme(id);
     applyCardTheme(id);
     playSound('deal');
   };
-
-  const scaleOptions: { value: CardScale; label: string }[] = [
-    { value: 'small', label: t('settings.scale.small') },
-    { value: 'normal', label: t('settings.scale.normal') },
-    { value: 'large', label: t('settings.scale.large') }
-  ];
 
   return (
     <View style={styles.root}>
@@ -48,10 +39,6 @@ export const LookSettingsTab = () => {
             />
           ))}
         </View>
-      </SettingsSection>
-
-      <SettingsSection icon={Maximize2} title={t('settings.cardScale')}>
-        <SegmentedControl options={scaleOptions} value={cardScale} onChange={setCardScale} />
       </SettingsSection>
     </View>
   );
