@@ -1,9 +1,7 @@
-import type { GameId, LobbyTable } from '@durak-master/schemas';
+import type { LobbyTable } from '@durak-master/schemas';
 
 import { BET_STEPS } from '@durak-master/schemas';
 import { useState } from 'react';
-
-export type GameFilter = 'all' | GameId;
 
 export type BetFilter = 'all' | 'high' | 'low' | 'mid';
 
@@ -31,15 +29,10 @@ const matchesBet = (bet: number, filter: BetFilter): boolean => {
 };
 
 export const useLobbyFilters = (tables: LobbyTable[]) => {
-  const [game, setGame] = useState<GameFilter>('all');
   const [bet, setBet] = useState<BetFilter>('all');
   const [hideFull, setHideFull] = useState(false);
 
   const visible = tables.filter((table) => {
-    if (game !== 'all' && table.settings.game !== game) {
-      return false;
-    }
-
     if (!matchesBet(table.settings.bet, bet)) {
       return false;
     }
@@ -52,13 +45,11 @@ export const useLobbyFilters = (tables: LobbyTable[]) => {
   });
 
   return {
-    game,
     bet,
     hideFull,
     visible,
 
     isFiltered: visible.length < tables.length,
-    setGame,
     setBet,
     toggleHideFull: () => setHideFull((previous) => !previous)
   };

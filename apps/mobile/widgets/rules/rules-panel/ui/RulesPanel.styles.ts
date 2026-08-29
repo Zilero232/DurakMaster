@@ -3,10 +3,6 @@ import { StyleSheet } from 'react-native';
 import { colors, fontFamily, fontSize, lineHeight, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
-  root: {
-    gap: spacing[5]
-  },
-
   sections: {
     gap: spacing[5]
   },

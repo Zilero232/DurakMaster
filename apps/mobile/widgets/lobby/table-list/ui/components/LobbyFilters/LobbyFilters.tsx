@@ -4,17 +4,14 @@ import { ScrollView, Text, View } from 'react-native';
 
 import type { LobbyFiltersProps } from './LobbyFilters.types';
 
-import { GAME_ICONS } from '../TableBadges';
 import { FilterChip } from './components';
-import { BET_OPTIONS, GAME_OPTIONS } from './LobbyFilters.config';
+import { BET_OPTIONS } from './LobbyFilters.config';
 import { styles } from './LobbyFilters.styles';
 
 export const LobbyFilters = ({
-  game,
   bet,
   hideFull,
   count,
-  onChangeGame,
   onChangeBet,
   onToggleHideFull
 }: LobbyFiltersProps) => {
@@ -22,22 +19,6 @@ export const LobbyFilters = ({
 
   return (
     <View style={styles.root}>
-      <ScrollView
-        horizontal
-        contentContainerStyle={styles.chips}
-        showsHorizontalScrollIndicator={false}
-      >
-        {GAME_OPTIONS.map((option) => (
-          <FilterChip
-            key={option}
-            icon={option === 'all' ? undefined : GAME_ICONS[option]}
-            isActive={option === game}
-            label={option === 'all' ? t('lobby.allGames') : t(`games.${option}.name`)}
-            onPress={() => onChangeGame(option)}
-          />
-        ))}
-      </ScrollView>
-
       <ScrollView
         horizontal
         contentContainerStyle={styles.chips}

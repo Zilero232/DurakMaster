@@ -97,10 +97,8 @@ export const TableList = ({ onJoin, onCreate }: TableListProps) => {
         <LobbyFilters
           bet={filters.bet}
           count={filters.visible.length}
-          game={filters.game}
           hideFull={filters.hideFull}
           onChangeBet={filters.setBet}
-          onChangeGame={filters.setGame}
           onToggleHideFull={filters.toggleHideFull}
         />
       )}
