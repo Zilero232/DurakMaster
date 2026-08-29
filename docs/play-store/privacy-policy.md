@@ -7,8 +7,6 @@ the Google Play listing can go live. Keep it in step with
 [privacy.md](./privacy.md), which holds the matching Data safety answers — a
 policy that promises less than the app collects is grounds for rejection.
 
-Replace `support@durakmaster.ru` with the address you actually read.
-
 ---
 
 ## What we collect
@@ -50,7 +48,7 @@ statistics that no longer identify you may be retained.
 
 ## Deleting your account
 
-Write to **support@durakmaster.ru** from the address your account uses. We
+Write to **zilero@dev.ru** from the address your account uses. We
 delete the account and its personal data within 30 days.
 
 ## Security
@@ -71,4 +69,4 @@ will be announced in the app.
 
 ## Contact
 
-**support@durakmaster.ru**
+**zilero@dev.ru**

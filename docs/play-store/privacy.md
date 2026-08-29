@@ -33,7 +33,7 @@ Answer the console form as follows.
 
 **Is all of the user data encrypted in transit?** — Yes, HTTPS and WSS.
 
-**Can users request that their data be deleted?** — Yes. Provide the support email and keep the
+**Can users request that their data be deleted?** — Yes, through **zilero@dev.ru**. Keep the
 deletion route working.
 
 ## In-app purchases and gambling
@@ -50,5 +50,6 @@ purchase of virtual currency.
 The policy must be reachable at a public URL before the listing can go live. Keep its wording in
 step with the table above — a policy that promises less than the app collects is a rejection.
 
-Cover at minimum: what is collected, why, how long it is kept, who it is shared with (nobody),
-how to request deletion, and a contact address.
+The text to publish is in [privacy-policy.md](./privacy-policy.md) — it already covers what is
+collected, why, how long it is kept, who it is shared with (nobody), how to request deletion, and
+the contact address.

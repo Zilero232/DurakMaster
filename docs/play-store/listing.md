@@ -10,13 +10,62 @@ What Google Play asks for, with the constraints that actually cause rejections.
 | Short description | 80 chars | Классический дурак онлайн: подкидной и переводной, столы на 2–6 игроков |
 | Full description | 4000 chars | See below |
 
-The full description should cover: what the game is, the modes (подкидной / переводной), deck
-sizes, table sizes, playing against bots or people, and that credits are in-game only and cannot
-be bought or traded. That last point matters — it is what keeps the listing out of the gambling
-category.
-
 Do not promise features that are not in the build. A description mentioning tournaments before
 tournaments exist is grounds for removal.
+
+### Full description — Russian
+
+    Классический русский дурак онлайн. Подкидной и переводной, колода на 24, 36 или 52 карты,
+    столы от двух до шести игроков.
+
+    ЧТО ЕСТЬ В ИГРЕ
+
+    • Подкидной и переводной дурак — режим выбирается при создании стола
+    • Колода 24, 36 или 52 карты
+    • От 2 до 6 игроков за столом
+    • Настройка, кто может подкидывать: только соседи или все
+    • Ничья включается и выключается
+    • Приватные столы с паролем — играйте только со своими
+    • Пять тем оформления колоды
+
+    ЧЕСТНАЯ ИГРА
+
+    Колода тасуется на сервере криптографическим генератором. Карты соперников не хранятся
+    в приложении — клиент просто не знает, что у них на руках.
+
+    ВАЛЮТА
+
+    Кредиты и монеты зарабатываются в игре. Их нельзя купить, продать или передать другому
+    игроку, и они не имеют ценности за пределами приложения.
+
+    Игра бесплатная, без рекламы.
+
+### Full description — English
+
+    Classic Russian Durak online. Throw-in and transfer variants, decks of 24, 36 or 52 cards,
+    tables for two to six players.
+
+    WHAT IS IN THE GAME
+
+    • Throw-in and transfer Durak — chosen when the table is created
+    • Decks of 24, 36 or 52 cards
+    • 2 to 6 players per table
+    • Choose who may throw in: neighbours only, or everyone
+    • Draws can be turned on or off
+    • Private tables with a password — play with your own circle
+    • Five deck themes
+
+    FAIR PLAY
+
+    The deck is shuffled on the server with a cryptographic generator. Opponents' cards are
+    never stored in the app — the client simply does not know what they hold.
+
+    CURRENCY
+
+    Credits and coins are earned by playing. They cannot be bought, sold or transferred
+    between players, and they have no value outside the app.
+
+    Free to play, no ads.
 
 ## Graphics
 

@@ -1,0 +1,32 @@
+# Without this every build ships the host's working tree into the image. The
+# COPY steps merge over the installed dependency tree, so Windows- or
+# macOS-resolved modules would replace the Linux ones the image installed.
+
+node_modules
+**/node_modules
+
+# Regenerated inside the image by `prisma generate`.
+apps/server/generated
+
+# Build output, none of it belongs in a fresh image.
+dist
+**/dist
+apps/mobile/.expo
+apps/mobile/android
+apps/mobile/ios
+
+.git
+.github
+
+# Playwright specs never run in the image.
+e2e
+
+# Secrets and local configuration.
+.env
+.env.*
+!.env.example
+infra/play-store
+
+docs
+*.md
+!README.md

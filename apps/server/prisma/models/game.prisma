@@ -5,7 +5,7 @@ model Game {
   id      String @id @default(cuid())
   tableId String
 
-  /** Which of the four games this was. */
+  /** Which game this was — the registry currently holds durak only. */
   game String
 
   /**

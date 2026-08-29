@@ -13,6 +13,12 @@ on:
         type: boolean
         default: false
 
+# prisma.config.ts resolves DIRECT_URL through env(), which throws when unset —
+# and bun install fires the server postinstall that runs prisma generate.
+env:
+  DATABASE_URL: postgresql://placeholder
+  DIRECT_URL: postgresql://placeholder
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -32,6 +38,9 @@ jobs:
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
+
+      - name: Generate the Prisma client
+        run: bun --filter @durak-master/server db:generate
 
       - name: Verify before building
         run: bun run verify

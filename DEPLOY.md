@@ -62,11 +62,14 @@ nano .env
 Production `.env` must carry:
 
 - `NODE_ENV=production`
-- `DATABASE_URL` and `DIRECT_URL` — pointing at `postgres:5432` inside the compose network
+- `DATABASE_URL` — pointing at `postgres:5432` inside the compose network
+- `DIRECT_URL` — the same value; only `prisma migrate deploy` reads it, the running app does not
 - `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` — read by the database container
 - `BETTER_AUTH_SECRET` — a fresh one, never the example value
 - `BETTER_AUTH_URL=https://api.durakmaster.ru`
 - `CORS_ORIGINS=https://durakmaster.ru` — the same value gates the WebSocket handshake
+- `PUBLIC_URL=https://api.durakmaster.ru` — the origin avatar URLs are built from. It falls back
+  to `BETTER_AUTH_URL` when unset, which is only correct while the two agree
 
 ### DNS
 

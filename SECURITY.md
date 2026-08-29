@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-Write to **security@durakmaster.ru**. Do not open a public issue.
+Write to **zilero@dev.ru**. Do not open a public issue.
 
 Include what you found, how to reproduce it, and what an attacker could do with
 it. We reply within 72 hours.

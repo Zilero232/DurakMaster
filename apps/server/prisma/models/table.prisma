@@ -11,7 +11,7 @@ model GameTable {
   id     String      @id @default(cuid())
   status TableStatus @default(WAITING)
 
-  /** Which of the four games is played here. */
+  /** Which game is played here — the registry currently holds durak only. */
   game String
 
   /** The full rule set, shaped by `game` — see the note on `Game.settings`. */
