@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { MAX_NAME_LENGTH } from '../auth/credentials';
+
 export const LEAGUES = [
   { id: 'silver', color: '#b8bcc4' },
   { id: 'gold', color: '#e0b64a' },
@@ -102,3 +104,12 @@ export function computeRatingGain(winnings: number, currentRating: number): numb
 
   return Math.max(1, Math.round(base * damping));
 }
+
+export const setNameInputSchema = z.object({
+  name: z.string().trim().min(2).max(MAX_NAME_LENGTH)
+});
+
+export const setAvatarInputSchema = z.object({ seed: avatarSeedSchema });
+
+export type SetNameInput = z.infer<typeof setNameInputSchema>;
+export type SetAvatarInput = z.infer<typeof setAvatarInputSchema>;

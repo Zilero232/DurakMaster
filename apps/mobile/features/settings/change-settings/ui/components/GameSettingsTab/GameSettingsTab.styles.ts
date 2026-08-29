@@ -4,6 +4,6 @@ import { spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
-    gap: spacing[5]
+    gap: spacing[3]
   }
 });

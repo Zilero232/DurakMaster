@@ -7,7 +7,9 @@ import type { FinishedPlayer, RoomEvent, RoomMember } from '../../game';
 import type { Socket } from '../realtime.types';
 
 import { GameHistoryService, RoomsService } from '../../game';
+import { ProfilesService } from '../../profile';
 import { AchievementsService } from '../../social';
+import { splitPot } from '../lib/split-pot';
 import { BroadcastService } from './broadcast.service';
 import { SessionsService } from './sessions.service';
 import { SocketRegistryService } from './socket-registry.service';
@@ -29,8 +31,13 @@ export class GameFlowService {
     private readonly achievements: AchievementsService,
     private readonly history: GameHistoryService,
     private readonly registry: SocketRegistryService,
-    private readonly broadcast: BroadcastService
-  ) {}
+    private readonly broadcast: BroadcastService,
+    private readonly profiles: ProfilesService
+  ) {
+    this.profiles.onIdentityChanged((userId, identity) => {
+      this.refreshSeatedProfile(userId, identity);
+    });
+  }
 
   applyAction(
     socket: Socket,
@@ -99,7 +106,12 @@ export class GameFlowService {
 
   private async finish(
     roomId: string,
-    event: { loserUserId: string | null; isDraw: boolean; members: RoomMember[] }
+    event: {
+      loserUserId: string | null;
+      isDraw: boolean;
+      members: RoomMember[];
+      outPlaces: Record<string, number>;
+    }
   ): Promise<void> {
     const room = this.rooms.getRoom(roomId);
 
@@ -107,7 +119,7 @@ export class GameFlowService {
       return;
     }
 
-    const { loserUserId, isDraw, members } = event;
+    const { loserUserId, isDraw, members, outPlaces } = event;
     const { bet } = room.settings;
 
     const winners = members.filter(
@@ -115,7 +127,18 @@ export class GameFlowService {
     );
 
     const humans = members.filter((member) => !member.isBot);
-    const prize = isDraw || winners.length === 0 ? 0 : bet + Math.floor(bet / winners.length);
+
+    const shares = isDraw
+      ? []
+      : splitPot(
+          bet,
+          winners.map((member) => ({
+            userId: member.profile.userId,
+            outPlace: outPlaces[member.profile.userId] ?? null
+          }))
+        );
+
+    const shareOf = new Map(shares.map((share) => [share.userId, share.amount]));
 
     const played: FinishedPlayer[] = [];
 
@@ -123,12 +146,16 @@ export class GameFlowService {
       const { userId } = member.profile;
       const isLoser = userId === loserUserId;
       const isWinner = !isLoser && !isDraw;
-      const creditsDelta = isDraw ? 0 : isLoser ? -bet : prize - bet;
-      const ratingDelta = isWinner ? computeRatingGain(prize, member.profile.rating) : 0;
+      const share = shareOf.get(userId) ?? 0;
+
+      const creditsDelta = isDraw ? 0 : isLoser ? -bet : share;
+      const payout = isDraw ? bet : isLoser ? 0 : bet + share;
+
+      const ratingDelta = isWinner ? computeRatingGain(share, member.profile.rating) : 0;
 
       await this.sessions.applyGameResult({
         userId,
-        creditsDelta,
+        creditsDelta: payout,
         ratingDelta,
         isWinner,
         isDraw

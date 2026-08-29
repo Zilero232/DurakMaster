@@ -1,1 +1,0 @@
-export { ProfileTabSkeleton } from './ProfileTabSkeleton';

@@ -21,6 +21,7 @@ export const createGame = ({
     seat: index,
     handCount: HAND_SIZE,
     isOut: false,
+    outPlace: null,
     isDisconnected: false
   }));
 

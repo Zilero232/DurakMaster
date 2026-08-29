@@ -2,9 +2,19 @@ import { StyleSheet } from 'react-native';
 
 import { colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit';
 
+export const CORNER_INSET = spacing[3];
+
+const CARD_MAX_WIDTH = 480;
+
 export const styles = StyleSheet.create({
   root: {
     flex: 1
+  },
+
+  corner: {
+    position: 'absolute',
+    right: spacing[5],
+    zIndex: 1
   },
 
   scroll: {
@@ -15,11 +25,11 @@ export const styles = StyleSheet.create({
   },
 
   card: {
-    gap: spacing[4],
+    gap: spacing[5],
     width: '100%',
-    maxWidth: 400,
+    maxWidth: CARD_MAX_WIDTH,
     alignSelf: 'center',
-    padding: spacing[6],
+    padding: spacing[8],
     borderRadius: radii.xl,
     backgroundColor: colors.surfaceOverlay,
     ...shadows.panel
@@ -35,8 +45,8 @@ export const styles = StyleSheet.create({
 
   subtitle: {
     marginBottom: spacing[2],
-    fontSize: fontSize.sm,
-    lineHeight: 20,
+    fontSize: fontSize.md,
+    lineHeight: 22,
     color: colors.mutedForeground,
     textAlign: 'center'
   },

@@ -9,7 +9,10 @@ export const playerStateSchema = z.object({
   seat: z.number().int().nonnegative(),
   handCount: z.number().int().nonnegative(),
   isOut: z.boolean(),
-  isDisconnected: z.boolean()
+  isDisconnected: z.boolean(),
+
+  /** 1 for the first player to go out, 2 for the next, null while still holding cards. */
+  outPlace: z.number().int().positive().nullable().default(null)
 });
 
 export type PlayerState = z.infer<typeof playerStateSchema>;

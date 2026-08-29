@@ -23,6 +23,7 @@ export function createGame(input: CreateDurakGameInput): DurakState {
     seat: index,
     handCount: HAND_SIZE,
     isOut: false,
+    outPlace: null,
     isDisconnected: false
   }));
 

@@ -6,19 +6,26 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSettingsStore } from '@/entities/settings';
 import { authClient } from '@/shared/api';
+import { LanguageSwitch } from '@/shared/i18n';
 import { Button, LobbyBackground } from '@/ui-kit';
 
 import type { AuthMode } from './SignInForm.types';
 
 import { CredentialsFields } from './components';
-import { styles } from './SignInForm.styles';
+import { CORNER_INSET, styles } from './SignInForm.styles';
 
 const DEFAULT_VALUES: CredentialsInput = { email: '', password: '', name: '' };
 
 export const SignInForm = () => {
   const { t } = useTranslation();
+
+  const insets = useSafeAreaInsets();
+
+  const isBatterySaver = useSettingsStore((store) => store.isBatterySaver);
 
   const [mode, setMode] = useState<AuthMode>('signIn');
 
@@ -49,7 +56,11 @@ export const SignInForm = () => {
   };
 
   return (
-    <LobbyBackground>
+    <LobbyBackground isStatic={isBatterySaver}>
+      <View style={[styles.corner, { top: insets.top + CORNER_INSET }]}>
+        <LanguageSwitch />
+      </View>
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.root}

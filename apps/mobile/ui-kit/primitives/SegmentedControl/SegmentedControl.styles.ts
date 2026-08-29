@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
     gap: spacing[1],
     padding: spacing[1],
     borderRadius: radii.md,
-    backgroundColor: colors.surface2
+    backgroundColor: colors.surface1
   },
 
   option: {

@@ -1,4 +1,4 @@
-import { useSessionStore } from '@/entities/session';
+import { useMyProfile, useSessionStore } from '@/entities/session';
 import { MatchResult } from '@/widgets/game/match-result';
 
 import { AppShell } from '../AppShell';
@@ -6,7 +6,7 @@ import { TableRouter } from '../TableRouter';
 
 export const HomeScreen = () => {
   const currentTable = useSessionStore((store) => store.currentTable);
-  const profile = useSessionStore((store) => store.profile);
+  const { profile } = useMyProfile();
   const outcome = useSessionStore((store) => store.outcome);
   const clearOutcome = useSessionStore((store) => store.clearOutcome);
 

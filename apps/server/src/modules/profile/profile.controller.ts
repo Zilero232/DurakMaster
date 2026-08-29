@@ -1,7 +1,8 @@
 import type { MyProfile } from '@durak-master/schemas';
 import type { Request } from 'express';
 
-import { Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { setAvatarInputSchema, setNameInputSchema } from '@durak-master/schemas';
+import { Body, Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 
 import {
   AppBadRequestException,
@@ -19,6 +20,36 @@ export class ProfileController {
     private readonly profiles: ProfilesService,
     private readonly storage: AvatarStorageService
   ) {}
+
+  @Get('me')
+  async getMyProfile(@CurrentUserId() userId: string): Promise<MyProfile> {
+    return this.profiles.ensureProfile(userId);
+  }
+
+  @Patch('me/name')
+  async setName(@CurrentUserId() userId: string, @Body() body: unknown): Promise<MyProfile> {
+    const { name } = setNameInputSchema.parse(body);
+
+    return this.profiles.setName(userId, name);
+  }
+
+  @Patch('me/avatar')
+  async setAvatar(@CurrentUserId() userId: string, @Body() body: unknown): Promise<MyProfile> {
+    const { seed } = setAvatarInputSchema.parse(body);
+
+    return this.profiles.setAvatar(userId, seed);
+  }
+
+  @Post('bonus')
+  async claimBonus(@CurrentUserId() userId: string): Promise<MyProfile> {
+    const profile = await this.profiles.claimFreeCredits(userId);
+
+    if (!profile) {
+      throw new AppBadRequestException('BAD_REQUEST', 'Bonus is not available yet');
+    }
+
+    return profile;
+  }
 
   @Post('avatar')
   async uploadAvatar(@CurrentUserId() userId: string, @Req() request: Request): Promise<MyProfile> {

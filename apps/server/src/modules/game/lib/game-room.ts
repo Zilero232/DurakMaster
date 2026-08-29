@@ -1,6 +1,7 @@
 import type {
   Card,
   GameAction,
+  GameCoreState,
   GameErrorCode,
   LobbyTable,
   PlayerView,
@@ -25,6 +26,18 @@ import { nextFreeSeat } from './next-free-seat';
 import { RoomChatter } from './room-chatter';
 import { RoomTimers } from './room-timers';
 
+const collectOutPlaces = (players: GameCoreState['players']): Record<string, number> => {
+  const places: Record<string, number> = {};
+
+  for (const player of players) {
+    if (player.outPlace !== null) {
+      places[player.userId] = player.outPlace;
+    }
+  }
+
+  return places;
+};
+
 export type RoomMember = {
   profile: PublicProfile;
   seat: number;
@@ -36,7 +49,13 @@ export type RoomMember = {
 
 export type RoomEvent =
   | { type: 'emoji'; userId: string; emoji: TauntId }
-  | { type: 'finished'; loserUserId: string | null; isDraw: boolean; members: RoomMember[] }
+  | {
+      type: 'finished';
+      loserUserId: string | null;
+      isDraw: boolean;
+      members: RoomMember[];
+      outPlaces: Record<string, number>;
+    }
   | { type: 'phrase'; phrase: TablePhrase }
   | { type: 'state-changed' };
 
@@ -173,7 +192,13 @@ export class GameRoom {
       member.isReady = member.isBot;
     }
 
-    this.emit({ type: 'finished', loserUserId: userId, isDraw: false, members: played });
+    this.emit({
+      type: 'finished',
+      loserUserId: userId,
+      isDraw: false,
+      members: played,
+      outPlaces: {}
+    });
   }
 
   reconnect(userId: string): boolean {
@@ -276,6 +301,7 @@ export class GameRoom {
     if (this.session.state.phase === 'finished') {
       const outcome = this.session.getOutcome();
       const played = this.getMembers();
+      const outPlaces = collectOutPlaces(this.session.state.players);
 
       this.clearTimers();
 
@@ -290,7 +316,8 @@ export class GameRoom {
         type: 'finished',
         loserUserId: outcome.loserUserId,
         isDraw: outcome.isDraw,
-        members: played
+        members: played,
+        outPlaces
       });
 
       return;

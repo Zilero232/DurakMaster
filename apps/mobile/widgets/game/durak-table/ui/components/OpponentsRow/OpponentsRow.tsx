@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { OpponentSeat } from '@/entities/game-table';
+import { useSettingsStore } from '@/entities/settings';
 
 import type { OpponentsRowProps } from './OpponentsRow.types';
 
@@ -18,6 +19,8 @@ export const OpponentsRow = ({
   onSelectPlayer
 }: OpponentsRowProps) => {
   const { t } = useTranslation();
+
+  const isBatterySaver = useSettingsStore((store) => store.isBatterySaver);
 
   const opponents = view.players.filter((player) => player.seat !== mySeat);
 
@@ -39,6 +42,7 @@ export const OpponentsRow = ({
             isEmpty={isEmpty}
             isLoser={player.userId === loserUserId}
             isReady={readyUserIds.has(player.userId)}
+            isStatic={isBatterySaver}
             name={meta?.name ?? t('table.emptySeat')}
             phrase={phrases[player.userId]}
             player={player}

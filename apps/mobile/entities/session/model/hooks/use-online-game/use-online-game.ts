@@ -26,8 +26,10 @@ export const useOnlineGame = () => {
 
   const hasUndefended = view?.table.some((pair) => pair.defense === null) ?? false;
 
+  const isOut = view?.players.find((player) => player.seat === seat)?.isOut ?? false;
+
   const canPass = (current: typeof view, mySeat: number, amDefending: boolean): boolean => {
-    if (!current || amDefending || current.phase !== 'playing') {
+    if (!current || amDefending || isOut || current.phase !== 'playing') {
       return false;
     }
 

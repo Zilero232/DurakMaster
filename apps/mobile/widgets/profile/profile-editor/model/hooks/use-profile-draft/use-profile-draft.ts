@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner-native';
 
-import { useSessionStore } from '@/entities/session';
+import { useMyProfile } from '@/entities/session';
 
 import type { ProfileDraft, UseProfileDraftInput } from './use-profile-draft.types';
 
@@ -24,9 +24,7 @@ const toDraft = (name: string, avatarUrl: string | null): ProfileDraft => ({
 export const useProfileDraft = ({ profile, onSaved }: UseProfileDraftInput) => {
   const { t } = useTranslation();
 
-  const setProfile = useSessionStore((store) => store.setProfile);
-  const setAvatar = useSessionStore((store) => store.setAvatar);
-  const setName = useSessionStore((store) => store.setName);
+  const { setAvatar, setName, writeProfile } = useMyProfile();
 
   const [draft, setDraft] = useState(() => toDraft(profile.name, profile.avatarUrl));
   const [source, setSource] = useState(profile);
@@ -65,7 +63,7 @@ export const useProfileDraft = ({ profile, onSaved }: UseProfileDraftInput) => {
 
     try {
       if (hasImageChange && draft.pickedUri) {
-        setProfile(await uploadAvatar(await prepareAvatar(draft.pickedUri)));
+        writeProfile(await uploadAvatar(await prepareAvatar(draft.pickedUri)));
       } else if (hasSeedChange && draft.seed) {
         setAvatar(draft.seed);
       }

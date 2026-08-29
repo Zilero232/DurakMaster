@@ -47,11 +47,20 @@ export function finishBout(state: DurakState, options: FinishBoutOptions): Durak
     }
   }
 
-  const players = state.players.map((item) => ({
-    ...item,
-    handCount: hands[item.userId]?.length ?? 0,
-    isOut: talon.length === 0 && (hands[item.userId]?.length ?? 0) === 0
-  }));
+  let nextOutPlace = state.players.filter((item) => item.outPlace !== null).length;
+
+  const players = state.players.map((item) => {
+    const handCount = hands[item.userId]?.length ?? 0;
+    const isOut = talon.length === 0 && handCount === 0;
+
+    if (!isOut || item.outPlace !== null) {
+      return { ...item, handCount, isOut };
+    }
+
+    nextOutPlace += 1;
+
+    return { ...item, handCount, isOut, outPlace: nextOutPlace };
+  });
 
   const active = players.filter((item) => !item.isOut);
 

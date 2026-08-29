@@ -9,8 +9,6 @@ export const useLobbyConnection = () => {
   const status = useSessionStore((store) => store.status);
   const connect = useSessionStore((store) => store.connect);
   const subscribeLobby = useSessionStore((store) => store.subscribeLobby);
-  const requestProfile = useSessionStore((store) => store.requestProfile);
-  const profile = useSessionStore((store) => store.profile);
 
   useEffect(() => {
     if (session && (status === 'idle' || status === 'error')) {
@@ -23,12 +21,6 @@ export const useLobbyConnection = () => {
       subscribeLobby();
     }
   }, [status, subscribeLobby]);
-
-  useEffect(() => {
-    if (status === 'connected' && !profile) {
-      requestProfile();
-    }
-  }, [status, profile, requestProfile]);
 
   return { isPending, session, status };
 };

@@ -1,4 +1,4 @@
-# Инфраструктура для ЛОКАЛЬНОЙ разработки: Postgres, Valkey, Mailpit.
+# Инфраструктура для ЛОКАЛЬНОЙ разработки: Postgres и Valkey.
 #
 # Сами клиент и сервер запускаются на хосте через `bun dev` — так работает
 # горячая перезагрузка. Этот файл поднимает только то, что удобнее в контейнерах.
@@ -48,20 +48,6 @@ services:
       interval: 30s
       timeout: 3s
       retries: 5
-
-  mailpit:
-    # Локальный SMTP-приёмник: перехватывает исходящую почту вместо доставки.
-    # Полезен, потому что многие провайдеры блокируют исходящие 25/465/587.
-    # Сервер подключается на localhost:1025 без TLS и авторизации.
-    # Веб-интерфейс: http://localhost:8025
-    image: axllent/mailpit:latest
-    container_name: durakmaster-mailpit-dev
-    ports:
-      - '1025:1025' # SMTP
-      - '8025:8025' # Web UI
-    environment:
-      MP_SMTP_AUTH_ACCEPT_ANY: 'true'
-      MP_SMTP_AUTH_ALLOW_INSECURE: 'true'
 
 volumes:
   pgdata_dev:

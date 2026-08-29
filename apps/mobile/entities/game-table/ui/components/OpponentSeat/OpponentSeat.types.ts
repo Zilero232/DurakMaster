@@ -17,6 +17,9 @@ export type OpponentSeatProps = {
   isDefender: boolean;
   isActive: boolean;
 
+  /** Battery saver stops the active-seat pulse. */
+  isStatic?: boolean;
+
   isLoser?: boolean;
   onPress?: () => void;
 };

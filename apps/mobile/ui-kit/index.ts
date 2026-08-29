@@ -26,6 +26,7 @@ export type { LeagueBadgeProps, LoserHatProps, SuitIconProps, TauntIconProps } f
 export {
   Avatar,
   Button,
+  CountBadge,
   FeedbackProvider,
   SegmentedControl,
   Sheet,
@@ -38,6 +39,8 @@ export type {
   ButtonProps,
   ButtonSize,
   ButtonVariant,
+  CountBadgeProps,
+  CountBadgeTone,
   SegmentedControlProps,
   SegmentedOption,
   SheetProps,
@@ -77,6 +80,7 @@ export {
   screenGradient,
   shadows,
   spacing,
-  TABLE_MAX_WIDTH
+  TABLE_MAX_WIDTH,
+  TOAST_MAX_WIDTH
 } from './theme';
 export type { CardScaleName, Colors } from './theme';

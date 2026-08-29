@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { match } from 'ts-pattern';
 
+import { LanguageSwitch } from '@/shared/i18n';
 import { colors, iconSize } from '@/ui-kit';
 
 import type { AppHeaderProps } from './AppHeader.types';
@@ -30,6 +31,8 @@ export const AppHeader = ({ tab, status, onSignOut }: AppHeaderProps) => {
             {status === 'connecting' ? t('connection.connecting') : t('connection.offline')}
           </Text>
         )}
+
+        <LanguageSwitch />
 
         <Pressable
           accessibilityLabel={t('auth.signOut')}

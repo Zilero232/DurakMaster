@@ -11,3 +11,4 @@ export type { UsePairMeasureInput } from './use-pair-measure';
 export { useSeatSize } from './use-seat-size';
 export type { SeatMetrics } from './use-seat-size';
 export { useTableChatter } from './use-table-chatter';
+export { useTurnPulse } from './use-turn-pulse';

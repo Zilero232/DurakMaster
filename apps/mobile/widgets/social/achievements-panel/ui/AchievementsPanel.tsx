@@ -1,8 +1,7 @@
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { useSocialStore } from '@/entities/social';
+import { useAchievements } from '@/entities/social';
 import { Sheet } from '@/ui-kit';
 
 import type { AchievementsPanelProps } from './AchievementsPanel.types';
@@ -13,15 +12,7 @@ import { AchievementRow } from './components';
 export const AchievementsPanel = ({ isOpen, onClose }: AchievementsPanelProps) => {
   const { t } = useTranslation();
 
-  const achievements = useSocialStore((store) => store.achievements);
-  const loadAchievements = useSocialStore((store) => store.loadAchievements);
-  const claimAchievement = useSocialStore((store) => store.claimAchievement);
-
-  useEffect(() => {
-    if (isOpen) {
-      loadAchievements();
-    }
-  }, [isOpen, loadAchievements]);
+  const { achievements, claim } = useAchievements();
 
   const unlocked = achievements.filter((entry) => entry.unlockedAt !== null).length;
 
@@ -45,11 +36,7 @@ export const AchievementsPanel = ({ isOpen, onClose }: AchievementsPanelProps) =
 
         <View style={styles.list}>
           {sorted.map((achievement) => (
-            <AchievementRow
-              key={achievement.id}
-              achievement={achievement}
-              onClaim={claimAchievement}
-            />
+            <AchievementRow key={achievement.id} achievement={achievement} onClaim={claim} />
           ))}
         </View>
       </View>

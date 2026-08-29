@@ -9,6 +9,7 @@ import type { SessionStore } from './session-store.types';
 
 import { INITIAL_STATE } from './session-store.config';
 import { createConnection } from './session-store.connection';
+import { cacheProfileFrom } from './session-store.profile-cache';
 import { reduceServerMessage } from './session-store.reduce';
 
 export const useSessionStore = create<SessionStore>((set, get) => {
@@ -17,6 +18,8 @@ export const useSessionStore = create<SessionStore>((set, get) => {
       if (message.type === 'table:emoji' || message.type === 'table:phrase') {
         playSound('click');
       }
+
+      cacheProfileFrom(message);
 
       const next = reduceServerMessage(get(), message);
 
@@ -31,8 +34,6 @@ export const useSessionStore = create<SessionStore>((set, get) => {
 
   return {
     ...INITIAL_STATE,
-
-    selectTableCard: (key) => set({ selectedTableCardKey: key }),
 
     connect: async () => {
       if (get().status === 'connecting' || get().status === 'connected') {
@@ -50,8 +51,6 @@ export const useSessionStore = create<SessionStore>((set, get) => {
       set({ ...INITIAL_STATE });
     },
 
-    requestProfile: () => socketClient.send({ type: 'profile:get' }),
-
     subscribeLobby: () => {
       set({ isLobbySubscribed: true });
       socketClient.send({ type: 'lobby:subscribe' });
@@ -59,37 +58,22 @@ export const useSessionStore = create<SessionStore>((set, get) => {
 
     createTable: (settings, password) =>
       socketClient.send({ type: 'table:create', payload: { settings, password } }),
-
     joinTable: (tableId, password) =>
       socketClient.send({ type: 'table:join', payload: { tableId, password } }),
 
     leaveTable: () => socketClient.send({ type: 'table:leave' }),
-
     setReady: (isReady) => socketClient.send({ type: 'table:ready', payload: { isReady } }),
-
     addBot: () => socketClient.send({ type: 'table:add-bot' }),
-
     applyBoost: (boost, targetUserId) =>
       socketClient.send({ type: 'table:boost', payload: { boost, targetUserId } }),
-
     sendPhrase: (phraseId) => socketClient.send({ type: 'table:phrase', payload: { phraseId } }),
-
     sendEmoji: (emoji) => socketClient.send({ type: 'table:emoji', payload: { emoji } }),
 
-    claimBonus: () => socketClient.send({ type: 'profile:claim-bonus' }),
-
-    setProfile: (profile) => set({ profile }),
-
-    setAvatar: (seed) => socketClient.send({ type: 'profile:set-avatar', payload: { seed } }),
-
-    setName: (name) => socketClient.send({ type: 'profile:set-name', payload: { name } }),
+    selectTableCard: (key) => set({ selectedTableCardKey: key }),
 
     clearOutcome: () => set({ outcome: null }),
-
     clearRejection: () => set({ rejectedCode: null }),
-
     clearRevealed: () => set({ revealed: null }),
-
     clearError: () => set({ lastError: null, lastErrorCode: null })
   };
 });

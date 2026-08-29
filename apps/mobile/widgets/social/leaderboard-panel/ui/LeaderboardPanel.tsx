@@ -1,8 +1,7 @@
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { useSocialStore } from '@/entities/social';
+import { useLeaderboard } from '@/entities/social';
 import { Avatar, Sheet } from '@/ui-kit';
 
 import type { LeaderboardPanelProps } from './LeaderboardPanel.types';
@@ -15,14 +14,7 @@ const AVATAR_SIZE = 32;
 export const LeaderboardPanel = ({ isOpen, onClose }: LeaderboardPanelProps) => {
   const { t } = useTranslation();
 
-  const leaderboard = useSocialStore((store) => store.leaderboard);
-  const loadLeaderboard = useSocialStore((store) => store.loadLeaderboard);
-
-  useEffect(() => {
-    if (isOpen) {
-      loadLeaderboard();
-    }
-  }, [isOpen, loadLeaderboard]);
+  const { leaderboard } = useLeaderboard();
 
   return (
     <Sheet isOpen={isOpen} title={t('leaderboard.title')} onClose={onClose}>

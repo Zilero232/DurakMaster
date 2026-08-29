@@ -22,6 +22,7 @@ export function createGame(input: CreateKozelGameInput): KozelState {
     seat: index,
     handCount: KOZEL_HAND_SIZE,
     isOut: false,
+    outPlace: null,
     isDisconnected: false
   }));
 

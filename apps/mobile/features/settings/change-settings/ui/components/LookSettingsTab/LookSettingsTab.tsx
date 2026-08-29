@@ -1,4 +1,4 @@
-import { Languages, Maximize2, Palette } from 'lucide-react-native';
+import { Maximize2, Palette } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
@@ -6,19 +6,15 @@ import type { CardScale } from '@/entities/settings';
 import type { CardThemeId } from '@/ui-kit';
 
 import { useSettingsStore } from '@/entities/settings';
-import { useLocale } from '@/shared/i18n';
 import { playSound } from '@/shared/lib/sound';
 import { CARD_THEMES, SegmentedControl, useSetCardTheme } from '@/ui-kit';
 
-import { LocaleOptions } from '../LocaleOptions';
 import { SettingsSection } from '../SettingsSection';
 import { ThemeOption } from '../ThemeOption';
 import { styles } from './LookSettingsTab.styles';
 
 export const LookSettingsTab = () => {
   const { t } = useTranslation();
-
-  const { locale, setLocale } = useLocale();
 
   const cardTheme = useSettingsStore((store) => store.cardTheme);
   const setCardTheme = useSettingsStore((store) => store.setCardTheme);
@@ -56,10 +52,6 @@ export const LookSettingsTab = () => {
 
       <SettingsSection icon={Maximize2} title={t('settings.cardScale')}>
         <SegmentedControl options={scaleOptions} value={cardScale} onChange={setCardScale} />
-      </SettingsSection>
-
-      <SettingsSection icon={Languages} title={t('settings.language')}>
-        <LocaleOptions value={locale} onChange={setLocale} />
       </SettingsSection>
     </View>
   );

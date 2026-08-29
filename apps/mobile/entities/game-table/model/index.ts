@@ -9,6 +9,7 @@ export {
   useCountUp,
   usePairMeasure,
   useSeatSize,
-  useTableChatter
+  useTableChatter,
+  useTurnPulse
 } from './hooks';
 export type { CardMetrics, UsePairMeasureInput } from './hooks';

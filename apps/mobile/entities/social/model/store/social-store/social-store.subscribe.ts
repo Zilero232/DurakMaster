@@ -1,38 +1,22 @@
-import { socketClient } from '@/shared/api';
+import { queryClient, socketClient } from '@/shared/api';
 
+import { ACHIEVEMENTS_QUERY_KEY } from '../../../api';
 import { useSocialStore } from './social-store';
 
 export const subscribeToSocialMessages = () =>
   socketClient.subscribe((message) => {
     const store = useSocialStore.getState();
 
-    switch (message.type) {
-      case 'friends:list':
-        store.setFriends(message.payload);
-        break;
+    if (message.type === 'friends:invited') {
+      store.setInvite(message.payload);
 
-      case 'friends:found':
-        store.setFound(message.payload.profiles);
-        break;
+      return;
+    }
 
-      case 'friends:invited':
-        store.setInvite(message.payload);
-        break;
+    if (message.type === 'achievements:unlocked') {
+      store.setFreshlyUnlocked(message.payload.ids);
 
-      case 'achievements:list':
-        store.setAchievements(message.payload.achievements);
-        break;
-
-      case 'leaderboard:list':
-        store.setLeaderboard(message.payload);
-        break;
-
-      case 'achievements:unlocked':
-        store.setFreshlyUnlocked(message.payload.ids);
-        break;
-
-      default:
-        break;
+      void queryClient.invalidateQueries({ queryKey: ACHIEVEMENTS_QUERY_KEY });
     }
   });
 

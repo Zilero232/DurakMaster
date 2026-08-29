@@ -1,5 +1,6 @@
 import { ScrollView, View } from 'react-native';
 
+import { useMyProfile } from '@/entities/session';
 import { useLayout } from '@/shared/model/layout';
 import { ProfileMenu } from '@/widgets/profile/profile-menu';
 import { ProfileSummary } from '@/widgets/profile/profile-summary';
@@ -9,13 +10,19 @@ import type { ProfileTabProps } from './ProfileTab.types';
 
 import { styles } from './ProfileTab.styles';
 
-export const ProfileTab = ({ profile, onClaimBonus, onOpenPanel }: ProfileTabProps) => {
+export const ProfileTab = ({ profile, onOpenPanel }: ProfileTabProps) => {
   const { isDesktop } = useLayout();
+
+  const { claimBonus } = useMyProfile();
+
+  if (!profile) {
+    return null;
+  }
 
   const wallet = (
     <WalletBar
       profile={profile}
-      onClaimBonus={onClaimBonus}
+      onClaimBonus={claimBonus}
       onEdit={() => onOpenPanel('profileEditor')}
     />
   );

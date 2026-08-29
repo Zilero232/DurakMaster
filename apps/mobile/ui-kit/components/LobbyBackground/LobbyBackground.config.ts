@@ -8,9 +8,25 @@ export type SuitMark = {
   size: number;
   rotate: number;
   opacity: number;
+
+  delay: number;
+  speed: number;
+  direction: -1 | 1;
 };
 
-export const SUIT_MARKS: SuitMark[] = [
+const DELAY_STEP_MS = 640;
+
+const SPEED_STEPS = [1, 1.35, 0.8, 1.15] as const;
+
+const withMotion = (marks: Omit<SuitMark, 'delay' | 'direction' | 'speed'>[]): SuitMark[] =>
+  marks.map((mark, index) => ({
+    ...mark,
+    delay: index * DELAY_STEP_MS,
+    speed: SPEED_STEPS[index % SPEED_STEPS.length] ?? 1,
+    direction: index % 2 === 0 ? 1 : -1
+  }));
+
+export const SUIT_MARKS: SuitMark[] = withMotion([
   { id: 'spade-1', suit: 'spades', top: 0.04, left: 0.76, size: 138, rotate: 18, opacity: 0.05 },
   { id: 'heart-1', suit: 'hearts', top: 0.02, left: 0.28, size: 74, rotate: -12, opacity: 0.035 },
   { id: 'club-1', suit: 'clubs', top: 0.1, left: 0.05, size: 96, rotate: 24, opacity: 0.04 },
@@ -37,4 +53,4 @@ export const SUIT_MARKS: SuitMark[] = [
   { id: 'spade-5', suit: 'spades', top: 0.85, left: 0.66, size: 122, rotate: 26, opacity: 0.04 },
   { id: 'diamond-4', suit: 'diamonds', top: 0.9, left: 0.4, size: 72, rotate: -18, opacity: 0.03 },
   { id: 'heart-5', suit: 'hearts', top: 0.93, left: 0.08, size: 112, rotate: -8, opacity: 0.04 }
-];
+]);

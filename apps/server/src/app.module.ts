@@ -14,6 +14,8 @@ import { SocialModule } from './modules/social';
   imports: [
     AppConfigModule,
     LoggerModule.forRootAsync({
+      imports: [],
+      providers: [],
       inject: [AppConfigService],
       useFactory: (config: AppConfigService) => loggerOptions(config.isDevelopment)
     }),

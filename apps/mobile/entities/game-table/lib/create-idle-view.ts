@@ -14,6 +14,7 @@ export const createIdleView = (table: LobbyTable, rules: DurakRules): ViewForGam
       seat,
       handCount: 0,
       isOut: false,
+      outPlace: null,
       isDisconnected: false
     };
   }),

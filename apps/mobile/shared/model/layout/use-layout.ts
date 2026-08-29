@@ -16,17 +16,15 @@ export type LayoutInfo = {
   isPortrait: boolean;
 };
 
+const SIZES = ['desktop', 'wide', 'medium', 'compact'] as const satisfies readonly Breakpoint[];
+
+const resolveSize = (width: number): Breakpoint =>
+  SIZES.find((size) => width >= breakpoint[size]) ?? 'compact';
+
 export const useLayout = (): LayoutInfo => {
   const { width, height } = useWindowDimensions();
 
-  const size: Breakpoint =
-    width >= breakpoint.desktop
-      ? 'desktop'
-      : width >= breakpoint.wide
-        ? 'wide'
-        : width >= breakpoint.medium
-          ? 'medium'
-          : 'compact';
+  const size = resolveSize(width);
 
   return {
     width,

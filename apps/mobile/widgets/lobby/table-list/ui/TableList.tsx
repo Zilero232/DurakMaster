@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { match } from 'ts-pattern';
 
-import { useSessionStore } from '@/entities/session';
+import { useMyProfile, useSessionStore } from '@/entities/session';
 import { useLayout } from '@/shared/model/layout';
 import { Button, colors, iconSize, SuitIcon } from '@/ui-kit';
 
@@ -23,12 +23,15 @@ const columnsFor = (width: number): number => Math.max(1, Math.floor(width / COL
 
 const keyExtractor = (table: LobbyTable) => table.id;
 
-export const TableList = ({ tables, status, onJoin, onCreate }: TableListProps) => {
+export const TableList = ({ onJoin, onCreate }: TableListProps) => {
   const { t } = useTranslation();
 
   const { isDesktop } = useLayout();
 
-  const myUserId = useSessionStore((store) => store.profile?.userId);
+  const { profile } = useMyProfile();
+  const myUserId = profile?.userId;
+  const tables = useSessionStore((store) => store.tables);
+  const status = useSessionStore((store) => store.status);
 
   const [listWidth, setListWidth] = useState(0);
 

@@ -1,10 +1,8 @@
 import type {
-  AvatarSeed,
   BoostId,
   Card,
   GameErrorCode,
   LobbyTable,
-  MyProfile,
   PlayerView,
   PublicProfile,
   QuickPhraseId,
@@ -28,7 +26,6 @@ export type SessionState = {
   status: ConnectionStatus;
 
   isLobbySubscribed: boolean;
-  profile: MyProfile | null;
 
   tables: LobbyTable[];
   currentTable: LobbyTable | null;
@@ -62,7 +59,6 @@ export type SessionActions = {
   disconnect: () => void;
 
   subscribeLobby: () => void;
-  requestProfile: () => void;
   createTable: (settings: TableSettings, password?: string) => void;
   joinTable: (tableId: string, password?: string) => void;
   leaveTable: () => void;
@@ -73,11 +69,6 @@ export type SessionActions = {
 
   sendPhrase: (phraseId: QuickPhraseId) => void;
   sendEmoji: (emoji: TauntId) => void;
-  claimBonus: () => void;
-
-  setProfile: (profile: MyProfile) => void;
-  setAvatar: (seed: AvatarSeed) => void;
-  setName: (name: string) => void;
 
   clearOutcome: () => void;
   clearRejection: () => void;

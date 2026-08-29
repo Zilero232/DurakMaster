@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { iconSize } from '@/ui-kit';
+import { CountBadge, iconSize } from '@/ui-kit';
 
 import type { MenuTileProps } from './MenuTile.types';
 
@@ -11,7 +11,8 @@ export const MenuTile = ({
   icon: Icon,
   label,
   tint,
-  badge,
+  badgeCount = 0,
+  badgeTone,
   isLocked = false,
   onPress
 }: MenuTileProps) => {
@@ -35,7 +36,9 @@ export const MenuTile = ({
           <Icon color={tint} size={iconSize.lg} />
         </View>
 
-        {badge && <Text style={styles.badge}>{badge}</Text>}
+        <View style={styles.badge}>
+          <CountBadge count={badgeCount} tone={badgeTone} />
+        </View>
       </View>
 
       <Text numberOfLines={1} style={styles.label}>

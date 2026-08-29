@@ -22,4 +22,14 @@ export class AuthService {
       return null;
     }
   }
+
+  async resolveSessionToken(headers: Headers): Promise<string | null> {
+    try {
+      const session = await this.auth.api.getSession({ headers });
+
+      return session?.session.token ?? null;
+    } catch {
+      return null;
+    }
+  }
 }

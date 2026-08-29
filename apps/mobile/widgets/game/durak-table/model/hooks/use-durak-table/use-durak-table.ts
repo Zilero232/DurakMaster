@@ -1,6 +1,6 @@
 import type { BoostId } from '@durak-master/schemas';
 
-import { useSessionStore } from '@/entities/session';
+import { useMyProfile, useSessionStore } from '@/entities/session';
 import { useAnimationSpeed, useSettingsStore } from '@/entities/settings';
 
 import type { UseDurakTableInput } from './use-durak-table.types';
@@ -10,7 +10,7 @@ import { useCardDrag } from '../use-card-drag';
 export const useDurakTable = ({ game }: UseDurakTableInput) => {
   const sendPhrase = useSessionStore((store) => store.sendPhrase);
   const sendEmoji = useSessionStore((store) => store.sendEmoji);
-  const profile = useSessionStore((store) => store.profile);
+  const { profile } = useMyProfile();
   const setReady = useSessionStore((store) => store.setReady);
   const currentTable = useSessionStore((store) => store.currentTable);
   const addBot = useSessionStore((store) => store.addBot);

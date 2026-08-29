@@ -25,9 +25,8 @@ export const styles = StyleSheet.create({
   },
 
   top: {
-    flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing[2]
+    justifyContent: 'center'
   },
 
   halo: {
@@ -40,10 +39,9 @@ export const styles = StyleSheet.create({
   },
 
   badge: {
-    fontSize: fontSize.sm,
-    fontWeight: '700',
-    fontFamily: fontFamily.sansBold,
-    color: colors.goldBright
+    position: 'absolute',
+    top: -spacing[1],
+    right: -spacing[2]
   },
 
   label: {

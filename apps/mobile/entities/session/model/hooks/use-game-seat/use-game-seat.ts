@@ -1,5 +1,6 @@
 import type { ActionForGame, GameId, PlayerView, ViewForGame } from '@durak-master/schemas';
 
+import { useMyProfile } from '../../../api';
 import { sendGameAction, useSessionStore } from '../../store';
 
 const viewForGame = <G extends GameId>(view: PlayerView | null, game: G) =>
@@ -7,7 +8,7 @@ const viewForGame = <G extends GameId>(view: PlayerView | null, game: G) =>
 
 export const useGameSeat = <G extends GameId>(game: G) => {
   const rawView = useSessionStore((store) => store.view);
-  const profile = useSessionStore((store) => store.profile);
+  const { profile } = useMyProfile();
   const players = useSessionStore((store) => store.tablePlayers);
   const currentTable = useSessionStore((store) => store.currentTable);
   const storedSeat = useSessionStore((store) => store.mySeat);
@@ -57,6 +58,7 @@ export const useGameSeat = <G extends GameId>(game: G) => {
         seat,
         handCount: 0,
         isOut: false,
+        outPlace: null,
         isDisconnected: false
       };
     });

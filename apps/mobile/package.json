@@ -4,7 +4,7 @@
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
-    "predev": "lsof -ti:8081 | xargs kill -9 2>/dev/null || true",
+    "predev": "fkill :8081 --force --silent",
     "dev": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
@@ -71,6 +71,7 @@
   },
   "devDependencies": {
     "@testing-library/jest-native": "^5.4.3",
+    "babel-preset-expo": "~57.0.9",
     "@testing-library/react-native": "^14.0.1",
     "@types/react": "~19.2.18",
     "jsdom": "^30.0.1",

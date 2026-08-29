@@ -35,6 +35,26 @@ const clearWebToken = (): void => {
   } catch {}
 };
 
+const requestWebToken = async (): Promise<string | null> => {
+  try {
+    const response = await fetch(`${API_URL}/api/auth/ws-token`, { credentials: 'include' });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const { token } = (await response.json()) as { token: string | null };
+
+    if (token) {
+      globalThis.localStorage?.setItem(WEB_TOKEN_KEY, token);
+    }
+
+    return token;
+  } catch {
+    return null;
+  }
+};
+
 export const authClient = createAuthClient({
   baseURL: API_URL,
 
@@ -60,7 +80,7 @@ const SESSION_COOKIE_NAME = 'better-auth.session_token';
 
 export const getAuthToken = async (): Promise<string | null> => {
   if (isWeb) {
-    return readWebToken();
+    return readWebToken() ?? (await requestWebToken());
   }
 
   const cookie = await Promise.resolve()

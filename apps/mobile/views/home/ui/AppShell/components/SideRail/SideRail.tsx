@@ -2,6 +2,7 @@ import { LogOut } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
+import { LanguageSwitch } from '@/shared/i18n';
 import { colors, iconSize } from '@/ui-kit';
 
 import type { SideRailProps } from './SideRail.types';
@@ -38,6 +39,8 @@ export const SideRail = ({ tab, status, onChange, onSignOut }: SideRailProps) =>
             {status === 'connecting' ? t('connection.connecting') : t('connection.offline')}
           </Text>
         )}
+
+        <LanguageSwitch />
 
         <Pressable
           accessibilityRole='button'

@@ -9,7 +9,8 @@ export {
   getCardSize,
   MAX_FAN_ANGLE,
   screen,
-  TABLE_MAX_WIDTH
+  TABLE_MAX_WIDTH,
+  TOAST_MAX_WIDTH
 } from './layout';
 export type { CardScaleName } from './layout';
 

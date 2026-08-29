@@ -5,6 +5,11 @@ import { Injectable, Logger } from '@nestjs/common';
 
 import { PrismaService } from '../../../lib/prisma/prisma.service';
 
+export type ProfileIdentityListener = (
+  userId: string,
+  identity: { name: string; avatarUrl: string | null }
+) => void;
+
 const FREE_CREDITS_AMOUNT = 1_000;
 const FREE_CREDITS_INTERVAL_MS = 4 * 60 * 60 * 1000;
 
@@ -12,7 +17,21 @@ const FREE_CREDITS_INTERVAL_MS = 4 * 60 * 60 * 1000;
 export class ProfilesService {
   private readonly logger = new Logger(ProfilesService.name);
 
+  private readonly identityListeners = new Set<ProfileIdentityListener>();
+
   constructor(private readonly prisma: PrismaService) {}
+
+  onIdentityChanged(listener: ProfileIdentityListener): void {
+    this.identityListeners.add(listener);
+  }
+
+  private announceIdentity(profile: MyProfile): MyProfile {
+    for (const listener of this.identityListeners) {
+      listener(profile.userId, { name: profile.name, avatarUrl: profile.avatarUrl });
+    }
+
+    return profile;
+  }
 
   async ensureProfile(userId: string): Promise<MyProfile> {
     const [user, profile] = await Promise.all([
@@ -179,13 +198,13 @@ export class ProfilesService {
       data: { image: toAvatarUrl(seed) }
     });
 
-    return this.ensureProfile(userId);
+    return this.announceIdentity(await this.ensureProfile(userId));
   }
 
   async setAvatarUrl(userId: string, url: string): Promise<MyProfile> {
     await this.prisma.user.update({ where: { id: userId }, data: { image: url } });
 
-    return this.ensureProfile(userId);
+    return this.announceIdentity(await this.ensureProfile(userId));
   }
 
   async setName(userId: string, name: string): Promise<MyProfile> {
@@ -194,7 +213,7 @@ export class ProfilesService {
       data: { name: name.trim() }
     });
 
-    return this.ensureProfile(userId);
+    return this.announceIdentity(await this.ensureProfile(userId));
   }
 
   async recordLogin(userId: string): Promise<number> {

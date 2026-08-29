@@ -59,7 +59,7 @@ These are not style preferences — breaking any one of them breaks the game or 
 
 ```bash
 bun install                # dependencies for all workspaces
-bun dev:infra              # Postgres + Valkey + Mailpit in Docker
+bun dev:infra              # Postgres + Valkey in Docker
 bun dev:server             # API — one terminal
 bun dev:mobile             # Expo — another terminal, this is where the QR code is
 bun typecheck              # type check across all packages

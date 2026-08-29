@@ -10,10 +10,7 @@ export const reduceServerMessage = (
 ): Partial<SessionState> | null => {
   switch (message.type) {
     case 'connected':
-      return { status: 'connected', profile: message.payload.profile };
-
-    case 'profile:updated':
-      return { profile: message.payload.profile };
+      return { status: 'connected' };
 
     case 'lobby:tables':
       return { tables: message.payload.tables };
@@ -57,7 +54,6 @@ export const reduceServerMessage = (
 
     case 'table:boost-used':
       return {
-        profile: state.profile ? { ...state.profile, coins: message.payload.coins } : state.profile,
         revealed: {
           boost: message.payload.boost,
           cards: message.payload.talon ?? message.payload.hand ?? [],

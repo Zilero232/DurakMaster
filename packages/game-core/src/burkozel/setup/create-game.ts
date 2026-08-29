@@ -20,6 +20,7 @@ export function createGame(input: CreateBurkozelGameInput): BurkozelState {
     seat: index,
     handCount: BURKOZEL_HAND_SIZE,
     isOut: false,
+    outPlace: null,
     isDisconnected: false
   }));
 

@@ -32,7 +32,6 @@ export const useTableJoin = () => {
   };
 
   return {
-    tables,
     isPasswordPromptOpen: pendingTableId !== null,
     join,
     confirmPassword,

@@ -4,6 +4,9 @@ export type { AvatarProps } from './Avatar';
 export { Button, FeedbackProvider, usePressFeedback } from './Button';
 export type { ButtonProps, ButtonSize, ButtonVariant } from './Button';
 
+export { CountBadge } from './CountBadge';
+export type { CountBadgeProps, CountBadgeTone } from './CountBadge';
+
 export { SegmentedControl } from './SegmentedControl';
 export type { SegmentedControlProps, SegmentedOption } from './SegmentedControl';
 

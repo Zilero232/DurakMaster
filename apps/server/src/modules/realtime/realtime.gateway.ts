@@ -1,4 +1,4 @@
-import type { ClientMessage, MyProfile, UseBoostInput } from '@durak-master/schemas';
+import type { ClientMessage, UseBoostInput } from '@durak-master/schemas';
 import type { OnModuleDestroy } from '@nestjs/common';
 import type { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit } from '@nestjs/websockets';
 
@@ -12,7 +12,6 @@ import type { ConnectionRequest } from './services';
 
 import { RoomsService } from '../game';
 import { ProfilesService } from '../profile';
-import { AchievementsService, FriendsService, LeaderboardService } from '../social';
 import { HEARTBEAT_INTERVAL_MS, RATE_LIMIT } from './realtime.config';
 import {
   BroadcastService,
@@ -37,9 +36,6 @@ export class RealtimeGateway
   constructor(
     private readonly rooms: RoomsService,
     private readonly profiles: ProfilesService,
-    private readonly friends: FriendsService,
-    private readonly achievements: AchievementsService,
-    private readonly leaderboard: LeaderboardService,
     private readonly registry: SocketRegistryService,
     private readonly connection: ConnectionService,
     private readonly broadcast: BroadcastService,
@@ -213,77 +209,12 @@ export class RealtimeGateway
         this.rooms.getRoomOfUser(userId)?.sendEmoji(userId, message.payload.emoji);
         break;
 
-      case 'profile:get':
-        await this.connection.sendProfile(socket, userId);
-        break;
-
-      case 'profile:set-avatar':
-        await this.updateProfile(socket, userId, () =>
-          this.profiles.setAvatar(userId, message.payload.seed)
-        );
-        break;
-
-      case 'profile:set-name':
-        await this.updateProfile(socket, userId, () =>
-          this.profiles.setName(userId, message.payload.name)
-        );
-        break;
-
-      case 'profile:claim-bonus':
-        await this.tables.claimBonus(socket, userId);
-        break;
-
       case 'game:action':
         this.games.applyAction(socket, userId, message.payload);
         break;
 
-      case 'friends:list':
-        await this.presence.sendList(socket, userId);
-        break;
-
-      case 'friends:search':
-        this.registry.send(socket, {
-          type: 'friends:found',
-          payload: { profiles: await this.friends.search(userId, message.payload.query) }
-        });
-        break;
-
-      case 'friends:request':
-        await this.presence.apply(socket, userId, message.payload.userId, 'request');
-        break;
-
-      case 'friends:accept':
-        await this.presence.apply(socket, userId, message.payload.userId, 'accept');
-        break;
-
-      case 'friends:decline':
-        await this.presence.apply(socket, userId, message.payload.userId, 'decline');
-        break;
-
-      case 'friends:remove':
-        await this.presence.apply(socket, userId, message.payload.userId, 'remove');
-        break;
-
       case 'friends:invite':
         await this.presence.invite(socket, userId, message.payload.userId);
-        break;
-
-      case 'leaderboard:list':
-        this.registry.send(socket, {
-          type: 'leaderboard:list',
-          payload: await this.leaderboard.top(userId)
-        });
-        break;
-
-      case 'achievements:list':
-        this.registry.send(socket, {
-          type: 'achievements:list',
-          payload: { achievements: await this.achievements.list(userId) }
-        });
-        break;
-
-      case 'achievements:claim':
-        await this.claimAchievement(socket, userId, message.payload.achievementId);
         break;
 
       default:
@@ -373,40 +304,6 @@ export class RealtimeGateway
     if (room) {
       this.broadcast.table(room.id);
     }
-  }
-
-  private async updateProfile(
-    socket: Socket,
-    userId: string,
-    update: () => Promise<MyProfile>
-  ): Promise<void> {
-    const profile = await update();
-
-    this.registry.send(socket, { type: 'profile:updated', payload: { profile } });
-
-    this.games.refreshSeatedProfile(userId, profile);
-  }
-
-  private async claimAchievement(
-    socket: Socket,
-    userId: string,
-    achievementId: Parameters<AchievementsService['claim']>[1]
-  ): Promise<void> {
-    const result = await this.achievements.claim(userId, achievementId);
-
-    if ('error' in result) {
-      this.registry.send(socket, {
-        type: 'error',
-        payload: { message: 'That reward is not available', code: result.error }
-      });
-
-      return;
-    }
-
-    this.registry.send(socket, {
-      type: 'profile:updated',
-      payload: { profile: await this.profiles.ensureProfile(userId) }
-    });
   }
 
   private async consumeRateLimit(userId: string): Promise<boolean> {

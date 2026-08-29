@@ -3,32 +3,24 @@ import { useWindowDimensions, View } from 'react-native';
 
 import type { LobbyBackgroundProps } from './LobbyBackground.types';
 
-import { SuitIcon } from '../../icons';
 import { colors, screenGradient } from '../../theme';
+import { DriftingSuit } from './components';
 import { SUIT_MARKS } from './LobbyBackground.config';
 import { styles } from './LobbyBackground.styles';
 
-export const LobbyBackground = ({ children, style }: LobbyBackgroundProps) => {
+export const LobbyBackground = ({ children, style, isStatic = false }: LobbyBackgroundProps) => {
   const { height, width } = useWindowDimensions();
 
   return (
     <LinearGradient colors={screenGradient} style={[styles.root, style]}>
       <View style={styles.layer}>
         {SUIT_MARKS.map((mark) => (
-          <SuitIcon
+          <DriftingSuit
             key={mark.id}
-            style={[
-              styles.mark,
-              {
-                top: height * mark.top,
-                left: width * mark.left,
-                opacity: mark.opacity,
-                transform: [{ rotate: `${mark.rotate}deg` }]
-              }
-            ]}
-            color={colors.foreground}
-            size={mark.size}
-            suit={mark.suit}
+            isStatic={isStatic}
+            left={width * mark.left}
+            mark={mark}
+            top={height * mark.top}
           />
         ))}
       </View>

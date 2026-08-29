@@ -43,7 +43,7 @@ export const createConnection = ({
   const open = async () => {
     const token = await getAuthToken();
 
-    if (getStatus() === 'idle') {
+    if (getStatus() !== 'connecting') {
       return;
     }
 
