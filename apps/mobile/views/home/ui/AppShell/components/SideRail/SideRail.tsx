@@ -4,7 +4,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import { TEST_ID } from '@/shared/config';
 import { LanguageSwitch } from '@/shared/i18n';
-import { colors, iconSize } from '@/ui-kit';
+import { AppLogo, colors, iconSize } from '@/ui-kit';
 
 import type { SideRailProps } from './SideRail.types';
 
@@ -18,8 +18,12 @@ export const SideRail = ({ tab, status, onChange, onSignOut }: SideRailProps) =>
   return (
     <View accessibilityRole='tablist' style={styles.root}>
       <View style={styles.brand}>
-        <Text style={styles.brandName}>{t('common.appName')}</Text>
-        <Text style={styles.brandSubtitle}>{t('common.appSubtitle')}</Text>
+        <AppLogo size={40} />
+
+        <View>
+          <Text style={styles.brandName}>{t('common.appName')}</Text>
+          <Text style={styles.brandSubtitle}>{t('common.appSubtitle')}</Text>
+        </View>
       </View>
 
       <View style={styles.nav}>

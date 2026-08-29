@@ -35,6 +35,10 @@ export const styles = StyleSheet.create({
     ...shadows.panel
   },
 
+  logo: {
+    alignSelf: 'center'
+  },
+
   title: {
     fontSize: fontSize.xxl,
     fontWeight: '800',

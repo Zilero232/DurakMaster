@@ -15,6 +15,9 @@ export const styles = StyleSheet.create({
   },
 
   brand: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[3],
     paddingHorizontal: spacing[3]
   },
 

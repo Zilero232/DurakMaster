@@ -1,3 +1,6 @@
+export { AppLogo } from './components';
+export type { AppLogoProps } from './components';
+
 export {
   CardThemeProvider,
   ContentWidth,

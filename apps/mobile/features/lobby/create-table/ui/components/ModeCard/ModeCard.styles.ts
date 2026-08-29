@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
     minHeight: 74,
     paddingVertical: spacing[2],
     paddingHorizontal: spacing[2],
-    borderWidth: 2,
+    borderWidth: StyleSheet.hairlineWidth * 2,
     borderColor: colors.transparent,
     borderRadius: radii.md,
     backgroundColor: colors.surface1,

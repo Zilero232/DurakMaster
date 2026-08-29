@@ -12,7 +12,7 @@ import { useSettingsStore } from '@/entities/settings';
 import { authClient } from '@/shared/api';
 import { TEST_ID } from '@/shared/config';
 import { LanguageSwitch } from '@/shared/i18n';
-import { Button, LobbyBackground } from '@/ui-kit';
+import { AppLogo, Button, LobbyBackground } from '@/ui-kit';
 
 import type { AuthMode } from './SignInForm.types';
 
@@ -68,6 +68,8 @@ export const SignInForm = () => {
       >
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps='handled'>
           <View style={styles.card}>
+            <AppLogo size={64} style={styles.logo} />
+
             <Text style={styles.title}>
               {t(isSignIn ? 'auth.signInTitle' : 'auth.signUpTitle')}
             </Text>

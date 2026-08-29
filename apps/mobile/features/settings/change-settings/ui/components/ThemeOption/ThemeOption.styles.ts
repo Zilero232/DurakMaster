@@ -14,9 +14,9 @@ export const styles = StyleSheet.create({
     gap: spacing[2],
     paddingVertical: spacing[3],
     paddingHorizontal: spacing[2],
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: StyleSheet.hairlineWidth * 2,
     borderColor: colors.border,
-    borderRadius: radii.sm,
+    borderRadius: radii.md,
     backgroundColor: colors.surface1
   },
 

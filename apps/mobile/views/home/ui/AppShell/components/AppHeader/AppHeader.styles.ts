@@ -1,6 +1,14 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+import {
+  borderWidth,
+  colors,
+  fontFamily,
+  fontSize,
+  ICON_BUTTON_SIZE,
+  radii,
+  spacing
+} from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -40,9 +48,9 @@ export const styles = StyleSheet.create({
   iconButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 36,
-    height: 36,
-    borderWidth: StyleSheet.hairlineWidth * 2,
+    width: ICON_BUTTON_SIZE,
+    height: ICON_BUTTON_SIZE,
+    borderWidth: borderWidth.hairline,
     borderColor: colors.glassBorder,
     borderRadius: radii.pill,
     backgroundColor: 'rgba(255, 255, 255, 0.14)'

@@ -12,8 +12,8 @@ export const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    height: 36,
-    borderWidth: 2,
+    minHeight: 44,
+    borderWidth: StyleSheet.hairlineWidth * 2,
     borderColor: colors.transparent,
     borderRadius: radii.pill,
     backgroundColor: colors.surface1
