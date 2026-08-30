@@ -8,8 +8,7 @@ name: deploy
 #   EXPO_PUBLIC_API_URL       baked into the web bundle at build time
 #   DEPLOY_SSH_HOST           the VPS
 #   DEPLOY_SSH_USER
-#   DEPLOY_SSH_KEY            private key — preferred
-#   DEPLOY_SSH_PASSWORD       only used when no key is set
+#   DEPLOY_SSH_PASSWORD       the VPS password
 #   DEPLOY_PATH               where docker-compose.yml lives, e.g. /opt/durakmaster
 #
 # Actions are pinned to a commit SHA, not a tag: a moved tag would run unknown
@@ -25,11 +24,6 @@ on:
 concurrency:
   group: deploy
   cancel-in-progress: false
-
-# prisma.config.ts resolves DIRECT_URL through env(), which throws when unset.
-env:
-  DATABASE_URL: postgresql://placeholder
-  DIRECT_URL: postgresql://placeholder
 
 permissions: {}
 
@@ -106,7 +100,6 @@ jobs:
         with:
           host: ${{ secrets.DEPLOY_SSH_HOST }}
           username: ${{ secrets.DEPLOY_SSH_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
           password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
           source: docker-compose.yml
           target: ${{ secrets.DEPLOY_PATH }}
@@ -121,7 +114,6 @@ jobs:
         with:
           host: ${{ secrets.DEPLOY_SSH_HOST }}
           username: ${{ secrets.DEPLOY_SSH_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
           password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
           envs: DEPLOY_PATH
           script: |
