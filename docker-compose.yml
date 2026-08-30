@@ -42,13 +42,13 @@ services:
     # The postgres entrypoint reads POSTGRES_* directly from the env file.
     env_file:
       - ./.env
-    # Bound to loopback, never to 0.0.0.0: the server reaches Postgres over the
-    # compose network, and an external client tunnels in over SSH:
-    #   ssh -L 5433:localhost:5433 <vps>
-    # Publishing this on a public interface would not be covered by UFW — Docker
-    # writes its rules into FORWARD, so the port would stay open to the internet.
+    # Published on every interface so a desktop client can connect directly.
+    # UFW does not cover this — Docker writes its rules into FORWARD — so the
+    # password in POSTGRES_PASSWORD is the only thing guarding the database.
+    # Keep it long, and restrict the port in the DOCKER-USER chain to trusted
+    # addresses when the list of them is known.
     ports:
-      - '127.0.0.1:5433:5432'
+      - '5433:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
