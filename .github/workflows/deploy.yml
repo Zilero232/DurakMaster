@@ -118,6 +118,18 @@ jobs:
           envs: DEPLOY_PATH
           script: |
             set -euo pipefail
+
+            # ssh-action opens a non-login shell, so /etc/profile never runs and
+            # a snap-installed docker stays out of PATH.
+            export PATH="$PATH:/usr/local/bin:/usr/bin:/snap/bin"
+
+            if ! command -v docker >/dev/null; then
+              echo "docker is not installed on this host. Install it once:" >&2
+              echo "  curl -fsSL https://get.docker.com | sh" >&2
+              echo "  sudo usermod -aG docker \$USER   # then reconnect" >&2
+              exit 1
+            fi
+
             cd "$DEPLOY_PATH"
             docker compose pull web server
             docker compose up -d
