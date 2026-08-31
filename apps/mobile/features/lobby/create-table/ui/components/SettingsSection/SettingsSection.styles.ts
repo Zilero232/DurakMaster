@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
 
 const BADGE_SIZE = 30;
 
@@ -8,14 +8,6 @@ export const styles = StyleSheet.create({
   root: {
     gap: spacing[3],
     minWidth: 0
-  },
-
-  card: {
-    padding: spacing[4],
-    borderRadius: radii.lg,
-    borderWidth: borderWidth.hairline,
-    borderColor: colors.border,
-    backgroundColor: colors.surface1
   },
 
   inRow: {

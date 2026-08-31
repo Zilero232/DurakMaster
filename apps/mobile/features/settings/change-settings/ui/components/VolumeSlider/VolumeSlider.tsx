@@ -6,9 +6,8 @@ import { colors } from '@/ui-kit';
 
 import type { VolumeSliderProps } from './VolumeSlider.types';
 
+import { STEP } from './VolumeSlider.config';
 import { styles } from './VolumeSlider.styles';
-
-const STEP = 0.05;
 
 export const VolumeSlider = ({ value, label, onChange }: VolumeSliderProps) => {
   const handleComplete = (next: number) => {

@@ -1,25 +1,12 @@
-import { Check, Send, UserPlus, X } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { Avatar, colors, iconSize } from '@/ui-kit';
+import { Avatar, colors, iconSize, Panel } from '@/ui-kit';
 
-import type { FriendRowAction, FriendRowProps } from './FriendRow.types';
+import type { FriendRowProps } from './FriendRow.types';
 
+import { AVATAR_SIZE, ICONS, PRIMARY } from './FriendRow.config';
 import { styles } from './FriendRow.styles';
-
-const ICONS = {
-  add: UserPlus,
-  accept: Check,
-  invite: Send,
-
-  decline: X,
-  remove: X
-} as const;
-
-const PRIMARY: FriendRowAction[] = ['accept', 'add', 'invite'];
-
-const AVATAR_SIZE = 40;
 
 export const FriendRow = ({
   profile,
@@ -37,7 +24,7 @@ export const FriendRow = ({
       : t('friends.offline');
 
   return (
-    <View style={styles.root}>
+    <Panel padding='compact' style={styles.root}>
       <View style={styles.avatarWrap}>
         <Avatar name={profile.name} size={AVATAR_SIZE} src={profile.avatarUrl} />
 
@@ -73,6 +60,6 @@ export const FriendRow = ({
           );
         })}
       </View>
-    </View>
+    </Panel>
   );
 };

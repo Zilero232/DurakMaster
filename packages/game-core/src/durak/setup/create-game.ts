@@ -1,5 +1,7 @@
 import type { Card, DurakState, PlayerState, SettingsForGame } from '@durak-master/schemas';
 
+import { isJoker } from '@durak-master/schemas';
+
 import { buildDeck, shuffle } from '../../shared';
 import { HAND_SIZE } from '../config';
 import { computeAttackLimit } from '../rules';
@@ -12,11 +14,34 @@ export type CreateDurakGameInput = {
   randomInt: (maxExclusive: number) => number;
 };
 
+function keepJokerOffTheBottom(deck: Card[]): Card[] {
+  const bottom = deck[deck.length - 1];
+
+  if (!bottom || !isJoker(bottom)) {
+    return deck;
+  }
+
+  const swapIndex = deck.findIndex((card) => !isJoker(card));
+
+  if (swapIndex === -1) {
+    return deck;
+  }
+
+  const swapped = [...deck];
+
+  swapped[deck.length - 1] = deck[swapIndex] as Card;
+  swapped[swapIndex] = bottom;
+
+  return swapped;
+}
+
 export function createGame(input: CreateDurakGameInput): DurakState {
   const { tableId, settings, userIds, randomInt } = input;
   const { rules } = settings;
 
-  const deck = shuffle(buildDeck(rules.deckSize), randomInt);
+  const deck = keepJokerOffTheBottom(
+    shuffle(buildDeck(rules.deckSize, rules.withJokers), randomInt)
+  );
 
   const players: PlayerState[] = userIds.map((userId, index) => ({
     userId,

@@ -20,6 +20,9 @@
   "scripts": {
     "prepare": "husky",
     "dev:infra": "docker compose -f docker-compose.dev.yml up -d",
+    "publish:rustore": "bun scripts/publish-rustore.ts",
+    "commitlint": "commitlint --from origin/main",
+    "commit": "cz",
     "dev:server": "bun --filter @durak-master/server dev",
     "dev:mobile": "bun --filter @durak-master/mobile dev",
     "android": "bun --filter @durak-master/mobile android",
@@ -42,6 +45,14 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:shots": "cross-env E2E_SHOTS=1 playwright test e2e/screenshots.spec.ts"
   },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-git"
+    }
+  },
+  "resolutions": {
+    "zod": "4.4.3"
+  },
   "lint-staged": {
     "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": [
       "eslint --fix",
@@ -50,22 +61,29 @@
     "*.{json,md,yml,yaml}": "prettier --write"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
     "@feature-sliced/steiger-plugin": "^0.7.0",
     "@playwright/test": "^1.62.1",
     "@siberiacancode/eslint": "^2.18.1",
     "@siberiacancode/prettier": "^1.9.0",
     "@siberiacancode/tsconfig": "^1.2.0",
     "@vitest/coverage-v8": "^4.1.11",
+    "commitizen": "^4.3.2",
     "cross-env": "^10.1.0",
+    "cz-git": "^1.14.0",
     "dotenv": "^17.4.2",
     "eslint": "^10.9.1",
     "fkill-cli": "^9.0.0",
     "husky": "^9.1.7",
-    "lint-staged": "^17.3.0",
+    "lint-staged": "^17.4.1",
     "prettier": "^3.9.6",
     "steiger": "^0.6.0",
     "typescript": "6.0.3",
     "vitest": "^4.1.11"
   },
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "zod": "4.4.3"
+  }
 }

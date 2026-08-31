@@ -47,6 +47,11 @@ export class GameFlowService {
     const room = this.rooms.getRoomOfUser(userId);
 
     if (!room) {
+      this.registry.send(socket, {
+        type: 'game:rejected',
+        payload: { code: 'NOT_IN_GAME' }
+      });
+
       return;
     }
 
@@ -74,10 +79,18 @@ export class GameFlowService {
         });
         break;
 
-      case 'idle-removed':
-        void this.releaseIdlePlayers(roomId, event.userIds).catch((error: unknown) => {
-          this.logger.error(`Failed to release idle players in room ${roomId}`, error);
+      case 'stake-released':
+        void this.refundStake(roomId, event.userId).catch((error: unknown) => {
+          this.logger.error(`Failed to release the stake for ${event.userId}`, error);
         });
+        break;
+
+      case 'idle-removed':
+        void this.releaseIdlePlayers(roomId, event.userIds, event.refundUserIds).catch(
+          (error: unknown) => {
+            this.logger.error(`Failed to release idle players in room ${roomId}`, error);
+          }
+        );
         break;
 
       case 'phrase':
@@ -110,11 +123,24 @@ export class GameFlowService {
     this.broadcast.lobby();
   }
 
-  private async releaseIdlePlayers(roomId: string, userIds: string[]): Promise<void> {
+  private async refundStake(roomId: string, userId: string): Promise<void> {
     const bet = this.rooms.getRoom(roomId)?.settings.bet ?? 0;
 
+    await this.profiles.releaseStake(userId, bet);
+  }
+
+  private async releaseIdlePlayers(
+    roomId: string,
+    userIds: string[],
+    refundUserIds: string[]
+  ): Promise<void> {
+    const bet = this.rooms.getRoom(roomId)?.settings.bet ?? 0;
+    const owed = new Set(refundUserIds);
+
     for (const userId of userIds) {
-      await this.profiles.releaseStake(userId, bet);
+      if (owed.has(userId)) {
+        await this.profiles.releaseStake(userId, bet);
+      }
 
       const socket = this.registry.get(userId);
 

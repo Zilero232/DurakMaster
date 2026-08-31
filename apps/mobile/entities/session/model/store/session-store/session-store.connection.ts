@@ -8,6 +8,7 @@ import type { ConnectionStatus } from './session-store.types';
 type ConnectionHandlers = {
   onMessage: (message: ServerMessage) => void;
   onStatus: (status: ConnectionStatus) => void;
+  onDisconnected: () => void;
   getStatus: () => ConnectionStatus;
   isLobbySubscribed: () => boolean;
 };
@@ -15,6 +16,7 @@ type ConnectionHandlers = {
 export const createConnection = ({
   onMessage,
   onStatus,
+  onDisconnected,
   getStatus,
   isLobbySubscribed
 }: ConnectionHandlers) => {
@@ -23,6 +25,7 @@ export const createConnection = ({
   socketClient.subscribeState((state) => {
     if (state === 'closed') {
       onStatus('error');
+      onDisconnected();
 
       return;
     }

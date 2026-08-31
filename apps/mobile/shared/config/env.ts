@@ -37,6 +37,6 @@ const resolveApiUrl = (): string => {
 
 export const API_URL = resolveApiUrl();
 
-export const WS_URL = process.env.EXPO_PUBLIC_WS_URL ?? `${API_URL.replace(/^http/, 'ws')}/ws`;
+export const WS_URL = `${API_URL.replace(/^http/, 'ws')}/ws`;
 
 export const ARE_BOTS_ENABLED = __DEV__;

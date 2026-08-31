@@ -4,7 +4,7 @@ import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Switch, Text, TextInput, View } from 'react-native';
 
-import { colors, iconSize } from '@/ui-kit';
+import { colors, iconSize, Panel } from '@/ui-kit';
 
 import type { PrivacySectionProps } from './PrivacySection.types';
 
@@ -14,7 +14,7 @@ export const PrivacySection = ({ control, isPrivate }: PrivacySectionProps) => {
   const { t } = useTranslation();
 
   return (
-    <View style={styles.root}>
+    <Panel style={styles.root}>
       <View style={styles.row}>
         {isPrivate ? (
           <Lock color={colors.accent} size={iconSize.md} />
@@ -65,6 +65,6 @@ export const PrivacySection = ({ control, isPrivate }: PrivacySectionProps) => {
           name='password'
         />
       )}
-    </View>
+    </Panel>
   );
 };

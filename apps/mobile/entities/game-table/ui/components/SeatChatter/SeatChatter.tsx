@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import Animated, {
   Easing,
   FadeIn,
@@ -14,15 +14,15 @@ import { TauntIcon } from '@/ui-kit';
 
 import type { SeatChatterProps } from './SeatChatter.types';
 
+import { FADE_MS, GROW_MS, HOLD_MS, PEAK_RATIO } from './SeatChatter.config';
 import { styles } from './SeatChatter.styles';
 
-const GROW_MS = 320;
-const HOLD_MS = 1200;
-const FADE_MS = 320;
-
-const PEAK_RATIO = 0.78;
-
-export const SeatChatter = ({ chatter, size, placement = 'above' }: SeatChatterProps) => {
+export const SeatChatter = ({
+  chatter,
+  size,
+  arcLift = 0,
+  placement = 'above'
+}: SeatChatterProps) => {
   const scale = useSharedValue(0);
 
   const sentAt = chatter?.sentAt;
@@ -57,16 +57,24 @@ export const SeatChatter = ({ chatter, size, placement = 'above' }: SeatChatterP
     );
   }
 
+  const isAbove = placement === 'above';
+
   return (
     <Animated.View
       key={chatter.sentAt}
+      style={[
+        styles.bubble,
+        isAbove ? styles.above : styles.below,
+        { transform: [{ translateY: arcLift }] }
+      ]}
       entering={FadeIn.duration(160)}
       exiting={FadeOut.duration(240)}
-      style={[styles.bubble, placement === 'above' ? styles.above : styles.below]}
     >
       <Text numberOfLines={1} style={styles.bubbleText}>
         {chatter.text}
       </Text>
+
+      <View style={[styles.tail, isAbove ? styles.tailAbove : styles.tailBelow]} />
     </Animated.View>
   );
 };

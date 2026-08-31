@@ -35,6 +35,7 @@ const build = (status: ConnectionStatus = 'connecting') => {
   const connection = createConnection({
     onMessage: (message) => seen.push(message.type),
     onStatus: () => {},
+    onDisconnected: () => {},
     getStatus: () => status,
     isLobbySubscribed: () => false
   });

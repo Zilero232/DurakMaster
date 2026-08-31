@@ -38,6 +38,7 @@ export const durakRulesSchema = z.object({
   allowDraw: z.boolean(),
   firstMove: firstMoveSchema,
   allowTransferByShowingTrump: z.boolean(),
+  withJokers: z.boolean(),
   attackLimit: z.number().int().min(1).max(MAX_ATTACK_CARDS_PER_BOUT)
 });
 
@@ -51,5 +52,6 @@ export const DEFAULT_DURAK_RULES: DurakRules = {
   allowDraw: true,
   firstMove: 'lowestTrump',
   allowTransferByShowingTrump: false,
+  withJokers: false,
   attackLimit: MAX_ATTACK_CARDS_PER_BOUT
 };

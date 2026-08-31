@@ -31,7 +31,7 @@ export const styles = StyleSheet.create({
     borderRadius: radii.md,
     borderWidth: borderWidth.hairline,
     borderColor: colors.border,
-    backgroundColor: colors.surface2,
+    backgroundColor: colors.backgroundBottom,
     fontSize: fontSize.md,
     fontFamily: fontFamily.sans,
     color: colors.foreground

@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { colors, iconSize } from '@/ui-kit';
+import { colors, iconSize, Panel } from '@/ui-kit';
 
 import type { SettingsSectionProps } from './SettingsSection.types';
 
@@ -13,22 +13,30 @@ export const SettingsSection = ({
   hint,
   isInRow,
   isPlain
-}: SettingsSectionProps) => (
-  <View style={[styles.root, !isPlain && styles.card, isInRow && styles.inRow]}>
-    <View style={styles.header}>
-      {Icon && (
-        <View style={styles.badge}>
-          <Icon color={colors.accent} size={iconSize.sm} />
+}: SettingsSectionProps) => {
+  const body = (
+    <>
+      <View style={styles.header}>
+        {Icon && (
+          <View style={styles.badge}>
+            <Icon color={colors.accent} size={iconSize.sm} />
+          </View>
+        )}
+
+        <View style={styles.heading}>
+          <Text style={styles.title}>{title}</Text>
+
+          {hint && <Text style={styles.hint}>{hint}</Text>}
         </View>
-      )}
-
-      <View style={styles.heading}>
-        <Text style={styles.title}>{title}</Text>
-
-        {hint && <Text style={styles.hint}>{hint}</Text>}
       </View>
-    </View>
 
-    {children}
-  </View>
-);
+      {children}
+    </>
+  );
+
+  if (isPlain) {
+    return <View style={[styles.root, isInRow && styles.inRow]}>{body}</View>;
+  }
+
+  return <Panel style={[styles.root, isInRow && styles.inRow]}>{body}</Panel>;
+};

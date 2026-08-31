@@ -14,6 +14,7 @@ const DEFAULT_RULES = {
   allowDraw: true,
   firstMove: 'lowestTrump' as const,
   allowTransferByShowingTrump: false,
+  withJokers: false,
   attackLimit: 6
 };
 

@@ -44,6 +44,7 @@ export type RoomMember = {
   isReady: boolean;
   isBot: boolean;
   isConnected: boolean;
+  hasStakeHeld: boolean;
   missedTurns: number;
 };
 
@@ -57,8 +58,9 @@ export type RoomEvent =
       outPlaces: Record<string, number>;
       removedUserId?: string;
     }
-  | { type: 'idle-removed'; userIds: string[] }
+  | { type: 'idle-removed'; userIds: string[]; refundUserIds: string[] }
   | { type: 'phrase'; phrase: TablePhrase }
+  | { type: 'stake-released'; userId: string }
   | { type: 'state-changed' };
 
 export class GameRoom {
@@ -127,6 +129,7 @@ export class GameRoom {
       isReady: isBot,
       isBot,
       isConnected: true,
+      hasStakeHeld: !isBot,
       missedTurns: 0
     };
 
@@ -156,9 +159,50 @@ export class GameRoom {
       return;
     }
 
+    const wasStakeHeld = member.hasStakeHeld;
+
     this.members.delete(userId);
     this.passOwnership(userId);
+
+    if (wasStakeHeld) {
+      this.emit({ type: 'stake-released', userId });
+    }
+
     this.emit({ type: 'state-changed' });
+  }
+
+  hasStakeHeld(userId: string): boolean {
+    return this.members.get(userId)?.hasStakeHeld ?? false;
+  }
+
+  holdStake(userId: string): void {
+    const member = this.members.get(userId);
+
+    if (member) {
+      member.hasStakeHeld = true;
+    }
+  }
+
+  private releaseStakes(): void {
+    for (const member of this.members.values()) {
+      member.hasStakeHeld = false;
+    }
+  }
+
+  private resetToWaiting(): void {
+    this.clearTimers();
+
+    this.status = 'waiting';
+    this.session = null;
+    this.hasDealt = false;
+
+    this.releaseStakes();
+
+    for (const member of this.members.values()) {
+      member.isReady = member.isBot;
+    }
+
+    this.scheduleReadyTimer();
   }
 
   private passOwnership(leavingUserId: string): void {
@@ -188,16 +232,7 @@ export class GameRoom {
 
     this.members.delete(userId);
     this.passOwnership(userId);
-    this.clearTimers();
-
-    this.status = 'waiting';
-    this.session = null;
-
-    for (const member of this.members.values()) {
-      member.isReady = member.isBot;
-    }
-
-    this.scheduleReadyTimer();
+    this.resetToWaiting();
 
     this.emit({
       type: 'finished',
@@ -266,12 +301,20 @@ export class GameRoom {
       return;
     }
 
+    const refundUserIds = idle
+      .filter((member) => member.hasStakeHeld)
+      .map((member) => member.profile.userId);
+
     for (const member of idle) {
       this.members.delete(member.profile.userId);
       this.passOwnership(member.profile.userId);
     }
 
-    this.emit({ type: 'idle-removed', userIds: idle.map((member) => member.profile.userId) });
+    this.emit({
+      type: 'idle-removed',
+      userIds: idle.map((member) => member.profile.userId),
+      refundUserIds
+    });
     this.emit({ type: 'state-changed' });
 
     this.scheduleReadyTimer();
@@ -343,14 +386,7 @@ export class GameRoom {
       const played = this.getMembers();
       const outPlaces = collectOutPlaces(this.session.state.players);
 
-      this.clearTimers();
-
-      this.status = 'waiting';
-      this.session = null;
-
-      for (const member of this.members.values()) {
-        member.isReady = member.isBot;
-      }
+      this.resetToWaiting();
 
       this.emit({
         type: 'finished',

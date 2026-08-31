@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+import { borderWidth, colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -13,7 +13,8 @@ export const styles = StyleSheet.create({
     borderRadius: radii.md,
     borderWidth: borderWidth.hairline,
     borderColor: colors.border,
-    backgroundColor: colors.surface2
+    backgroundColor: colors.surface2,
+    ...shadows.tile
   },
 
   pressed: {

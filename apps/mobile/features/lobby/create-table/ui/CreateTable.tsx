@@ -11,7 +11,7 @@ import { useCreateTableForm } from '../model';
 import { CommonSettings, DurakDeckSection, DurakModesSection, PrivacySection } from './components';
 import { styles } from './CreateTable.styles';
 
-export const CreateTable = ({ onCreate }: CreateTableProps) => {
+export const CreateTable = ({ isPending = false, onCreate }: CreateTableProps) => {
   const { t } = useTranslation();
 
   const { isDesktop } = useLayout();
@@ -35,6 +35,7 @@ export const CreateTable = ({ onCreate }: CreateTableProps) => {
       <Button
         isFullWidth
         isDisabled={!canSubmit}
+        isLoading={isPending}
         size='lg'
         testID={TEST_ID.lobby.createSubmit}
         variant='primary'

@@ -4,6 +4,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { AppConfigModule, AppConfigService, loggerOptions } from './config';
 import { AuthModule } from './lib/auth/auth.module';
 import { PrismaModule } from './lib/prisma/prisma.module';
+import { AdsModule } from './modules/ads';
 import { GameModule } from './modules/game';
 import { HealthModule } from './modules/health';
 import { ProfileModule } from './modules/profile';
@@ -23,6 +24,7 @@ import { SocialModule } from './modules/social';
     AuthModule,
     ProfileModule,
     SocialModule,
+    AdsModule,
     GameModule,
     RealtimeModule,
     HealthModule

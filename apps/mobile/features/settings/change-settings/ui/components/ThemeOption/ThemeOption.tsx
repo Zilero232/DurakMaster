@@ -4,9 +4,8 @@ import { PlayingCard } from '@/ui-kit';
 
 import type { ThemeOptionProps } from './ThemeOption.types';
 
+import { PREVIEW_CARD } from './ThemeOption.config';
 import { PREVIEW_CARD_WIDTH, styles } from './ThemeOption.styles';
-
-const PREVIEW_CARD = { rank: 'ace', suit: 'spades' } as const;
 
 export const ThemeOption = ({ theme, label, isActive, onPress }: ThemeOptionProps) => (
   <Pressable

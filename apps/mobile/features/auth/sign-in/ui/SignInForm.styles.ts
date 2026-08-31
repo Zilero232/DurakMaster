@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
 
 export const CORNER_INSET = spacing[3];
 
@@ -26,13 +26,11 @@ export const styles = StyleSheet.create({
 
   card: {
     gap: spacing[5],
+    padding: spacing[8],
     width: '100%',
     maxWidth: CARD_MAX_WIDTH,
     alignSelf: 'center',
-    padding: spacing[8],
-    borderRadius: radii.xl,
-    backgroundColor: colors.surfaceOverlay,
-    ...shadows.panel
+    borderRadius: radii.xl
   },
 
   logo: {

@@ -24,6 +24,7 @@ model User {
   invitesReceived TableInvite[] @relation("InviteTo")
 
   achievements AchievementProgress[]
+  adViews      AdView[]
 
   @@map("user")
 }

@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react-native';
+import { Check, Hourglass } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -9,11 +9,12 @@ import type { SeatIdentityProps } from './SeatIdentity.types';
 import { useSeatSize } from '../../../../../model';
 import { SeatChatter } from '../../../SeatChatter';
 import { SeatTimer } from '../../../SeatTimer';
+import { CHECK_SIZE, EMPTY_ICON_RATIO } from './SeatIdentity.config';
 import { styles } from './SeatIdentity.styles';
 
-const CHECK_SIZE = 12;
-
 export const SeatIdentity = ({
+  seatCount,
+  arcLift = 0,
   name,
   avatarUrl,
   isEmpty,
@@ -30,18 +31,20 @@ export const SeatIdentity = ({
 }: SeatIdentityProps) => {
   const { t } = useTranslation();
 
-  const seat = useSeatSize();
+  const seat = useSeatSize(seatCount);
 
   return (
     <View style={styles.identity}>
       <View style={[styles.avatarRing, isEmpty && styles.emptyRing]}>
-        <Avatar name={isEmpty ? '' : name} size={seat.avatar} src={avatarUrl} />
+        {isEmpty ? (
+          <Hourglass color={colors.subtleForeground} size={seat.avatar * EMPTY_ICON_RATIO} />
+        ) : (
+          <Avatar name={name} size={seat.avatar} src={avatarUrl} />
+        )}
 
         {isActive && turnSeconds > 0 && (
           <SeatTimer deadline={turnDeadline} size={seat.ring} totalSeconds={turnSeconds} />
         )}
-
-        <SeatChatter chatter={phrase} placement='below' size={seat.avatar} />
 
         {isLoser && <LoserHat size={seat.hat} style={styles.hat} />}
 
@@ -52,7 +55,7 @@ export const SeatIdentity = ({
         )}
       </View>
 
-      <View style={styles.info}>
+      <View style={[styles.info, isEmpty && styles.emptyInfo]}>
         <Text numberOfLines={1} style={styles.name}>
           {name}
         </Text>
@@ -66,6 +69,8 @@ export const SeatIdentity = ({
           <Text style={[styles.role, styles.offline]}>{t('table.role.offline')}</Text>
         )}
       </View>
+
+      <SeatChatter arcLift={arcLift} chatter={phrase} placement='below' size={seat.avatar} />
     </View>
   );
 };

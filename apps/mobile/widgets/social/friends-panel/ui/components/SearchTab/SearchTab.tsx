@@ -10,10 +10,8 @@ import type { SearchTabProps } from './SearchTab.types';
 
 import { EmptyState } from '../EmptyState';
 import { FriendRow } from '../FriendRow';
+import { DEBOUNCE_MS, MIN_QUERY } from './SearchTab.config';
 import { styles } from './SearchTab.styles';
-
-const DEBOUNCE_MS = 350;
-const MIN_QUERY = 2;
 
 export const SearchTab = ({ found, onSearch, onAction }: SearchTabProps) => {
   const { t } = useTranslation();

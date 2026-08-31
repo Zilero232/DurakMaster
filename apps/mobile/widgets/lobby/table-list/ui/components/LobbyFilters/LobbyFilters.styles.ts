@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+import { borderWidth, colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -29,12 +29,14 @@ export const styles = StyleSheet.create({
     borderWidth: borderWidth.hairline,
     borderColor: colors.border,
     borderRadius: radii.pill,
-    backgroundColor: colors.surface1
+    backgroundColor: colors.surface1,
+    ...shadows.tile
   },
 
   chipActive: {
-    borderColor: colors.accent,
-    backgroundColor: colors.accent
+    borderColor: colors.borderGold,
+    backgroundColor: colors.accent,
+    ...shadows.button
   },
 
   chipLabel: {

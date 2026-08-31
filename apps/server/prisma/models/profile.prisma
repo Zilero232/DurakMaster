@@ -20,8 +20,10 @@ model Profile {
   lastLoginAt       DateTime?
   loginStreak       Int       @default(0)
 
-  /** Consecutive wins, reset by a loss. Kept here, not on an achievement row:
-      an unlocked achievement stops moving, and the run has to keep counting. */
+  /**
+   * Consecutive wins, reset by a loss. Kept here, not on an achievement row:
+   * an unlocked achievement stops moving, and the run has to keep counting.
+   */
   winStreak Int @default(0)
 
   createdAt DateTime @default(now())
@@ -30,4 +32,16 @@ model Profile {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("profile")
+}
+
+model AdView {
+  id     String @id @default(cuid())
+  userId String
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("ad_view")
 }

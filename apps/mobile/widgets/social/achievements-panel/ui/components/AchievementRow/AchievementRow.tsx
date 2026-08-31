@@ -2,7 +2,7 @@ import { Coins, Trophy } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { Button, colors, iconSize } from '@/ui-kit';
+import { Button, colors, iconSize, Panel } from '@/ui-kit';
 
 import type { AchievementRowProps } from './AchievementRow.types';
 
@@ -17,7 +17,7 @@ export const AchievementRow = ({ achievement, onClaim }: AchievementRowProps) =>
   const isClaimable = isUnlocked && claimedAt === null;
 
   return (
-    <View style={[styles.root, !isUnlocked && styles.locked]}>
+    <Panel padding='compact' style={[styles.root, !isUnlocked && styles.locked]}>
       <View style={styles.head}>
         <Trophy color={isUnlocked ? colors.gold : colors.subtleForeground} size={iconSize.lg} />
 
@@ -49,6 +49,6 @@ export const AchievementRow = ({ achievement, onClaim }: AchievementRowProps) =>
           </Text>
         </>
       )}
-    </View>
+    </Panel>
   );
 };

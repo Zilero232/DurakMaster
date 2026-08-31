@@ -1,5 +1,7 @@
 import type { Card, PlayerState, Suit } from '@durak-master/schemas';
 
+import { isJoker } from '@durak-master/schemas';
+
 import { rankValue } from '../rules';
 
 export function findFirstAttackerSeat(
@@ -16,6 +18,10 @@ export function findFirstAttackerSeat(
     const hand = hands[player.userId] ?? [];
 
     for (const card of hand) {
+      if (isJoker(card)) {
+        continue;
+      }
+
       const value = rankValue(card.rank);
 
       if (card.suit === trump && (bestTrump === null || value < bestTrump)) {

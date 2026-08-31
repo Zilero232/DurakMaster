@@ -27,3 +27,9 @@ export const claimProfileBonus = async (): Promise<MyProfile> => {
 
   return data;
 };
+
+export const skipBonusWait = async (): Promise<MyProfile> => {
+  const { data } = await httpClient.post<MyProfile>('/ads/skip-bonus-wait');
+
+  return data;
+};

@@ -12,14 +12,13 @@ import { useSettingsStore } from '@/entities/settings';
 import { authClient } from '@/shared/api';
 import { TEST_ID } from '@/shared/config';
 import { LanguageSwitch } from '@/shared/i18n';
-import { AppLogo, Button, LobbyBackground } from '@/ui-kit';
+import { AppLogo, Button, LobbyBackground, Panel } from '@/ui-kit';
 
 import type { AuthMode } from './SignInForm.types';
 
 import { CredentialsFields } from './components';
+import { DEFAULT_VALUES } from './SignInForm.config';
 import { CORNER_INSET, styles } from './SignInForm.styles';
-
-const DEFAULT_VALUES: CredentialsInput = { email: '', password: '', name: '' };
 
 export const SignInForm = () => {
   const { t } = useTranslation();
@@ -67,7 +66,7 @@ export const SignInForm = () => {
         style={styles.root}
       >
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps='handled'>
-          <View style={styles.card}>
+          <Panel elevation='floating' padding='roomy' style={styles.card}>
             <AppLogo size={64} style={styles.logo} />
 
             <Text style={styles.title}>
@@ -95,7 +94,7 @@ export const SignInForm = () => {
                 {t(isSignIn ? 'auth.switchToSignUp' : 'auth.switchToSignIn')}
               </Text>
             </Pressable>
-          </View>
+          </Panel>
         </ScrollView>
       </KeyboardAvoidingView>
     </LobbyBackground>

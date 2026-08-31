@@ -9,8 +9,7 @@ import type { TableViewProps } from '../view.types';
 
 import { TableBadges } from '../../../TableBadges';
 import { styles } from '../../TableRow.styles';
-
-const VISIBLE_AVATARS = 4;
+import { VISIBLE_AVATARS } from './TableTile.config';
 
 export const TableTile = ({ table, isMine, isBlocked, isPlaying }: TableViewProps) => {
   const { t } = useTranslation();

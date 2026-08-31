@@ -1,1 +1,1 @@
-export { formatCredits } from './format';
+export { formatCountdown, formatCredits } from './format';

@@ -37,6 +37,15 @@ export class BroadcastService {
     });
   }
 
+  tableRemoved(roomId: string): void {
+    for (const userId of this.registry.getLobbySubscribers()) {
+      this.registry.sendTo(userId, {
+        type: 'lobby:table-removed',
+        payload: { tableId: roomId }
+      });
+    }
+  }
+
   lobby(): void {
     const tables = this.rooms.listTables();
 

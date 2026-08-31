@@ -10,12 +10,15 @@ import { GameRoom } from '../lib';
 
 export type RoomListener = (roomId: string, event: RoomEvent) => void;
 
+export type RoomRemovedListener = (roomId: string) => void;
+
 @Injectable()
 export class RoomsService implements OnModuleDestroy {
   private readonly logger = new Logger(RoomsService.name);
   private readonly rooms = new Map<string, GameRoom>();
   private readonly userRoom = new Map<string, string>();
   private readonly listeners = new Set<RoomListener>();
+  private readonly removalListeners = new Set<RoomRemovedListener>();
   private readonly reconnectTimers = new Map<string, NodeJS.Timeout>();
 
   onModuleDestroy(): void {
@@ -37,6 +40,12 @@ export class RoomsService implements OnModuleDestroy {
     this.listeners.add(listener);
 
     return () => this.listeners.delete(listener);
+  }
+
+  onRoomRemoved(listener: RoomRemovedListener): () => void {
+    this.removalListeners.add(listener);
+
+    return () => this.removalListeners.delete(listener);
   }
 
   private notify(roomId: string, event: RoomEvent): void {
@@ -108,7 +117,11 @@ export class RoomsService implements OnModuleDestroy {
 
     room.clearTimers();
     this.rooms.delete(room.id);
-    this.notify(room.id, { type: 'state-changed' });
+
+    for (const listener of this.removalListeners) {
+      listener(room.id);
+    }
+
     this.logger.log(`Room removed: ${room.id}`);
   }
 

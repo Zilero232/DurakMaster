@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
     borderWidth: borderWidth.regular,
     borderColor: colors.border,
     borderRadius: radii.md,
-    backgroundColor: colors.surface2
+    backgroundColor: colors.backgroundBottom
   },
 
   fieldInvalid: {

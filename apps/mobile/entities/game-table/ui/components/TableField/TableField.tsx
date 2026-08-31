@@ -15,6 +15,7 @@ export const TableField = ({
   pairs,
   beatableIndexes,
   mySeat,
+  isWaiting = false,
   hoveredIndex = null,
   cardScale = 'normal',
   isInstant = false,
@@ -60,7 +61,9 @@ export const TableField = ({
   if (pairs.length === 0) {
     return (
       <View style={styles.root}>
-        <Text style={styles.empty}>{t('table.attackerTurn')}</Text>
+        <Text style={styles.empty}>
+          {t(isWaiting ? 'table.waitingTitle' : 'table.attackerTurn')}
+        </Text>
       </View>
     );
   }

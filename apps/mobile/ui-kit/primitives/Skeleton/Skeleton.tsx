@@ -10,9 +10,8 @@ import Animated, {
 import type { SkeletonProps } from './Skeleton.types';
 
 import { radii } from '../../theme';
+import { PULSE_MS } from './Skeleton.config';
 import { styles } from './Skeleton.styles';
-
-const PULSE_MS = 900;
 
 export const Skeleton = ({
   width = '100%',

@@ -2,6 +2,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { LeaveCorner, RevealedCards, RewardBurst } from '@/entities/game-table';
 import { useSessionStore } from '@/entities/session';
+import { useLayout } from '@/shared/model/layout';
 import { ContentWidth, FeltBackground, TABLE_MAX_WIDTH } from '@/ui-kit';
 
 import type { DurakTableProps } from './DurakTable.types';
@@ -24,6 +25,8 @@ export const DurakTable = ({
 }: DurakTableProps) => {
   const insets = useSafeAreaInsets();
 
+  const { isDesktop } = useLayout();
+
   const revealed = useSessionStore((store) => store.revealed);
   const clearRevealed = useSessionStore((store) => store.clearRevealed);
 
@@ -38,7 +41,7 @@ export const DurakTable = ({
           maxWidth={TABLE_MAX_WIDTH}
           style={[styles.table, { paddingTop: insets.top, paddingBottom: insets.bottom }]}
         >
-          <LeaveCorner isPlaying={!isWaiting} onLeave={onLeave} />
+          {isDesktop && <LeaveCorner isPlaying={!isWaiting} onLeave={onLeave} />}
 
           <OpponentsRow
             loserUserId={game.outcome?.loserUserId ?? null}

@@ -4,14 +4,12 @@ import { toAvatarUrl } from '@durak-master/schemas';
 import { Injectable, Logger } from '@nestjs/common';
 
 import { PrismaService } from '../../../lib/prisma/prisma.service';
+import { FREE_CREDITS_AMOUNT, FREE_CREDITS_INTERVAL_MS } from '../config';
 
 export type ProfileIdentityListener = (
   userId: string,
   identity: { name: string; avatarUrl: string | null }
 ) => void;
-
-const FREE_CREDITS_AMOUNT = 1_000;
-const FREE_CREDITS_INTERVAL_MS = 4 * 60 * 60 * 1000;
 
 @Injectable()
 export class ProfilesService {
@@ -170,26 +168,23 @@ export class ProfilesService {
   }
 
   async claimFreeCredits(userId: string): Promise<MyProfile | null> {
-    const profile = await this.prisma.profile.findUnique({ where: { userId } });
+    const now = new Date();
+    const readyBefore = new Date(now.getTime() - FREE_CREDITS_INTERVAL_MS);
 
-    if (!profile) {
-      return null;
-    }
-
-    const now = Date.now();
-    const last = profile.lastFreeCreditsAt?.getTime() ?? 0;
-
-    if (now - last < FREE_CREDITS_INTERVAL_MS) {
-      return null;
-    }
-
-    await this.prisma.profile.update({
-      where: { userId },
+    const claimed = await this.prisma.profile.updateMany({
+      where: {
+        userId,
+        OR: [{ lastFreeCreditsAt: null }, { lastFreeCreditsAt: { lte: readyBefore } }]
+      },
       data: {
         credits: { increment: BigInt(FREE_CREDITS_AMOUNT) },
-        lastFreeCreditsAt: new Date(now)
+        lastFreeCreditsAt: now
       }
     });
+
+    if (claimed.count === 0) {
+      return null;
+    }
 
     return this.ensureProfile(userId);
   }

@@ -21,19 +21,13 @@ export class FriendsPresenceService {
     const room = this.rooms.getRoomOfUser(userId);
 
     if (!room) {
-      this.registry.send(socket, {
-        type: 'error',
-        payload: { message: 'You are not at a table', code: 'TABLE_NOT_FOUND' }
-      });
+      this.registry.failNotInGame(socket);
 
       return;
     }
 
     if (!(await this.friends.areFriends(userId, targetId))) {
-      this.registry.send(socket, {
-        type: 'error',
-        payload: { message: 'You are not friends', code: 'NOT_FRIENDS' }
-      });
+      this.registry.fail(socket, 'You are not friends', 'NOT_FRIENDS');
 
       return;
     }
@@ -42,10 +36,7 @@ export class FriendsPresenceService {
     const from = await this.profiles.getPublicProfile(userId);
 
     if (!targetSocket || !from) {
-      this.registry.send(socket, {
-        type: 'error',
-        payload: { message: 'That player is offline', code: 'FRIEND_OFFLINE' }
-      });
+      this.registry.fail(socket, 'That player is offline', 'FRIEND_OFFLINE');
 
       return;
     }

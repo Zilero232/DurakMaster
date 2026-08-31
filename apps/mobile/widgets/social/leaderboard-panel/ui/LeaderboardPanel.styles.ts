@@ -9,10 +9,7 @@ export const styles = StyleSheet.create({
 
   myRank: {
     alignItems: 'center',
-    gap: spacing[1],
-    padding: spacing[4],
-    borderRadius: radii.lg,
-    backgroundColor: colors.surface2
+    gap: spacing[1]
   },
 
   myRankValue: {

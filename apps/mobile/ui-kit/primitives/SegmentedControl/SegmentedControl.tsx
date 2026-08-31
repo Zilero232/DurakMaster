@@ -1,7 +1,9 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, Text, View } from 'react-native';
 
 import type { SegmentedControlProps } from './SegmentedControl.types';
 
+import { gradientEnds, surfaceGradient } from '../../theme';
 import { styles } from './SegmentedControl.styles';
 
 export const SegmentedControl = <T extends number | string>({
@@ -27,6 +29,15 @@ export const SegmentedControl = <T extends number | string>({
           style={[styles.option, isActive && styles.optionActive]}
           onPress={() => onChange(option.value)}
         >
+          {isActive && (
+            <LinearGradient
+              colors={surfaceGradient.accent}
+              end={gradientEnds.vertical.end}
+              start={gradientEnds.vertical.start}
+              style={styles.fill}
+            />
+          )}
+
           <Text numberOfLines={1} style={[styles.label, isActive && styles.labelActive]}>
             {option.label}
           </Text>

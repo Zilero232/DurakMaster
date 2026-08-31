@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { useAchievements } from '@/entities/social';
-import { Sheet } from '@/ui-kit';
+import { Panel, Sheet } from '@/ui-kit';
 
 import type { AchievementsPanelProps } from './AchievementsPanel.types';
 
@@ -26,13 +26,13 @@ export const AchievementsPanel = ({ isOpen, onClose }: AchievementsPanelProps) =
   return (
     <Sheet isOpen={isOpen} title={t('achievements.title')} onClose={onClose}>
       <View style={styles.root}>
-        <View style={styles.summary}>
+        <Panel isHighlighted style={styles.summary}>
           <Text style={styles.summaryValue}>
             {unlocked} / {achievements.length}
           </Text>
 
           <Text style={styles.summaryLabel}>{t('achievements.unlocked')}</Text>
-        </View>
+        </Panel>
 
         <View style={styles.list}>
           {sorted.map((achievement) => (

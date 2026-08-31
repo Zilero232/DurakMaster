@@ -8,13 +8,16 @@ export {
   cardSchema,
   DECK_SIZES,
   deckSizeSchema,
+  isJoker,
+  JOKER_COLORS,
+  jokerColorSchema,
   LOWEST_RANK_BY_DECK_SIZE,
   RANKS,
   rankSchema,
   SUITS,
   suitSchema
 } from './card';
-export type { Card, DeckSize, Rank, Suit } from './card';
+export type { Card, DeckSize, JokerColor, Rank, Suit } from './card';
 
 export { DEFAULT_GAME, GAME_IDS, gameIdSchema, PLAYER_RANGE_BY_GAME } from './game-id';
 export type { GameId } from './game-id';

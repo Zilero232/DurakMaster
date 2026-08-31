@@ -71,21 +71,30 @@ const playOut = (rules: DurakRules, players: number, seed: number): DurakState =
 const combinations = DECK_SIZES.flatMap((deckSize) =>
   MODES.flatMap((mode) =>
     SCOPES.flatMap((throwInScope) =>
-      [true, false].map((allowDraw) => ({ deckSize, mode, throwInScope, allowDraw }))
+      [true, false].flatMap((allowDraw) =>
+        [true, false].map((withJokers) => ({
+          deckSize,
+          mode,
+          throwInScope,
+          allowDraw,
+          withJokers
+        }))
+      )
     )
   )
 );
 
 describe('durak rule matrix', () => {
   it.each(combinations)(
-    'finishes with deck $deckSize, $mode, throw-in $throwInScope, draw $allowDraw',
-    ({ deckSize, mode, throwInScope, allowDraw }) => {
+    'finishes with deck $deckSize, $mode, throw-in $throwInScope, draw $allowDraw, jokers $withJokers',
+    ({ deckSize, mode, throwInScope, allowDraw, withJokers }) => {
       const rules: DurakRules = {
         ...DEFAULT_DURAK_RULES,
         deckSize,
         mode,
         throwInScope,
-        allowDraw
+        allowDraw,
+        withJokers
       };
 
       const seats = Math.min(4, maxDurakPlayers(deckSize));

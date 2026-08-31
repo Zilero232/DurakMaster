@@ -27,6 +27,7 @@ export const TableCenter = ({
         cardScale={cardScale}
         hoveredIndex={hoveredIndex}
         isInstant={isInstant}
+        isWaiting={view.phase !== 'playing'}
         mySeat={mySeat}
         pairs={view.table}
         onDefend={onDefend}

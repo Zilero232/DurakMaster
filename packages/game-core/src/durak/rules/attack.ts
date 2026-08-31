@@ -1,5 +1,7 @@
 import type { Card, TablePair } from '@durak-master/schemas';
 
+import { isJoker } from '@durak-master/schemas';
+
 import { allowedThrowInRanks } from './throw-in';
 
 export function isLegalAttackCard(
@@ -13,6 +15,10 @@ export function isLegalAttackCard(
 
   if (table.length === 0) {
     return true;
+  }
+
+  if (isJoker(card)) {
+    return false;
   }
 
   return allowedThrowInRanks(table).has(card.rank);

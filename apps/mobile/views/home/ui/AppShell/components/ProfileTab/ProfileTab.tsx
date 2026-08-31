@@ -1,6 +1,7 @@
 import { ScrollView, View } from 'react-native';
 
 import { useMyProfile } from '@/entities/session';
+import { WatchAdButton } from '@/features/profile/watch-ad';
 import { useLayout } from '@/shared/model/layout';
 import { ProfileMenu } from '@/widgets/profile/profile-menu';
 import { ProfileSummary } from '@/widgets/profile/profile-summary';
@@ -29,6 +30,8 @@ export const ProfileTab = ({ profile, onOpenPanel }: ProfileTabProps) => {
 
   const summary = <ProfileSummary profile={profile} onOpenStats={() => onOpenPanel('stats')} />;
 
+  const watchAd = <WatchAdButton />;
+
   const menu = <ProfileMenu onOpenPanel={onOpenPanel} />;
 
   return (
@@ -40,6 +43,7 @@ export const ProfileTab = ({ profile, onOpenPanel }: ProfileTabProps) => {
         <>
           <View style={styles.column}>
             {wallet}
+            {watchAd}
             {summary}
           </View>
 
@@ -48,6 +52,7 @@ export const ProfileTab = ({ profile, onOpenPanel }: ProfileTabProps) => {
       ) : (
         <>
           {wallet}
+          {watchAd}
           {summary}
           {menu}
         </>

@@ -1,5 +1,7 @@
 import type { Card, TablePair } from '@durak-master/schemas';
 
+import { isJoker } from '@durak-master/schemas';
+
 import { hasDefendedCards } from './table';
 
 export function canTransfer(
@@ -12,6 +14,10 @@ export function canTransfer(
   }
 
   if (hasDefendedCards(table)) {
+    return false;
+  }
+
+  if (isJoker(card) || table.some((pair) => isJoker(pair.attack))) {
     return false;
   }
 

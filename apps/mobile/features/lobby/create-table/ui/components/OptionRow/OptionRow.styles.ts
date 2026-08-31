@@ -7,9 +7,10 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 2,
     padding: spacing[1],
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
     borderRadius: radii.pill,
-    backgroundColor: colors.surface2,
-    ...shadows.tile
+    backgroundColor: colors.backgroundBottom
   },
 
   option: {
@@ -27,7 +28,9 @@ export const styles = StyleSheet.create({
   },
 
   optionActive: {
-    backgroundColor: colors.surface1,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.borderAccent,
+    backgroundColor: colors.surface2,
     ...shadows.tile
   },
 

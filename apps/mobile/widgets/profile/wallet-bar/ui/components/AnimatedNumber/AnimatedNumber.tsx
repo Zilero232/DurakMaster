@@ -7,10 +7,8 @@ import { duration } from '@/ui-kit';
 
 import type { AnimatedNumberProps } from './AnimatedNumber.types';
 
+import { MIN_TICK_MS, STEPS } from './AnimatedNumber.config';
 import { styles } from './AnimatedNumber.styles';
-
-const STEPS = 12;
-const MIN_TICK_MS = 16;
 
 export const AnimatedNumber = ({ value, suffix = '', style }: AnimatedNumberProps) => {
   const { duration: scaled, isInstant } = useAnimationSpeed();

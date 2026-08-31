@@ -1,5 +1,3 @@
-import type { BoostId } from '@durak-master/schemas';
-
 import { useBoolean } from '@siberiacancode/reactuse';
 import { View } from 'react-native';
 
@@ -10,9 +8,8 @@ import type { TableActionsProps } from './TableActions.types';
 
 import { useTableContext } from '../../../model';
 import { MoveButton, SeatButton } from './components';
+import { UNDO_BLOCKED } from './TableActions.config';
 import { styles } from './TableActions.styles';
-
-const UNDO_BLOCKED = new Set<BoostId>(['undoMove']);
 
 export const TableActions = ({ turnDeadline }: TableActionsProps) => {
   const { profile, chatter, turn, moves } = useTableContext();
@@ -40,15 +37,15 @@ export const TableActions = ({ turnDeadline }: TableActionsProps) => {
           onPress={() => toggleEmojis(true)}
         />
 
-        <View style={styles.boosts}>
-          {!turn.isWaiting && (
+        {!turn.isWaiting && (
+          <View style={styles.boosts}>
             <BoostBar
               coins={profile?.coins ?? 0}
               unavailable={turn.canUndo ? undefined : UNDO_BLOCKED}
               onUseBoost={moves.onUseBoost}
             />
-          )}
-        </View>
+          </View>
+        )}
 
         <TableEmojis
           isOpen={isEmojisOpen}

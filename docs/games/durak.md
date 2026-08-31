@@ -148,7 +148,97 @@ A separate table setting (`allowTransferByShowingTrump`), off by default.
 
 ---
 
-## 9. Table settings
+## 9. Jokers
+
+An optional mode (`withJokers`). Two jokers are added to the deck: one red, one
+black. They are dealt, drawn and counted like any other card, so a 36-card deck
+becomes 38.
+
+> **Sources disagree, badly.** This is the least standardized part of Durak.
+> [Wikipedia](https://ru.wikipedia.org/wiki/Дурак_(карточная_игра)) offers three
+> readings side by side: a joker beats any card including the trump ace; or the
+> red joker beats red cards and the black one black cards; or a trump joker beats
+> everything while a non-trump joker beats only its own colour.
+> [Cyclowiki](https://cyclowiki.org/wiki/Варианты_игры_«Дурак») adds regional
+> variants where a joker beats only aces (Novosibirsk) or is itself beaten by
+> twos and threes (Estonian).
+>
+> **Chosen:** the plain, most widespread reading — **a joker beats any card and
+> nothing beats a joker**. Colour plays no part. The regional variants are not
+> implemented: they make the card's power depend on the trump suit, which is
+> exactly the kind of conditional the rules layer is meant to stay free of.
+
+### 9.1 A joker has no rank and no suit
+
+This is the rule that everything else follows from. A joker is not a card of some
+very high rank — it sits outside the rank order entirely.
+
+> **Pitfall.** Do not model a joker as `rank: 'joker'` inside the existing rank
+> list. Rank comparison walks `RANKS` by position, and an entry that must never
+> be compared has no position. Model it as a separate kind of card.
+
+### 9.2 In defence
+
+A joker beats **any** card: any rank, any suit, trump included.
+
+A joker on the table **cannot be beaten** — not by a trump, not by another joker.
+A defender facing a joker can only take.
+
+> **Pitfall.** "Nothing beats a joker" has to be checked before the trump rule,
+> not after. A trump card beating a plain card is the common path, and a joker
+> attack falls into it unless it is excluded first.
+
+### 9.3 In attack and throwing in
+
+A joker may open a bout like any other card.
+
+**A joker cannot be thrown in, and no card can be thrown in onto a joker.**
+Throwing in matches ranks, and a joker has no rank to match — neither as the card
+being added nor as the card already on the table.
+
+> **Pitfall.** `allowedThrowInRanks` collects ranks from the table. A joker must
+> contribute nothing to that set, and must not be offered as a throw-in candidate
+> either. Both directions, not just one.
+
+A bout opened with a joker therefore stays a single pair: the defender takes it,
+or — if they hold a joker of their own they cannot use — takes it anyway.
+
+### 9.4 Transfer
+
+**A joker cannot be transferred with, and a bout containing a joker cannot be
+transferred.** A transfer requires all cards on the table to share one rank; a
+joker has no rank, so the condition can never hold.
+
+### 9.5 A joker is never the trump card
+
+The face-up card under the deck sets the trump suit, and a joker has no suit to
+give. Sources that do cover this say the deal then runs with no trump at all —
+a different game, and not the variant chosen here.
+
+**Chosen:** a joker never ends up in that slot. If the shuffle puts one at the
+bottom of the talon, it is swapped with the nearest ordinary card, which keeps
+every card in play and leaves the trump suit well defined.
+
+> **Pitfall.** The swap has to happen before the trump is read, not after, and it
+> must move the joker rather than drop it — a deck that silently loses a card
+> breaks the draw count at the end of the deal.
+
+### 9.6 First move
+
+The lowest-trump rule ignores jokers: a joker is never "the lowest trump", and
+never "the lowest card overall" when no trump was dealt. If every card in play is
+a joker — impossible with two jokers and a 6-card hand, but the code should not
+depend on that — the first move falls to the player in seat order.
+
+### 9.7 What a joker does not change
+
+Jokers do not change the attack limit, the draw order, the discard, or how the
+deal ends. A joker in hand at the end of a deal is just a card: holding one does
+not save a player from being the durak.
+
+---
+
+## 10. Table settings
 
 Confirmed for RstGames: deck of 24/36/52, 2–6 players, throw-in/transfer Durak,
 draw on/off, private tables with a password, "with cheats" mode.
@@ -161,7 +251,7 @@ setting.
 
 ---
 
-## 10. Checklist of typical bugs
+## 11. Checklist of typical bugs
 
 - [ ] Ranks are compared by position in the list, not as strings
 - [ ] The trump card under the deck is drawn last
@@ -175,3 +265,9 @@ setting.
 - [ ] Transfer is checked for card sufficiency in the new defender's hand
 - [ ] A draw is checked only at the end of a bout
 - [ ] A player who has run out of cards leaves only when the deck is empty
+- [ ] A joker beats every card, and nothing beats a joker
+- [ ] A joker contributes no rank to the throw-in set, and cannot be thrown in
+- [ ] A bout that contains a joker cannot be transferred
+- [ ] A joker is never picked as the lowest trump for the first move
+- [ ] The deck grows by two cards when `withJokers` is on
+- [ ] A joker at the bottom of the talon is swapped out, not dropped

@@ -15,9 +15,8 @@ import type { TableListProps } from './TableList.types';
 
 import { useLobbyFilters } from '../model';
 import { LobbyFilters, TableListSkeleton, TableRow } from './components';
+import { COLUMN_WIDTH } from './TableList.config';
 import { styles } from './TableList.styles';
-
-const COLUMN_WIDTH = 480;
 
 const columnsFor = (width: number): number => Math.max(1, Math.floor(width / COLUMN_WIDTH));
 
@@ -32,6 +31,7 @@ export const TableList = ({ onJoin, onCreate }: TableListProps) => {
   const myUserId = profile?.userId;
   const tables = useSessionStore((store) => store.tables);
   const status = useSessionStore((store) => store.status);
+  const joiningTableId = useSessionStore((store) => store.joiningTableId);
 
   const [listWidth, setListWidth] = useState(0);
 
@@ -49,7 +49,13 @@ export const TableList = ({ onJoin, onCreate }: TableListProps) => {
       <FlashList
         renderItem={({ item }) => (
           <View style={isDesktop && styles.cell}>
-            <TableRow isTile={isDesktop} myUserId={myUserId} table={item} onJoin={onJoin} />
+            <TableRow
+              isPending={item.id === joiningTableId}
+              isTile={isDesktop}
+              myUserId={myUserId}
+              table={item}
+              onJoin={onJoin}
+            />
           </View>
         )}
         contentContainerStyle={isDesktop ? styles.desktopList : styles.list}

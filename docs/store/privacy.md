@@ -1,6 +1,6 @@
 # Privacy and data safety
 
-Google Play asks two separate things: the **Data safety form** in the console, and a **privacy
+RuStore asks two separate things: the **data collection answers** in the console, and a **privacy
 policy** hosted at a public URL. Both must agree with what the app actually does.
 
 ## What the app collects
@@ -15,7 +15,7 @@ policy** hosted at a public URL. Both must agree with what the app actually does
 The app does **not** collect location, contacts, device identifiers, or any advertising data.
 There is no analytics SDK and no ad network.
 
-## Data safety answers
+## Data collection answers
 
 Answer the console form as follows.
 

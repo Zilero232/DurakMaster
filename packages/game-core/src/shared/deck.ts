@@ -1,6 +1,6 @@
 import type { Card, DeckSize, Rank } from '@durak-master/schemas';
 
-import { LOWEST_RANK_BY_DECK_SIZE, RANKS, SUITS } from '@durak-master/schemas';
+import { JOKER_COLORS, LOWEST_RANK_BY_DECK_SIZE, RANKS, SUITS } from '@durak-master/schemas';
 
 function ranksForDeckSize(deckSize: DeckSize): readonly Rank[] {
   const lowest = LOWEST_RANK_BY_DECK_SIZE[deckSize];
@@ -8,7 +8,7 @@ function ranksForDeckSize(deckSize: DeckSize): readonly Rank[] {
   return RANKS.slice(RANKS.indexOf(lowest));
 }
 
-export function buildDeck(deckSize: DeckSize): Card[] {
+export function buildDeck(deckSize: DeckSize, withJokers = false): Card[] {
   const deck: Card[] = [];
 
   for (const suit of SUITS) {
@@ -17,15 +17,21 @@ export function buildDeck(deckSize: DeckSize): Card[] {
     }
   }
 
+  if (withJokers) {
+    for (const joker of JOKER_COLORS) {
+      deck.push({ rank: 'ace', suit: 'spades', joker });
+    }
+  }
+
   return deck;
 }
 
 export function cardsEqual(a: Card, b: Card): boolean {
-  return a.rank === b.rank && a.suit === b.suit;
+  return a.rank === b.rank && a.suit === b.suit && a.joker === b.joker;
 }
 
 export function cardKey(card: Card): string {
-  return `${card.rank}:${card.suit}`;
+  return card.joker ? `joker:${card.joker}` : `${card.rank}:${card.suit}`;
 }
 
 export function shuffle<T>(items: readonly T[], randomInt: (maxExclusive: number) => number): T[] {

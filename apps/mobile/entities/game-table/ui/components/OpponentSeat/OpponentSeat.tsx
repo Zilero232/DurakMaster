@@ -5,9 +5,12 @@ import type { OpponentSeatProps } from './OpponentSeat.types';
 
 import { useCardSize, useSeatSize, useTurnPulse } from '../../../model';
 import { SeatCards, SeatIdentity } from './components';
-import { BACK_SCALE, styles } from './OpponentSeat.styles';
+import { MIN_BACK_WIDTH, SEAT_INNER_PADDING } from './OpponentSeat.config';
+import { BACK_SCALE, BACK_STEP_X, styles } from './OpponentSeat.styles';
 
 export const OpponentSeat = ({
+  seatCount,
+  arcLift = 0,
   isEmpty = false,
   isReady = false,
   player,
@@ -23,18 +26,23 @@ export const OpponentSeat = ({
   isLoser = false,
   onPress
 }: OpponentSeatProps) => {
-  const metrics = useSeatSize();
+  const metrics = useSeatSize(seatCount);
   const { width: cardWidth } = useCardSize();
   const pulse = useTurnPulse(isActive, isStatic);
 
-  const backWidth = Math.min(cardWidth * BACK_SCALE, metrics.maxWidth * BACK_SCALE);
+  const roomForCards = metrics.maxWidth - SEAT_INNER_PADDING - BACK_STEP_X * 5;
+
+  const backWidth = Math.max(
+    MIN_BACK_WIDTH,
+    Math.min(cardWidth * BACK_SCALE, metrics.maxWidth * BACK_SCALE, roomForCards)
+  );
 
   return (
-    <Animated.View style={pulse}>
+    <Animated.View style={[pulse, { marginTop: -arcLift }]}>
       <Pressable
         style={({ pressed }) => [
           styles.root,
-          { maxWidth: metrics.maxWidth, minWidth: metrics.minWidth },
+          { maxWidth: metrics.maxWidth },
           isEmpty && styles.empty,
           isActive && styles.active,
           player.isOut && styles.out,
@@ -45,14 +53,10 @@ export const OpponentSeat = ({
         disabled={isEmpty}
         onPress={onPress}
       >
-        <SeatCards
-          backWidth={backWidth}
-          handCount={player.handCount}
-          seat={player.seat}
-          userId={player.userId}
-        />
+        <SeatCards backWidth={backWidth} handCount={player.handCount} userId={player.userId} />
 
         <SeatIdentity
+          arcLift={arcLift}
           avatarUrl={avatarUrl}
           isActive={isActive}
           isAttacker={isAttacker}
@@ -64,6 +68,7 @@ export const OpponentSeat = ({
           isReady={isReady}
           name={name}
           phrase={phrase}
+          seatCount={seatCount}
           turnDeadline={turnDeadline}
           turnSeconds={turnSeconds}
         />

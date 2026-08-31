@@ -6,6 +6,7 @@ export {
   cardSize,
   CONFIRM_MAX_WIDTH,
   CONTENT_MAX_WIDTH,
+  CORNER_BUTTON_SIZE,
   DESKTOP_MAX_WIDTH,
   getCardSize,
   ICON_BUTTON_SIZE,
@@ -19,17 +20,21 @@ export type { CardScaleName } from './layout';
 export { isRedSuit, rankLabel, suitSymbol } from './suits';
 export {
   borderWidth,
+  bubbleTailSize,
   card,
   colors,
   duration,
   fontFamily,
   fontSize,
   glow,
+  gradientEnds,
   iconSize,
   lineHeight,
   radii,
   screenGradient,
+  seatRowGap,
   shadows,
-  spacing
+  spacing,
+  surfaceGradient
 } from './tokens';
 export type { Colors } from './tokens';

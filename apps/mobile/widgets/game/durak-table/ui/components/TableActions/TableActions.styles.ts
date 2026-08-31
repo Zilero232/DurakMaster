@@ -7,7 +7,7 @@ const TOOL_SIZE = 44;
 const SEAT_SIZE = 60;
 const RING_PADDING = 2;
 
-const ACTION_MAX_WIDTH = 148;
+const ACTION_MAX_WIDTH = 180;
 
 const AVATAR_SIZE = SEAT_SIZE - (RING_PADDING + borderWidth.regular) * 2;
 
@@ -30,17 +30,22 @@ export const styles = StyleSheet.create({
   },
 
   walletRow: {
+    zIndex: 2,
     alignItems: 'center'
   },
 
   root: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     gap: spacing[2],
     paddingVertical: spacing[2],
     paddingHorizontal: spacing[3],
+    borderWidth: borderWidth.hairline,
+    borderColor: colors.glassBorder,
     borderRadius: radii.lg,
-    backgroundColor: colors.glass
+    backgroundColor: colors.glass,
+    ...shadows.card
   },
 
   seat: {
@@ -52,6 +57,7 @@ export const styles = StyleSheet.create({
   actionSlot: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-start',
     gap: spacing[2],
     flex: 1,
     flexBasis: 0,
@@ -97,6 +103,7 @@ export const styles = StyleSheet.create({
     borderWidth: borderWidth.hairline,
     borderColor: colors.glassBorder,
     borderRadius: radii.md,
-    backgroundColor: colors.glassStrong
+    backgroundColor: colors.glassStrong,
+    ...shadows.tile
   }
 });

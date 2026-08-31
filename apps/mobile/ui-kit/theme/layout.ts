@@ -36,6 +36,8 @@ export const CONTENT_MAX_WIDTH = 720;
 
 export const ICON_BUTTON_SIZE = 36;
 
+export const CORNER_BUTTON_SIZE = 40;
+
 export const CONFIRM_MAX_WIDTH = 380;
 
 export const TOAST_MAX_WIDTH = 420;

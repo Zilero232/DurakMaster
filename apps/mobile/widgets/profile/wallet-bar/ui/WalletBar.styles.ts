@@ -4,11 +4,7 @@ import { colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit'
 
 export const styles = StyleSheet.create({
   root: {
-    gap: spacing[3],
-    padding: spacing[4],
-    borderRadius: radii.lg,
-    backgroundColor: colors.surfaceOverlay,
-    ...shadows.panel
+    gap: spacing[3]
   },
 
   top: {
@@ -31,7 +27,29 @@ export const styles = StyleSheet.create({
     padding: spacing[3],
     borderRadius: radii.md,
     backgroundColor: colors.success,
+    overflow: 'hidden',
     ...shadows.button
+  },
+
+  bonusFill: {
+    position: 'absolute',
+    zIndex: -1,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0
+  },
+
+  bonusWaiting: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
+    backgroundColor: colors.backgroundBottom,
+    boxShadow: 'none',
+    elevation: 0
+  },
+
+  bonusWaitingLabel: {
+    color: colors.mutedForeground
   },
 
   bonusPressed: {
@@ -49,8 +67,10 @@ export const styles = StyleSheet.create({
   progressTrack: {
     overflow: 'hidden',
     height: 6,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
     borderRadius: radii.pill,
-    backgroundColor: colors.surface3
+    backgroundColor: colors.backgroundBottom
   },
 
   progressFill: {

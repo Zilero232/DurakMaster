@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { card, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+import { card, colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit';
 
 export const PREVIEW_CARD_WIDTH = 38;
 
@@ -17,7 +17,8 @@ export const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth * 2,
     borderColor: colors.border,
     borderRadius: radii.md,
-    backgroundColor: colors.surface1
+    backgroundColor: colors.surface1,
+    ...shadows.tile
   },
 
   active: {

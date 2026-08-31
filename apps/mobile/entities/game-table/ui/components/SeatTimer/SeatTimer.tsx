@@ -9,11 +9,8 @@ import { colors } from '@/ui-kit';
 
 import type { SeatTimerProps } from './SeatTimer.types';
 
+import { STROKE, TICK_MS, WARN_AT_SECONDS } from './SeatTimer.config';
 import { styles } from './SeatTimer.styles';
-
-const TICK_MS = 250;
-const WARN_AT_SECONDS = 5;
-const STROKE = 3;
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 

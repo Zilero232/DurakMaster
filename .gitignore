@@ -64,3 +64,4 @@ uploads
 
 e2e/.shots/
 e2e/.results/
+.playwright-mcp/

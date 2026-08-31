@@ -28,6 +28,7 @@ export const useSessionStore = create<SessionStore>((set, get) => {
       }
     },
     onStatus: (status) => set({ status }),
+    onDisconnected: () => set({ isJoiningTable: false, joiningTableId: null }),
     getStatus: () => get().status,
     isLobbySubscribed: () => get().isLobbySubscribed
   });
@@ -56,10 +57,14 @@ export const useSessionStore = create<SessionStore>((set, get) => {
       socketClient.send({ type: 'lobby:subscribe' });
     },
 
-    createTable: (settings, password) =>
-      socketClient.send({ type: 'table:create', payload: { settings, password } }),
-    joinTable: (tableId, password) =>
-      socketClient.send({ type: 'table:join', payload: { tableId, password } }),
+    createTable: (settings, password) => {
+      set({ isJoiningTable: socketClient.isConnected, joiningTableId: null });
+      socketClient.send({ type: 'table:create', payload: { settings, password } });
+    },
+    joinTable: (tableId, password) => {
+      set({ isJoiningTable: socketClient.isConnected, joiningTableId: tableId });
+      socketClient.send({ type: 'table:join', payload: { tableId, password } });
+    },
 
     leaveTable: () => socketClient.send({ type: 'table:leave' }),
     setReady: (isReady) => socketClient.send({ type: 'table:ready', payload: { isReady } }),

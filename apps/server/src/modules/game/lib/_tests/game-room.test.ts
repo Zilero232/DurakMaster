@@ -88,6 +88,54 @@ describe('game room seating', () => {
   });
 });
 
+describe('game room stakes', () => {
+  it('holds the stake of everyone who sat down', () => {
+    const { room } = createRoom(2);
+
+    room.join(profile('a'));
+    room.join(profile('bot'), true);
+
+    expect(room.hasStakeHeld('a')).toBe(true);
+    expect(room.hasStakeHeld('bot')).toBe(false);
+
+    room.clearTimers();
+  });
+
+  it('counts as out of the match again once the game is over', () => {
+    const { room } = createRoom(2);
+
+    room.join(profile('a'));
+    room.join(profile('b'));
+    room.setReady('a', true);
+    room.setReady('b', true);
+
+    expect(room.isInMatch).toBe(true);
+
+    room.leave('a');
+
+    expect(room.isInMatch).toBe(false);
+
+    room.clearTimers();
+  });
+
+  it('stops holding a stake once the match has paid out', () => {
+    const { room } = createRoom(2);
+
+    room.join(profile('a'));
+    room.join(profile('b'));
+    room.setReady('a', true);
+    room.setReady('b', true);
+
+    expect(room.hasStakeHeld('b')).toBe(true);
+
+    room.leave('a');
+
+    expect(room.hasStakeHeld('b')).toBe(false);
+
+    room.clearTimers();
+  });
+});
+
 describe('game room forfeit', () => {
   it('reports the players who were at the table when someone walks out mid-game', () => {
     const { room, events } = createRoom(2);

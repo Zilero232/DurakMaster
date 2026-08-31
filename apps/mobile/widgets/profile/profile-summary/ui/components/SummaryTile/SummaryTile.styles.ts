@@ -9,11 +9,8 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing[1],
     paddingVertical: spacing[3],
-    paddingHorizontal: spacing[2],
-    borderRadius: radii.md,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
-    backgroundColor: colors.glass
+    paddingHorizontal: spacing[1],
+    borderRadius: radii.md
   },
 
   value: {

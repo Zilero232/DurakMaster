@@ -2,7 +2,7 @@ import { getRankInfo } from '@durak-master/schemas';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { Avatar, Sheet, StatRow } from '@/ui-kit';
+import { Avatar, Panel, Sheet, StatRow } from '@/ui-kit';
 
 import type { PlayerCardProps } from './PlayerCard.types';
 
@@ -44,7 +44,7 @@ export const PlayerCard = ({ profile, isOpen, onClose }: PlayerCardProps) => {
           </View>
         </View>
 
-        <View style={styles.stats}>
+        <Panel style={styles.stats}>
           <StatRow label={t('stats.rating')} value={String(profile.rating)} />
           <StatRow label={t('stats.gamesPlayed')} value={String(profile.gamesPlayed)} />
           <StatRow label={t('stats.wins')} value={String(profile.gamesWon)} />
@@ -54,7 +54,7 @@ export const PlayerCard = ({ profile, isOpen, onClose }: PlayerCardProps) => {
             progress={winRate}
             value={`${Math.round(winRate * 100)}%`}
           />
-        </View>
+        </Panel>
       </View>
     </Sheet>
   );

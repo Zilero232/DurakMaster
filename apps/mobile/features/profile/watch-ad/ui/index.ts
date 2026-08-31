@@ -1,0 +1,1 @@
+export { WatchAdButton } from './WatchAdButton';

@@ -1,6 +1,6 @@
 # Store listing
 
-What Google Play asks for, with the constraints that actually cause rejections.
+What RuStore asks for, with the constraints that actually cause rejections.
 
 ## Text
 

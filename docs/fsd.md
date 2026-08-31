@@ -43,7 +43,7 @@ apps/mobile/
 ├── views/              # Views layer (canon: pages/)
 │   └── <view-name>/
 ├── widgets/            # Widgets layer
-│   └── <domain>/       # game | lobby | profile | rules
+│   └── <domain>/       # game | lobby | profile | rules | social
 │       └── <widget-name>/
 ├── features/           # Features layer
 │   └── <domain>/       # auth | game | lobby | settings
@@ -55,12 +55,12 @@ apps/mobile/
 │   ├── config/         # env, server address
 │   ├── i18n/           # i18next, locales, key typing
 │   ├── lib/            # format, haptics, sound, time
+│   ├── model/          # layout, preferences, clock
 │   └── platform/       # bridge to @durak-master/platform
 └── ui-kit/             # Design system (no slices — segments only)
     ├── primitives/     # basic: Button, Avatar, Sheet
     ├── components/     # composite: PlayingCard, StatusScreen
     ├── icons/          # SuitIcon
-    ├── lib/            # card utilities, press feedback context
     └── theme/          # tokens, screen-derived sizes, deck themes
 ```
 
@@ -123,11 +123,12 @@ A slice is a directory inside a layer, named after a **business domain** (not a 
 **Domain groups (DurakMaster):** the `features/` and `widgets/` layers group slices by business domain:
 
 - `auth/` — sign in and sign up (`sign-in`)
-- `game/` — the course of a round (`online-table`, `quick-phrases`, `view-discard`). The reusable parts of a table — hand, felt, talon, timer, result — are an entity (`entities/game-table`), not a widget: every game composes them, so they must sit below the widget layer.
+- `game/` — the course of a round (`durak-table`, `online-table`, `match-result` as widgets; `table-emojis` as a feature). The reusable parts of a table — hand, felt, talon, timer, result — are an entity (`entities/game-table`), not a widget: every game composes them, so they must sit below the widget layer.
 - `lobby/` — table list, creating and joining a table (`table-list`, `create-table`, `join-table`)
 - `profile/` (widgets only) — wallet, profile menu
 - `settings/` (features only) — settings panel
 - `rules/` (widgets only) — rules panel
+- `social/` (widgets only) — friends, achievements, leaderboard
 
 A domain folder is an organizational container, **not a public API**. An import always goes down to the slice level: `@/features/lobby/create-table`, not `@/features/lobby`.
 

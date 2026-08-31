@@ -14,10 +14,14 @@ Run through this before every submission. Anything unticked is a reason not to s
 
 - [ ] DNS for `durakmaster.ru`, `www` and `api` points at the VPS, and both resolve
 - [ ] The API is served over HTTPS; Android blocks cleartext HTTP by default
-- [ ] A Play Console app entry exists with package `com.durakmaster.app`
-- [ ] `EXPO_TOKEN` and `PLAY_SERVICE_ACCOUNT` are set as repository secrets
-- [ ] An initial Prisma migration is committed — `apps/server/prisma/migrations/` is empty, and
-      `db:push` is a test-database shortcut, not a production path
+- [ ] A RuStore Console app entry exists with package `com.durakmaster.app`
+- [ ] `EXPO_TOKEN`, `RUSTORE_KEY_ID`, `RUSTORE_PRIVATE_KEY` and `RUSTORE_CONTACT_EMAIL` are set
+      as repository secrets
+- [ ] Every schema change carries its Prisma migration — `db:push` is a test-database
+      shortcut, not a production path
+- [ ] The signing key is uploaded to the Console and the same keystore still exists on EAS
+- [ ] `EXPO_PUBLIC_YANDEX_REWARDED_UNIT_ID` is filled in the build profile — an empty value
+      ships the app with the rewarded-ad button hidden
 
 ## Build
 
@@ -33,9 +37,9 @@ Run through this before every submission. Anything unticked is a reason not to s
 - [ ] `CORS_ORIGINS` lists the production client origin
 - [ ] `/health` answers on the production host
 
-## Play Console
+## RuStore Console
 
-- [ ] Data safety form matches [privacy.md](./privacy.md)
+- [ ] Data collection answers match [privacy.md](./privacy.md)
 - [ ] Content rating questionnaire completed
 - [ ] Target audience set — the game is **not** aimed at children
 - [ ] Ads declaration answered

@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { X } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Modal, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
@@ -6,12 +7,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { SheetProps } from './Sheet.types';
 
-import { colors, iconSize } from '../../theme';
+import { colors, gradientEnds, iconSize, surfaceGradient } from '../../theme';
+import { DIALOG_FROM_WIDTH, MAX_HEIGHT_RATIO } from './Sheet.config';
 import { styles } from './Sheet.styles';
-
-const DIALOG_FROM_WIDTH = 768;
-
-const MAX_HEIGHT_RATIO = { dialog: 0.88, sheet: 0.92 } as const;
 
 export const Sheet = ({ isOpen, title, children, footer, maxWidth, onClose }: SheetProps) => {
   const { t } = useTranslation();
@@ -57,6 +55,13 @@ export const Sheet = ({ isOpen, title, children, footer, maxWidth, onClose }: Sh
         entering={isDialog ? FadeIn.duration(160) : SlideInDown.duration(240)}
         exiting={isDialog ? FadeOut.duration(140) : SlideOutDown.duration(180)}
       >
+        <LinearGradient
+          colors={surfaceGradient.raised}
+          end={gradientEnds.vertical.end}
+          start={gradientEnds.vertical.start}
+          style={styles.fill}
+        />
+
         {!isDialog && <View style={styles.grabber} />}
 
         <View style={styles.header}>

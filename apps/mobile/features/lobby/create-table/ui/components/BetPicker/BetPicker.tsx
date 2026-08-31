@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { formatCredits } from '@/shared/lib/format';
+import { Panel } from '@/ui-kit';
 
 import type { BetPickerProps } from './BetPicker.types';
 
+import { LAST_INDEX } from './BetPicker.config';
 import { styles } from './BetPicker.styles';
 import { BetInput, BetShortcuts, BetSlider } from './components';
-
-const LAST_INDEX = BET_STEPS.length - 1;
 
 export const BetPicker = ({ value, onChange }: BetPickerProps) => {
   const { t } = useTranslation();
@@ -27,7 +27,7 @@ export const BetPicker = ({ value, onChange }: BetPickerProps) => {
   };
 
   return (
-    <View style={styles.root}>
+    <Panel isHighlighted style={styles.root}>
       <View style={styles.header}>
         <Text style={styles.label}>{t('create.yourBet')}</Text>
 
@@ -44,6 +44,6 @@ export const BetPicker = ({ value, onChange }: BetPickerProps) => {
       </View>
 
       <BetShortcuts label={label} value={value} onChange={onChange} />
-    </View>
+    </Panel>
   );
 };

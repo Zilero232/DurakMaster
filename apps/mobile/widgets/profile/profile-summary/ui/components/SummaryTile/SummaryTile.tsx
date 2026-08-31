@@ -1,13 +1,13 @@
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 
-import { iconSize } from '@/ui-kit';
+import { iconSize, Panel } from '@/ui-kit';
 
 import type { SummaryTileProps } from './SummaryTile.types';
 
 import { styles } from './SummaryTile.styles';
 
 export const SummaryTile = ({ icon: Icon, tint, value, label }: SummaryTileProps) => (
-  <View style={styles.root}>
+  <Panel elevation='flat' padding='compact' style={styles.root} tone='sunken'>
     <Icon color={tint} size={iconSize.md} />
 
     <Text numberOfLines={1} style={styles.value}>
@@ -17,5 +17,5 @@ export const SummaryTile = ({ icon: Icon, tint, value, label }: SummaryTileProps
     <Text numberOfLines={2} style={styles.label}>
       {label}
     </Text>
-  </View>
+  </Panel>
 );

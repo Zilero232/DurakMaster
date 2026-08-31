@@ -1,18 +1,30 @@
 import type { Card, DurakAction, DurakState, Suit } from '@durak-master/schemas';
 
+import { isJoker } from '@durak-master/schemas';
+
 import { beats, isLegalAttackCard, rankValue } from '../rules';
 
 const TRUMP_PENALTY = 100;
+
+const JOKER_COST = 1_000;
 
 const TRUMP_WASTE_LIMIT = 2;
 
 const ENDGAME_TALON = 4;
 
 function cardCost(card: Card, trump: Suit): number {
+  if (isJoker(card)) {
+    return JOKER_COST;
+  }
+
   return rankValue(card.rank) + (card.suit === trump ? TRUMP_PENALTY : 0);
 }
 
 function isWorthDefending(state: DurakState, attack: Card, defense: Card): boolean {
+  if (isJoker(defense)) {
+    return state.talon.length <= ENDGAME_TALON || attack.suit === state.trump;
+  }
+
   const isTrumpDefense = defense.suit === state.trump;
   const isTrumpAttack = attack.suit === state.trump;
 

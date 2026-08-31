@@ -30,8 +30,7 @@
     "reaction": "Send reaction {{emoji}}",
     "seatFree": "Waiting",
     "joining": "Taking a seat…",
-    "deckLeft": "Deck",
-    "emptySeat": "Waiting for a player"
+    "deckLeft": "Deck"
   },
   "result": {
     "win": "Victory",
@@ -46,8 +45,7 @@
     "toMenu": "To menu",
     "leaveTable": "Leave table",
     "waitingReady": "Ready: {{current}} of {{max}}",
-    "waitingOthers": "Waiting for others…",
-    "timeoutHint": "Your turn ran out of time"
+    "waitingOthers": "Waiting for others…"
   },
   "discard": {
     "title": "Discard pile",
@@ -74,6 +72,10 @@
   "card": {
     "faceDown": "Face-down card",
     "label": "{{rank}} of {{suit}}",
+    "joker": {
+      "red": "Red joker",
+      "black": "Black joker"
+    },
     "rank": {
       "two": "2",
       "three": "3",

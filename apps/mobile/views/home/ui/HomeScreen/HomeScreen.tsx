@@ -1,3 +1,5 @@
+import { match, P } from 'ts-pattern';
+
 import { useMyProfile, useSessionStore } from '@/entities/session';
 import { MatchResult } from '@/widgets/game/match-result';
 
@@ -10,20 +12,15 @@ export const HomeScreen = () => {
   const outcome = useSessionStore((store) => store.outcome);
   const clearOutcome = useSessionStore((store) => store.clearOutcome);
 
-  if (currentTable) {
-    return <TableRouter />;
-  }
-
-  if (outcome) {
-    return (
+  return match({ outcome, currentTable })
+    .with({ outcome: P.nonNullable }, ({ outcome: result }) => (
       <MatchResult
-        creditsDelta={outcome.creditsDelta}
-        isDraw={outcome.isDraw}
-        isLoser={outcome.loserUserId === profile?.userId}
+        creditsDelta={result.creditsDelta}
+        isDraw={result.isDraw}
+        isLoser={result.loserUserId === profile?.userId}
         onDismiss={clearOutcome}
       />
-    );
-  }
-
-  return <AppShell />;
+    ))
+    .with({ currentTable: P.nonNullable }, () => <TableRouter />)
+    .otherwise(() => <AppShell />);
 };

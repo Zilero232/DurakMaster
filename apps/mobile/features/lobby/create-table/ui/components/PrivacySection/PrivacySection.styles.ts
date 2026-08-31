@@ -4,11 +4,6 @@ import { borderWidth, colors, fontFamily, fontSize, radii, spacing } from '@/ui-
 
 export const styles = StyleSheet.create({
   root: {
-    padding: spacing[4],
-    borderRadius: radii.lg,
-    borderWidth: borderWidth.hairline,
-    borderColor: colors.border,
-    backgroundColor: colors.surface1,
     gap: spacing[3]
   },
 

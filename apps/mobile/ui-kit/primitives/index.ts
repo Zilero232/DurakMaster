@@ -7,6 +7,9 @@ export type { ButtonProps, ButtonSize, ButtonVariant } from './Button';
 export { CountBadge } from './CountBadge';
 export type { CountBadgeProps, CountBadgeTone } from './CountBadge';
 
+export { Panel } from './Panel';
+export type { PanelElevation, PanelPadding, PanelProps, PanelTone } from './Panel';
+
 export { SegmentedControl } from './SegmentedControl';
 export type { SegmentedControlProps, SegmentedOption } from './SegmentedControl';
 

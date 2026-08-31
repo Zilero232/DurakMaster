@@ -33,6 +33,8 @@ export const reduceServerMessage = (
 
     case 'table:joined':
       return {
+        isJoiningTable: false,
+        joiningTableId: null,
         currentTable: message.payload.table,
         mySeat: message.payload.seat,
         outcome: null,
@@ -43,6 +45,8 @@ export const reduceServerMessage = (
 
     case 'table:left':
       return {
+        isJoiningTable: false,
+        joiningTableId: null,
         currentTable: null,
         mySeat: null,
         view: null,
@@ -102,6 +106,8 @@ export const reduceServerMessage = (
 
     case 'error':
       return {
+        isJoiningTable: false,
+        joiningTableId: null,
         lastErrorCode: message.payload.code ?? null,
         lastError: message.payload.message
       };

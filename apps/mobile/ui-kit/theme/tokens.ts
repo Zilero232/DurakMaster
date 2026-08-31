@@ -35,6 +35,7 @@ export const colors = {
   danger: '#DE3B4F',
   dangerDim: '#A62838',
   success: '#3FBF86',
+  successDim: '#2E9A69',
   info: '#4FA3E3',
 
   trump: '#4FA3E3',
@@ -68,6 +69,20 @@ export const screenGradient = [
   colors.backgroundBottom
 ] as const;
 
+export const surfaceGradient = {
+  raised: [colors.surface2, colors.surface1] as const,
+  sunken: [colors.backgroundBottom, colors.surface1] as const,
+  accent: [colors.accentBright, colors.accent, colors.accentDim] as const,
+  danger: [colors.danger, colors.dangerDim] as const,
+  success: [colors.success, colors.successDim] as const,
+  gold: [colors.goldBright, colors.gold, colors.goldDim] as const
+} as const;
+
+export const gradientEnds = {
+  vertical: { start: { x: 0.5, y: 0 }, end: { x: 0.5, y: 1 } },
+  diagonal: { start: { x: 0, y: 0 }, end: { x: 1, y: 1 } }
+} as const;
+
 export const radii = {
   xs: 6,
   sm: 10,
@@ -98,6 +113,10 @@ export const iconSize = {
   xl: 32,
   hero: 56
 } as const;
+
+export const bubbleTailSize = 7;
+
+export const seatRowGap = 2;
 
 export const borderWidth = {
   hairline: 1,

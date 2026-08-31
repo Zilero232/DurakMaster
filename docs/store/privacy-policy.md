@@ -3,8 +3,8 @@
 **DurakMaster** — last updated 30 August 2026.
 
 This is the source of the policy that must be published at a public URL before
-the Google Play listing can go live. Keep it in step with
-[privacy.md](./privacy.md), which holds the matching Data safety answers — a
+the RuStore listing can go live. Keep it in step with
+[privacy.md](./privacy.md), which holds the matching console answers — a
 policy that promises less than the app collects is grounds for rejection.
 
 ---

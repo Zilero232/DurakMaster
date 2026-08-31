@@ -1,4 +1,4 @@
-import type { CreateTableInput, GameErrorCode, JoinTableInput } from '@durak-master/schemas';
+import type { CreateTableInput, JoinTableInput } from '@durak-master/schemas';
 
 import { Injectable } from '@nestjs/common';
 
@@ -39,22 +39,24 @@ export class TableFlowService {
   ) {}
 
   async create(socket: Socket, userId: string, payload: CreateTableInput): Promise<void> {
-    const profile = this.sessions.get(userId);
+    const profile = await this.seatedProfile(userId);
 
     if (!profile) {
+      this.registry.fail(socket, 'Sign in required', 'USER_NOT_FOUND');
+
       return;
     }
 
     if (payload.settings.isPrivate && !payload.password) {
-      this.fail(socket, 'A private table needs a password', 'PASSWORD_REQUIRED');
+      this.registry.fail(socket, 'A private table needs a password', 'PASSWORD_REQUIRED');
 
       return;
     }
 
-    await this.leaveCurrentRoom(userId);
+    this.leaveCurrentRoom(userId);
 
     if (!(await this.profiles.reserveStake(userId, payload.settings.bet))) {
-      this.fail(socket, 'Not enough credits for this bet', 'NOT_ENOUGH_CREDITS');
+      this.registry.fail(socket, 'Not enough credits for this bet', 'NOT_ENOUGH_CREDITS');
 
       return;
     }
@@ -71,11 +73,17 @@ export class TableFlowService {
   }
 
   async join(socket: Socket, userId: string, payload: JoinTableInput): Promise<void> {
-    const profile = this.sessions.get(userId);
+    const profile = await this.seatedProfile(userId);
     const room = this.rooms.getRoom(payload.tableId);
 
-    if (!profile || !room) {
-      this.fail(socket, 'Table not found', 'TABLE_NOT_FOUND');
+    if (!profile) {
+      this.registry.fail(socket, 'Sign in required', 'USER_NOT_FOUND');
+
+      return;
+    }
+
+    if (!room) {
+      this.registry.fail(socket, 'Table not found', 'TABLE_NOT_FOUND');
 
       return;
     }
@@ -87,21 +95,31 @@ export class TableFlowService {
         Boolean(payload.password) && verifyTablePassword(payload.password ?? '', room.passwordHash);
 
       if (!isCorrect) {
-        this.fail(socket, 'Wrong table password', 'WRONG_PASSWORD');
+        this.registry.fail(socket, 'Wrong table password', 'WRONG_PASSWORD');
 
         return;
       }
     }
 
+    if (isReturning) {
+      this.rooms.join(room, profile);
+      this.broadcast.tableJoined(userId, room.id);
+      this.broadcast.table(room.id);
+
+      return;
+    }
+
+    this.leaveCurrentRoom(userId);
+
     if (!(await this.profiles.reserveStake(userId, room.settings.bet))) {
-      this.fail(socket, 'Not enough credits for this bet', 'NOT_ENOUGH_CREDITS');
+      this.registry.fail(socket, 'Not enough credits for this bet', 'NOT_ENOUGH_CREDITS');
 
       return;
     }
 
     if (!this.rooms.join(room, profile)) {
       await this.profiles.releaseStake(userId, room.settings.bet);
-      this.fail(socket, 'The table is full', 'TABLE_FULL');
+      this.registry.fail(socket, 'The table is full', 'TABLE_FULL');
 
       return;
     }
@@ -111,9 +129,41 @@ export class TableFlowService {
     this.broadcast.lobby();
   }
 
+  async setReady(socket: Socket, userId: string, isReady: boolean): Promise<void> {
+    const room = this.rooms.getRoomOfUser(userId);
+
+    if (!room) {
+      this.registry.failNotInGame(socket);
+
+      return;
+    }
+
+    if (isReady && !room.hasStakeHeld(userId)) {
+      if (!(await this.profiles.reserveStake(userId, room.settings.bet))) {
+        this.registry.fail(socket, 'Not enough credits for this bet', 'NOT_ENOUGH_CREDITS');
+        this.evict(socket, userId, room.id);
+
+        return;
+      }
+
+      room.holdStake(userId);
+    }
+
+    room.setReady(userId, isReady);
+    this.broadcast.table(room.id);
+  }
+
+  private evict(socket: Socket, userId: string, roomId: string): void {
+    this.rooms.leave(userId);
+    this.registry.send(socket, { type: 'table:left' });
+
+    this.broadcast.table(roomId);
+    this.broadcast.lobby();
+  }
+
   addBot(socket: Socket, userId: string): void {
     if (!this.config.isDevelopment) {
-      this.fail(socket, 'Bots are available in development only', 'BOTS_DISABLED');
+      this.registry.fail(socket, 'Bots are available in development only', 'BOTS_DISABLED');
 
       return;
     }
@@ -121,11 +171,13 @@ export class TableFlowService {
     const room = this.rooms.getRoomOfUser(userId);
 
     if (!room) {
+      this.registry.failNotInGame(socket);
+
       return;
     }
 
     if (room.isPlaying || room.isFull) {
-      this.fail(socket, 'The table is full', 'TABLE_FULL');
+      this.registry.fail(socket, 'The table is full', 'TABLE_FULL');
 
       return;
     }
@@ -141,17 +193,19 @@ export class TableFlowService {
     this.broadcast.lobby();
   }
 
-  private async leaveCurrentRoom(userId: string): Promise<void> {
-    const room = this.rooms.getRoomOfUser(userId);
+  private async seatedProfile(userId: string) {
+    const cached = this.sessions.get(userId);
 
-    if (room && !room.isInMatch) {
-      await this.profiles.releaseStake(userId, room.settings.bet);
+    if (cached) {
+      return cached;
     }
 
-    this.rooms.leave(userId);
+    await this.sessions.load(userId);
+
+    return this.sessions.get(userId);
   }
 
-  private fail(socket: Socket, message: string, code: GameErrorCode): void {
-    this.registry.send(socket, { type: 'error', payload: { message, code } });
+  private leaveCurrentRoom(userId: string): void {
+    this.rooms.leave(userId);
   }
 }

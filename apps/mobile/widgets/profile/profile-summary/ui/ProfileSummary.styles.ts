@@ -4,12 +4,7 @@ import { colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
-    gap: spacing[3],
-    padding: spacing[4],
-    borderRadius: radii.lg,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
-    backgroundColor: colors.surface1
+    gap: spacing[3]
   },
 
   header: {

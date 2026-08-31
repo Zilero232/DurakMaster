@@ -1,6 +1,8 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, Text, View } from 'react-native';
 
 import { formatCredits } from '@/shared/lib/format';
+import { gradientEnds, surfaceGradient } from '@/ui-kit';
 
 import type { BetShortcutsProps } from './BetShortcuts.types';
 
@@ -21,6 +23,15 @@ export const BetShortcuts = ({ value, label, onChange }: BetShortcutsProps) => (
           style={[styles.step, isActive && styles.stepActive]}
           onPress={() => onChange(bet)}
         >
+          {isActive && (
+            <LinearGradient
+              colors={surfaceGradient.gold}
+              end={gradientEnds.vertical.end}
+              start={gradientEnds.vertical.start}
+              style={styles.fill}
+            />
+          )}
+
           <Text style={[styles.stepLabel, isActive && styles.stepLabelActive]}>
             {formatCredits(bet)}
           </Text>

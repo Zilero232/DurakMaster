@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -16,12 +16,24 @@ export const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth * 2,
     borderColor: colors.transparent,
     borderRadius: radii.pill,
-    backgroundColor: colors.surface1
+    backgroundColor: colors.surface1,
+    overflow: 'hidden',
+    ...shadows.tile
   },
 
   stepActive: {
     borderColor: colors.gold,
-    backgroundColor: colors.goldBright
+    backgroundColor: colors.goldBright,
+    ...shadows.button
+  },
+
+  fill: {
+    position: 'absolute',
+    zIndex: -1,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0
   },
 
   stepLabel: {

@@ -1,19 +1,22 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
-    width: '50%',
+    flexGrow: 1,
+    flexBasis: '46%',
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing[1],
-    minHeight: 96,
-    paddingVertical: spacing[4],
+    minHeight: 76,
+    paddingVertical: spacing[3],
     paddingHorizontal: spacing[2],
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,
-    backgroundColor: colors.transparent
+    borderRadius: radii.md,
+    backgroundColor: colors.surface1,
+    ...shadows.tile
   },
 
   pressed: {

@@ -19,7 +19,19 @@ export const styles = StyleSheet.create({
   panel: {
     position: 'absolute',
     backgroundColor: colors.surface1,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.borderStrong,
+    overflow: 'hidden',
     ...shadows.panel
+  },
+
+  fill: {
+    position: 'absolute',
+    zIndex: -1,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0
   },
 
   sheet: {

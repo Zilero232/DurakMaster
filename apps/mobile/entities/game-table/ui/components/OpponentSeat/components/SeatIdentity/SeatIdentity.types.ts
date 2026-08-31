@@ -1,6 +1,9 @@
 import type { Chatter } from '../../../SeatChatter';
 
 export type SeatIdentityProps = {
+  seatCount: number;
+  arcLift?: number;
+
   name: string;
   avatarUrl: string | null;
 

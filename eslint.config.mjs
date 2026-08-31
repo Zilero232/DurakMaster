@@ -16,8 +16,6 @@ export default eslint(
       'apps/mobile/ios',
       'apps/mobile/assets',
       'apps/server/prisma/migrations',
-      // i18next расширяет собственный модуль, а слить можно только interface.
-      'apps/mobile/shared/i18n/i18next.d.ts',
       'docs/**',
       '**/*.md/**'
     ]

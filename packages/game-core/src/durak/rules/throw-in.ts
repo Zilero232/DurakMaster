@@ -1,12 +1,16 @@
 import type { DurakState, TablePair } from '@durak-master/schemas';
 
+import { isJoker } from '@durak-master/schemas';
+
 export function allowedThrowInRanks(table: readonly TablePair[]): Set<string> {
   const ranks = new Set<string>();
 
   for (const pair of table) {
-    ranks.add(pair.attack.rank);
+    if (!isJoker(pair.attack)) {
+      ranks.add(pair.attack.rank);
+    }
 
-    if (pair.defense) {
+    if (pair.defense && !isJoker(pair.defense)) {
       ranks.add(pair.defense.rank);
     }
   }

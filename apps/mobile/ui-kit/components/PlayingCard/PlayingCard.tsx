@@ -27,7 +27,9 @@ export const PlayingCard = ({
   const styles = createStyles(width, theme);
 
   const label = card
-    ? t('card.label', { rank: t(`card.rank.${card.rank}`), suit: t(`card.suit.${card.suit}`) })
+    ? card.joker
+      ? t(`card.joker.${card.joker}`)
+      : t('card.label', { rank: t(`card.rank.${card.rank}`), suit: t(`card.suit.${card.suit}`) })
     : t('card.faceDown');
 
   const rootStyle = [

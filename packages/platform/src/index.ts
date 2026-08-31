@@ -5,6 +5,8 @@ export type {
   PlatformKind,
   PurchaseResult,
   PushAdapter,
+  RewardedAdResult,
+  RewardedAdsAdapter,
   StorageAdapter,
   StoreProduct
 } from './types';

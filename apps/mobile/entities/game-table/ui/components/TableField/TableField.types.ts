@@ -10,6 +10,7 @@ export type TableFieldProps = {
 
   mySeat: number;
 
+  isWaiting?: boolean;
   hoveredIndex?: number | null;
   cardScale?: CardScale;
   isInstant?: boolean;

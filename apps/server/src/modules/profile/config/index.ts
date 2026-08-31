@@ -5,3 +5,4 @@ export {
   AVATAR_MIME_TYPES,
   AVATAR_ROUTE
 } from './avatar.config';
+export { FREE_CREDITS_AMOUNT, FREE_CREDITS_INTERVAL_MS } from './rewards.config';

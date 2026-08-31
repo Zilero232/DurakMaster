@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, colors, radii, spacing } from '@/ui-kit';
+import { borderWidth, colors, radii, shadows, spacing } from '@/ui-kit';
 
 export const AVATAR_SIZE = 48;
 
@@ -16,7 +16,8 @@ export const styles = StyleSheet.create({
     borderRadius: radii.md,
     borderWidth: borderWidth.hairline,
     borderColor: colors.border,
-    backgroundColor: colors.surface2
+    backgroundColor: colors.surface2,
+    ...shadows.tile
   },
 
   selected: {

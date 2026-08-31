@@ -8,8 +8,8 @@ on:
         type: choice
         options: [preview, production]
         default: preview
-      submit:
-        description: Submit the build to Google Play after it finishes
+      rustore:
+        description: Publish the build to RuStore after it finishes
         type: boolean
         default: false
 
@@ -64,19 +64,19 @@ jobs:
         working-directory: apps/mobile
         run: eas build --platform android --profile ${{ inputs.profile }} --non-interactive --wait
 
-      - name: Write the Play service account key
-        if: ${{ inputs.submit && inputs.profile == 'production' }}
-        run: |
-          mkdir -p infra/play-store
-          printf '%s' "$PLAY_SERVICE_ACCOUNT" > infra/play-store/service-account.json
-        env:
-          PLAY_SERVICE_ACCOUNT: ${{ secrets.PLAY_SERVICE_ACCOUNT }}
-
-      - name: Submit to Google Play
-        if: ${{ inputs.submit && inputs.profile == 'production' }}
+      - name: Download the build for RuStore
+        if: ${{ inputs.rustore }}
         working-directory: apps/mobile
-        run: eas submit --platform android --profile production --non-interactive --latest
+        run: |
+          url=$(eas build:list --platform android --status finished --limit 1 --json --non-interactive | jq -r '.[0].artifacts.buildUrl')
+          curl -fsSL "$url" -o "$RUNNER_TEMP/durakmaster.aab"
 
-      - name: Remove the service account key
-        if: always()
-        run: rm -f infra/play-store/service-account.json
+      - name: Publish to RuStore
+        if: ${{ inputs.rustore }}
+        run: bun run publish:rustore
+        env:
+          RUSTORE_KEY_ID: ${{ secrets.RUSTORE_KEY_ID }}
+          RUSTORE_PRIVATE_KEY: ${{ secrets.RUSTORE_PRIVATE_KEY }}
+          RUSTORE_PACKAGE_NAME: com.durakmaster.app
+          RUSTORE_BUNDLE_PATH: ${{ runner.temp }}/durakmaster.aab
+          RUSTORE_CONTACT_EMAIL: ${{ secrets.RUSTORE_CONTACT_EMAIL }}

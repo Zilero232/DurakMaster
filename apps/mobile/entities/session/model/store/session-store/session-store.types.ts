@@ -26,6 +26,8 @@ export type SessionState = {
   status: ConnectionStatus;
 
   isLobbySubscribed: boolean;
+  joiningTableId: string | null;
+  isJoiningTable: boolean;
 
   tables: LobbyTable[];
   currentTable: LobbyTable | null;

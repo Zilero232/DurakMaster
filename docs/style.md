@@ -1268,3 +1268,26 @@ bun verify       # typecheck + lint + format:check in one command
 ```
 
 `bun fix` does not fix: blank lines (section 13), hook order (section 9.1), FSD import boundaries (→ [`docs/fsd.md`](./fsd.md)), translation completeness (section 18), explanatory comments (section 20).
+
+## 22. Commit messages
+
+[Conventional Commits](https://www.conventionalcommits.org), enforced by commitlint
+in the `commit-msg` hook and re-checked on every pull request.
+
+```
+<type>(<scope>): <subject>
+```
+
+`type` — `feat`, `fix`, `refactor`, `docs`, `chore`, `test`, `build`, `ci`, `perf`, `style`, `revert`.
+
+`scope` is optional, and when given must be one of: `mobile`, `server`, `schemas`,
+`game-core`, `platform`, `ci`, `docs`, `deps`. An unknown scope fails the hook —
+add it to `commitlint.config.mjs` if a new one is genuinely needed.
+
+The subject is lowercase, without a trailing period, at most 100 characters.
+
+```bash
+feat(game-core): deal two jokers when the mode is on
+fix(server): reject a joker transfer by showing a trump
+chore(deps): bump expo to 57.0.2
+```

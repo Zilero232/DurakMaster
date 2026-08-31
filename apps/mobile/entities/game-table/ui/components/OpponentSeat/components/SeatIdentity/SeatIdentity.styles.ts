@@ -1,13 +1,15 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, colors, fontFamily, fontSize, radii } from '@/ui-kit';
+import { borderWidth, colors, fontFamily, fontSize, lineHeight, radii, seatRowGap } from '@/ui-kit';
 
 import { HAT_SIZE, RING_PADDING } from '../../OpponentSeat.styles';
+
+const INFO_ROW_GAP = 1;
 
 export const styles = StyleSheet.create({
   identity: {
     alignItems: 'center',
-    gap: 2
+    gap: seatRowGap
   },
 
   avatarRing: {
@@ -48,8 +50,14 @@ export const styles = StyleSheet.create({
 
   info: {
     alignItems: 'center',
-    gap: 1,
+    justifyContent: 'flex-start',
+    gap: INFO_ROW_GAP,
+    height: lineHeight.normal(fontSize.xs) * 2 + INFO_ROW_GAP,
     maxWidth: 84
+  },
+
+  emptyInfo: {
+    height: 'auto'
   },
 
   name: {

@@ -11,9 +11,8 @@ import type { FriendRowAction } from './components';
 import type { FriendsPanelProps, FriendsTab as Tab } from './FriendsPanel.types';
 
 import { FriendsTab, RequestsTab, SearchTab } from './components';
+import { MIN_QUERY } from './FriendsPanel.config';
 import { styles } from './FriendsPanel.styles';
-
-const MIN_QUERY = 2;
 
 export const FriendsPanel = ({ isOpen, onClose }: FriendsPanelProps) => {
   const { t } = useTranslation();

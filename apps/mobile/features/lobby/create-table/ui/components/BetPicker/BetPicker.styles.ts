@@ -1,15 +1,10 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
-    gap: spacing[3],
-    padding: spacing[4],
-    borderRadius: radii.lg,
-    borderWidth: borderWidth.hairline,
-    borderColor: colors.borderGold,
-    backgroundColor: colors.surface1
+    gap: spacing[3]
   },
 
   amount: {

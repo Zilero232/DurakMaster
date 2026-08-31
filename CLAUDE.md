@@ -28,7 +28,7 @@ docs/
 ├── fsd.md           # Client architecture — read before structural edits
 ├── style.md         # Code style, import order, naming
 ├── games/           # Game rules — source of truth for game-core (durak)
-└── play-store/      # Store release: listing, privacy, signing
+└── store/           # Store release: listing, privacy, checklist
 infra/               # Infrastructure configs
 ```
 
@@ -71,7 +71,7 @@ bun ios                    # iOS
 bun web                    # browser
 ```
 
-Releasing to Google Play — [docs/play-store/](./docs/play-store/README.md).
+Releasing to RuStore — [DEPLOY.md](./DEPLOY.md), listing and privacy in [docs/store/](./docs/store/README.md).
 
 The two dev servers run in separate terminals on purpose: `bun --filter
 --parallel` prefixes every output line with the package name, which mangles the

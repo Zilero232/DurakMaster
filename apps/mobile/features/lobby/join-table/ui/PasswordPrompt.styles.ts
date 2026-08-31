@@ -21,6 +21,6 @@ export const styles = StyleSheet.create({
     color: colors.foreground,
     textAlign: 'center',
     letterSpacing: 1,
-    backgroundColor: colors.surface2
+    backgroundColor: colors.backgroundBottom
   }
 });

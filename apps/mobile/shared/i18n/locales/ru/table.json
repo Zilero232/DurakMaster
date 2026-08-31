@@ -30,8 +30,7 @@
     "reaction": "Отправить реакцию {{emoji}}",
     "seatFree": "Ждём",
     "joining": "Заходим за стол…",
-    "deckLeft": "В колоде",
-    "emptySeat": "Ждём игрока"
+    "deckLeft": "В колоде"
   },
   "result": {
     "win": "Победа",
@@ -46,8 +45,7 @@
     "toMenu": "В меню",
     "leaveTable": "Выйти из-за стола",
     "waitingReady": "Готовы: {{current}} из {{max}}",
-    "waitingOthers": "Ждём остальных…",
-    "timeoutHint": "Время хода истекло"
+    "waitingOthers": "Ждём остальных…"
   },
   "discard": {
     "title": "Отбой",
@@ -75,6 +73,10 @@
   "card": {
     "faceDown": "Карта рубашкой вверх",
     "label": "{{rank}} {{suit}}",
+    "joker": {
+      "red": "Красный джокер",
+      "black": "Чёрный джокер"
+    },
     "rank": {
       "two": "2",
       "three": "3",

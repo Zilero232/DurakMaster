@@ -11,9 +11,8 @@ import Animated, {
 import type { SpinnerProps } from './Spinner.types';
 
 import { colors } from '../../theme';
+import { TURN_MS } from './Spinner.config';
 import { createStyles } from './Spinner.styles';
-
-const TURN_MS = 900;
 
 export const Spinner = ({ size = 24, color = colors.accent, style }: SpinnerProps) => {
   const angle = useSharedValue(0);

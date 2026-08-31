@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -9,10 +9,7 @@ export const styles = StyleSheet.create({
 
   league: {
     alignItems: 'center',
-    gap: spacing[1],
-    padding: spacing[4],
-    borderRadius: radii.lg,
-    backgroundColor: colors.surface2
+    gap: spacing[1]
   },
 
   leagueName: {

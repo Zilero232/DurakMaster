@@ -7,6 +7,7 @@ import {
   Handshake,
   RefreshCw,
   Shuffle,
+  Sparkles,
   Users,
   VenetianMask
 } from 'lucide-react-native';
@@ -75,5 +76,11 @@ export const DURAK_TOGGLE_FIELDS: ModeToggleField[] = [
     icon: Eye,
     labelKey: 'games.durak.showTrump',
     hintKey: 'games.durak.showTrumpHint'
+  },
+  {
+    name: 'durakRules.withJokers',
+    icon: Sparkles,
+    labelKey: 'games.durak.withJokers',
+    hintKey: 'games.durak.withJokersHint'
   }
 ];

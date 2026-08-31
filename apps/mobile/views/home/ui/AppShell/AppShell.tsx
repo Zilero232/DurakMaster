@@ -32,6 +32,7 @@ export const AppShell = () => {
 
   const { profile } = useMyProfile();
   const createTable = useSessionStore((store) => store.createTable);
+  const isJoiningTable = useSessionStore((store) => store.isJoiningTable);
 
   const [tab, setTab] = useState<ShellTab>('profile');
 
@@ -46,7 +47,7 @@ export const AppShell = () => {
   const content = match(tab)
     .with('profile', () => <ProfileTab profile={profile} onOpenPanel={panels.open} />)
     .with('tables', () => <TableList onCreate={() => setTab('create')} onJoin={join} />)
-    .with('create', () => <CreateTable onCreate={createTable} />)
+    .with('create', () => <CreateTable isPending={isJoiningTable} onCreate={createTable} />)
     .exhaustive();
 
   return (

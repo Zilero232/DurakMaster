@@ -9,9 +9,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[3],
-    padding: spacing[3],
-    borderRadius: radii.md,
-    backgroundColor: colors.surface2
+    borderRadius: radii.md
   },
 
   avatarWrap: {
@@ -25,7 +23,7 @@ export const styles = StyleSheet.create({
     width: ONLINE_DOT,
     height: ONLINE_DOT,
     borderWidth: borderWidth.regular,
-    borderColor: colors.surface2,
+    borderColor: colors.surface1,
     borderRadius: radii.pill,
     backgroundColor: colors.success
   },

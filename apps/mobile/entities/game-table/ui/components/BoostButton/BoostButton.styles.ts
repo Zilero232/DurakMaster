@@ -24,7 +24,8 @@ export const styles = StyleSheet.create({
     borderWidth: borderWidth.hairline,
     borderColor: colors.glassBorder,
     borderRadius: radii.md,
-    backgroundColor: colors.glassStrong
+    backgroundColor: colors.glassStrong,
+    ...shadows.tile
   },
 
   disabled: {

@@ -6,9 +6,8 @@ import { PlayingCard, Sheet } from '@/ui-kit';
 
 import type { RevealedCardsProps } from './RevealedCards.types';
 
+import { CARD_WIDTH } from './RevealedCards.config';
 import { styles } from './RevealedCards.styles';
-
-const CARD_WIDTH = 64;
 
 export const RevealedCards = ({ boost, cards, onClose }: RevealedCardsProps) => {
   const { t } = useTranslation();

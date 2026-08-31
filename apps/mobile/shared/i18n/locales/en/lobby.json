@@ -61,6 +61,8 @@
       "allowDraw": "Draw",
       "showTrump": "Pass by trump",
       "showTrumpHint": "pass by showing a trump",
+      "withJokers": "Jokers",
+      "withJokersHint": "two jokers beat any card",
       "mode": {
         "title": "Game type",
         "throwIn": "Throw-in",

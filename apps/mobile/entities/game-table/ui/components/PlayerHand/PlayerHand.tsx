@@ -9,9 +9,8 @@ import type { PlayerHandProps } from './PlayerHand.types';
 import { dealFromTalon, sortHand } from '../../../lib';
 import { useCardSize } from '../../../model';
 import { DraggableCard } from './components';
+import { FAN_DROP_RATIO } from './PlayerHand.config';
 import { EDGE_PADDING, fanOverlap, styles } from './PlayerHand.styles';
-
-const FAN_DROP_RATIO = 0.1;
 
 export const PlayerHand = ({
   cards,

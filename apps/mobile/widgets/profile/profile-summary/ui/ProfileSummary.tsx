@@ -3,7 +3,7 @@ import { ChevronRight, Flame, Percent, TrendingUp, Trophy } from 'lucide-react-n
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { colors, iconSize, LeagueBadge } from '@/ui-kit';
+import { colors, iconSize, LeagueBadge, Panel } from '@/ui-kit';
 
 import type { ProfileSummaryProps } from './ProfileSummary.types';
 
@@ -19,7 +19,7 @@ export const ProfileSummary = ({ profile, onOpenStats }: ProfileSummaryProps) =>
   const winRate = gamesPlayed > 0 ? Math.round((gamesWon / gamesPlayed) * 100) : 0;
 
   return (
-    <View style={styles.root}>
+    <Panel style={styles.root}>
       <View style={styles.header}>
         <LeagueBadge league={rank.league.id} level={rank.level} size={48} />
 
@@ -71,6 +71,6 @@ export const ProfileSummary = ({ profile, onOpenStats }: ProfileSummaryProps) =>
           value={String(profile.loginStreak)}
         />
       </View>
-    </View>
+    </Panel>
   );
 };

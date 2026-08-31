@@ -1,18 +1,19 @@
 import { getRankInfo } from '@durak-master/schemas';
-import { Coins, Gift, Wallet } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Coins, Gift, Timer, Wallet } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { isNullish } from 'remeda';
 
+import { formatCountdown } from '@/shared/lib/format';
 import { useNow } from '@/shared/model/time';
-import { colors, iconSize } from '@/ui-kit';
+import { colors, gradientEnds, iconSize, Panel, surfaceGradient } from '@/ui-kit';
 
 import type { WalletBarProps } from './WalletBar.types';
 
 import { PlayerIdentity, WalletAmount } from './components';
+import { BONUS_COUNTDOWN_TICK_MS, BONUS_IDLE_TICK_MS } from './WalletBar.config';
 import { styles } from './WalletBar.styles';
-
-const BONUS_CHECK_INTERVAL_MS = 30_000;
 
 export const WalletBar = ({
   profile,
@@ -23,15 +24,17 @@ export const WalletBar = ({
 }: WalletBarProps) => {
   const { t } = useTranslation();
 
-  const now = useNow(BONUS_CHECK_INTERVAL_MS);
-
   const { credits, coins, nextFreeCreditsAt } = profile;
+
+  const now = useNow(isNullish(nextFreeCreditsAt) ? BONUS_IDLE_TICK_MS : BONUS_COUNTDOWN_TICK_MS);
 
   const rank = getRankInfo(profile.rating);
   const isBonusReady = isNullish(nextFreeCreditsAt) || nextFreeCreditsAt <= now;
 
+  const countdown = isBonusReady ? '' : formatCountdown(nextFreeCreditsAt - now);
+
   return (
-    <View style={styles.root}>
+    <Panel elevation='floating' style={styles.root}>
       <View style={styles.top}>
         <PlayerIdentity
           avatarUrl={profile.avatarUrl}
@@ -60,16 +63,37 @@ export const WalletBar = ({
         </View>
       </View>
 
-      {isBonusReady && onClaimBonus && (
+      {onClaimBonus && (
         <Pressable
+          style={({ pressed }) => [
+            styles.bonus,
+            !isBonusReady && styles.bonusWaiting,
+            pressed && styles.bonusPressed
+          ]}
           accessibilityHint={t('profile.bonusHint')}
           accessibilityRole='button'
-          style={({ pressed }) => [styles.bonus, pressed && styles.bonusPressed]}
+          accessibilityState={{ disabled: !isBonusReady }}
+          disabled={!isBonusReady}
           onPress={onClaimBonus}
         >
-          <Gift color={colors.primaryForeground} size={iconSize.md} />
+          {isBonusReady && (
+            <LinearGradient
+              colors={surfaceGradient.success}
+              end={gradientEnds.vertical.end}
+              start={gradientEnds.vertical.start}
+              style={styles.bonusFill}
+            />
+          )}
 
-          <Text style={styles.bonusLabel}>{t('profile.claimBonus')}</Text>
+          {isBonusReady ? (
+            <Gift color={colors.primaryForeground} size={iconSize.md} />
+          ) : (
+            <Timer color={colors.mutedForeground} size={iconSize.md} />
+          )}
+
+          <Text style={[styles.bonusLabel, !isBonusReady && styles.bonusWaitingLabel]}>
+            {isBonusReady ? t('profile.claimBonus') : t('profile.bonusIn', { time: countdown })}
+          </Text>
         </Pressable>
       )}
 
@@ -81,6 +105,6 @@ export const WalletBar = ({
           ]}
         />
       </View>
-    </View>
+    </Panel>
   );
 };

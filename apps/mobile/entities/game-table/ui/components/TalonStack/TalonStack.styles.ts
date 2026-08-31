@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 
 import { borderWidth, cardSize, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
 
-export const TALON_SCALE = 0.86;
+export const TALON_SCALE = 0.6;
 
 export const talonCard = {
   width: cardSize.width * TALON_SCALE,

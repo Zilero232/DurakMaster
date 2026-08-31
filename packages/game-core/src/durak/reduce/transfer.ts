@@ -1,5 +1,7 @@
 import type { Card, DurakState } from '@durak-master/schemas';
 
+import { isJoker } from '@durak-master/schemas';
+
 import type { DurakReduceResult } from './shared';
 
 import { handContains, removeCard } from '../../shared';
@@ -88,6 +90,10 @@ export function applyTransferByShowing(
   }
 
   if (state.shownTrumpSeats.includes(seat)) {
+    return fail('TRANSFER_NOT_ALLOWED');
+  }
+
+  if (isJoker(card) || state.table.some((pair) => isJoker(pair.attack))) {
     return fail('TRANSFER_NOT_ALLOWED');
   }
 

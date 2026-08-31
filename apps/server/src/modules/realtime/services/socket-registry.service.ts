@@ -1,4 +1,4 @@
-import type { ServerMessage } from '@durak-master/schemas';
+import type { GameErrorCode, ServerMessage } from '@durak-master/schemas';
 
 import { Injectable } from '@nestjs/common';
 
@@ -53,6 +53,14 @@ export class SocketRegistryService {
     if (socket.readyState === socket.OPEN) {
       socket.send(JSON.stringify(message));
     }
+  }
+
+  fail(socket: Socket, message: string, code: GameErrorCode): void {
+    this.send(socket, { type: 'error', payload: { message, code } });
+  }
+
+  failNotInGame(socket: Socket): void {
+    this.fail(socket, 'You are not at a table', 'NOT_IN_GAME');
   }
 
   sendTo(userId: string, message: ServerMessage): void {

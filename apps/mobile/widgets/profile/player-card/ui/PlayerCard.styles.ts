@@ -63,11 +63,6 @@ export const styles = StyleSheet.create({
   },
 
   stats: {
-    gap: spacing[3],
-    padding: spacing[4],
-    borderRadius: radii.lg,
-    borderWidth: borderWidth.hairline,
-    borderColor: colors.border,
-    backgroundColor: colors.surface2
+    gap: spacing[3]
   }
 });

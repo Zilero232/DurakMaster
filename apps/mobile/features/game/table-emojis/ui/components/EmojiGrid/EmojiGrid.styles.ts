@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, colors, radii, spacing } from '@/ui-kit';
+import { borderWidth, colors, radii, shadows, spacing } from '@/ui-kit';
 
 const TILE_SIZE = 60;
 
@@ -20,7 +20,8 @@ export const styles = StyleSheet.create({
     borderRadius: radii.md,
     borderWidth: borderWidth.hairline,
     borderColor: colors.border,
-    backgroundColor: colors.surface2
+    backgroundColor: colors.surface2,
+    ...shadows.tile
   },
 
   pressed: {

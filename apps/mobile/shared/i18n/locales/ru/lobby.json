@@ -63,6 +63,8 @@
       "allowDraw": "Ничья",
       "showTrump": "Перевод козырем",
       "showTrumpHint": "перевести, показав козырь",
+      "withJokers": "Джокеры",
+      "withJokersHint": "два джокера бьют любую карту",
       "mode": {
         "title": "Тип игры",
         "throwIn": "Подкидной",

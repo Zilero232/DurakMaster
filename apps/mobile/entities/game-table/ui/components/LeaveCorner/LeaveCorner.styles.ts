@@ -1,8 +1,18 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, colors, fontFamily, fontSize, lineHeight, radii, spacing } from '@/ui-kit';
+import {
+  borderWidth,
+  colors,
+  CORNER_BUTTON_SIZE,
+  fontFamily,
+  fontSize,
+  lineHeight,
+  radii,
+  shadows,
+  spacing
+} from '@/ui-kit';
 
-const SIZE = 40;
+const SIZE = CORNER_BUTTON_SIZE;
 
 export const styles = StyleSheet.create({
   root: {
@@ -17,7 +27,8 @@ export const styles = StyleSheet.create({
     borderWidth: borderWidth.hairline,
     borderColor: colors.glassBorder,
     borderRadius: radii.pill,
-    backgroundColor: colors.glassStrong
+    backgroundColor: colors.glassStrong,
+    ...shadows.tile
   },
 
   pressed: {

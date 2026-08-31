@@ -15,6 +15,8 @@ export const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 420,
     padding: spacing[6],
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.borderStrong,
     borderRadius: radii.xl,
     backgroundColor: colors.surface1,
     ...shadows.panel

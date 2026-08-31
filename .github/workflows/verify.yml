@@ -18,7 +18,10 @@ jobs:
     timeout-minutes: 20
 
     steps:
+      # commitlint walks the range against the base branch, so it needs history.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -44,3 +47,7 @@ jobs:
 
       - name: Typecheck, test, lint and format
         run: bun run verify
+
+      - name: Check the commit messages
+        if: ${{ github.event_name == 'pull_request' }}
+        run: bunx commitlint --from "origin/${{ github.base_ref }}" --to HEAD

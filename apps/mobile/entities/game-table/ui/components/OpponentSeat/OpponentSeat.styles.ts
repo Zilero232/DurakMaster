@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, cardSize, colors, fontSize, radii, shadows, spacing } from '@/ui-kit';
+import { borderWidth, cardSize, colors, fontSize, glow, radii, shadows, spacing } from '@/ui-kit';
 
 export const BACK_SCALE = 0.42;
 
@@ -16,6 +16,8 @@ export const RING_PADDING = 2;
 export const RING_SIZE = AVATAR_SIZE + (RING_PADDING + borderWidth.regular) * 2;
 
 export const BACK_STEP_X = 6;
+
+export const EMPTY_SEAT_WIDTH = 64;
 export const BACK_STEP_ANGLE = 3;
 
 export const styles = StyleSheet.create({
@@ -27,8 +29,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 0,
     flexShrink: 1,
+    minWidth: 0,
     paddingVertical: spacing[1],
-    paddingHorizontal: spacing[1],
+    paddingHorizontal: spacing[2],
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.md,
@@ -36,10 +39,9 @@ export const styles = StyleSheet.create({
   },
 
   active: {
-    borderColor: colors.glassBorder,
-    backgroundColor: 'rgba(255, 255, 255, 0.14)',
-    boxShadow: '0px 0px 10px rgba(225, 175, 59, 0.8)',
-    elevation: 8
+    borderColor: colors.borderAccent,
+    backgroundColor: colors.glassStrong,
+    ...glow.accent
   },
 
   out: {
@@ -47,6 +49,9 @@ export const styles = StyleSheet.create({
   },
 
   empty: {
+    justifyContent: 'center',
+    minWidth: EMPTY_SEAT_WIDTH,
+    paddingVertical: spacing[2],
     borderStyle: 'dashed',
     borderColor: colors.borderStrong
   },

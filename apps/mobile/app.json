@@ -2,12 +2,13 @@
   "expo": {
     "name": "Дурак Мастер",
     "slug": "durak-master",
-    "scheme": "durakmaster",
+    "owner": "zilero228",
     "version": "1.0.0",
+    "scheme": "durakmaster",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#191526",
+    "icon": "./assets/icon.png",
     "newArchEnabled": true,
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -22,7 +23,12 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "permissions": ["INTERNET", "VIBRATE", "READ_EXTERNAL_STORAGE"],
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.VIBRATE",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ],
       "blockedPermissions": [
         "android.permission.RECORD_AUDIO",
         "android.permission.WRITE_EXTERNAL_STORAGE"
@@ -51,11 +57,18 @@
           "backgroundColor": "#191526",
           "imageWidth": 180
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "1d39eb21-70f3-4aab-b552-1b882be87f9d"
+      }
     }
   }
 }

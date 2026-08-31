@@ -1,3 +1,6 @@
+export { JokerIcon } from './JokerIcon';
+export type { JokerIconProps } from './JokerIcon';
+
 export { LeagueBadge } from './LeagueBadge';
 export type { LeagueBadgeProps } from './LeagueBadge';
 

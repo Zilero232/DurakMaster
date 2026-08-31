@@ -1,13 +1,13 @@
 import { Text, View } from 'react-native';
 
-import { colors, iconSize } from '@/ui-kit';
+import { colors, iconSize, Panel } from '@/ui-kit';
 
 import type { SettingsSectionProps } from './SettingsSection.types';
 
 import { styles } from './SettingsSection.styles';
 
 export const SettingsSection = ({ title, children, icon: Icon, hint }: SettingsSectionProps) => (
-  <View style={styles.root}>
+  <Panel style={styles.root}>
     <View style={styles.header}>
       {Icon && (
         <View style={styles.badge}>
@@ -23,5 +23,5 @@ export const SettingsSection = ({ title, children, icon: Icon, hint }: SettingsS
     </View>
 
     {children}
-  </View>
+  </Panel>
 );

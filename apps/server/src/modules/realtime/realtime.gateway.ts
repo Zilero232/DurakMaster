@@ -1,4 +1,4 @@
-import type { ClientMessage, UseBoostInput } from '@durak-master/schemas';
+import type { ClientMessage, QuickPhraseId, TauntId, UseBoostInput } from '@durak-master/schemas';
 import type { OnModuleDestroy } from '@nestjs/common';
 import type { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit } from '@nestjs/websockets';
 
@@ -28,6 +28,7 @@ export class RealtimeGateway
 {
   private heartbeat: NodeJS.Timeout | null = null;
   private unsubscribe: (() => void) | null = null;
+  private unsubscribeRemovals: (() => void) | null = null;
 
   private readonly logger = new Logger(RealtimeGateway.name);
 
@@ -48,6 +49,11 @@ export class RealtimeGateway
     this.unsubscribe = this.rooms.onEvent((roomId, event) =>
       this.games.handleRoomEvent(roomId, event)
     );
+
+    this.unsubscribeRemovals = this.rooms.onRoomRemoved((roomId) => {
+      this.broadcast.tableRemoved(roomId);
+      this.broadcast.lobby();
+    });
 
     this.heartbeat = setInterval(() => {
       for (const socket of this.registry.all()) {
@@ -123,6 +129,9 @@ export class RealtimeGateway
 
     this.unsubscribe?.();
     this.unsubscribe = null;
+
+    this.unsubscribeRemovals?.();
+    this.unsubscribeRemovals = null;
   }
 
   handleDisconnect(socket: Socket): void {
@@ -190,7 +199,7 @@ export class RealtimeGateway
         break;
 
       case 'table:ready':
-        this.setReady(userId, message.payload.isReady);
+        await this.tables.setReady(socket, userId, message.payload.isReady);
         break;
 
       case 'table:boost':
@@ -202,11 +211,11 @@ export class RealtimeGateway
         break;
 
       case 'table:phrase':
-        this.rooms.getRoomOfUser(userId)?.sendPhrase(userId, message.payload.phraseId);
+        this.sendPhrase(socket, userId, message.payload.phraseId);
         break;
 
       case 'table:emoji':
-        this.rooms.getRoomOfUser(userId)?.sendEmoji(userId, message.payload.emoji);
+        this.sendEmoji(socket, userId, message.payload.emoji);
         break;
 
       case 'game:action':
@@ -225,12 +234,6 @@ export class RealtimeGateway
   private leaveTable(socket: Socket, userId: string): void {
     const room = this.rooms.getRoomOfUser(userId);
 
-    if (room && !room.isInMatch) {
-      void this.profiles.releaseStake(userId, room.settings.bet).catch((error: unknown) => {
-        this.logger.error(`Failed to release the stake for ${userId}`, error);
-      });
-    }
-
     this.rooms.leave(userId);
     this.registry.send(socket, { type: 'table:left' });
 
@@ -246,10 +249,7 @@ export class RealtimeGateway
     const room = this.rooms.getRoomOfUser(userId);
 
     if (!room?.isPlaying) {
-      this.registry.send(socket, {
-        type: 'error',
-        payload: { message: 'No game in progress', code: 'GAME_NOT_ACTIVE' }
-      });
+      this.registry.fail(socket, 'No game in progress', 'GAME_NOT_ACTIVE');
 
       return;
     }
@@ -259,10 +259,7 @@ export class RealtimeGateway
     const coins = await this.profiles.spendCoins(userId, price);
 
     if (coins === null) {
-      this.registry.send(socket, {
-        type: 'error',
-        payload: { message: 'Not enough coins', code: 'NOT_ENOUGH_COINS' }
-      });
+      this.registry.fail(socket, 'Not enough coins', 'NOT_ENOUGH_COINS');
 
       return;
     }
@@ -270,10 +267,7 @@ export class RealtimeGateway
     if (input.boost === 'undoMove' && !room.undoLastMove(userId)) {
       await this.profiles.refundCoins(userId, price);
 
-      this.registry.send(socket, {
-        type: 'error',
-        payload: { message: 'Nothing to take back', code: 'INVALID_ACTION_FOR_PHASE' }
-      });
+      this.registry.fail(socket, 'Nothing to take back', 'INVALID_ACTION_FOR_PHASE');
 
       return;
     }
@@ -300,14 +294,28 @@ export class RealtimeGateway
     }
   }
 
-  private setReady(userId: string, isReady: boolean): void {
+  private sendPhrase(socket: Socket, userId: string, phraseId: QuickPhraseId): void {
     const room = this.rooms.getRoomOfUser(userId);
 
-    room?.setReady(userId, isReady);
+    if (!room) {
+      this.registry.failNotInGame(socket);
 
-    if (room) {
-      this.broadcast.table(room.id);
+      return;
     }
+
+    room.sendPhrase(userId, phraseId);
+  }
+
+  private sendEmoji(socket: Socket, userId: string, emoji: TauntId): void {
+    const room = this.rooms.getRoomOfUser(userId);
+
+    if (!room) {
+      this.registry.failNotInGame(socket);
+
+      return;
+    }
+
+    room.sendEmoji(userId, emoji);
   }
 
   private async consumeRateLimit(userId: string): Promise<boolean> {

@@ -21,15 +21,22 @@ export type {
   StatRowProps,
   StatusScreenProps
 } from './components';
-export { LeagueBadge, LoserHat, SuitIcon, TauntIcon } from './icons';
+export { JokerIcon, LeagueBadge, LoserHat, SuitIcon, TauntIcon } from './icons';
 
-export type { LeagueBadgeProps, LoserHatProps, SuitIconProps, TauntIconProps } from './icons';
+export type {
+  JokerIconProps,
+  LeagueBadgeProps,
+  LoserHatProps,
+  SuitIconProps,
+  TauntIconProps
+} from './icons';
 
 export {
   Avatar,
   Button,
   CountBadge,
   FeedbackProvider,
+  Panel,
   SegmentedControl,
   Sheet,
   Skeleton,
@@ -43,6 +50,10 @@ export type {
   ButtonVariant,
   CountBadgeProps,
   CountBadgeTone,
+  PanelElevation,
+  PanelPadding,
+  PanelProps,
+  PanelTone,
   SegmentedControlProps,
   SegmentedOption,
   SheetProps,
@@ -63,18 +74,21 @@ export type { CardTheme, CardThemeId, SuitPalette } from './theme';
 
 export {
   borderWidth,
+  bubbleTailSize,
   card,
   CARD_SCALE,
   cardSize,
   colors,
   CONFIRM_MAX_WIDTH,
   CONTENT_MAX_WIDTH,
+  CORNER_BUTTON_SIZE,
   DESKTOP_MAX_WIDTH,
   duration,
   fontFamily,
   fontSize,
   getCardSize,
   glow,
+  gradientEnds,
   ICON_BUTTON_SIZE,
   iconSize,
   lineHeight,
@@ -82,8 +96,10 @@ export {
   radii,
   screen,
   screenGradient,
+  seatRowGap,
   shadows,
   spacing,
+  surfaceGradient,
   TABLE_MAX_WIDTH,
   TOAST_MAX_WIDTH
 } from './theme';

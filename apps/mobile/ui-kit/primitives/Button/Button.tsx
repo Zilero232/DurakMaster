@@ -1,10 +1,17 @@
-import { Pressable, Text } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Pressable, Text, View } from 'react-native';
 
 import type { ButtonProps } from './Button.types';
 
-import { iconSize } from '../../theme';
+import { gradientEnds, iconSize } from '../../theme';
 import { Spinner } from '../Spinner';
-import { SIZE_STYLES, styles, VARIANT_SPINNER_COLOR, VARIANT_STYLES } from './Button.styles';
+import {
+  SIZE_STYLES,
+  styles,
+  VARIANT_GRADIENT,
+  VARIANT_SPINNER_COLOR,
+  VARIANT_STYLES
+} from './Button.styles';
 import { usePressFeedback } from './feedback-context';
 
 export const Button = ({
@@ -21,6 +28,7 @@ export const Button = ({
 }: ButtonProps) => {
   const variantStyle = VARIANT_STYLES[variant];
   const sizeStyle = SIZE_STYLES[size];
+  const gradient = VARIANT_GRADIENT[variant];
 
   const feedback = usePressFeedback();
 
@@ -49,6 +57,19 @@ export const Button = ({
       testID={testID}
       onPress={handlePress}
     >
+      {gradient && (
+        <>
+          <LinearGradient
+            colors={gradient}
+            end={gradientEnds.vertical.end}
+            start={gradientEnds.vertical.start}
+            style={styles.fill}
+          />
+
+          <View pointerEvents='none' style={styles.sheen} />
+        </>
+      )}
+
       {isLoading ? (
         <Spinner color={VARIANT_SPINNER_COLOR[variant]} size={iconSize.md} />
       ) : typeof children === 'string' ? (

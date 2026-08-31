@@ -24,12 +24,24 @@ export const RANKS = [
 export const rankSchema = z.enum(RANKS);
 export type Rank = z.infer<typeof rankSchema>;
 
+export const JOKER_COLORS = ['red', 'black'] as const;
+
+export const jokerColorSchema = z.enum(JOKER_COLORS);
+export type JokerColor = z.infer<typeof jokerColorSchema>;
+
 export const cardSchema = z.object({
   rank: rankSchema,
-  suit: suitSchema
+  suit: suitSchema,
+
+  /** Set only on a joker, which has no rank or suit of its own — see docs/games/durak.md §9. */
+  joker: jokerColorSchema.optional()
 });
 
 export type Card = z.infer<typeof cardSchema>;
+
+export function isJoker(card: Card): card is Card & { joker: JokerColor } {
+  return card.joker !== undefined;
+}
 
 export const DECK_SIZES = [24, 32, 36, 52] as const;
 

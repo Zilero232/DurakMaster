@@ -11,6 +11,7 @@
     "topUpCredits": "Top up credits",
     "claimBonus": "Claim bonus",
     "bonusHint": "Free credits are waiting",
+    "bonusIn": "Bonus in {{time}}",
     "leagues": {
       "silver": "Silver",
       "gold": "Gold",
@@ -27,7 +28,11 @@
     "uploadAvatar": "Upload your own photo",
     "orPick": "or pick a ready one",
     "photoChosen": "Photo chosen — press Save",
-    "saveFailed": "Could not save the profile"
+    "saveFailed": "Could not save the profile",
+    "watchAd": "Watch an ad",
+    "adRewarded": "The bonus is ready",
+    "adFailed": "The ad could not be shown",
+    "adRefused": "No more ads for now"
   },
   "menu": {
     "news": "News",

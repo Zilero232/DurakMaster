@@ -25,7 +25,17 @@ export const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: radii.lg,
     backgroundColor: colors.surface1,
+    overflow: 'hidden',
     ...shadows.card
+  },
+
+  fill: {
+    position: 'absolute',
+    zIndex: -1,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0
   },
 
   tile: {
@@ -69,8 +79,11 @@ export const styles = StyleSheet.create({
     gap: spacing[1],
     paddingVertical: spacing[2],
     paddingHorizontal: spacing[4],
+    borderWidth: borderWidth.hairline,
+    borderColor: colors.borderGold,
     borderRadius: radii.pill,
-    backgroundColor: colors.primary
+    backgroundColor: colors.primary,
+    ...shadows.tile
   },
 
   tileJoinLabel: {

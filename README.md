@@ -84,7 +84,7 @@ docs/
 ├── games/      game rules — the source of truth
 ├── fsd.md      client architecture
 ├── style.md    code style
-└── play-store/ store release
+└── store/      store release
 ```
 
 ## Testing
@@ -103,7 +103,7 @@ tests are built from.
 ## Deployment
 
 - **Web and API** — [DEPLOY.md](DEPLOY.md): images to ghcr, a VPS behind Caddy
-- **Android** — [docs/play-store/](docs/play-store/README.md): EAS build, Google Play
+- **Android** — [docs/store/](docs/store/README.md): EAS build, RuStore
 
 ## Documentation
 

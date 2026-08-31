@@ -7,9 +7,7 @@ const TRACK_HEIGHT = 6;
 export const styles = StyleSheet.create({
   root: {
     gap: spacing[2],
-    padding: spacing[3],
-    borderRadius: radii.md,
-    backgroundColor: colors.surface2
+    borderRadius: radii.md
   },
 
   locked: {

@@ -3,6 +3,9 @@ import type { PlayerState } from '@durak-master/schemas';
 import type { Chatter } from '../SeatChatter';
 
 export type OpponentSeatProps = {
+  seatCount: number;
+  arcLift?: number;
+
   isEmpty?: boolean;
   isReady?: boolean;
   player: PlayerState;
