@@ -233,9 +233,13 @@ export class RealtimeGateway
 
   private leaveTable(socket: Socket, userId: string): void {
     const room = this.rooms.getRoomOfUser(userId);
+    const isForfeit = room?.isPlaying ?? false;
 
     this.rooms.leave(userId);
-    this.registry.send(socket, { type: 'table:left' });
+
+    if (!isForfeit) {
+      this.registry.send(socket, { type: 'table:left' });
+    }
 
     if (room) {
       this.broadcast.table(room.id);

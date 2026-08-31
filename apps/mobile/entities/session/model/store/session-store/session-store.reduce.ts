@@ -50,7 +50,6 @@ export const reduceServerMessage = (
         currentTable: null,
         mySeat: null,
         view: null,
-        outcome: null,
         phrases: [],
         emojis: {},
         revealed: null,
