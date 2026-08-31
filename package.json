@@ -50,9 +50,6 @@
       "path": "node_modules/cz-git"
     }
   },
-  "resolutions": {
-    "zod": "4.4.3"
-  },
   "lint-staged": {
     "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": [
       "eslint --fix",
