@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 
 import type { Socket } from '../realtime.types';
 
-import { AppConfigService } from '../../../config';
+import { AppConfigService } from '../../../config/config.service';
 import {
   GameHistoryService,
   hashTablePassword,

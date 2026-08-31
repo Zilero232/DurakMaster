@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, unlink, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { AppConfigService } from '../../../config';
+import { AppConfigService } from '../../../config/config.service';
 import { AVATAR_DIRECTORY, AVATAR_EXTENSION, AVATAR_ROUTE } from '../config';
 
 @Injectable()
