@@ -1,11 +1,14 @@
-import type { Chatter } from '../../../SeatChatter';
+import type { Chatter } from '../../../ui/components/SeatChatter';
+import type { SeatMetrics } from '../../hooks';
 
-export type SeatIdentityProps = {
-  seatCount: number;
-  arcLift?: number;
+export type SeatContextValue = {
+  metrics: SeatMetrics;
+  arcLift: number;
 
   name: string;
   avatarUrl: string | null;
+  handCount: number;
+  backWidth: number;
 
   isEmpty: boolean;
   isActive: boolean;

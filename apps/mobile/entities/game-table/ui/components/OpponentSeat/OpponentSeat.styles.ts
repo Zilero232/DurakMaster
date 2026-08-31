@@ -1,21 +1,12 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, cardSize, colors, fontSize, glow, radii, shadows, spacing } from '@/ui-kit';
+import { colors, fontSize, glow, radii, shadows, spacing } from '@/ui-kit';
 
-export const BACK_SCALE = 0.42;
-
-export const backSize = {
-  width: cardSize.width * BACK_SCALE,
-  height: cardSize.height * BACK_SCALE
-};
-
-export const AVATAR_SIZE = 38;
-
-export const HAT_SIZE = 26;
 export const RING_PADDING = 2;
-export const RING_SIZE = AVATAR_SIZE + (RING_PADDING + borderWidth.regular) * 2;
 
 export const BACK_STEP_X = 6;
+
+export const SEAT_PADDING_X = spacing[1];
 
 export const EMPTY_SEAT_WIDTH = 64;
 export const BACK_STEP_ANGLE = 3;
@@ -30,8 +21,8 @@ export const styles = StyleSheet.create({
     gap: 0,
     flexShrink: 1,
     minWidth: 0,
-    paddingVertical: spacing[1],
-    paddingHorizontal: spacing[2],
+    paddingVertical: 2,
+    paddingHorizontal: SEAT_PADDING_X,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.md,
@@ -51,7 +42,7 @@ export const styles = StyleSheet.create({
   empty: {
     justifyContent: 'center',
     minWidth: EMPTY_SEAT_WIDTH,
-    paddingVertical: spacing[2],
+    paddingVertical: spacing[1],
     borderStyle: 'dashed',
     borderColor: colors.borderStrong
   },

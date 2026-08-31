@@ -1,5 +1,3 @@
-export { SeatCards } from './SeatCards';
-export type { SeatCardsProps } from './SeatCards';
+export { MAX_VISIBLE_BACKS, SeatCards } from './SeatCards';
 
 export { SeatIdentity } from './SeatIdentity';
-export type { SeatIdentityProps } from './SeatIdentity';

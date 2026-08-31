@@ -1,2 +1,2 @@
 export { SeatCards } from './SeatCards';
-export type { SeatCardsProps } from './SeatCards.types';
+export { MAX_VISIBLE_BACKS } from './SeatCards.config';

@@ -1,10 +1,8 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, colors, fontFamily, fontSize, lineHeight, radii, seatRowGap } from '@/ui-kit';
+import { borderWidth, colors, fontFamily, radii, seatRowGap, spacing } from '@/ui-kit';
 
-import { HAT_SIZE, RING_PADDING } from '../../OpponentSeat.styles';
-
-const INFO_ROW_GAP = 1;
+import { RING_PADDING } from '../../OpponentSeat.styles';
 
 export const styles = StyleSheet.create({
   identity: {
@@ -27,8 +25,6 @@ export const styles = StyleSheet.create({
 
   hat: {
     position: 'absolute',
-    top: -HAT_SIZE * 0.68,
-    left: -HAT_SIZE * 0.22,
     zIndex: 3,
     transform: [{ rotate: '-16deg' }]
   },
@@ -48,21 +44,8 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.success
   },
 
-  info: {
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    gap: INFO_ROW_GAP,
-    height: lineHeight.normal(fontSize.xs) * 2 + INFO_ROW_GAP,
-    maxWidth: 84
-  },
-
-  emptyInfo: {
-    height: 'auto'
-  },
-
   name: {
     maxWidth: '100%',
-    fontSize: fontSize.xs,
     fontWeight: '600',
     fontFamily: fontFamily.sansSemi,
     color: colors.onFelt,
@@ -70,8 +53,13 @@ export const styles = StyleSheet.create({
   },
 
   role: {
-    fontSize: fontSize.xs,
+    position: 'absolute',
+    top: '100%',
+    alignSelf: 'center',
+    marginTop: seatRowGap,
+    paddingHorizontal: spacing[1],
     color: colors.onFeltMuted,
+    textAlign: 'center',
     textTransform: 'uppercase'
   },
 

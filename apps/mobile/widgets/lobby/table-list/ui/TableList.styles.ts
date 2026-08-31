@@ -27,9 +27,11 @@ export const styles = StyleSheet.create({
   },
 
   empty: {
+    flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
     gap: spacing[3],
-    paddingVertical: spacing[12],
+    paddingVertical: spacing[8],
     paddingHorizontal: spacing[4]
   },
 
