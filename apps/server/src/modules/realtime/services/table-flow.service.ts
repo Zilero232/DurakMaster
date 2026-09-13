@@ -1,6 +1,6 @@
 import type { CreateTableInput, JoinTableInput } from '@durak-master/schemas';
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 import type { Socket } from '../realtime.types';
 
@@ -28,6 +28,8 @@ const BOT_PROFILE = {
 
 @Injectable()
 export class TableFlowService {
+  private readonly logger = new Logger(TableFlowService.name);
+
   constructor(
     private readonly rooms: RoomsService,
     private readonly sessions: SessionsService,
@@ -66,7 +68,9 @@ export class TableFlowService {
 
     this.rooms.join(room, profile);
 
-    void this.history.ensureTable(room.id, room.settings, passwordHash);
+    void this.history.ensureTable(room.id, room.settings, passwordHash).catch((error: unknown) => {
+      this.logger.error(`Failed to record table ${room.id}`, error);
+    });
 
     this.broadcast.tableJoined(userId, room.id);
     this.broadcast.lobby();

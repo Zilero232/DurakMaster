@@ -3,7 +3,7 @@ import type { GameAction, GameErrorCode } from '@durak-master/schemas';
 import { computeRatingGain } from '@durak-master/schemas';
 import { Injectable, Logger } from '@nestjs/common';
 
-import type { FinishedPlayer, RoomEvent, RoomMember } from '../../game';
+import type { FinishedPlayer, FinishFacts, RoomEvent, RoomMember } from '../../game';
 import type { Socket } from '../realtime.types';
 
 import { GameHistoryService, RoomsService } from '../../game';
@@ -160,6 +160,7 @@ export class GameFlowService {
       isDraw: boolean;
       members: RoomMember[];
       outPlaces: Record<string, number>;
+      facts: FinishFacts;
       removedUserId?: string;
     }
   ): Promise<void> {
@@ -169,7 +170,7 @@ export class GameFlowService {
       return;
     }
 
-    const { loserUserId, isDraw, members, outPlaces, removedUserId } = event;
+    const { loserUserId, isDraw, members, outPlaces, facts, removedUserId } = event;
     const { bet } = room.settings;
 
     const winners = members.filter(
@@ -213,7 +214,9 @@ export class GameFlowService {
 
       played.push({ userId, seat: member.seat, creditsDelta, ratingDelta, isLoser });
 
-      await this.notifyPlayer(false, userId, room.settings.game, {
+      await this.notifyPlayer(false, userId, {
+        isFlawless: !facts.tookUserIds.includes(userId),
+        tableSize: members.length,
         loserUserId,
         isDraw,
         isWinner,
@@ -222,13 +225,17 @@ export class GameFlowService {
       });
     }
 
-    void this.history.recordFinishedGame({
-      tableId: room.id,
-      settings: room.settings,
-      players: played,
-      loserUserId,
-      isDraw
-    });
+    void this.history
+      .recordFinishedGame({
+        tableId: room.id,
+        settings: room.settings,
+        players: played,
+        loserUserId,
+        isDraw
+      })
+      .catch((error: unknown) => {
+        this.logger.error(`Failed to record the finished game in room ${roomId}`, error);
+      });
 
     if (removedUserId) {
       const socket = this.registry.get(removedUserId);
@@ -246,8 +253,9 @@ export class GameFlowService {
   private async notifyPlayer(
     isBot: boolean,
     userId: string,
-    game: string,
     outcome: {
+      isFlawless: boolean;
+      tableSize: number;
       loserUserId: string | null;
       isDraw: boolean;
       isWinner: boolean;
@@ -261,9 +269,8 @@ export class GameFlowService {
       ? []
       : await this.achievements.recordGame(userId, {
           isWin: isWinner,
-          isFlawless: false,
-          endedOnTrumps: false,
-          game: game as Parameters<AchievementsService['recordGame']>[1]['game']
+          isFlawless: outcome.isFlawless,
+          tableSize: outcome.tableSize
         });
 
     const socket = this.registry.get(userId);

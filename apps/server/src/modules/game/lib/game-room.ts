@@ -20,7 +20,12 @@ import { randomInt, randomUUID } from 'node:crypto';
 
 import type { GameSession } from './game-session';
 
-import { isVisibleBotAction, MISSED_TURNS_LIMIT, READY_TIMEOUT_MS } from '../config';
+import {
+  isVisibleBotAction,
+  MISSED_TURNS_LIMIT,
+  PEEK_TALON_CARDS,
+  READY_TIMEOUT_MS
+} from '../config';
 import { createGameSession } from './game-session';
 import { nextFreeSeat } from './next-free-seat';
 import { RoomChatter } from './room-chatter';
@@ -36,6 +41,10 @@ const collectOutPlaces = (players: GameCoreState['players']): Record<string, num
   }
 
   return places;
+};
+
+export type FinishFacts = {
+  tookUserIds: string[];
 };
 
 export type RoomMember = {
@@ -56,6 +65,7 @@ export type RoomEvent =
       isDraw: boolean;
       members: RoomMember[];
       outPlaces: Record<string, number>;
+      facts: FinishFacts;
       removedUserId?: string;
     }
   | { type: 'idle-removed'; userIds: string[]; refundUserIds: string[] }
@@ -71,6 +81,8 @@ export class GameRoom {
   private members = new Map<string, RoomMember>();
   private ownerId: string | null = null;
   private session: GameSession | null = null;
+
+  private tookUserIds = new Set<string>();
   private status: TableStatus = 'waiting';
 
   private hasDealt = false;
@@ -195,6 +207,7 @@ export class GameRoom {
     this.status = 'waiting';
     this.session = null;
     this.hasDealt = false;
+    this.tookUserIds.clear();
 
     this.releaseStakes();
 
@@ -229,6 +242,7 @@ export class GameRoom {
 
   private forfeit(userId: string): void {
     const played = this.getMembers();
+    const facts: FinishFacts = { tookUserIds: [...this.tookUserIds] };
 
     this.members.delete(userId);
     this.passOwnership(userId);
@@ -240,6 +254,7 @@ export class GameRoom {
       isDraw: false,
       members: played,
       outPlaces: {},
+      facts,
       removedUserId: userId
     });
   }
@@ -371,6 +386,10 @@ export class GameRoom {
       return error;
     }
 
+    if (action.game === 'durak' && action.action.type === 'take') {
+      this.tookUserIds.add(userId);
+    }
+
     this.afterStateChange();
 
     return null;
@@ -386,6 +405,8 @@ export class GameRoom {
       const played = this.getMembers();
       const outPlaces = collectOutPlaces(this.session.state.players);
 
+      const facts: FinishFacts = { tookUserIds: [...this.tookUserIds] };
+
       this.resetToWaiting();
 
       this.emit({
@@ -393,7 +414,8 @@ export class GameRoom {
         loserUserId: outcome.loserUserId,
         isDraw: outcome.isDraw,
         members: played,
-        outPlaces
+        outPlaces,
+        facts
       });
 
       return;
@@ -580,19 +602,29 @@ export class GameRoom {
   peekTalon(): Card[] | null {
     const state = this.session?.state;
 
-    return state && 'talon' in state ? [...(state.talon as Card[])] : null;
+    if (!state || !('talon' in state)) {
+      return null;
+    }
+
+    return (state.talon as Card[]).slice(0, PEEK_TALON_CARDS);
   }
 
-  peekHand(userId: string): Card[] | null {
+  peekHand(viewerId: string, targetUserId: string): Card[] | null {
     const state = this.session?.state;
 
     if (!state || !('hands' in state)) {
       return null;
     }
 
+    const isOpponent = targetUserId !== viewerId && this.members.has(targetUserId);
+
+    if (!isOpponent) {
+      return null;
+    }
+
     const hands = state.hands as Record<string, Card[]>;
 
-    return hands[userId] ? [...hands[userId]] : null;
+    return hands[targetUserId] ? [...hands[targetUserId]] : null;
   }
 
   getProfiles(): PublicProfile[] {

@@ -5,6 +5,7 @@ import { Injectable, Logger } from '@nestjs/common';
 
 import { PrismaService } from '../../../lib/prisma/prisma.service';
 import { FREE_CREDITS_AMOUNT, FREE_CREDITS_INTERVAL_MS } from '../config';
+import { toPublicProfile } from '../lib';
 
 export type ProfileIdentityListener = (
   userId: string,
@@ -54,7 +55,7 @@ export class ProfilesService {
       return null;
     }
 
-    return this.toPublicProfile(userId, user.name, user.image, user.profile);
+    return toPublicProfile({ userId, name: user.name, image: user.image }, user.profile, true);
   }
 
   async getPublicProfiles(userIds: string[]): Promise<Map<string, PublicProfile>> {
@@ -70,17 +71,16 @@ export class ProfilesService {
     return new Map(
       users.map((user) => [
         user.id,
-        this.toPublicProfile(
-          user.id,
-          user.name,
-          user.image,
+        toPublicProfile(
+          { userId: user.id, name: user.name, image: user.image },
           user.profile ?? {
             rating: 0,
             gamesPlayed: 0,
             gamesWon: 0,
             gamesLost: 0,
             premiumUntil: null
-          }
+          },
+          true
         )
       ])
     );
@@ -242,32 +242,6 @@ export class ProfilesService {
     return Math.floor(date.getTime() / (24 * 60 * 60 * 1000));
   }
 
-  private toPublicProfile(
-    userId: string,
-    name: string,
-    image: string | null,
-    profile: {
-      rating: number;
-      gamesPlayed: number;
-      gamesWon: number;
-      gamesLost: number;
-      premiumUntil: Date | null;
-    }
-  ): PublicProfile {
-    return {
-      userId,
-      name,
-      avatarUrl: image,
-      rating: profile.rating,
-      seasonRating: profile.rating,
-      gamesPlayed: profile.gamesPlayed,
-      gamesWon: profile.gamesWon,
-      gamesLost: profile.gamesLost,
-      isPremium: (profile.premiumUntil?.getTime() ?? 0) > Date.now(),
-      isOnline: true
-    };
-  }
-
   private toMyProfile(
     userId: string,
     name: string,
@@ -287,7 +261,7 @@ export class ProfilesService {
     const lastFree = profile.lastFreeCreditsAt?.getTime() ?? null;
 
     return {
-      ...this.toPublicProfile(userId, name, image, profile),
+      ...toPublicProfile({ userId, name, image }, profile, true),
       credits: Number(profile.credits),
       coins: profile.coins,
       premiumUntil: profile.premiumUntil?.getTime() ?? null,

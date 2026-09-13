@@ -5,14 +5,16 @@ import { Injectable, Logger } from '@nestjs/common';
 import { err, ok, Result } from 'neverthrow';
 
 import { PrismaService } from '../../../lib/prisma/prisma.service';
+import { BIG_TABLE_SEATS } from '../config';
 
 export type GameOutcomeFacts = {
   isWin: boolean;
 
+  /** The player won without ever taking cards off the table. */
   isFlawless: boolean;
 
-  endedOnTrumps: boolean;
-  game: string;
+  /** Seats at the table when the deal started. */
+  tableSize: number;
 };
 
 export type ClaimError = 'ALREADY_CLAIMED' | 'NOT_UNLOCKED';
@@ -67,12 +69,14 @@ export class AchievementsService {
 
     await this.applyWinStreak(userId, facts.isWin, unlocked);
 
-    if (facts.isFlawless && facts.isWin) {
+    if (facts.isWin && facts.isFlawless) {
       await bump('flawless');
+      await bump('flawlessTen');
     }
 
-    if (facts.endedOnTrumps && facts.isWin) {
-      await bump('allTrumps');
+    if (facts.isWin && facts.tableSize >= BIG_TABLE_SEATS) {
+      await bump('bigTable');
+      await bump('bigTableTen');
     }
 
     return unlocked;
@@ -91,7 +95,15 @@ export class AchievementsService {
   }
 
   async recordFriend(userId: string): Promise<AchievementId[]> {
-    return (await this.increment(userId, 'firstFriend', 1)) ? ['firstFriend'] : [];
+    const unlocked: AchievementId[] = [];
+
+    for (const id of ['firstFriend', 'fiveFriends'] as const) {
+      if (await this.increment(userId, id, 1)) {
+        unlocked.push(id);
+      }
+    }
+
+    return unlocked;
   }
 
   async claim(userId: string, id: AchievementId): Promise<ClaimResult> {
@@ -184,12 +196,12 @@ export class AchievementsService {
       return false;
     }
 
-    await this.prisma.achievementProgress.update({
-      where: { id: rowId },
+    const unlocked = await this.prisma.achievementProgress.updateMany({
+      where: { id: rowId, unlockedAt: null },
       data: { unlockedAt: new Date() }
     });
 
-    return true;
+    return unlocked.count > 0;
   }
 
   private async applyWinStreak(

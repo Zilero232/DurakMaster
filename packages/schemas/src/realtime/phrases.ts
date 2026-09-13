@@ -18,3 +18,5 @@ export const QUICK_PHRASES = [
 export const quickPhraseIdSchema = z.enum(QUICK_PHRASES);
 
 export type QuickPhraseId = z.infer<typeof quickPhraseIdSchema>;
+
+export const PHRASE_HISTORY_LIMIT = 20;

@@ -75,9 +75,9 @@
       "title": "Чисто",
       "description": "Выиграйте, ни разу не взяв карты"
     },
-    "allTrumps": {
-      "title": "Козырная рука",
-      "description": "Закончите партию с одними козырями"
+    "flawlessTen": {
+      "title": "Десять начисто",
+      "description": "Выиграйте десять партий, ни разу не взяв карты"
     },
     "loginStreak7": {
       "title": "Неделя",
@@ -87,13 +87,21 @@
       "title": "Месяц",
       "description": "Заходите тридцать дней подряд"
     },
-    "allGames": {
-      "title": "Все игры",
-      "description": "Сыграйте во все четыре игры"
-    },
     "firstFriend": {
       "title": "Не один",
       "description": "Добавьте первого друга"
+    },
+    "fiveFriends": {
+      "title": "Компания",
+      "description": "Добавьте пятерых друзей"
+    },
+    "bigTable": {
+      "title": "Против всех",
+      "description": "Выиграйте за столом на пять и более игроков"
+    },
+    "bigTableTen": {
+      "title": "Хозяин стола",
+      "description": "Выиграйте десять партий за большим столом"
     },
     "unlockedToast": "{{title}} — получено! +{{reward}} монет"
   },

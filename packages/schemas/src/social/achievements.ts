@@ -15,14 +15,16 @@ export const ACHIEVEMENTS = [
   { id: 'winStreak10', target: 10, reward: 100 },
 
   { id: 'flawless', target: 1, reward: 25 },
-
-  { id: 'allTrumps', target: 1, reward: 25 },
+  { id: 'flawlessTen', target: 10, reward: 100 },
 
   { id: 'loginStreak7', target: 7, reward: 20 },
   { id: 'loginStreak30', target: 30, reward: 100 },
 
-  { id: 'allGames', target: 4, reward: 50 },
-  { id: 'firstFriend', target: 1, reward: 10 }
+  { id: 'firstFriend', target: 1, reward: 10 },
+  { id: 'fiveFriends', target: 5, reward: 40 },
+
+  { id: 'bigTable', target: 1, reward: 20 },
+  { id: 'bigTableTen', target: 10, reward: 80 }
 ] as const;
 
 export const achievementIdSchema = z.enum([
@@ -37,11 +39,13 @@ export const achievementIdSchema = z.enum([
   'winStreak5',
   'winStreak10',
   'flawless',
-  'allTrumps',
+  'flawlessTen',
   'loginStreak7',
   'loginStreak30',
-  'allGames',
-  'firstFriend'
+  'firstFriend',
+  'fiveFriends',
+  'bigTable',
+  'bigTableTen'
 ]);
 
 export type AchievementId = z.infer<typeof achievementIdSchema>;

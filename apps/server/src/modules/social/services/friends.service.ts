@@ -1,7 +1,7 @@
 import type { Friend, FriendList, PublicProfile } from '@durak-master/schemas';
 
 import { MAX_FRIENDS } from '@durak-master/schemas';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { err, ok, Result } from 'neverthrow';
 
 import type { FriendshipStatus } from '../../../../generated/prisma/enums';
@@ -13,6 +13,7 @@ export type FriendError =
   | 'ALREADY_FRIENDS'
   | 'CANNOT_FRIEND_SELF'
   | 'FRIEND_LIMIT_REACHED'
+  | 'REQUEST_FAILED'
   | 'REQUEST_NOT_FOUND'
   | 'USER_NOT_FOUND';
 
@@ -20,6 +21,8 @@ export type FriendResult = Result<void, FriendError>;
 
 @Injectable()
 export class FriendsService {
+  private readonly logger = new Logger(FriendsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly profiles: ProfilesService
@@ -156,7 +159,11 @@ export class FriendsService {
         },
         { isolationLevel: 'Serializable' }
       )
-      .catch(() => ok());
+      .catch((error: unknown) => {
+        this.logger.error(`Failed to record a friend request from ${userId}`, error);
+
+        return err('REQUEST_FAILED');
+      });
   }
 
   async accept(userId: string, requesterId: string): Promise<FriendResult> {

@@ -75,9 +75,9 @@
       "title": "Flawless",
       "description": "Win without ever picking cards up"
     },
-    "allTrumps": {
-      "title": "All trumps",
-      "description": "Finish a game holding only trumps"
+    "flawlessTen": {
+      "title": "Ten clean",
+      "description": "Win ten deals without ever taking cards"
     },
     "loginStreak7": {
       "title": "A week",
@@ -87,13 +87,21 @@
       "title": "A month",
       "description": "Come back thirty days in a row"
     },
-    "allGames": {
-      "title": "Every game",
-      "description": "Play all four games"
-    },
     "firstFriend": {
       "title": "Not alone",
       "description": "Add your first friend"
+    },
+    "fiveFriends": {
+      "title": "Company",
+      "description": "Add five friends"
+    },
+    "bigTable": {
+      "title": "Against them all",
+      "description": "Win at a table of five or more"
+    },
+    "bigTableTen": {
+      "title": "Table owner",
+      "description": "Win ten deals at a big table"
     },
     "unlockedToast": "{{title}} unlocked! +{{reward}} coins"
   },

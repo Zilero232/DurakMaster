@@ -29,10 +29,6 @@ export class SocketRegistryService {
     return this.sockets.get(userId);
   }
 
-  has(userId: string): boolean {
-    return this.sockets.has(userId);
-  }
-
   all(): Socket[] {
     return [...this.sockets.values()];
   }

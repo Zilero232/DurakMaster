@@ -4,6 +4,7 @@ import { LEADERBOARD_SIZE } from '@durak-master/schemas';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../lib/prisma/prisma.service';
+import { toPublicProfile } from '../../profile';
 
 @Injectable()
 export class LeaderboardService {
@@ -19,18 +20,11 @@ export class LeaderboardService {
 
     const entries = rows.map((row, index) => ({
       rank: index + 1,
-      profile: {
-        userId: row.userId,
-        name: row.user.name,
-        avatarUrl: row.user.image,
-        rating: row.rating,
-        seasonRating: row.rating,
-        gamesPlayed: row.gamesPlayed,
-        gamesWon: row.gamesWon,
-        gamesLost: row.gamesLost,
-        isPremium: (row.premiumUntil?.getTime() ?? 0) > Date.now(),
-        isOnline: false
-      }
+      profile: toPublicProfile(
+        { userId: row.userId, name: row.user.name, image: row.user.image },
+        row,
+        false
+      )
     }));
 
     const mine = await this.prisma.profile.findUnique({ where: { userId } });

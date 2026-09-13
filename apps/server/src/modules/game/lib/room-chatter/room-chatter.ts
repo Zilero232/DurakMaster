@@ -1,8 +1,7 @@
 import type { QuickPhraseId, TablePhrase } from '@durak-master/schemas';
 
+import { PHRASE_HISTORY_LIMIT } from '@durak-master/schemas';
 import { randomUUID } from 'node:crypto';
-
-import { PHRASE_HISTORY_LIMIT } from '../../config';
 
 export class RoomChatter {
   private phrases: TablePhrase[] = [];

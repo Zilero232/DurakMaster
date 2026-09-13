@@ -56,6 +56,11 @@ export class SocialController {
     @Param('userId') requesterId: string
   ): Promise<void> {
     ensureOk(await this.friends.accept(userId, requesterId));
+
+    await Promise.all([
+      this.achievements.recordFriend(userId),
+      this.achievements.recordFriend(requesterId)
+    ]);
   }
 
   @Post('friends/:userId/decline')

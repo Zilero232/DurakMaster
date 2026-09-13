@@ -43,12 +43,3 @@ export const joinTableInputSchema = z.object({
 });
 
 export type JoinTableInput = z.infer<typeof joinTableInputSchema>;
-
-export const lobbyFilterSchema = z.object({
-  isPrivate: z.boolean().optional(),
-  minBet: z.number().int().nonnegative().optional(),
-  maxBet: z.number().int().nonnegative().optional(),
-  playersCount: z.number().int().optional()
-});
-
-export type LobbyFilter = z.infer<typeof lobbyFilterSchema>;

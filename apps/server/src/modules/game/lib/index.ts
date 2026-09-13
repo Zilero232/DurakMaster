@@ -1,5 +1,5 @@
 export { GameRoom } from './game-room';
-export type { RoomEvent, RoomMember } from './game-room';
+export type { FinishFacts, RoomEvent, RoomMember } from './game-room';
 export { createGameSession } from './game-session';
 export { nextFreeSeat } from './next-free-seat';
 export { RoomChatter } from './room-chatter';

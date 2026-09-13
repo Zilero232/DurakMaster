@@ -1,10 +1,9 @@
 import type { ServerMessage } from '@durak-master/schemas';
 
 import { cardKey } from '@durak-master/game-core';
+import { PHRASE_HISTORY_LIMIT } from '@durak-master/schemas';
 
 import type { SessionState } from './session-store.types';
-
-import { PHRASE_HISTORY_LIMIT } from './session-store.config';
 
 export const reduceServerMessage = (
   state: SessionState,

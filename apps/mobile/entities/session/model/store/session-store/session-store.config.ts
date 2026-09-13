@@ -1,7 +1,5 @@
 import type { SessionState } from './session-store.types';
 
-export const PHRASE_HISTORY_LIMIT = 20;
-
 export const INITIAL_STATE: SessionState = {
   status: 'idle',
   isLobbySubscribed: false,

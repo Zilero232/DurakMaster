@@ -76,7 +76,7 @@ const createHarness = (startingCredits = 1_000) => {
     rooms,
     sessions as never,
     wallet as never,
-    { ensureTable: vi.fn() } as never,
+    { ensureTable: vi.fn(async () => {}) } as never,
     registry as never,
     broadcast as never,
     { isDevelopment: true } as never

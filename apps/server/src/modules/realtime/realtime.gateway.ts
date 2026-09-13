@@ -276,15 +276,26 @@ export class RealtimeGateway
       return;
     }
 
+    const hand =
+      input.boost === 'peekHand' && input.targetUserId
+        ? room.peekHand(userId, input.targetUserId)
+        : null;
+
+    if (input.boost === 'peekHand' && hand === null) {
+      await this.profiles.refundCoins(userId, price);
+
+      this.registry.fail(socket, 'That player is not at the table', 'INVALID_ACTION_FOR_PHASE');
+
+      return;
+    }
+
     this.registry.send(socket, {
       type: 'table:boost-used',
       payload: {
         boost: input.boost,
         coins,
         ...(input.boost === 'peekTalon' ? { talon: room.peekTalon() ?? [] } : {}),
-        ...(input.boost === 'peekHand' && input.targetUserId
-          ? { hand: room.peekHand(input.targetUserId) ?? [], targetUserId: input.targetUserId }
-          : {})
+        ...(hand && input.targetUserId ? { hand, targetUserId: input.targetUserId } : {})
       }
     });
 
