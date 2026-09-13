@@ -1,6 +1,6 @@
 # Privacy and data safety
 
-RuStore asks two separate things: the **data collection answers** in the console, and a **privacy
+Play asks two separate things: the **Data safety answers** in the console, and a **privacy
 policy** hosted at a public URL. Both must agree with what the app actually does.
 
 ## What the app collects
@@ -12,8 +12,12 @@ policy** hosted at a public URL. Both must agree with what the app actually does
 | Avatar (preset or uploaded image) | Shown to other players | Postgres, image on our storage |
 | Game history, rating, credits | Ranking and the player's own profile | Postgres |
 
-The app does **not** collect location, contacts, device identifiers, or any advertising data.
-There is no analytics SDK and no ad network.
+The app does **not** collect location or contacts, and there is no analytics SDK.
+
+The build carries Google AdMob for the rewarded ad the player opens themselves. The SDK collects
+its own data, including an advertising identifier — declare it as collected and shared by a third
+party, not by us. It ships in the bundle whether or not `EXPO_PUBLIC_ADMOB_REWARDED_UNIT_ID` is
+filled, so the declaration does not depend on that.
 
 ## Data collection answers
 

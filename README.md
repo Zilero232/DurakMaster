@@ -103,7 +103,7 @@ tests are built from.
 ## Deployment
 
 - **Web and API** — [DEPLOY.md](DEPLOY.md): images to ghcr, a VPS behind Caddy
-- **Android** — [docs/store/](docs/store/README.md): EAS build, RuStore
+- **Android** — [docs/store/](docs/store/README.md): EAS build, Google Play
 
 ## Documentation
 

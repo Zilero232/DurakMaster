@@ -1,16 +1,18 @@
-# Releasing to RuStore
+# Releasing to Google Play
 
-Everything needed to publish DurakMaster on RuStore, in the order it is needed.
+Everything needed to publish DurakMaster on Google Play, in the order it is needed.
 
 | Document | What it holds |
 |---|---|
+| [google-play.md](./google-play.md) | App signing, the service account, tracks, AdMob |
 | [listing.md](./listing.md) | Store listing copy, screenshots, graphic assets |
-| [privacy.md](./privacy.md) | Data collection answers for the console |
+| [privacy.md](./privacy.md) | What the app collects |
 | [privacy-policy.md](./privacy-policy.md) | The policy text to publish at a public URL |
+| [data-safety.md](./data-safety.md) | The Data safety form, content rating, ads, audience |
 | [release-checklist.md](./release-checklist.md) | The pass to run before every submission |
 
 The signing keys, API credentials and the CI step live in
-[DEPLOY.md](../../DEPLOY.md#releasing-to-rustore).
+[DEPLOY.md](../../DEPLOY.md#releasing-to-google-play).
 
 ---
 
@@ -24,12 +26,12 @@ bunx eas login
 # build an installable APK to test on a real device
 cd apps/mobile && eas build --platform android --profile preview
 
-# build the App Bundle RuStore accepts
+# build the App Bundle Play accepts
 cd apps/mobile && eas build --platform android --profile production
 ```
 
-CI does the same through the **release** workflow, which takes a profile and an
-optional `rustore` flag that uploads the finished build.
+CI does the same through the **release** workflow, which takes a profile and a `play` flag that
+submits the finished build.
 
 ## Build profiles
 
@@ -38,10 +40,10 @@ optional `rustore` flag that uploads the finished build.
 - **development** — a dev client pointed at `localhost:4000`, for running Metro against a device.
 - **preview** — an installable APK against staging. Use this for manual testing; an App Bundle
   cannot be sideloaded.
-- **production** — an App Bundle (`.aab`) against the production API. This is what RuStore gets.
+- **production** — an App Bundle (`.aab`) against the production API. This is what Play gets.
 
 `appVersionSource: remote` means EAS owns `versionCode`, and `autoIncrement` raises it on every
-production build. Do not bump it by hand — RuStore rejects a version that does not exceed the
+production build. Do not bump it by hand — Play rejects a version that does not exceed the
 published one.
 
 The user-facing `version` in `app.json` is separate and belongs to you: raise it when the release
@@ -52,7 +54,7 @@ is worth naming.
 Each profile pins `EXPO_PUBLIC_API_URL`. It is baked into the bundle at build time, so a
 production build cannot be pointed elsewhere afterwards — rebuild instead.
 
-`EXPO_PUBLIC_YANDEX_REWARDED_UNIT_ID` is empty until the ad unit exists in the Yandex partner
+`EXPO_PUBLIC_ADMOB_REWARDED_UNIT_ID` is empty until the ad unit exists in the AdMob
 interface; without it the rewarded-ad button hides itself.
 
 The server needs its own environment; see `.env.example` for the full list.

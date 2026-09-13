@@ -38,7 +38,7 @@ These are enforced as invariants (see [CLAUDE.md](CLAUDE.md)):
 
 ## Secrets
 
-Never commit: `.env`, the RuStore API private key, any
+Never commit: `.env`, the Google Play service account key, any
 keystore. All three are git-ignored — keep them that way.
 
 `BETTER_AUTH_SECRET` in production must be freshly generated, never the value

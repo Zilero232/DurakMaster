@@ -3,57 +3,76 @@ import type { RewardedAdResult, RewardedAdsAdapter } from '@durak-master/platfor
 import { isEmpty, isNonNullish } from 'remeda';
 
 import { platformInfo } from './platform-info';
-import { AD_SHOW_TIMEOUT_MS, AD_UNIT_ID, DEMO_AD_UNIT_ID } from './rewarded-ads.config';
-
-const adUnitId = __DEV__ ? DEMO_AD_UNIT_ID : AD_UNIT_ID;
+import { AD_SHOW_TIMEOUT_MS, AD_UNIT_ID } from './rewarded-ads.config';
 
 const isSupported = (unitId?: string): unitId is string =>
-  platformInfo.kind === 'android' && isNonNullish(unitId) && !isEmpty(unitId);
+  platformInfo.isNative && isNonNullish(unitId) && !isEmpty(unitId);
 
 const showRewardedAd = async (unitId: string): Promise<RewardedAdResult> => {
-  const { RewardedAdLoader } = await import('yandex-mobile-ads');
+  const { AdEventType, RewardedAd, RewardedAdEventType } =
+    await import('react-native-google-mobile-ads');
 
-  const loader = await RewardedAdLoader.create();
-  const ad = await loader.loadAd({ adUnitId: unitId });
+  const ad = RewardedAd.createForAdRequest(unitId);
 
   return new Promise((resolve) => {
-    let hasEarned = false;
+    const unsubscribe: (() => void)[] = [];
 
-    const timer = setTimeout(() => {
-      resolve({ status: 'failed', reason: 'The ad never finished' });
-    }, AD_SHOW_TIMEOUT_MS);
+    let hasEarned = false;
+    let hasSettled = false;
+
+    let timer: ReturnType<typeof setTimeout> | null = null;
 
     const settle = (result: RewardedAdResult) => {
-      clearTimeout(timer);
+      if (hasSettled) {
+        return;
+      }
+
+      hasSettled = true;
+
+      if (timer) {
+        clearTimeout(timer);
+      }
+
+      unsubscribe.forEach((off) => off());
       resolve(result);
     };
 
-    ad.onRewarded = () => {
-      hasEarned = true;
-    };
+    timer = setTimeout(() => {
+      settle({ status: 'failed', reason: 'The ad never finished' });
+    }, AD_SHOW_TIMEOUT_MS);
 
-    ad.onAdFailedToShow = (error) => {
-      settle({ status: 'failed', reason: error?.description ?? 'The ad failed to show' });
-    };
+    unsubscribe.push(
+      ad.addAdEventListener(RewardedAdEventType.LOADED, () => {
+        void ad.show();
+      }),
 
-    ad.onAdDismissed = () => {
-      settle(hasEarned ? { status: 'earned' } : { status: 'dismissed' });
-    };
+      ad.addAdEventListener(RewardedAdEventType.EARNED_REWARD, () => {
+        hasEarned = true;
+      }),
 
-    void ad.show();
+      ad.addAdEventListener(AdEventType.ERROR, (error) => {
+        settle({ status: 'failed', reason: error?.message ?? 'The ad failed to load' });
+      }),
+
+      ad.addAdEventListener(AdEventType.CLOSED, () => {
+        settle(hasEarned ? { status: 'earned' } : { status: 'dismissed' });
+      })
+    );
+
+    ad.load();
   });
 };
 
 export const rewardedAdsAdapter: RewardedAdsAdapter = {
-  isAvailable: () => isSupported(adUnitId),
+  isAvailable: () => isSupported(AD_UNIT_ID),
 
   show: async () => {
-    if (!isSupported(adUnitId)) {
+    if (!isSupported(AD_UNIT_ID)) {
       return { status: 'unavailable' };
     }
 
     try {
-      return await showRewardedAd(adUnitId);
+      return await showRewardedAd(AD_UNIT_ID);
     } catch (error) {
       return {
         status: 'failed',

@@ -3,7 +3,7 @@
 **DurakMaster** — last updated 30 August 2026.
 
 This is the source of the policy that must be published at a public URL before
-the RuStore listing can go live. Keep it in step with
+the Play listing can go live. Keep it in step with
 [privacy.md](./privacy.md), which holds the matching console answers — a
 policy that promises less than the app collects is grounds for rejection.
 
@@ -20,8 +20,14 @@ We collect only what the game needs to work.
 | Avatar — a preset or an image you upload | Shown to other players | No |
 | Game history, rating, in-game credits and coins | Ranking and your own profile | Yes |
 
-We do **not** collect your location, your contacts, your device identifiers, or
-any advertising data. There is no analytics SDK and no ad network in the app.
+We do **not** collect your location or your contacts, and there is no analytics
+SDK in the app.
+
+The app includes Google AdMob, which shows a rewarded ad when you choose to
+watch one in exchange for credits. That SDK is provided by Google and collects
+its own data, including an advertising identifier, under
+[Google's privacy policy](https://policies.google.com/privacy). We receive only
+whether the ad was watched — never a profile of you.
 
 ## How we use it
 

@@ -293,6 +293,10 @@ export { useFriendChatUnread } from './use-friend-chat-unread';
 export type * from './use-friend-chat-unread.types';
 ```
 
+**The one type that stays in the hook file** is a return type derived from the hook itself:
+`export type OnlineGame = ReturnType<typeof useOnlineGame>;` (`entities/session/model/hooks/use-online-game`).
+Moving it to `.types.ts` would make the two files import each other.
+
 The hook's input type is named `Use<Name>Input` (§5). If it repeats the component's props — do not duplicate, derive it: `Pick<GameTableProps, 'tableId' | 'onLeave'>`.
 
 Small slices do not need this: `widgets/game/online-table/model/` is two flat files (`use-latest-phrases.ts`, `use-table-sounds.ts`) without a barrel.
@@ -423,6 +427,8 @@ Over the limit — refactor:
 2. Logic → `model/` (a hook).
 3. Utilities → the slice's `lib/`.
 4. Static tables (tabs, modes, presets) → `<Name>.config.ts`.
+
+**A static table whose values are JSX is the one exception to the limit.** `ui-kit/icons/TauntIcon/TauntIcon.faces.tsx` is a `Record<TauntId, ReactNode>` of sixteen faces: it cannot be a `.config.ts` (the values are JSX), and splitting one lookup table across files to satisfy a line count buys nothing. What does have to leave such a file is everything that is not the table — its drawing primitives sit in `TauntIcon.strokes.tsx`, its palette in `TauntIcon.config.ts`.
 
 **A barrel of related primitives is no exception either.** A composite primitive that exports many small parts must not be kept as a single file: every part goes into `components/<Name>/`, and `<Name>.tsx` stays thin.
 
@@ -624,6 +630,46 @@ Within each group the order is free, but **it must match in all three places** (
 
 ---
 
+### 8.2 Order inside a component body
+
+The body of a component is read top to bottom in one order, so a reader always knows where to
+look:
+
+1. **Hooks** — `useTranslation`, context hooks, store selectors, `useState`, `useRef`,
+   `useSharedValue`, `useAnimatedStyle`, `useEffect`. React requires them before any early
+   return anyway, so this is not a preference so much as the shape the rules force.
+2. **Derived values** — plain `const`s computed from props and hook results: flags,
+   measurements, a `match` over state.
+3. **Functions** — handlers, gesture definitions, anything the JSX calls.
+4. **The returned JSX.**
+
+```tsx
+export const SheetSurface = ({ isDialog, isOpen, maxHeight, onClose }: SheetSurfaceProps) => {
+  const insets = useSafeAreaInsets();
+  const offset = useSharedValue(0);
+
+  useEffect(() => {
+    if (isOpen) {
+      offset.value = 0;
+    }
+  }, [isOpen, offset]);
+
+  const threshold = maxHeight * CLOSE_RATIO;
+
+  const drag = Gesture.Pan().onEnd((event) => {
+    // ...
+  });
+
+  return <Animated.View>{/* ... */}</Animated.View>;
+};
+```
+
+An early return (`if (!session) { return <SignInForm />; }`) sits after the hooks and before the
+derived values it does not need — that is the one place the order bends, because the hooks above
+it must run unconditionally.
+
+---
+
 ## 9. Arrow functions: the body
 
 **All declarations (top-level and module-level) use a block body with `return`.** Single-line expression bodies are forbidden: the `=> { return ... }` shape is uniform regardless of the body's size, and there is no need to rewrite it when the logic grows.
@@ -668,6 +714,29 @@ const getSelectedLift = (width: number): number => -(width / cardTokens.ratio) *
   ```
 
 **Rule for review:** if the arrow is to the right of `=` (a function declaration) — block body. If the arrow is inside `(...)` or `{...}` (an argument) — your call, usually an expression.
+
+### 9.4 More than one argument — take an object
+
+**A function with two or more arguments takes a single object.** Positional arguments read fine at
+the definition and badly at the call: `fanOverlap(6, 80, 360, -0.45)` says nothing, and swapping
+two numbers of the same type compiles. Named fields carry the meaning to the call site and let a
+later argument be added without touching every caller.
+
+```ts
+// ✗ NOT OK
+export const fanOverlap = (count: number, width: number, available: number, looseRatio: number) => {
+
+// ✓ OK
+export const fanOverlap = ({ count, width, available, looseRatio }: FanOverlapInput): number => {
+```
+
+The input type is named `<Name>Input` and lives in the sibling `.types.ts` (§2.2 for hooks, §2 for
+`lib/`). One argument stays positional — `seatBackHeight(back)` needs no ceremony.
+
+React components are already objects (props), and an inline callback keeps the signature its
+caller gives it (`.map((item, index) => …)`).
+
+---
 
 ### 9.5 `if` / `else` — always with braces
 

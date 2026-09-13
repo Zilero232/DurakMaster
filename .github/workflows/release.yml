@@ -8,8 +8,8 @@ on:
         type: choice
         options: [preview, production]
         default: preview
-      rustore:
-        description: Publish the build to RuStore after it finishes
+      play:
+        description: Submit the build to Google Play (internal track, as a draft)
         type: boolean
         default: false
 
@@ -64,19 +64,21 @@ jobs:
         working-directory: apps/mobile
         run: eas build --platform android --profile ${{ inputs.profile }} --non-interactive --wait
 
-      - name: Download the build for RuStore
-        if: ${{ inputs.rustore }}
+      # EAS Submit reads the key from the path in eas.json, so the secret is
+      # written there and removed again even if the submit fails.
+      - name: Write the Play service account key
+        if: ${{ inputs.play && inputs.profile == 'production' }}
         working-directory: apps/mobile
-        run: |
-          url=$(eas build:list --platform android --status finished --limit 1 --json --non-interactive | jq -r '.[0].artifacts.buildUrl')
-          curl -fsSL "$url" -o "$RUNNER_TEMP/durakmaster.aab"
-
-      - name: Publish to RuStore
-        if: ${{ inputs.rustore }}
-        run: bun run publish:rustore
+        run: printenv GOOGLE_PLAY_SERVICE_ACCOUNT > google-play-key.json
         env:
-          RUSTORE_KEY_ID: ${{ secrets.RUSTORE_KEY_ID }}
-          RUSTORE_PRIVATE_KEY: ${{ secrets.RUSTORE_PRIVATE_KEY }}
-          RUSTORE_PACKAGE_NAME: com.durakmaster.app
-          RUSTORE_BUNDLE_PATH: ${{ runner.temp }}/durakmaster.aab
-          RUSTORE_CONTACT_EMAIL: ${{ secrets.RUSTORE_CONTACT_EMAIL }}
+          GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+
+      - name: Submit to Google Play
+        if: ${{ inputs.play && inputs.profile == 'production' }}
+        working-directory: apps/mobile
+        run: eas submit --platform android --profile production --latest --non-interactive
+
+      - name: Remove the Play service account key
+        if: ${{ always() && inputs.play && inputs.profile == 'production' }}
+        working-directory: apps/mobile
+        run: rm -f google-play-key.json

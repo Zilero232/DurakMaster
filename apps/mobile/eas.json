@@ -18,7 +18,7 @@
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.durakmaster.ru",
-        "EXPO_PUBLIC_YANDEX_REWARDED_UNIT_ID": ""
+        "EXPO_PUBLIC_ADMOB_REWARDED_UNIT_ID": ""
       }
     },
     "production": {
@@ -28,7 +28,17 @@
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.durakmaster.ru",
-        "EXPO_PUBLIC_YANDEX_REWARDED_UNIT_ID": ""
+        "EXPO_PUBLIC_ADMOB_REWARDED_UNIT_ID": ""
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./google-play-key.json",
+        "track": "internal",
+        "releaseStatus": "draft",
+        "changesNotSentForReview": false
       }
     }
   }

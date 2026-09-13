@@ -26,10 +26,10 @@
       "permissions": [
         "android.permission.INTERNET",
         "android.permission.VIBRATE",
-        "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
       "blockedPermissions": [
+        "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
         "android.permission.WRITE_EXTERNAL_STORAGE"
       ]
@@ -47,6 +47,7 @@
       [
         "expo-image-picker",
         {
+          "cameraPermission": false,
           "photosPermission": "Let $(PRODUCT_NAME) use a photo of yours as your avatar."
         }
       ],
@@ -58,7 +59,28 @@
           "imageWidth": 180
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+          "userTrackingUsageDescription": "This identifier is used to show you ads that are more relevant to you."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "minSdkVersion": 24
+          },
+          "ios": {
+            "deploymentTarget": "16.4"
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
