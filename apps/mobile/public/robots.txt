@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://durakmaster.ru/sitemap.xml
+Host: https://durakmaster.ru

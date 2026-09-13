@@ -1,0 +1,39 @@
+# Durak Master
+
+> Online Durak: throw-in and transfer variants, tables for 2–6 players, against people or bots. Browser, Android and iOS from one codebase.
+
+Durak Master is a free card game. The rules are the classic ones: throw-in and
+transfer Durak, a deck of 24, 36 or 52 cards, with or without jokers. A table seats
+two to six players, and empty seats can be filled with bots. In-game credits are
+earned by playing — they cannot be bought, sold or transferred between players, and
+there is no wagering of real money.
+
+## Pages
+
+- [Home](https://durakmaster.ru/): sign in, the list of open tables, creating your own.
+
+The app is a single page: the lobby, the table and the profile live at one address and
+switch on the client.
+
+## Game
+
+- Modes: throw-in, transfer
+- Deck: 24, 36 or 52 cards, jokers optional
+- Players: 2–6 at a table, empty seats take bots
+- Speed: normal (30 seconds a turn) or fast (15 seconds)
+- Interface languages: Russian, English
+
+## Technology
+
+- Client: Expo SDK 57, React Native 0.86, Expo Router — one codebase for browser, Android and iOS
+- Server: NestJS on Bun, Prisma 7, PostgreSQL
+- Realtime: WebSocket, table state held in server memory
+- Game rules: a separate package of pure functions, with no transport and no database
+- Auth: better-auth, sign-in by email
+
+## Optional
+
+- [Full version for models](https://durakmaster.ru/llms-full.txt)
+- [Russian version](https://durakmaster.ru/llms.txt)
+- [Source code](https://github.com/Zilero232/DurakMaster)
+- Contact: zilero@dev.ru
