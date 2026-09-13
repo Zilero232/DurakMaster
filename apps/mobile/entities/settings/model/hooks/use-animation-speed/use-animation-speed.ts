@@ -5,7 +5,7 @@ export const useAnimationSpeed = () => {
   const animationSpeed = useSettingsStore((store) => store.animationSpeed);
   const isBatterySaver = useSettingsStore((store) => store.isBatterySaver);
 
-  const scale = animationScale(animationSpeed, isBatterySaver);
+  const scale = animationScale({ speed: animationSpeed, isBatterySaver });
 
   return {
     scale,

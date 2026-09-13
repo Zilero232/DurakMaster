@@ -8,6 +8,6 @@ export const DEAL_MS = 300;
 
 export const COUNT_UP_MS = 900;
 
-export const COUNT_UP_STEPS = 24;
-
 export const HINT_LIFETIME_MS = 2600;
+
+export const CHATTER_LIFETIME_MS = 3400;

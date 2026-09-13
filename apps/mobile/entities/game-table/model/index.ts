@@ -3,14 +3,10 @@ export type { SeatContextValue } from './contexts';
 
 export type { DropZone } from './drop-zone';
 
-export type { SeatMetrics } from './hooks';
-
 export {
-  seatBackHeight,
   useBoostHint,
   useCardGesture,
   useCardSize,
-  useCountUp,
   usePairMeasure,
   useReadyPrompt,
   useSeatSize,

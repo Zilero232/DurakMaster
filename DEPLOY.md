@@ -7,7 +7,7 @@
 | Web client    | VPS, Caddy  | CI: `deploy.yml`                               |
 | API + sockets | VPS, Docker | CI: `deploy.yml`                               |
 | Database      | VPS, Docker | the same job                                   |
-| Android       | RuStore     | CI: `release.yml`                              |
+| Android       | Google Play | CI: `release.yml`                              |
 | iOS           | App Store   | planned — EAS builds it, no submit profile yet |
 
 Everything is built in GitHub Actions and pushed to ghcr.io. **The VPS builds
@@ -42,6 +42,39 @@ Settings → Secrets and variables → Actions:
 | `DEPLOY_PATH`         | where `docker-compose.yml` lives, e.g. `/opt/durakmaster` |
 
 ---
+
+### SEO and the web document
+
+`apps/mobile/public/` is copied into the export as is, so everything a crawler asks for is a
+plain file next to `index.html`:
+
+| File                                 | What it is                                                                                            |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `index.html`                         | The document Expo wraps the app in — title, description, canonical, Open Graph, Twitter card, JSON-LD |
+| `robots.txt`                         | Allows everything, points at the sitemap                                                              |
+| `sitemap.xml`                        | One entry: the app is a single page                                                                   |
+| `manifest.webmanifest`               | Installable web app — name, icons, theme                                                              |
+| `llms.txt`, `llms-full.txt`          | What the game is, for models that read them                                                           |
+| `og-image.png`                       | 1200×630 social preview, cut from a real screenshot                                                   |
+| `icon-*.png`, `apple-touch-icon.png` | Home-screen and manifest icons                                                                        |
+
+`web.output` is `single`, so `app/+html.tsx` would be ignored — the document is
+`public/index.html` and Expo injects the bundle into it.
+
+The absolute URLs in those files are hard-coded to `https://durakmaster.ru`. A different domain
+means editing them; there is no build-time substitution.
+
+The app ships Russian and English, but both live at the same URL — the language is a client-side
+switch, not a path. So there are no per-language pages to declare with `hreflang`; the document
+says `og:locale: ru_RU` with `en_US` as the alternate, and the English `llms.en.txt` sits beside
+the Russian one.
+
+The OG image is regenerated from a real screenshot rather than drawn by hand:
+
+```bash
+bun run test:e2e:shots
+bunx sharp-cli -i e2e/.shots/desktop-6-table-playing.png -o apps/mobile/public/   resize 1200 630 --fit cover --position center
+```
 
 ## One-time VPS setup
 
@@ -108,35 +141,37 @@ Then open `https://durakmaster.ru`, sign in, and play a deal against a bot.
 
 ---
 
-## Releasing to RuStore
+## Releasing to Google Play
 
-The `release` workflow publishes to RuStore when its `rustore` input is on: it
-downloads the finished EAS build and pushes it through the RuStore Public API
-(`bun run publish:rustore`).
+The `release` workflow builds one App Bundle. With the `play` input on and the
+`production` profile it also runs `eas submit`, which uploads that bundle to the
+**internal** track as a **draft** — nothing reaches testers until you promote it
+in the Console.
+
+The store-facing paperwork — listing copy, data answers, checklists — lives in
+[docs/store/](./docs/store/README.md).
 
 ### Secrets
 
-| Secret                  | What it is                             |
-| ----------------------- | -------------------------------------- |
-| `RUSTORE_KEY_ID`        | key id from RuStore Console            |
-| `RUSTORE_PRIVATE_KEY`   | the matching RSA private key, PEM      |
-| `RUSTORE_CONTACT_EMAIL` | developer contact shown on the listing |
+| Secret                        | What it is                               |
+| ----------------------------- | ---------------------------------------- |
+| `GOOGLE_PLAY_SERVICE_ACCOUNT` | the service account JSON key, whole file |
+
+CI writes it to `apps/mobile/google-play-key.json` — the path `eas.json` points
+at — and deletes it afterwards, pass or fail. The same file goes there by hand
+for a local `eas submit`; it is gitignored.
 
 ### One-time setup in the Console
 
-The API cannot do these — they are done once by hand:
-
 1. Create the app entry with the `com.durakmaster.app` package name.
-2. Generate an API key pair, scope it to this app, and put the halves into the
-   secrets above.
-3. Upload the signing key: RuStore does **not** sign for you and cannot recover a
-   lost key. Encrypt the keystore with RuStore's PEPK tool, upload the ZIP, and
-   upload the upload-key certificate as `.pem`. Every later version must carry the
-   same signature or the upload is rejected.
+2. Enrol in Play App Signing and upload the certificate exported from
+   `eas credentials`. Google holds the real signing key; EAS holds the upload
+   key, and it must never be regenerated.
+3. Play Console → **Setup → API access**: link a Google Cloud project, create a
+   service account there, create a JSON key for it.
+4. Play Console → **Users and permissions**: invite that service account and
+   grant it release rights for this app. A fresh grant takes up to 24 hours.
 
-EAS holds that keystore — export it with `eas credentials` and keep it somewhere
-you will still have it in a year.
-
-The version lands as a draft awaiting moderation. `RUSTORE_PUBLISH_TYPE` chooses
-what happens after review: `MANUAL` (default) waits for a button in the Console,
-`INSTANTLY` goes live on its own.
+The Data safety form, content rating and ads declaration are answered from
+[docs/store/data-safety.md](./docs/store/data-safety.md); the rest of the Play
+specifics are in [docs/store/google-play.md](./docs/store/google-play.md).

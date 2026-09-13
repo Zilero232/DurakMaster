@@ -4,12 +4,7 @@ import type { CardScaleName } from '@/ui-kit';
 
 import { CARD_SCALE, getCardSize, TABLE_MAX_WIDTH } from '@/ui-kit';
 
-export type CardMetrics = {
-  width: number;
-  height: number;
-
-  available: number;
-};
+import type { CardMetrics } from './use-card-size.types';
 
 export const useCardSize = (scale: CardScaleName = 'normal', edgePadding = 0): CardMetrics => {
   const { width: windowWidth } = useWindowDimensions();

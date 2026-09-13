@@ -12,6 +12,9 @@ export type { LobbyBackgroundProps } from './LobbyBackground';
 export { CardThemeProvider, PlayingCard, useCardTheme, useSetCardTheme } from './PlayingCard';
 export type { PlayingCardProps } from './PlayingCard';
 
+export { SettingsSection } from './SettingsSection';
+export type { SettingsSectionProps } from './SettingsSection';
+
 export { StatRow } from './StatRow';
 export type { StatRowProps } from './StatRow';
 

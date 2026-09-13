@@ -2,11 +2,12 @@ import { Layers, Settings2 } from 'lucide-react-native';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { SettingsSection } from '@/ui-kit';
+
 import type { DurakSettingsProps } from './DurakSettings.types';
 
 import { ModesGrid } from '../ModesGrid';
 import { OptionRow } from '../OptionRow';
-import { SettingsSection } from '../SettingsSection';
 import { DURAK_CHOICE_FIELDS, DURAK_TOGGLE_FIELDS } from './DurakModes.config';
 import { DECK_SIZE_ITEMS } from './DurakSettings.config';
 

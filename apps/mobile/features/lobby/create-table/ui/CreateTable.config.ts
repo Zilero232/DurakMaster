@@ -6,7 +6,7 @@ import {
   TURN_SECONDS_BY_SPEED
 } from '@durak-master/schemas';
 
-import type { OptionItem } from './components';
+import type { OptionItem } from './components/OptionRow';
 
 export const playerCountItems = (game: GameId, deckSize?: DurakDeckSize): OptionItem<number>[] => {
   const { min, max: range } = PLAYER_RANGE_BY_GAME[game];

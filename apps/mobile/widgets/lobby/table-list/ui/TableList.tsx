@@ -1,6 +1,3 @@
-import type { LobbyTable } from '@durak-master/schemas';
-
-import { FlashList } from '@shopify/flash-list';
 import { PlugZap, Plus, SearchX } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,13 +11,8 @@ import { Button, colors, iconSize, SuitIcon } from '@/ui-kit';
 import type { TableListProps } from './TableList.types';
 
 import { useLobbyFilters } from '../model';
-import { LobbyFilters, TableListSkeleton, TableRow } from './components';
-import { COLUMN_WIDTH } from './TableList.config';
+import { LobbyFilters, LobbyPlaceholder, TableGrid, TableListSkeleton } from './components';
 import { styles } from './TableList.styles';
-
-const columnsFor = (width: number): number => Math.max(1, Math.floor(width / COLUMN_WIDTH));
-
-const keyExtractor = (table: LobbyTable) => table.id;
 
 export const TableList = ({ onJoin, onCreate }: TableListProps) => {
   const { t } = useTranslation();
@@ -46,55 +38,43 @@ export const TableList = ({ onJoin, onCreate }: TableListProps) => {
     hasVisible: filters.visible.length > 0
   })
     .with({ hasVisible: true }, () => (
-      <FlashList
-        renderItem={({ item }) => (
-          <View style={isDesktop && styles.cell}>
-            <TableRow
-              isPending={item.id === joiningTableId}
-              isTile={isDesktop}
-              myUserId={myUserId}
-              table={item}
-              onJoin={onJoin}
-            />
-          </View>
-        )}
-        contentContainerStyle={isDesktop ? styles.desktopList : styles.list}
-        data={filters.visible}
-        keyExtractor={keyExtractor}
-        numColumns={isDesktop ? columnsFor(listWidth) : 1}
-        showsVerticalScrollIndicator={false}
+      <TableGrid
+        isDesktop={isDesktop}
+        joiningTableId={joiningTableId}
+        myUserId={myUserId}
+        tables={filters.visible}
+        width={listWidth}
+        onJoin={onJoin}
       />
     ))
 
     .with({ hasAny: true }, () => (
-      <View style={styles.empty}>
-        <SearchX color={colors.subtleForeground} size={iconSize.hero} />
-
-        <Text style={styles.emptyTitle}>{t('lobby.nothingMatches')}</Text>
-        <Text style={styles.emptyHint}>{t('lobby.nothingMatchesHint')}</Text>
-      </View>
+      <LobbyPlaceholder
+        hint={t('lobby.nothingMatchesHint')}
+        icon={<SearchX color={colors.subtleForeground} size={iconSize.hero} />}
+        title={t('lobby.nothingMatches')}
+      />
     ))
     .with({ isLoading: true }, () => <TableListSkeleton />)
     .with({ status: 'error' }, () => (
-      <View style={styles.empty}>
-        <PlugZap color={colors.subtleForeground} size={iconSize.hero} />
-
-        <Text style={styles.emptyTitle}>{t('lobby.offline')}</Text>
-        <Text style={styles.emptyHint}>{t('lobby.offlineHint')}</Text>
-      </View>
+      <LobbyPlaceholder
+        hint={t('lobby.offlineHint')}
+        icon={<PlugZap color={colors.subtleForeground} size={iconSize.hero} />}
+        title={t('lobby.offline')}
+      />
     ))
     .otherwise(() => (
-      <View style={styles.empty}>
-        <SuitIcon color={colors.subtleForeground} size={iconSize.hero} suit='spades' />
-
-        <Text style={styles.emptyTitle}>{t('lobby.empty')}</Text>
-        <Text style={styles.emptyHint}>{t('lobby.emptyHint')}</Text>
-
-        <Button size='lg' variant='primary' onPress={onCreate}>
-          <Plus color={colors.primaryForeground} size={iconSize.md} />
-          <Text style={styles.emptyAction}>{t('lobby.createFirst')}</Text>
-        </Button>
-      </View>
+      <LobbyPlaceholder
+        action={
+          <Button size='lg' variant='primary' onPress={onCreate}>
+            <Plus color={colors.primaryForeground} size={iconSize.md} />
+            <Text style={styles.emptyAction}>{t('lobby.createFirst')}</Text>
+          </Button>
+        }
+        hint={t('lobby.emptyHint')}
+        icon={<SuitIcon color={colors.subtleForeground} size={iconSize.hero} suit='spades' />}
+        title={t('lobby.empty')}
+      />
     ));
 
   return (

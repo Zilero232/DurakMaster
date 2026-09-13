@@ -38,10 +38,6 @@ export const styles = StyleSheet.create({
     borderColor: colors.danger
   },
 
-  passwordFocused: {
-    borderColor: colors.accent
-  },
-
   error: {
     fontSize: fontSize.xs,
     fontFamily: fontFamily.sans,

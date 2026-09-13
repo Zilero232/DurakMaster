@@ -6,9 +6,8 @@ import type { AnimationSpeed } from '@/entities/settings';
 import type { HandSort } from '@/shared/model/preferences';
 
 import { useSettingsStore } from '@/entities/settings';
-import { SegmentedControl } from '@/ui-kit';
+import { SegmentedControl, SettingsSection } from '@/ui-kit';
 
-import { SettingsSection } from '../SettingsSection';
 import { SettingsToggle } from '../SettingsToggle';
 import { styles } from './GameSettingsTab.styles';
 

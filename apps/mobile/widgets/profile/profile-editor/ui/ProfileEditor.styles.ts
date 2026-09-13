@@ -17,12 +17,6 @@ export const styles = StyleSheet.create({
     color: colors.foreground
   },
 
-  nameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[2]
-  },
-
   input: {
     flex: 1,
     minWidth: 0,

@@ -5,7 +5,12 @@ export const FACE = {
   mouth: '#7B2D26',
   tongue: '#E8543F',
   blush: '#E88B7D',
+  tear: '#5BA9E8',
   white: '#FFFFFF'
 } as const;
 
 export const STROKE_WIDTH = 1.6;
+
+export const EYE_Y = 40;
+
+export const EYE_RADIUS = 3.4;

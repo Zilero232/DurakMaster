@@ -1,9 +1,11 @@
 import type { LobbyTable, PlayerView } from '@durak-master/schemas';
 
-export const isWaitingForPlayers = (
-  table: Pick<LobbyTable, 'status'> | null,
-  view: PlayerView | null
-): boolean => {
+export type IsWaitingForPlayersInput = {
+  table: Pick<LobbyTable, 'status'> | null;
+  view: PlayerView | null;
+};
+
+export const isWaitingForPlayers = ({ table, view }: IsWaitingForPlayersInput): boolean => {
   if (!view) {
     return true;
   }

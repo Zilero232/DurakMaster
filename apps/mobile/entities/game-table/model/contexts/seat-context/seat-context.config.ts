@@ -1,4 +1,4 @@
-import type { SeatMetrics } from '../../hooks';
+import type { SeatMetrics } from '../../../lib';
 import type { SeatContextValue } from './seat-context.types';
 
 const EMPTY_SEAT_METRICS: SeatMetrics = {

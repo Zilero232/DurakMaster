@@ -2,11 +2,7 @@ import { Defs, LinearGradient, Path, Stop, Svg, Text as SvgText } from 'react-na
 
 import type { LeagueBadgeProps } from './LeagueBadge.types';
 
-import { LEAGUE_LOOK } from './LeagueBadge.config';
-
-const CREST = 'M24 2 L44 9 L44 28 C44 40 35 49 24 54 C13 49 4 40 4 28 L4 9 Z';
-
-const GEM = 'M24 18 L32 27 L24 36 L16 27 Z';
+import { CREST, GEM, LEAGUE_LOOK } from './LeagueBadge.config';
 
 export const LeagueBadge = ({ league, level, size = 44, style }: LeagueBadgeProps) => {
   const look = LEAGUE_LOOK[league];

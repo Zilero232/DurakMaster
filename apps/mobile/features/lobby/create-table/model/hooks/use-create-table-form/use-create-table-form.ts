@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
 import type { CreateTableFormValues } from '../../create-table-form';
+import type { UseCreateTableFormInput } from './use-create-table-form.types';
 
 import {
   clampPlayersToGame,
@@ -11,11 +12,7 @@ import {
   toTableSettings
 } from '../../create-table-form';
 
-type UseCreateTableFormOptions = {
-  onCreate: (settings: ReturnType<typeof toTableSettings>, password?: string) => void;
-};
-
-export const useCreateTableForm = ({ onCreate }: UseCreateTableFormOptions) => {
+export const useCreateTableForm = ({ onCreate }: UseCreateTableFormInput) => {
   const { control, handleSubmit, setValue, formState } = useForm<CreateTableFormValues>({
     resolver: zodResolver(createTableFormSchema),
     defaultValues: CREATE_TABLE_DEFAULTS,

@@ -1,4 +1,4 @@
-import type { BetFilter } from '../../../model';
+import type { BetFilter } from '../../../config';
 
 export type LobbyFiltersProps = {
   bet: BetFilter;

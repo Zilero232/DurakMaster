@@ -23,6 +23,3 @@ export type { OptionItem, OptionRowProps } from './OptionRow';
 
 export { PrivacySection } from './PrivacySection';
 export type { PrivacySectionProps } from './PrivacySection';
-
-export { SettingsSection } from './SettingsSection';
-export type { SettingsSectionProps } from './SettingsSection';

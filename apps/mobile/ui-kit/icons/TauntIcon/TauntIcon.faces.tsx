@@ -3,26 +3,8 @@ import type { ReactNode } from 'react';
 
 import { Circle, Ellipse, Path } from 'react-native-svg';
 
-import { FACE, STROKE_WIDTH } from './TauntIcon.config';
-
-const line = (d: string, key: string) => (
-  <Path
-    key={key}
-    d={d}
-    fill='none'
-    stroke={FACE.ink}
-    strokeLinecap='round'
-    strokeWidth={STROKE_WIDTH}
-  />
-);
-
-const eye = (cx: number, key: string) => (
-  <Circle key={key} cx={cx} cy={40} fill={FACE.ink} r={3.4} />
-);
-
-const openMouth = (key: string) => (
-  <Path key={key} d='M32 58 Q50 78 68 58 Q50 66 32 58 Z' fill={FACE.mouth} />
-);
+import { FACE } from './TauntIcon.config';
+import { eye, line, openMouth } from './TauntIcon.strokes';
 
 export const FACES: Record<TauntId, ReactNode> = {
   laugh: [
@@ -35,8 +17,8 @@ export const FACES: Record<TauntId, ReactNode> = {
   cry: [
     line('M30 42 Q38 34 46 42', 'e1'),
     line('M54 42 Q62 34 70 42', 'e2'),
-    <Path key='t1' d='M34 46 Q31 58 36 62 Q41 58 38 46 Z' fill='#5BA9E8' />,
-    <Path key='t2' d='M62 46 Q59 58 64 62 Q69 58 66 46 Z' fill='#5BA9E8' />,
+    <Path key='t1' d='M34 46 Q31 58 36 62 Q41 58 38 46 Z' fill={FACE.tear} />,
+    <Path key='t2' d='M62 46 Q59 58 64 62 Q69 58 66 46 Z' fill={FACE.tear} />,
     <Path key='m' d='M34 70 Q50 56 66 70 Z' fill={FACE.mouth} />
   ],
 

@@ -1,42 +1,13 @@
-import type { Card } from '@durak-master/schemas';
-
 import { useEffect } from 'react';
 import { Gesture } from 'react-native-gesture-handler';
 import { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
 import type { DropZone } from '../../drop-zone';
+import type { UseCardGestureInput } from './use-card-gesture.types';
 
-const LIFT_SCALE = 1.12;
-const SPRING = { damping: 22, stiffness: 320 };
-
-const RETURN_SPRING = { damping: 26, stiffness: 420, overshootClamping: true };
-
-const zoneAt = (zones: DropZone[], x: number, y: number): number | null => {
-  'worklet';
-
-  for (const zone of zones) {
-    if (x >= zone.x && x <= zone.x + zone.width && y >= zone.y && y <= zone.y + zone.height) {
-      return zone.index;
-    }
-  }
-
-  return null;
-};
-
-type UseCardGestureInput = {
-  card: Card;
-
-  isPlayable: boolean;
-  dropZones: DropZone[];
-  onDropOn: (index: number) => void;
-
-  onDropMiss: (travelY: number) => void;
-  onPlay: () => void;
-  onHover: (index: number | null) => void;
-  onDragStart: () => void;
-  onDragEnd: () => void;
-};
+import { zoneAt } from '../../../lib';
+import { DRAG_MIN_DISTANCE, LIFT_SCALE, RETURN_SPRING, SPRING } from './use-card-gesture.config';
 
 export const useCardGesture = ({
   isPlayable,
@@ -76,7 +47,7 @@ export const useCardGesture = ({
 
   const pan = Gesture.Pan()
 
-    .minDistance(8)
+    .minDistance(DRAG_MIN_DISTANCE)
     .onStart(() => {
       isDragging.value = true;
       scale.value = withSpring(LIFT_SCALE, SPRING);
@@ -86,7 +57,9 @@ export const useCardGesture = ({
       offsetX.value = event.translationX;
       offsetY.value = event.translationY;
 
-      const zone = isPlayable ? zoneAt(zones.value, event.absoluteX, event.absoluteY) : null;
+      const zone = isPlayable
+        ? zoneAt({ zones: zones.value, x: event.absoluteX, y: event.absoluteY })
+        : null;
 
       if (zone === hoveredZone.value) {
         return;
@@ -96,7 +69,9 @@ export const useCardGesture = ({
       scheduleOnRN(onHover, zone);
     })
     .onEnd((event) => {
-      const index = isPlayable ? zoneAt(zones.value, event.absoluteX, event.absoluteY) : null;
+      const index = isPlayable
+        ? zoneAt({ zones: zones.value, x: event.absoluteX, y: event.absoluteY })
+        : null;
 
       settle();
 

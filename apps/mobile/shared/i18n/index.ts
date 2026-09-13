@@ -4,4 +4,5 @@ export type { Locale } from './config';
 export { detectLocale, isLocale, resolveLocale } from './lib';
 
 export { changeLocale, i18next, restoreLocale, useLocale } from './model';
+export type { TranslationKey } from './model';
 export { LanguageSwitch } from './ui';

@@ -6,17 +6,9 @@ import type { DropZone } from '@/entities/game-table';
 
 import { haptic } from '@/shared/lib/haptics';
 
+import type { UseCardDragInput } from './use-card-drag.types';
+
 import { MIN_ATTACK_TRAVEL } from '../../../config';
-
-type UseCardDragInput = {
-  onDefendWith: (pairIndex: number, card: Card) => void;
-
-  onAttackWith: (card: Card) => void;
-
-  isDefending: boolean;
-
-  beatableWith: (card: Card) => Set<number>;
-};
 
 export const useCardDrag = ({
   onDefendWith,

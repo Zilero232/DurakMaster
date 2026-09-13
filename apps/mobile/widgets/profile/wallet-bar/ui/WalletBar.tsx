@@ -1,17 +1,16 @@
 import { getRankInfo } from '@durak-master/schemas';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Coins, Gift, Timer, Wallet } from 'lucide-react-native';
+import { Coins, Wallet } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { View } from 'react-native';
 import { isNullish } from 'remeda';
 
 import { formatCountdown } from '@/shared/lib/format';
 import { useNow } from '@/shared/model/time';
-import { colors, gradientEnds, iconSize, Panel, surfaceGradient } from '@/ui-kit';
+import { colors, Panel } from '@/ui-kit';
 
 import type { WalletBarProps } from './WalletBar.types';
 
-import { PlayerIdentity, WalletAmount } from './components';
+import { BonusButton, PlayerIdentity, WalletAmount } from './components';
 import { BONUS_COUNTDOWN_TICK_MS, BONUS_IDLE_TICK_MS } from './WalletBar.config';
 import { styles } from './WalletBar.styles';
 
@@ -64,37 +63,7 @@ export const WalletBar = ({
       </View>
 
       {onClaimBonus && (
-        <Pressable
-          style={({ pressed }) => [
-            styles.bonus,
-            !isBonusReady && styles.bonusWaiting,
-            pressed && styles.bonusPressed
-          ]}
-          accessibilityHint={t('profile.bonusHint')}
-          accessibilityRole='button'
-          accessibilityState={{ disabled: !isBonusReady }}
-          disabled={!isBonusReady}
-          onPress={onClaimBonus}
-        >
-          {isBonusReady && (
-            <LinearGradient
-              colors={surfaceGradient.success}
-              end={gradientEnds.vertical.end}
-              start={gradientEnds.vertical.start}
-              style={styles.bonusFill}
-            />
-          )}
-
-          {isBonusReady ? (
-            <Gift color={colors.primaryForeground} size={iconSize.md} />
-          ) : (
-            <Timer color={colors.mutedForeground} size={iconSize.md} />
-          )}
-
-          <Text style={[styles.bonusLabel, !isBonusReady && styles.bonusWaitingLabel]}>
-            {isBonusReady ? t('profile.claimBonus') : t('profile.bonusIn', { time: countdown })}
-          </Text>
-        </Pressable>
+        <BonusButton countdown={countdown} isReady={isBonusReady} onClaim={onClaimBonus} />
       )}
 
       <View style={styles.progressTrack}>

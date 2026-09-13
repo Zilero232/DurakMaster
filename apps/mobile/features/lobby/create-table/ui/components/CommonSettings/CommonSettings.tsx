@@ -4,13 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { useLayout } from '@/shared/model/layout';
+import { SettingsSection } from '@/ui-kit';
 
 import type { CommonSettingsProps } from './CommonSettings.types';
 
 import { playerCountItems, SPEED_ITEMS } from '../../CreateTable.config';
 import { BetPicker } from '../BetPicker';
 import { OptionRow } from '../OptionRow';
-import { SettingsSection } from '../SettingsSection';
 import { styles } from './CommonSettings.styles';
 
 export const CommonSettings = ({ control, deckSize, game }: CommonSettingsProps) => {

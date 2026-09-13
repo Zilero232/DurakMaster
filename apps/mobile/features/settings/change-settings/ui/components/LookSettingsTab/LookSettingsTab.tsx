@@ -6,9 +6,8 @@ import type { CardThemeId } from '@/ui-kit';
 
 import { useSettingsStore } from '@/entities/settings';
 import { playSound } from '@/shared/lib/sound';
-import { CARD_THEMES, useSetCardTheme } from '@/ui-kit';
+import { CARD_THEMES, SettingsSection, useSetCardTheme } from '@/ui-kit';
 
-import { SettingsSection } from '../SettingsSection';
 import { ThemeOption } from '../ThemeOption';
 import { styles } from './LookSettingsTab.styles';
 

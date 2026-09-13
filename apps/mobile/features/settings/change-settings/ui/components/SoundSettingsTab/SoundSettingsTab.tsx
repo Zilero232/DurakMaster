@@ -4,8 +4,8 @@ import { View } from 'react-native';
 
 import { useSettingsStore } from '@/entities/settings';
 import { haptic } from '@/shared/lib/haptics';
+import { SettingsSection } from '@/ui-kit';
 
-import { SettingsSection } from '../SettingsSection';
 import { SettingsToggle } from '../SettingsToggle';
 import { VolumeSlider } from '../VolumeSlider';
 import { styles } from './SoundSettingsTab.styles';

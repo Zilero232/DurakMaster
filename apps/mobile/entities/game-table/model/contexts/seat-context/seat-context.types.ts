@@ -1,5 +1,5 @@
+import type { SeatMetrics } from '../../../lib';
 import type { Chatter } from '../../../ui/components/SeatChatter';
-import type { SeatMetrics } from '../../hooks';
 
 export type SeatContextValue = {
   metrics: SeatMetrics;

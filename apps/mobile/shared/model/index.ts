@@ -3,4 +3,5 @@ export type { Breakpoint, LayoutInfo } from './layout';
 
 export type { CardScale, HandSort } from './preferences';
 
-export { useNow } from './time';
+export { useCountTo, useNow } from './time';
+export type { UseCountToInput } from './time';

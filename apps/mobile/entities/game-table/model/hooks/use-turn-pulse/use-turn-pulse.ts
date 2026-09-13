@@ -8,9 +8,7 @@ import {
   withTiming
 } from 'react-native-reanimated';
 
-const PULSE_MS = 900;
-
-const PULSE_SCALE = 1.035;
+import { PULSE_MS, PULSE_SCALE } from './use-turn-pulse.config';
 
 export const useTurnPulse = (isActive: boolean, isStatic = false) => {
   const scale = useSharedValue(1);

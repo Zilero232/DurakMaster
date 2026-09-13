@@ -2,7 +2,7 @@ import { millisecondsToHours, millisecondsToMinutes, millisecondsToSeconds } fro
 
 const pad = (value: number): string => String(value).padStart(2, '0');
 
-export function formatCountdown(remainingMs: number): string {
+export const formatCountdown = (remainingMs: number): string => {
   const total = Math.max(0, remainingMs);
 
   const hours = millisecondsToHours(total);
@@ -10,9 +10,9 @@ export function formatCountdown(remainingMs: number): string {
   const seconds = millisecondsToSeconds(total) % 60;
 
   return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${pad(minutes)}:${pad(seconds)}`;
-}
+};
 
-export function formatCredits(value: number): string {
+export const formatCredits = (value: number): string => {
   if (value >= 1_000_000) {
     const millions = value / 1_000_000;
 
@@ -26,4 +26,4 @@ export function formatCredits(value: number): string {
   }
 
   return String(value);
-}
+};

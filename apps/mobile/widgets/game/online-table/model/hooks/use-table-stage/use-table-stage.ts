@@ -1,15 +1,8 @@
-import type { GameId, TableSettings } from '@durak-master/schemas';
-
-import { GAME_IDS } from '@durak-master/schemas';
-
 import { useSessionStore } from '@/entities/session';
 
-type TableStage =
-  | { kind: 'absent' }
-  | { kind: 'game'; game: GameId; settings: TableSettings }
-  | { kind: 'unsupported'; game: GameId };
+import type { TableStage } from './use-table-stage.types';
 
-const SUPPORTED = new Set<GameId>(GAME_IDS);
+import { SUPPORTED_GAMES } from './use-table-stage.config';
 
 export const useTableStage = (): TableStage => {
   const currentTable = useSessionStore((store) => store.currentTable);
@@ -20,7 +13,7 @@ export const useTableStage = (): TableStage => {
 
   const { settings } = currentTable;
 
-  if (!SUPPORTED.has(settings.game)) {
+  if (!SUPPORTED_GAMES.has(settings.game)) {
     return { kind: 'unsupported', game: settings.game };
   }
 

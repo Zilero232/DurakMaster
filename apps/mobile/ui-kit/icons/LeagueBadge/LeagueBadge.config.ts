@@ -15,3 +15,7 @@ export const LEAGUE_LOOK: Record<LeagueId, LeagueLook> = {
   sapphire: { light: '#7FA8ED', dark: '#2A55A0', gem: '#C2D8FF', stars: 5 },
   supreme: { light: '#C79BEA', dark: '#6B3FA0', gem: '#EBD6FF', stars: 6 }
 };
+
+export const CREST = 'M24 2 L44 9 L44 28 C44 40 35 49 24 54 C13 49 4 40 4 28 L4 9 Z';
+
+export const GEM = 'M24 18 L32 27 L24 36 L16 27 Z';

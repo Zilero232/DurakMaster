@@ -64,11 +64,13 @@ const toPredicate = (trump: TrumpTest): ((card: Card) => boolean) => {
   return typeof trump === 'function' ? trump : (card) => !isJoker(card) && card.suit === trump;
 };
 
-export const sortHand = (
-  cards: Card[],
-  trump: TrumpTest,
-  mode: HandSort = 'trumpFirst'
-): Card[] => {
+export type SortHandInput = {
+  cards: Card[];
+  trump: TrumpTest;
+  mode?: HandSort;
+};
+
+export const sortHand = ({ cards, trump, mode = 'trumpFirst' }: SortHandInput): Card[] => {
   switch (mode) {
     case 'manual': {
       return cards;

@@ -8,9 +8,10 @@ import { colors, iconSize } from '@/ui-kit';
 
 import type { SearchTabProps } from './SearchTab.types';
 
+import { MIN_QUERY } from '../../FriendsPanel.config';
 import { EmptyState } from '../EmptyState';
 import { FriendRow } from '../FriendRow';
-import { DEBOUNCE_MS, MIN_QUERY } from './SearchTab.config';
+import { DEBOUNCE_MS } from './SearchTab.config';
 import { styles } from './SearchTab.styles';
 
 export const SearchTab = ({ found, onSearch, onAction }: SearchTabProps) => {

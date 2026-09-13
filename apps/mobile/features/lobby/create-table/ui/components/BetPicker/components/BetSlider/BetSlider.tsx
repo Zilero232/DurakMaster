@@ -5,7 +5,7 @@ import { colors } from '@/ui-kit';
 
 import type { BetSliderProps } from './BetSlider.types';
 
-import { LAST_INDEX } from './BetSlider.config';
+import { LAST_INDEX } from '../../BetPicker.config';
 import { styles } from './BetSlider.styles';
 
 export const BetSlider = ({ index, label, onChange }: BetSliderProps) => {

@@ -3,6 +3,10 @@ import { StyleSheet } from 'react-native';
 import { colors, fontFamily, fontSize, radii, shadows, spacing } from '../../theme';
 
 export const styles = StyleSheet.create({
+  root: {
+    flex: 1
+  },
+
   backdrop: {
     position: 'absolute',
     top: 0,
@@ -53,11 +57,15 @@ export const styles = StyleSheet.create({
     transform: [{ translateX: '-50%' }, { translateY: '-50%' }]
   },
 
+  grabberZone: {
+    alignItems: 'center',
+    paddingTop: spacing[1],
+    paddingBottom: spacing[2]
+  },
+
   grabber: {
-    alignSelf: 'center',
     width: 40,
     height: 4,
-    marginBottom: spacing[2],
     borderRadius: radii.pill,
     backgroundColor: colors.borderStrong
   },
