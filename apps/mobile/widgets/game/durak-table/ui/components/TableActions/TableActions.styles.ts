@@ -2,8 +2,6 @@ import { StyleSheet } from 'react-native';
 
 import { borderWidth, colors, radii, shadows, spacing } from '@/ui-kit';
 
-const TOOL_SIZE = 44;
-
 const SEAT_SIZE = 60;
 const RING_PADDING = 2;
 
@@ -93,17 +91,5 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     gap: spacing[2]
-  },
-
-  leave: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: TOOL_SIZE,
-    height: TOOL_SIZE,
-    borderWidth: borderWidth.hairline,
-    borderColor: colors.glassBorder,
-    borderRadius: radii.md,
-    backgroundColor: colors.glassStrong,
-    ...shadows.tile
   }
 });

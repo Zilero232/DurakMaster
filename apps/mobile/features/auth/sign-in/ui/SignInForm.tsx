@@ -5,20 +5,19 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useSettingsStore } from '@/entities/settings';
 import { authClient } from '@/shared/api';
-import { TEST_ID } from '@/shared/config';
 import { LanguageSwitch } from '@/shared/i18n';
-import { AppLogo, Button, LobbyBackground, Panel } from '@/ui-kit';
+import { LobbyBackground } from '@/ui-kit';
 
 import type { AuthMode } from './SignInForm.types';
 
-import { CredentialsFields } from './components';
-import { DEFAULT_VALUES } from './SignInForm.config';
-import { CORNER_INSET, styles } from './SignInForm.styles';
+import { AuthCard } from './components';
+import { CORNER_INSET, DEFAULT_VALUES, SCROLL_PADDING_Y } from './SignInForm.config';
+import { styles } from './SignInForm.styles';
 
 export const SignInForm = () => {
   const { t } = useTranslation();
@@ -62,39 +61,27 @@ export const SignInForm = () => {
       </View>
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.root}
       >
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps='handled'>
-          <Panel elevation='floating' padding='roomy' style={styles.card}>
-            <AppLogo size={64} style={styles.logo} />
-
-            <Text style={styles.title}>
-              {t(isSignIn ? 'auth.signInTitle' : 'auth.signUpTitle')}
-            </Text>
-            <Text style={styles.subtitle}>{t('auth.subtitle')}</Text>
-
-            <CredentialsFields control={control} errors={errors} mode={mode} onSubmit={submit} />
-
-            {errors.root && <Text style={styles.error}>{errors.root.message}</Text>}
-
-            <Button
-              isFullWidth
-              isLoading={isSubmitting}
-              size='lg'
-              testID={TEST_ID.auth.submit}
-              variant='primary'
-              onPress={submit}
-            >
-              {t(isSignIn ? 'auth.signIn' : 'auth.signUp')}
-            </Button>
-
-            <Pressable accessibilityRole='button' onPress={toggleMode}>
-              <Text style={styles.switch}>
-                {t(isSignIn ? 'auth.switchToSignUp' : 'auth.switchToSignIn')}
-              </Text>
-            </Pressable>
-          </Panel>
+        <ScrollView
+          contentContainerStyle={[
+            styles.scroll,
+            {
+              paddingTop: insets.top + SCROLL_PADDING_Y,
+              paddingBottom: insets.bottom + SCROLL_PADDING_Y
+            }
+          ]}
+          keyboardShouldPersistTaps='handled'
+        >
+          <AuthCard
+            control={control}
+            errors={errors}
+            isSubmitting={isSubmitting}
+            mode={mode}
+            onSubmit={submit}
+            onToggleMode={toggleMode}
+          />
         </ScrollView>
       </KeyboardAvoidingView>
     </LobbyBackground>

@@ -2,7 +2,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { LeaveCorner, RevealedCards, RewardBurst } from '@/entities/game-table';
 import { useSessionStore } from '@/entities/session';
-import { useLayout } from '@/shared/model/layout';
 import { ContentWidth, FeltBackground, TABLE_MAX_WIDTH } from '@/ui-kit';
 
 import type { DurakTableProps } from './DurakTable.types';
@@ -12,7 +11,7 @@ import { TableProvider, useDurakTable } from '../../../model';
 import { OpponentsRow } from '../OpponentsRow';
 import { PlayerZone } from '../PlayerZone';
 import { TableCenter } from '../TableCenter';
-import { styles } from './DurakTable.styles';
+import { styles, TABLE_BOTTOM_GAP } from './DurakTable.styles';
 
 export const DurakTable = ({
   game,
@@ -25,8 +24,6 @@ export const DurakTable = ({
 }: DurakTableProps) => {
   const insets = useSafeAreaInsets();
 
-  const { isDesktop } = useLayout();
-
   const revealed = useSessionStore((store) => store.revealed);
   const clearRevealed = useSessionStore((store) => store.clearRevealed);
 
@@ -38,10 +35,13 @@ export const DurakTable = ({
     <TableProvider value={value}>
       <FeltBackground style={styles.root}>
         <ContentWidth
+          style={[
+            styles.table,
+            { paddingTop: insets.top, paddingBottom: insets.bottom + TABLE_BOTTOM_GAP }
+          ]}
           maxWidth={TABLE_MAX_WIDTH}
-          style={[styles.table, { paddingTop: insets.top, paddingBottom: insets.bottom }]}
         >
-          {isDesktop && <LeaveCorner isPlaying={!isWaiting} onLeave={onLeave} />}
+          <LeaveCorner isPlaying={!isWaiting} onLeave={onLeave} />
 
           <OpponentsRow
             loserUserId={game.outcome?.loserUserId ?? null}

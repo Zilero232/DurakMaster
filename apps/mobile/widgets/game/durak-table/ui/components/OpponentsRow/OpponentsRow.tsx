@@ -3,11 +3,10 @@ import { View } from 'react-native';
 
 import { OpponentSeat } from '@/entities/game-table';
 import { useSettingsStore } from '@/entities/settings';
-import { useLayout } from '@/shared/model/layout';
 
 import type { OpponentsRowProps } from './OpponentsRow.types';
 
-import { ARC_LIFT } from './OpponentsRow.config';
+import { arcLift } from '../../../lib';
 import { styles } from './OpponentsRow.styles';
 
 export const OpponentsRow = ({
@@ -24,24 +23,12 @@ export const OpponentsRow = ({
 
   const isBatterySaver = useSettingsStore((store) => store.isBatterySaver);
 
-  const { isDesktop } = useLayout();
-
   const opponents = view.players.filter((player) => player.seat !== mySeat);
 
   const isDealt = view.phase === 'playing';
 
-  const arcLift = (index: number, total: number): number => {
-    if (total < 3) {
-      return 0;
-    }
-
-    const middle = (total - 1) / 2;
-
-    return Math.round((1 - Math.abs(index - middle) / middle) * ARC_LIFT);
-  };
-
   return (
-    <View style={[styles.root, isDesktop && styles.withLeaveButton]}>
+    <View style={styles.root}>
       {opponents.map((player, index) => {
         const meta = players.find((item) => item.userId === player.userId);
         const isEmpty = !meta;
@@ -49,7 +36,7 @@ export const OpponentsRow = ({
         return (
           <OpponentSeat
             key={player.userId}
-            arcLift={arcLift(index, opponents.length)}
+            arcLift={arcLift({ index, total: opponents.length })}
             avatarUrl={meta?.avatarUrl ?? null}
             isActive={player.seat === view.activeSeat}
             isAttacker={isDealt && player.seat === view.attackerSeat}

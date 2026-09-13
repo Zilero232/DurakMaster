@@ -11,4 +11,7 @@ export type SeatChatterProps = {
 
   /** Opponent seats sit above the felt, so their bubble hangs below to clear the cards. */
   placement?: 'above' | 'below';
+
+  /** Height the seat's role line occupies, so a bubble below clears it. */
+  clearance?: number;
 };

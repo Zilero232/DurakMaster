@@ -15,13 +15,14 @@ import { TauntIcon } from '@/ui-kit';
 import type { SeatChatterProps } from './SeatChatter.types';
 
 import { FADE_MS, GROW_MS, HOLD_MS, PEAK_RATIO } from './SeatChatter.config';
-import { styles } from './SeatChatter.styles';
+import { BELOW_CLEARANCE, styles } from './SeatChatter.styles';
 
 export const SeatChatter = ({
   chatter,
   size,
   arcLift = 0,
-  placement = 'above'
+  placement = 'above',
+  clearance = 0
 }: SeatChatterProps) => {
   const scale = useSharedValue(0);
 
@@ -65,6 +66,7 @@ export const SeatChatter = ({
       style={[
         styles.bubble,
         isAbove ? styles.above : styles.below,
+        !isAbove && { marginTop: clearance + BELOW_CLEARANCE },
         { transform: [{ translateY: arcLift }] }
       ]}
       entering={FadeIn.duration(160)}

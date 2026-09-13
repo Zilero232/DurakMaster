@@ -22,7 +22,7 @@ export const DurakTable = ({ settings, onLeave, onSelectPlayer }: DurakTableProp
   }
 
   const view = game.view ?? createIdleView(currentTable, settings.rules);
-  const isWaiting = isWaitingForPlayers(currentTable, game.view);
+  const isWaiting = isWaitingForPlayers({ table: currentTable, view: game.view });
 
   return (
     <DurakPlayfield

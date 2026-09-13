@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-export type ShellPanel =
-  'achievements' | 'friends' | 'leaderboard' | 'profileEditor' | 'rules' | 'settings' | 'stats';
+import type { ShellPanel } from './use-shell-panels.types';
 
 export const useShellPanels = () => {
   const [panel, setPanel] = useState<ShellPanel | null>(null);

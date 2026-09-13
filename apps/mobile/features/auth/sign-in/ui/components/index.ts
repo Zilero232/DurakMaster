@@ -1,3 +1,6 @@
+export { AuthCard } from './AuthCard';
+export type { AuthCardProps } from './AuthCard';
+
 export { CredentialsFields } from './CredentialsFields';
 export type { CredentialsFieldsProps } from './CredentialsFields';
 

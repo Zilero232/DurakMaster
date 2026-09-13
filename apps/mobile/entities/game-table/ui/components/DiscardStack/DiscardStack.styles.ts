@@ -1,25 +1,12 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, cardSize, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
-
-export const DISCARD_SCALE = 0.62;
-
-export const discardCard = {
-  width: cardSize.width * DISCARD_SCALE,
-  height: cardSize.height * DISCARD_SCALE
-};
-
-export const CARD_OFFSET = 3;
-
-export const VISIBLE_CARDS = 4;
+import { borderWidth, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
     flexShrink: 0,
     alignItems: 'center',
-    justifyContent: 'center',
-    width: discardCard.width + CARD_OFFSET * VISIBLE_CARDS,
-    height: discardCard.height
+    justifyContent: 'center'
   },
 
   card: {

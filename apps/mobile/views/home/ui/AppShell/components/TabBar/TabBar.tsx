@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { TEST_ID } from '@/shared/config';
 import { haptic } from '@/shared/lib/haptics';
@@ -9,13 +10,15 @@ import { colors, iconSize, SuitIcon } from '@/ui-kit';
 import type { TabBarProps } from './TabBar.types';
 
 import { TABS } from '../../AppShell.config';
-import { styles } from './TabBar.styles';
+import { BOTTOM_GAP, styles } from './TabBar.styles';
 
 export const TabBar = ({ tab, onChange }: TabBarProps) => {
   const { t } = useTranslation();
 
+  const insets = useSafeAreaInsets();
+
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { paddingBottom: insets.bottom + BOTTOM_GAP }]}>
       {TABS.map(({ id, labelKey, suit }) => {
         const isActive = tab === id;
 

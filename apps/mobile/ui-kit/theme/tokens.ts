@@ -118,6 +118,11 @@ export const bubbleTailSize = 7;
 
 export const seatRowGap = 2;
 
+export const opacity = {
+  muted: 0.85,
+  disabled: 0.5
+} as const;
+
 export const borderWidth = {
   hairline: 1,
   regular: 2

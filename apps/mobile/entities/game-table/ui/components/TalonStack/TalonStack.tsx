@@ -4,15 +4,18 @@ import { PlayingCard, SuitIcon } from '@/ui-kit';
 
 import type { TalonStackProps } from './TalonStack.types';
 
+import { useCardSize } from '../../../model';
 import {
   EMPTY_BADGE_SIZE,
-  styles,
   SUIT_BADGE_SIZE,
-  talonCard,
+  talonLayout,
   TRUMP_ROTATION
-} from './TalonStack.styles';
+} from './TalonStack.config';
+import { styles } from './TalonStack.styles';
 
 export const TalonStack = ({ count, trump, trumpCard }: TalonStackProps) => {
+  const card = useCardSize();
+
   const isEmpty = count === 0 && !trumpCard;
 
   if (isEmpty) {
@@ -25,18 +28,20 @@ export const TalonStack = ({ count, trump, trumpCard }: TalonStackProps) => {
     );
   }
 
+  const layout = talonLayout({ cardWidth: card.width, cardHeight: card.height });
+
   return (
     <View style={styles.root}>
-      <View style={styles.stack}>
+      <View style={layout.stack}>
         {trumpCard && (
-          <View style={styles.trumpCard}>
-            <PlayingCard card={trumpCard} rotation={TRUMP_ROTATION} width={talonCard.width} />
+          <View style={[styles.trumpCard, layout.trumpCard]}>
+            <PlayingCard card={trumpCard} rotation={TRUMP_ROTATION} width={layout.card} />
           </View>
         )}
 
         {count > 0 && (
           <View style={styles.back}>
-            <PlayingCard card={null} width={talonCard.width} />
+            <PlayingCard card={null} width={layout.card} />
 
             <Text style={styles.count}>{count}</Text>
           </View>

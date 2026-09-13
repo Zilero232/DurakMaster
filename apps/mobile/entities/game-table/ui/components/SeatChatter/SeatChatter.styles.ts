@@ -13,7 +13,7 @@ import {
 
 const BUBBLE_MAX_WIDTH = 140;
 
-const BELOW_CLEARANCE = spacing[1];
+export const BELOW_CLEARANCE = spacing[1];
 
 const WALLET_CHIP_ROW = lineHeight.tight(fontSize.sm) + spacing[1] * 2;
 
@@ -71,8 +71,7 @@ export const styles = StyleSheet.create({
   },
 
   below: {
-    top: '100%',
-    marginTop: BELOW_CLEARANCE
+    top: '100%'
   },
 
   bubbleText: {

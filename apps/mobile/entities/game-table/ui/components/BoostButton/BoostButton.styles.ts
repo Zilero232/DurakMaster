@@ -1,10 +1,17 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit';
+import {
+  borderWidth,
+  colors,
+  fontFamily,
+  fontSize,
+  HINT_MAX_WIDTH,
+  radii,
+  shadows,
+  spacing
+} from '@/ui-kit';
 
 const SIZE = 36;
-
-export const BOOST_SIZE = SIZE;
 
 export const styles = StyleSheet.create({
   root: {
@@ -46,10 +53,12 @@ export const styles = StyleSheet.create({
 
   hint: {
     position: 'absolute',
+    right: 0,
     bottom: SIZE + spacing[5],
     zIndex: 20,
     gap: 2,
-    width: 190,
+    width: HINT_MAX_WIDTH,
+    maxWidth: '100%',
     padding: spacing[3],
     borderWidth: borderWidth.hairline,
     borderColor: colors.border,

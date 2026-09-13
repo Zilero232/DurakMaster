@@ -4,18 +4,19 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import Animated, { FadeOut, ZoomIn } from 'react-native-reanimated';
 
+import { useCountTo } from '@/shared/model/time';
 import { colors, iconSize } from '@/ui-kit';
 
 import type { RewardBurstProps } from './RewardBurst.types';
 
-import { useCountUp } from '../../../model';
+import { COUNT_UP_MS } from '../../../config';
 import { VISIBLE_MS } from './RewardBurst.config';
 import { styles } from './RewardBurst.styles';
 
 export const RewardBurst = ({ creditsDelta, ratingDelta }: RewardBurstProps) => {
   const { t } = useTranslation();
 
-  const credits = useCountUp(creditsDelta);
+  const credits = useCountTo({ value: creditsDelta, durationMs: COUNT_UP_MS, isFromZero: true });
 
   const [isHidden, setIsHidden] = useState(false);
 

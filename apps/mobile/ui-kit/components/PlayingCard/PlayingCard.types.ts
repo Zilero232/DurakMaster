@@ -11,7 +11,7 @@ export type PlayingCardProps = {
   hasHint?: boolean;
   isSelected?: boolean;
   rotation?: number;
-  width?: number;
+  width: number;
   theme?: CardTheme;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;

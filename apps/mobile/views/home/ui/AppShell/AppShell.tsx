@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { match } from 'ts-pattern';
 
@@ -72,8 +71,6 @@ export const AppShell = () => {
         onCancel={signOut.cancel}
         onConfirm={signOut.confirm}
       />
-
-      <View style={{ height: insets.bottom }} />
     </LobbyBackground>
   );
 };

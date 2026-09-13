@@ -9,7 +9,7 @@ import { useSeatContext } from '../../../../../model';
 import { SeatChatter } from '../../../SeatChatter';
 import { SeatTimer } from '../../../SeatTimer';
 import { CHECK_SIZE, EMPTY_ICON_RATIO } from './SeatIdentity.config';
-import { styles } from './SeatIdentity.styles';
+import { roleRow, styles } from './SeatIdentity.styles';
 
 export const SeatIdentity = () => {
   const { t } = useTranslation();
@@ -68,6 +68,7 @@ export const SeatIdentity = () => {
       <SeatChatter
         arcLift={seat.arcLift}
         chatter={seat.phrase}
+        clearance={role ? roleRow(seat.metrics.label) : 0}
         placement='below'
         size={seat.metrics.avatar}
       />

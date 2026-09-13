@@ -100,7 +100,7 @@ export const VARIANT_STYLES: Record<ButtonVariant, StylePair> = {
     label: { color: colors.foreground }
   },
   ghost: {
-    container: { backgroundColor: 'rgba(255, 255, 255, 0.14)', borderColor: colors.glassBorder },
+    container: { backgroundColor: colors.glassStrong, borderColor: colors.glassBorder },
     label: { color: colors.onFelt }
   },
   danger: {

@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontSize, glow, radii, shadows, spacing } from '@/ui-kit';
+import { colors, glow, radii, spacing } from '@/ui-kit';
 
 export const RING_PADDING = 2;
 
@@ -45,23 +45,5 @@ export const styles = StyleSheet.create({
     paddingVertical: spacing[1],
     borderStyle: 'dashed',
     borderColor: colors.borderStrong
-  },
-
-  phrase: {
-    position: 'absolute',
-    zIndex: 5,
-    top: -14,
-    right: -4,
-    maxWidth: 180,
-    paddingVertical: spacing[1],
-    paddingHorizontal: spacing[3],
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.glassBorder,
-    borderRadius: radii.pill,
-    fontSize: fontSize.sm,
-    color: colors.foreground,
-    backgroundColor: colors.surfaceOverlay,
-    overflow: 'hidden',
-    ...shadows.card
   }
 });

@@ -2,15 +2,15 @@ import { View } from 'react-native';
 import Animated, { FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import { cardKey } from '@/shared/lib/cards';
-import { duration, MAX_FAN_ANGLE } from '@/ui-kit';
+import { card as cardTokens, duration, MAX_FAN_ANGLE } from '@/ui-kit';
 
 import type { PlayerHandProps } from './PlayerHand.types';
 
-import { dealFromTalon, sortHand } from '../../../lib';
+import { dealFromTalon, fanOverlap, sortHand } from '../../../lib';
 import { useCardSize } from '../../../model';
 import { DraggableCard } from './components';
 import { FAN_DROP_RATIO } from './PlayerHand.config';
-import { EDGE_PADDING, fanOverlap, styles } from './PlayerHand.styles';
+import { EDGE_PADDING, styles } from './PlayerHand.styles';
 
 export const PlayerHand = ({
   cards,
@@ -32,10 +32,10 @@ export const PlayerHand = ({
 }: PlayerHandProps) => {
   const { width, height, available } = useCardSize(cardScale, EDGE_PADDING);
 
-  const sorted = sortHand(cards, trump, sortMode);
+  const sorted = sortHand({ cards, trump, mode: sortMode });
   const count = sorted.length;
 
-  const overlap = fanOverlap(count, width, available);
+  const overlap = fanOverlap({ count, width, available, looseRatio: cardTokens.overlap });
   const fanDrop = height * FAN_DROP_RATIO;
 
   return (

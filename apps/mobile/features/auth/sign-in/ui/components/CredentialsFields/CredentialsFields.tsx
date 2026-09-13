@@ -2,6 +2,8 @@ import { MAX_NAME_LENGTH } from '@durak-master/schemas';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import type { TranslationKey } from '@/shared/i18n';
+
 import { TEST_ID } from '@/shared/config';
 
 import type { CredentialsFieldsProps } from './CredentialsFields.types';
@@ -10,6 +12,9 @@ import { FormField } from '../FormField';
 
 export const CredentialsFields = ({ control, errors, mode, onSubmit }: CredentialsFieldsProps) => {
   const { t } = useTranslation();
+
+  const errorText = (message?: string): string | undefined =>
+    message ? t(message as TranslationKey) : undefined;
 
   const isSignIn = mode === 'signIn';
 
@@ -20,7 +25,7 @@ export const CredentialsFields = ({ control, errors, mode, onSubmit }: Credentia
           render={({ field }) => (
             <FormField
               autoComplete='nickname'
-              error={errors.name?.message && t(errors.name.message as never)}
+              error={errorText(errors.name?.message)}
               label={t('auth.name')}
               maxLength={MAX_NAME_LENGTH}
               placeholder={t('auth.namePlaceholder')}
@@ -40,7 +45,7 @@ export const CredentialsFields = ({ control, errors, mode, onSubmit }: Credentia
           <FormField
             autoCapitalize='none'
             autoComplete='email'
-            error={errors.email?.message && t(errors.email.message as never)}
+            error={errorText(errors.email?.message)}
             keyboardType='email-address'
             label={t('auth.email')}
             testID={TEST_ID.auth.email}
@@ -60,7 +65,7 @@ export const CredentialsFields = ({ control, errors, mode, onSubmit }: Credentia
             isSecret
             autoCapitalize='none'
             autoComplete={isSignIn ? 'current-password' : 'new-password'}
-            error={errors.password?.message && t(errors.password.message as never)}
+            error={errorText(errors.password?.message)}
             label={t('auth.password')}
             returnKeyType='go'
             testID={TEST_ID.auth.password}

@@ -53,6 +53,6 @@ export const styles = StyleSheet.create({
     borderWidth: borderWidth.hairline,
     borderColor: colors.glassBorder,
     borderRadius: radii.pill,
-    backgroundColor: 'rgba(255, 255, 255, 0.14)'
+    backgroundColor: colors.glassStrong
   }
 });

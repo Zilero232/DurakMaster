@@ -3,7 +3,8 @@ import { times } from 'remeda';
 
 import { PlayingCard } from '@/ui-kit';
 
-import { seatBackHeight, useSeatContext } from '../../../../../model';
+import { seatBackHeight } from '../../../../../lib';
+import { useSeatContext } from '../../../../../model';
 import { BACK_STEP_ANGLE, BACK_STEP_X } from '../../OpponentSeat.styles';
 import { MAX_VISIBLE_BACKS } from './SeatCards.config';
 import { styles } from './SeatCards.styles';

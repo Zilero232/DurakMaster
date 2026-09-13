@@ -2,6 +2,8 @@ import { StyleSheet } from 'react-native';
 
 import { colors, fontFamily, fontSize, spacing } from '@/ui-kit';
 
+export const BOTTOM_GAP = spacing[1];
+
 export const styles = StyleSheet.create({
   root: {
     flexDirection: 'row',

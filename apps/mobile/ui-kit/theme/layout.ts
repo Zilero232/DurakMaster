@@ -1,4 +1,4 @@
-import { Dimensions, PixelRatio } from 'react-native';
+import { PixelRatio } from 'react-native';
 import { clamp } from 'remeda';
 
 import { card } from './tokens';
@@ -27,9 +27,6 @@ export const getCardSize = (screenWidth: number, scale: number = 1) => {
   };
 };
 
-export const screen = Dimensions.get('window');
-export const cardSize = getCardSize(screen.width);
-
 export const MAX_FAN_ANGLE = 18;
 
 export const CONTENT_MAX_WIDTH = 720;
@@ -41,6 +38,8 @@ export const CORNER_BUTTON_SIZE = 40;
 export const CONFIRM_MAX_WIDTH = 380;
 
 export const TOAST_MAX_WIDTH = 420;
+
+export const HINT_MAX_WIDTH = 190;
 
 export const DESKTOP_MAX_WIDTH = 1440;
 

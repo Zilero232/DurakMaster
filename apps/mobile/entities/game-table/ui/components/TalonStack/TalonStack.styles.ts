@@ -1,36 +1,14 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, cardSize, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
-
-export const TALON_SCALE = 0.6;
-
-export const talonCard = {
-  width: cardSize.width * TALON_SCALE,
-  height: cardSize.height * TALON_SCALE
-};
-
-const TRUMP_REVEAL = talonCard.width * 0.92;
-
-const TRUMP_TOP = (talonCard.height - talonCard.width) / 2;
+import { borderWidth, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
 
 const BADGE_SIZE = 26;
-
-export const SUIT_BADGE_SIZE = 16;
-
-export const EMPTY_BADGE_SIZE = 22;
-
-export const TRUMP_ROTATION = 90;
 
 export const styles = StyleSheet.create({
   root: {
     flexShrink: 0,
     alignItems: 'center',
     gap: spacing[2]
-  },
-
-  stack: {
-    width: talonCard.width + TRUMP_REVEAL,
-    height: talonCard.height
   },
 
   emptyRoot: {
@@ -52,9 +30,7 @@ export const styles = StyleSheet.create({
 
   trumpCard: {
     position: 'absolute',
-    zIndex: 0,
-    top: TRUMP_TOP,
-    left: talonCard.width - (talonCard.height - TRUMP_REVEAL)
+    zIndex: 0
   },
 
   back: {

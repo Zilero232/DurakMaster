@@ -1,8 +1,10 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, colors, fontFamily, radii, seatRowGap, spacing } from '@/ui-kit';
+import { borderWidth, colors, fontFamily, lineHeight, radii, seatRowGap, spacing } from '@/ui-kit';
 
 import { RING_PADDING } from '../../OpponentSeat.styles';
+
+export const roleRow = (label: number): number => lineHeight.tight(label) + seatRowGap;
 
 export const styles = StyleSheet.create({
   identity: {

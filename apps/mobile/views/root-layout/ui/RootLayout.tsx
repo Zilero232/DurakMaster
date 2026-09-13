@@ -1,5 +1,7 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Toaster } from 'sonner-native';
 
 import { SessionNotices } from '@/entities/session';
@@ -14,6 +16,8 @@ export const RootLayout = () => {
   const isReady = useAppBootstrap();
 
   const { isDesktop } = useLayout();
+
+  const insets = useSafeAreaInsets();
 
   if (!isReady) {
     return null;
@@ -36,9 +40,12 @@ export const RootLayout = () => {
       <SocialNotices />
 
       <Toaster
+        style={StyleSheet.flatten([
+          isDesktop ? rootLayoutStyles.toastDesktop : rootLayoutStyles.toast,
+          { marginTop: insets.top }
+        ])}
         duration={3200}
         position='top-center'
-        style={isDesktop ? rootLayoutStyles.toastDesktop : rootLayoutStyles.toast}
         theme='dark'
       />
     </AppProviders>
