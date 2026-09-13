@@ -55,13 +55,32 @@ These are not style preferences — breaking any one of them breaks the game or 
 5. **Coins are not transferred between players.** Transfers create a grey market and the
    risk of stores reclassifying the app as gambling.
 
+## Pinned dependencies
+
+Two packages are pinned to an exact version on purpose. Raising either needs a manual check, not
+just a green `bun verify` — both failures are invisible to the test suite.
+
+- **`better-auth` / `@better-auth/expo` — 1.7.2.** 1.7.4 answers `POST /api/auth/sign-up/email`
+  with a 500 and an empty body. Sign-up has no test, so `bun verify` stays green; the e2e suite
+  catches it. Check by hand after any bump:
+  ```bash
+  curl -s -o /dev/null -w "%{http_code}
+  ```
+
+" -X POST http://localhost:4000/api/auth/sign-up/email -H "Content-Type: application/json" -d '{"email":"probe@durak.local","password":"probe-password-1","name":"probe"}'
+
+````
+- **`typescript` — 6.0.3.** Expo SDK 57 installs it, and typescript-eslint refuses to run against
+TS 7, which takes the whole lint step down.
+
 ## Commands
 
 ```bash
 bun install                # dependencies for all workspaces
 bun dev:infra              # Postgres + Valkey in Docker
-bun dev:server             # API — one terminal
-bun dev:mobile             # Expo — another terminal, this is where the QR code is
+bun dev                    # API + Expo together — fine when you work in the browser
+bun dev:server             # API alone — one terminal
+bun dev:mobile             # Expo alone — another terminal, this is where the QR code is
 bun verify                 # typecheck + tests + ESLint + Steiger + Prettier
 bun fix                    # ESLint --fix + Prettier --write
 bun test:e2e               # Playwright against a running client and API
@@ -69,13 +88,14 @@ bun test:e2e:shots         # walk every screen and save shots to e2e/.shots/
 bun android                # Android (needs a running emulator or device)
 bun ios                    # iOS
 bun web                    # browser
-```
+````
 
-Releasing to RuStore — [DEPLOY.md](./DEPLOY.md), listing and privacy in [docs/store/](./docs/store/README.md).
+Releasing to Google Play — [DEPLOY.md](./DEPLOY.md), listing, privacy and the store
+paperwork in [docs/store/](./docs/store/README.md).
 
-The two dev servers run in separate terminals on purpose: `bun --filter
---parallel` prefixes every output line with the package name, which mangles the
-ANSI art Expo draws its QR code with.
+`bun dev` runs both through `bun --filter --parallel`, which prefixes every output line with the
+package name — that mangles the ANSI art Expo draws its QR code with. Fine for the browser; to
+scan the QR on a device, run `dev:server` and `dev:mobile` in separate terminals.
 
 ## How to work
 

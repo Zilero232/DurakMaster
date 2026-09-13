@@ -18,7 +18,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@better-auth/expo": "^1.7.2",
+    "@better-auth/expo": "1.7.2",
     "@dicebear/collection": "^9.4.2",
     "@dicebear/core": "^9.0.0",
     "@durak-master/game-core": "workspace:*",
@@ -33,10 +33,11 @@
     "@siberiacancode/reactuse": "^1.0.16",
     "@tanstack/react-query": "^5.102.7",
     "axios": "^1.20.0",
-    "better-auth": "^1.7.2",
+    "better-auth": "1.7.2",
     "date-fns": "^4.4.0",
     "expo": "~57.0.18",
     "expo-audio": "~57.0.4",
+    "expo-build-properties": "~57.0.17",
     "expo-constants": "~57.0.16",
     "expo-font": "~57.0.2",
     "expo-haptics": "~57.0.2",
@@ -60,6 +61,7 @@
     "react-i18next": "^17.0.12",
     "react-native": "0.86.3",
     "react-native-gesture-handler": "~2.32.0",
+    "react-native-google-mobile-ads": "^16.5.0",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
@@ -69,8 +71,7 @@
     "remeda": "^2.45.0",
     "sonner-native": "^0.27.0",
     "ts-pattern": "^5.9.0",
-    "yandex-mobile-ads": "^8.3.0",
-    "zod": "4.4.3",
+    "zod": "4.6.4",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
