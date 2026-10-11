@@ -5,13 +5,12 @@ import type { Socket } from '../realtime.types';
 import { AuthService } from '../../../lib/auth/auth.service';
 import { RoomsService } from '../../game';
 import { ProfilesService } from '../../profile';
-import { AchievementsService } from '../../social';
+import { AchievementsService, OnlinePlayersService } from '../../social';
 import { BroadcastService } from './broadcast.service';
 import { SessionsService } from './sessions.service';
 import { SocketRegistryService } from './socket-registry.service';
 
 export type ConnectionRequest = {
-  url?: string;
   headers: Record<string, string | string[] | undefined>;
 };
 
@@ -30,10 +29,11 @@ export class ConnectionService {
     private readonly profiles: ProfilesService,
     private readonly achievements: AchievementsService,
     private readonly registry: SocketRegistryService,
-    private readonly broadcast: BroadcastService
+    private readonly broadcast: BroadcastService,
+    private readonly onlinePlayers: OnlinePlayersService
   ) {}
 
-  toHeaders(request: ConnectionRequest): Headers {
+  private toHeaders(request: ConnectionRequest): Headers {
     const headers = new Headers();
 
     for (const [key, value] of Object.entries(request.headers)) {
@@ -41,14 +41,6 @@ export class ConnectionService {
         headers.set(key, value);
       } else if (Array.isArray(value)) {
         headers.set(key, value.join('; '));
-      }
-    }
-
-    if (!headers.has('authorization')) {
-      const token = new URL(request.url ?? '/ws', 'http://localhost').searchParams.get('token');
-
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`);
       }
     }
 
@@ -74,6 +66,11 @@ export class ConnectionService {
 
   async welcome(socket: Socket, userId: string): Promise<void> {
     const profile = await this.sessions.load(userId);
+
+    if (socket.readyState !== socket.OPEN) {
+      return;
+    }
+
     const previous = this.registry.add(profile.userId, socket);
 
     if (previous && previous !== socket) {
@@ -82,6 +79,8 @@ export class ConnectionService {
 
     socket.userId = profile.userId;
     socket.isAlive = true;
+
+    this.onlinePlayers.markOnline(profile.userId);
 
     this.registry.send(socket, { type: 'connected', payload: { profile } });
 
@@ -105,13 +104,14 @@ export class ConnectionService {
   disconnect(socket: Socket): void {
     const { userId } = socket;
 
-    if (!userId) {
+    if (!userId || this.registry.get(userId) !== socket) {
       return;
     }
 
     this.registry.remove(userId, socket);
     this.rooms.handleDisconnect(userId);
     this.sessions.setOnline(userId, false);
+    this.onlinePlayers.markOffline(userId);
     this.broadcast.lobby();
   }
 

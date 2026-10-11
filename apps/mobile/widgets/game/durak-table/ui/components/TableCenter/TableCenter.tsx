@@ -10,7 +10,6 @@ import { styles } from './TableCenter.styles';
 export const TableCenter = ({
   view,
   beatableIndexes,
-  cardScale,
   mySeat,
   isInstant,
   hoveredIndex,
@@ -24,7 +23,6 @@ export const TableCenter = ({
 
       <TableField
         beatableIndexes={beatableIndexes}
-        cardScale={cardScale}
         hoveredIndex={hoveredIndex}
         isInstant={isInstant}
         isWaiting={view.phase !== 'playing'}

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { MAX_NAME_LENGTH } from '../auth/credentials';
 
-export const LEAGUES = [
+const LEAGUES = [
   { id: 'silver', color: '#b8bcc4' },
   { id: 'gold', color: '#e0b64a' },
   { id: 'ruby', color: '#d3564f' },
@@ -11,9 +11,7 @@ export const LEAGUES = [
   { id: 'supreme', color: '#a06ad4' }
 ] as const;
 
-export const leagueIdSchema = z.enum(['silver', 'gold', 'ruby', 'emerald', 'sapphire', 'supreme']);
-
-export type LeagueId = z.infer<typeof leagueIdSchema>;
+export type LeagueId = (typeof LEAGUES)[number]['id'];
 
 export const AVATAR_SEED_PREFIX = 'dicebear:';
 

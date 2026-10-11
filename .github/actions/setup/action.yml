@@ -1,0 +1,29 @@
+name: Setup toolchain
+description: The mise toolchain and the caches every job in this repo needs.
+
+runs:
+  using: composite
+
+  steps:
+    # mise.toml is the one place the toolchain is pinned, so CI and a local
+    # `mise install` run the same bun and node.
+    - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+      with:
+        install: true
+        cache: true
+
+    - name: Cache bun packages
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+      with:
+        path: ~/.bun/install/cache
+        key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+        restore-keys: bun-${{ runner.os }}-
+
+    # The server's postinstall runs `prisma generate`, and prisma.config.ts
+    # resolves DIRECT_URL through env(), which throws when unset. `generate`
+    # never connects, so a placeholder satisfies it.
+    - name: Install dependencies
+      shell: bash
+      env:
+        DIRECT_URL: postgresql://placeholder
+      run: bun install --frozen-lockfile

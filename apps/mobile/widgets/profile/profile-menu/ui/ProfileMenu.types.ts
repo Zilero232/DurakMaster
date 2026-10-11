@@ -11,7 +11,6 @@ export type ProfileMenuEntry = {
   icon: LucideIcon;
   tint: string;
   badgeTone?: CountBadgeTone;
-  isLocked?: boolean;
 };
 
 export type ProfileMenuProps = {

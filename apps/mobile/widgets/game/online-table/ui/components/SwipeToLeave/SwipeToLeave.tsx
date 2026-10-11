@@ -25,7 +25,7 @@ import {
 } from './SwipeToLeave.config';
 import { styles } from './SwipeToLeave.styles';
 
-export const SwipeToLeave = ({ children, onLeave }: SwipeToLeaveProps) => {
+export const SwipeToLeave = ({ children, isEnabled, onLeave }: SwipeToLeaveProps) => {
   const { t } = useTranslation();
 
   const { width } = useWindowDimensions();
@@ -38,6 +38,7 @@ export const SwipeToLeave = ({ children, onLeave }: SwipeToLeaveProps) => {
   const threshold = width * LEAVE_RATIO;
 
   const pan = Gesture.Pan()
+    .enabled(isEnabled)
     .activeOffsetX([-16, 16])
     .failOffsetY([-24, 24])
     .onBegin((event) => {

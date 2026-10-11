@@ -7,7 +7,6 @@ export type SeatButtonProps = {
 
   chatter?: Chatter;
   isMyTurn: boolean;
-  isLoser?: boolean;
   turnDeadline: number | null;
   turnSeconds: number;
   onPress: () => void;

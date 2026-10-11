@@ -1,9 +1,10 @@
+import { Bot, Check, Hand, ShieldCheck, X } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { useReadyPrompt } from '@/entities/game-table';
-import { ARE_BOTS_ENABLED, TEST_ID } from '@/shared/config';
-import { Button } from '@/ui-kit';
+import { ARE_BOTS_ENABLED } from '@/shared/config';
+import { Button, iconSize } from '@/ui-kit';
 
 import { useTableContext } from '../../../../../model';
 import { styles } from '../../TableActions.styles';
@@ -23,8 +24,14 @@ export const MoveButton = () => {
     return (
       <View style={styles.actionSlot}>
         <Button
+          icon={(color) =>
+            turn.isReady ? (
+              <X color={color} size={iconSize.md} />
+            ) : (
+              <Check color={color} size={iconSize.md} />
+            )
+          }
           style={styles.action}
-          testID={TEST_ID.table.ready}
           variant={turn.isReady ? 'ghost' : 'primary'}
           onPress={() => {
             moves.onReady(!turn.isReady);
@@ -35,8 +42,8 @@ export const MoveButton = () => {
 
         {ARE_BOTS_ENABLED && turn.hasFreeSeat && (
           <Button
+            icon={(color) => <Bot color={color} size={iconSize.md} />}
             style={styles.action}
-            testID={TEST_ID.table.addBot}
             variant='ghost'
             onPress={moves.onAddBot}
           >
@@ -51,8 +58,8 @@ export const MoveButton = () => {
     <View style={styles.actionSlot}>
       {turn.canTake && (
         <Button
+          icon={(color) => <Hand color={color} size={iconSize.md} />}
           style={styles.action}
-          testID={TEST_ID.table.take}
           variant='danger'
           onPress={moves.onTake}
         >
@@ -62,8 +69,8 @@ export const MoveButton = () => {
 
       {turn.canPass && (
         <Button
+          icon={(color) => <ShieldCheck color={color} size={iconSize.md} />}
           style={styles.action}
-          testID={TEST_ID.table.pass}
           variant='primary'
           onPress={moves.onPass}
         >

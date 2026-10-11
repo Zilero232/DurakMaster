@@ -20,16 +20,11 @@ import { randomInt, randomUUID } from 'node:crypto';
 
 import type { GameSession } from './game-session';
 
-import {
-  isVisibleBotAction,
-  MISSED_TURNS_LIMIT,
-  PEEK_TALON_CARDS,
-  READY_TIMEOUT_MS
-} from '../config';
+import { isVisibleBotAction, PEEK_TALON_CARDS, READY_TIMEOUT_MS } from '../config';
 import { createGameSession } from './game-session';
 import { nextFreeSeat } from './next-free-seat';
-import { RoomChatter } from './room-chatter';
 import { RoomTimers } from './room-timers';
+import { createTablePhrase } from './table-phrase';
 
 const collectOutPlaces = (players: GameCoreState['players']): Record<string, number> => {
   const places: Record<string, number> = {};
@@ -54,7 +49,6 @@ export type RoomMember = {
   isBot: boolean;
   isConnected: boolean;
   hasStakeHeld: boolean;
-  missedTurns: number;
 };
 
 export type RoomEvent =
@@ -68,9 +62,9 @@ export type RoomEvent =
       facts: FinishFacts;
       removedUserId?: string;
     }
-  | { type: 'idle-removed'; userIds: string[]; refundUserIds: string[] }
+  | { type: 'idle-removed'; userIds: string[] }
   | { type: 'phrase'; phrase: TablePhrase }
-  | { type: 'stake-released'; userId: string }
+  | { type: 'stake-released'; userId: string; bet: number }
   | { type: 'state-changed' };
 
 export class GameRoom {
@@ -84,9 +78,6 @@ export class GameRoom {
 
   private tookUserIds = new Set<string>();
   private status: TableStatus = 'waiting';
-
-  private hasDealt = false;
-  private readonly chatter = new RoomChatter();
 
   private readonly timers = new RoomTimers({
     onTurnTimeout: () => this.handleTurnTimeout(),
@@ -110,10 +101,6 @@ export class GameRoom {
     return this.members.get(userId);
   }
 
-  get memberCount(): number {
-    return this.members.size;
-  }
-
   get isAbandoned(): boolean {
     return ![...this.members.values()].some((member) => !member.isBot);
   }
@@ -122,12 +109,12 @@ export class GameRoom {
     return this.members.size >= this.settings.maxPlayers;
   }
 
-  get isInMatch(): boolean {
-    return this.isPlaying || this.hasDealt;
-  }
-
   get isPlaying(): boolean {
     return this.status === 'playing';
+  }
+
+  get allowsPeeking(): boolean {
+    return this.settings.rules.fairness === 'cheaters';
   }
 
   join(profile: PublicProfile, isBot = false): RoomMember | null {
@@ -141,8 +128,7 @@ export class GameRoom {
       isReady: isBot,
       isBot,
       isConnected: true,
-      hasStakeHeld: !isBot,
-      missedTurns: 0
+      hasStakeHeld: !isBot
     };
 
     this.members.set(profile.userId, member);
@@ -171,16 +157,19 @@ export class GameRoom {
       return;
     }
 
-    const wasStakeHeld = member.hasStakeHeld;
+    this.unseat(member);
+    this.emit({ type: 'state-changed' });
+  }
+
+  private unseat(member: RoomMember): void {
+    const { userId } = member.profile;
 
     this.members.delete(userId);
     this.passOwnership(userId);
 
-    if (wasStakeHeld) {
-      this.emit({ type: 'stake-released', userId });
+    if (member.hasStakeHeld) {
+      this.emit({ type: 'stake-released', userId, bet: this.settings.bet });
     }
-
-    this.emit({ type: 'state-changed' });
   }
 
   hasStakeHeld(userId: string): boolean {
@@ -201,12 +190,22 @@ export class GameRoom {
     }
   }
 
+  close(): string[] {
+    const heldStakeUserIds = this.getMembers()
+      .filter((member) => member.hasStakeHeld)
+      .map((member) => member.profile.userId);
+
+    this.clearTimers();
+    this.releaseStakes();
+
+    return heldStakeUserIds;
+  }
+
   private resetToWaiting(): void {
     this.clearTimers();
 
     this.status = 'waiting';
     this.session = null;
-    this.hasDealt = false;
     this.tookUserIds.clear();
 
     this.releaseStakes();
@@ -267,7 +266,6 @@ export class GameRoom {
     }
 
     member.isConnected = true;
-    member.missedTurns = 0;
 
     this.session?.markDisconnected(userId, false);
 
@@ -316,20 +314,11 @@ export class GameRoom {
       return;
     }
 
-    const refundUserIds = idle
-      .filter((member) => member.hasStakeHeld)
-      .map((member) => member.profile.userId);
-
     for (const member of idle) {
-      this.members.delete(member.profile.userId);
-      this.passOwnership(member.profile.userId);
+      this.unseat(member);
     }
 
-    this.emit({
-      type: 'idle-removed',
-      userIds: idle.map((member) => member.profile.userId),
-      refundUserIds
-    });
+    this.emit({ type: 'idle-removed', userIds: idle.map((member) => member.profile.userId) });
     this.emit({ type: 'state-changed' });
 
     this.scheduleReadyTimer();
@@ -358,7 +347,6 @@ export class GameRoom {
     });
 
     this.status = 'playing';
-    this.hasDealt = true;
     this.session = createGameSession({
       tableId: this.id,
       settings: this.settings,
@@ -456,17 +444,7 @@ export class GameRoom {
       return;
     }
 
-    activeMember.missedTurns += 1;
-
-    if (activeMember.isBot) {
-      if (this.session.applyTimeout(activeMember.profile.userId)) {
-        this.afterStateChange();
-      }
-
-      return;
-    }
-
-    if (activeMember.missedTurns >= MISSED_TURNS_LIMIT) {
+    if (!activeMember.isBot) {
       this.forfeit(activeMember.profile.userId);
 
       return;
@@ -553,7 +531,7 @@ export class GameRoom {
       return null;
     }
 
-    const phrase = this.chatter.add(userId, phraseId);
+    const phrase = createTablePhrase(userId, phraseId);
 
     this.emit({ type: 'phrase', phrase });
 
@@ -602,7 +580,7 @@ export class GameRoom {
   peekTalon(): Card[] | null {
     const state = this.session?.state;
 
-    if (!state || !('talon' in state)) {
+    if (!this.allowsPeeking || !state || !('talon' in state)) {
       return null;
     }
 
@@ -612,7 +590,7 @@ export class GameRoom {
   peekHand(viewerId: string, targetUserId: string): Card[] | null {
     const state = this.session?.state;
 
-    if (!state || !('hands' in state)) {
+    if (!this.allowsPeeking || !state || !('hands' in state)) {
       return null;
     }
 

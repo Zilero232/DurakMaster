@@ -1,10 +1,10 @@
-import type { Card, Rank, Suit } from '@durak-master/schemas';
+import type { PlainCard, Rank, Suit } from '@durak-master/schemas';
 
 import { describe, expect, it } from 'vitest';
 
 import { beats, rankValue } from '../beating';
 
-const card = (rank: Rank, suit: Suit): Card => ({ rank, suit });
+const card = (rank: Rank, suit: Suit): PlainCard => ({ kind: 'plain', rank, suit });
 
 const TRUMP: Suit = 'hearts';
 

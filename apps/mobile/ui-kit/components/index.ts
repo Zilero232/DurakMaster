@@ -1,8 +1,8 @@
 export { AppLogo } from './AppLogo';
 export type { AppLogoProps } from './AppLogo';
 
-export { ContentWidth } from './ContentWidth';
-export type { ContentWidthProps } from './ContentWidth';
+export { EmptyState } from './EmptyState';
+export type { EmptyStateProps } from './EmptyState';
 
 export { FeltBackground } from './FeltBackground';
 export type { FeltBackgroundProps } from './FeltBackground';
@@ -19,4 +19,4 @@ export { StatRow } from './StatRow';
 export type { StatRowProps } from './StatRow';
 
 export { StatusScreen } from './StatusScreen';
-export type { StatusScreenProps } from './StatusScreen';
+export type { StatusScreenProps, StatusScreenTone } from './StatusScreen';

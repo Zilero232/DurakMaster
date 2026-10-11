@@ -1,6 +1,4 @@
-export const ROW_PADDING = 16;
-
-export const SEAT_GAP = 8;
+export const SEAT_GAP = 4;
 
 export const MIN_SEAT_WIDTH = 46;
 

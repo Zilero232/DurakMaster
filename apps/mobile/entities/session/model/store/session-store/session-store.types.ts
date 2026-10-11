@@ -24,8 +24,8 @@ export type TableEmoji = { emoji: TauntId; at: number };
 
 export type SessionState = {
   status: ConnectionStatus;
+  isSigningOut: boolean;
 
-  isLobbySubscribed: boolean;
   joiningTableId: string | null;
   isJoiningTable: boolean;
 
@@ -57,13 +57,15 @@ export type RevealedCards = {
 export type SessionActions = {
   selectTableCard: (key: string | null) => void;
 
-  connect: () => Promise<void>;
+  connect: () => void;
   disconnect: () => void;
+  setSigningOut: (isSigningOut: boolean) => void;
 
   subscribeLobby: () => void;
   createTable: (settings: TableSettings, password?: string) => void;
   joinTable: (tableId: string, password?: string) => void;
   leaveTable: () => void;
+  goToMenu: () => void;
   setReady: (isReady: boolean) => void;
   addBot: () => void;
   applyBoost: (boost: BoostId, targetUserId?: string) => void;
@@ -72,7 +74,6 @@ export type SessionActions = {
   sendPhrase: (phraseId: QuickPhraseId) => void;
   sendEmoji: (emoji: TauntId) => void;
 
-  clearOutcome: () => void;
   clearRejection: () => void;
   clearError: () => void;
 };

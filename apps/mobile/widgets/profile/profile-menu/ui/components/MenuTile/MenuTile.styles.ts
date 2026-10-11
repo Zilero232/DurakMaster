@@ -23,10 +23,6 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.glass
   },
 
-  locked: {
-    opacity: 0.55
-  },
-
   top: {
     alignItems: 'center',
     justifyContent: 'center'
@@ -53,12 +49,5 @@ export const styles = StyleSheet.create({
     fontFamily: fontFamily.sansBold,
     color: colors.onFelt,
     textAlign: 'center'
-  },
-
-  soon: {
-    fontSize: 10,
-    color: colors.onFeltMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.4
   }
 });

@@ -5,12 +5,6 @@ export const styles = StyleSheet.create({
     flex: 1
   },
 
-  /** On desktop the navigation moves to the left, so the shell becomes a row. */
-  desktopRoot: {
-    flex: 1,
-    flexDirection: 'row'
-  },
-
   content: {
     flex: 1,
     minWidth: 0

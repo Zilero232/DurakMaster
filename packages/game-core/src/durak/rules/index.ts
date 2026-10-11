@@ -7,4 +7,4 @@ export {
   hasUndefendedCards
 } from './table';
 export { allowedThrowInRanks, canThrowIn } from './throw-in';
-export { canTransfer } from './transfer';
+export { canTransfer, findTransferError } from './transfer';

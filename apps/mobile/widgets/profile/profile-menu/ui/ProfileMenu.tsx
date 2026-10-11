@@ -30,13 +30,12 @@ export const ProfileMenu = ({ onOpenPanel }: ProfileMenuProps) => {
 
   return (
     <View style={styles.grid}>
-      {PROFILE_MENU_ITEMS.map(({ id, icon, badgeTone, isLocked, tint }) => (
+      {PROFILE_MENU_ITEMS.map(({ id, icon, badgeTone, tint }) => (
         <MenuTile
           key={id}
           badgeCount={badgeCounts[id as keyof typeof badgeCounts] ?? 0}
           badgeTone={badgeTone}
           icon={icon}
-          isLocked={isLocked}
           label={t(`menu.${id}`)}
           tint={tint}
           onPress={id === 'share' ? handleShare : () => onOpenPanel(id)}

@@ -3,7 +3,7 @@ export type { AppLogoProps } from './components';
 
 export {
   CardThemeProvider,
-  ContentWidth,
+  EmptyState,
   FeltBackground,
   LobbyBackground,
   PlayingCard,
@@ -15,14 +15,18 @@ export {
 } from './components';
 
 export type {
-  ContentWidthProps,
+  EmptyStateProps,
   FeltBackgroundProps,
   LobbyBackgroundProps,
   PlayingCardProps,
   SettingsSectionProps,
   StatRowProps,
-  StatusScreenProps
+  StatusScreenProps,
+  StatusScreenTone
 } from './components';
+export { useEnterMotion } from './hooks';
+export type { EnterMotionInput } from './hooks';
+
 export { JokerIcon, LeagueBadge, LoserHat, SuitIcon, TauntIcon } from './icons';
 
 export type {
@@ -63,27 +67,16 @@ export type {
   SpinnerProps
 } from './primitives';
 
-export {
-  CARD_THEMES,
-  DEFAULT_CARD_THEME,
-  getCardTheme,
-  isRedSuit,
-  rankLabel,
-  suitColor,
-  suitSymbol
-} from './theme';
+export { CARD_THEMES, DEFAULT_CARD_THEME, getCardTheme, rankLabel, suitColor } from './theme';
 export type { CardTheme, CardThemeId, SuitPalette } from './theme';
 
 export {
   borderWidth,
   bubbleTailSize,
   card,
-  CARD_SCALE,
   colors,
-  CONFIRM_MAX_WIDTH,
-  CONTENT_MAX_WIDTH,
+  CORNER_BUTTON_CLEARANCE,
   CORNER_BUTTON_SIZE,
-  DESKTOP_MAX_WIDTH,
   duration,
   fontFamily,
   fontSize,
@@ -101,8 +94,6 @@ export {
   seatRowGap,
   shadows,
   spacing,
-  surfaceGradient,
-  TABLE_MAX_WIDTH,
-  TOAST_MAX_WIDTH
+  surfaceGradient
 } from './theme';
-export type { CardScaleName, Colors } from './theme';
+export type { Colors } from './theme';

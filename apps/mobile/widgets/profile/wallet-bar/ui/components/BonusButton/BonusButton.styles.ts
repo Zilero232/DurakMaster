@@ -28,8 +28,7 @@ export const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,
     backgroundColor: colors.backgroundBottom,
-    boxShadow: 'none',
-    elevation: 0
+    boxShadow: 'none'
   },
 
   waitingLabel: {

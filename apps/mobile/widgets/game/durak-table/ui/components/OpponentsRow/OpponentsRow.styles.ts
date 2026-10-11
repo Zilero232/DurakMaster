@@ -1,8 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { CORNER_BUTTON_SIZE, spacing } from '@/ui-kit';
-
-const LEAVE_CLEARANCE = CORNER_BUTTON_SIZE + spacing[3] * 2;
+import { CORNER_BUTTON_CLEARANCE, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -14,6 +12,6 @@ export const styles = StyleSheet.create({
     paddingTop: spacing[3],
     paddingBottom: spacing[2],
     paddingLeft: spacing[2],
-    paddingRight: LEAVE_CLEARANCE
+    paddingRight: CORNER_BUTTON_CLEARANCE
   }
 });

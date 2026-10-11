@@ -18,7 +18,6 @@ export type GameOutcome = {
 };
 
 export type GameSession = {
-  readonly game: GameId;
   readonly state: GameCoreState;
 
   apply: (userId: string, action: GameAction) => GameErrorCode | null;
@@ -47,14 +46,9 @@ class TypedGameSession<G extends GameId> implements GameSession {
 
   constructor(
     private readonly module: GameModule<G>,
-    initial: StateForGame<G>,
-    private readonly randomInt: (maxExclusive: number) => number
+    initial: StateForGame<G>
   ) {
     this.current = initial;
-  }
-
-  get game(): GameId {
-    return this.module.id;
   }
 
   get state(): GameCoreState {
@@ -155,17 +149,8 @@ class TypedGameSession<G extends GameId> implements GameSession {
     }
 
     this.current = result.state;
-    this.dealAgainIfNeeded();
 
     return null;
-  }
-
-  private dealAgainIfNeeded(): void {
-    const next = this.module.startNextDeal?.(this.current, this.randomInt);
-
-    if (next) {
-      this.current = next;
-    }
   }
 }
 
@@ -178,5 +163,5 @@ export function createGameSession<G extends GameId>(input: CreateSessionInput<G>
     randomInt: input.randomInt
   });
 
-  return new TypedGameSession(module, state, input.randomInt);
+  return new TypedGameSession(module, state);
 }

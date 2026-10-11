@@ -4,8 +4,6 @@ import { useTranslation } from 'react-i18next';
 
 import type { TranslationKey } from '@/shared/i18n';
 
-import { TEST_ID } from '@/shared/config';
-
 import type { CredentialsFieldsProps } from './CredentialsFields.types';
 
 import { FormField } from '../FormField';
@@ -48,7 +46,6 @@ export const CredentialsFields = ({ control, errors, mode, onSubmit }: Credentia
             error={errorText(errors.email?.message)}
             keyboardType='email-address'
             label={t('auth.email')}
-            testID={TEST_ID.auth.email}
             textContentType='emailAddress'
             value={field.value}
             onBlur={field.onBlur}
@@ -68,7 +65,6 @@ export const CredentialsFields = ({ control, errors, mode, onSubmit }: Credentia
             error={errorText(errors.password?.message)}
             label={t('auth.password')}
             returnKeyType='go'
-            testID={TEST_ID.auth.password}
             textContentType={isSignIn ? 'password' : 'newPassword'}
             value={field.value}
             onBlur={field.onBlur}

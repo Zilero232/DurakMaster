@@ -16,7 +16,6 @@ export const OpponentsRow = ({
   mySeat,
   phrases,
   turnSeconds,
-  loserUserId = null,
   onSelectPlayer
 }: OpponentsRowProps) => {
   const { t } = useTranslation();
@@ -42,7 +41,6 @@ export const OpponentsRow = ({
             isAttacker={isDealt && player.seat === view.attackerSeat}
             isDefender={isDealt && player.seat === view.defenderSeat}
             isEmpty={isEmpty}
-            isLoser={player.userId === loserUserId}
             isReady={readyUserIds.has(player.userId)}
             isStatic={isBatterySaver}
             name={meta?.name ?? t('table.seatFree')}
@@ -51,7 +49,7 @@ export const OpponentsRow = ({
             seatCount={opponents.length}
             turnDeadline={view.turnDeadline}
             turnSeconds={turnSeconds}
-            onPress={() => onSelectPlayer?.(player.userId)}
+            onPress={() => onSelectPlayer(player.userId)}
           />
         );
       })}

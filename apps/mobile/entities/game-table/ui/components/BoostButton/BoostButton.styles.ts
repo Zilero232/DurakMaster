@@ -58,7 +58,6 @@ export const styles = StyleSheet.create({
     zIndex: 20,
     gap: 2,
     width: HINT_MAX_WIDTH,
-    maxWidth: '100%',
     padding: spacing[3],
     borderWidth: borderWidth.hairline,
     borderColor: colors.border,

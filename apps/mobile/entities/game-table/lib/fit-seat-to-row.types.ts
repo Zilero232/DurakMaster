@@ -1,11 +1,11 @@
 export type SeatMetrics = {
   avatar: number;
   ring: number;
-  hat: number;
   back: number;
   label: number;
-  minWidth: number;
-  maxWidth: number;
+
+  /** Every seat takes the same slot, so a bot, a player and an empty chair never shift the row. */
+  width: number;
 };
 
 export type SeatBase = Omit<SeatMetrics, 'back'>;

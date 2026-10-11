@@ -49,6 +49,10 @@ A card can be beaten with:
 After the first card, everyone except the defender may throw in. Priority belongs
 to the main attacker; the others join in clockwise.
 
+A table may narrow this with `throwInScope: 'neighbors'`: only the defender's two
+active neighbours throw in, skipping players who are already out. The default is
+`'all'`, the rule above.
+
 **Rank restriction:** you may throw in only a card whose rank is **already on the
 table** — either among the attacking cards **or among the cards the defender beat
 with**.
@@ -176,6 +180,24 @@ very high rank — it sits outside the rank order entirely.
 > **Pitfall.** Do not model a joker as `rank: 'joker'` inside the existing rank
 > list. Rank comparison walks `RANKS` by position, and an entry that must never
 > be compared has no position. Model it as a separate kind of card.
+
+> **Pitfall.** Do not model a joker as an ordinary card with a flag on top
+> (`{ rank: 'ace', suit: 'spades', joker: 'red' }`). Every rank or suit check
+> that forgets the flag then treats the joker as the ace of spades, and nothing
+> warns about it.
+
+**Chosen:** `Card` is a union keyed on `kind` (`packages/schemas`, `card.ts`):
+
+```ts
+type PlainCard = { kind: 'plain'; rank: Rank; suit: Suit };
+type JokerCard = { kind: 'joker'; color: JokerColor };
+type Card = PlainCard | JokerCard;
+```
+
+A joker has no `rank` or `suit` field at all, so reading either before
+`isJoker(card)` has ruled the joker out is a type error. `trumpCard` is typed as
+a `PlainCard` — see §9.5. `cardKey` and `cardsEqual` in `game-core` compare cards
+of either kind.
 
 ### 9.2 In defence
 

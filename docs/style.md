@@ -770,7 +770,57 @@ A ternary for returning a value is still OK (it is an expression, not a statemen
 - Types from React are **named imports**: `import type { ComponentProps, ReactNode } from 'react'`. **`import type * as React from 'react'` is forbidden.**
 - Accessibility is not optional: every pressable element has an `accessibilityRole` and, if it contains only an icon, an `accessibilityLabel`. State — `accessibilityState={{ disabled, selected }}`.
 
-### 9.1 Hook order
+### 10.1 A component renders; a hook decides
+
+**A component's body holds no logic beyond choosing what to render.** Anything that computes,
+subscribes, schedules, measures or remembers goes into a hook in the slice's `model/hooks/`, and
+the component calls that hook and lays the result out.
+
+What has to leave a component:
+
+- `useEffect` bodies, timers, subscriptions, listeners.
+- Derived state assembled from several sources — the hook returns it ready to render.
+- Imperative work: measuring, animating by hand, talking to a player or a socket.
+- Branching over server state that decides *what happens*, not *what is drawn*.
+
+What stays: JSX, the props it hands down, and the small ternaries and `&&` that pick between
+already-prepared values.
+
+```tsx
+// ✗ BAD — the component owns the timer, the refs and the rules
+export const TableToast = ({ view }: TableToastProps) => {
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const [text, setText] = useState('');
+
+  useEffect(() => {
+    if (view.phase !== 'playing') {
+      return;
+    }
+
+    setText(view.isMyTurn ? 'Your turn' : 'Waiting');
+    timerRef.current = setTimeout(() => setText(''), HINT_LIFETIME_MS);
+
+    return () => clearTimeout(timerRef.current);
+  }, [view]);
+
+  return text ? <Text>{text}</Text> : null;
+};
+
+// ✓ OK — the hook decides, the component renders
+export const TableToast = ({ view }: TableToastProps) => {
+  const text = useTableHint({ view });
+
+  return text ? <Text>{text}</Text> : null;
+};
+```
+
+A hook that exists to serve one component lives next to it under that slice's `model/hooks/`, in
+its own folder per §2.2 — not inside `components/`, and not inline in the file.
+
+Two things this rule does not ask for: a hook per prop, and a hook that only forwards a single
+`useState`. Extract when there is logic to move, not to hit a shape.
+
+### 10.2 Hook order
 
 The linter does not sort hooks — we follow it by hand + catch it at review.
 
@@ -820,7 +870,7 @@ export const AppShell = () => {
 
 **Custom hooks** — by the semantics of their contents: `useSession` (a query) → the Data group; `useSettingsStore` (a store) → Store; `useTableSounds` (an effect) → Effects.
 
-### 9.2 Hook / Effect dependencies
+### 10.3 Hook / Effect dependencies
 
 The `deps` array of `useEffect` contains only what **should actually trigger a re-run** of the effect. If we know the effect needs a single `tableId` — we do not add `table`, `router` or mutation objects "to keep the linter quiet".
 
@@ -843,7 +893,7 @@ useEffect(() => {
 }, [tableId]);
 ```
 
-### 9.3 Destructuring query / mutation results
+### 10.4 Destructuring query / mutation results
 
 The result of `useQuery` / a custom query hook is **destructured right away**; we do not carry the object around and do not reach through the dot:
 
@@ -860,7 +910,7 @@ const { data: session, isPending } = useSession();
 
 **Exception — `useMutation`.** The mutation object is kept whole: both the fields (`isPending`, `isError`, `error`, `data`) and the methods (`mutateAsync`, `reset`) are needed.
 
-### 9.4 Destructure wherever it simplifies
+### 10.5 Destructure wherever it simplifies
 
 The principle: **destructure as much as possible** — for readability. If a value is accessed through the dot 2+ times, or arrives nested, pull it out into a local variable.
 
@@ -996,7 +1046,7 @@ Incoming messages are validated by `serverMessageSchema` from `@durak-master/sch
 - **Literal colors and spacings in components are forbidden.** `backgroundColor: '#436787'` instead of `colors.background` turns a change of appearance into a project-wide search.
 - Colors are written in hex: RN does not understand `oklch()`, and the values go into native views, where interpolation has to work without parsing CSS functions.
 - Fonts — the `fontFamily` keys match the names the fonts are loaded under in `views/root-layout` (`config/fonts.ts`, `useFonts`). Weight is set by **choosing the family** (`fontFamily.sansBold`), not by `fontWeight` alone: on Android, `fontWeight` without a matching font file is ignored.
-- Shadows — the `shadows.*` presets: they gather the incompatible iOS (`shadow*`) and Android (`elevation`) fields into a single object.
+- Shadows — the `shadows.*` presets, built on `boxShadow`, which the new architecture draws the same way on iOS and Android. Do not add `elevation` next to it: Android would draw both.
 - Screen-dependent sizes are in `ui-kit/theme/layout.ts` (`getCardSize`, `cardSize`, `screen`, `MAX_FAN_ANGLE`). RN has no breakpoints, so the card size is computed as a fraction of the screen width with a clamp at the top and the bottom.
 - There is no dark theme — the app is single-toned by design, `colors` is one set. Only the deck's appearance switches: `CARD_THEMES` / `getCardTheme` in `ui-kit/theme/card-themes.ts`, and the selected theme is distributed through `CardThemeProvider` (§2.2).
 
@@ -1336,7 +1386,7 @@ bun typecheck    # types across all workspaces
 bun verify       # typecheck + lint + format:check in one command
 ```
 
-`bun fix` does not fix: blank lines (section 13), hook order (section 9.1), FSD import boundaries (→ [`docs/fsd.md`](./fsd.md)), translation completeness (section 18), explanatory comments (section 20).
+`bun fix` does not fix: blank lines (section 13), logic left in a component (section 10.1), hook order (section 10.2), FSD import boundaries (→ [`docs/fsd.md`](./fsd.md)), translation completeness (section 18), explanatory comments (section 20).
 
 ## 22. Commit messages
 
@@ -1350,7 +1400,7 @@ in the `commit-msg` hook and re-checked on every pull request.
 `type` — `feat`, `fix`, `refactor`, `docs`, `chore`, `test`, `build`, `ci`, `perf`, `style`, `revert`.
 
 `scope` is optional, and when given must be one of: `mobile`, `server`, `schemas`,
-`game-core`, `platform`, `ci`, `docs`, `deps`. An unknown scope fails the hook —
+`game-core`, `ci`, `docs`, `deps`. An unknown scope fails the hook —
 add it to `commitlint.config.mjs` if a new one is genuinely needed.
 
 The subject is lowercase, without a trailing period, at most 100 characters.

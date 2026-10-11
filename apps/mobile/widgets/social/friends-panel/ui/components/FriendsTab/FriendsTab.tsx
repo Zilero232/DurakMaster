@@ -2,13 +2,14 @@ import { Users } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
+import { FriendRow } from '@/entities/social';
+import { EmptyState } from '@/ui-kit';
+
 import type { FriendsTabProps } from './FriendsTab.types';
 
-import { EmptyState } from '../EmptyState';
-import { FriendRow } from '../FriendRow';
 import { styles } from './FriendsTab.styles';
 
-export const FriendsTab = ({ friends, canInvite, onAction, onFind }: FriendsTabProps) => {
+export const FriendsTab = ({ friends, onAction, onFind }: FriendsTabProps) => {
   const { t } = useTranslation();
 
   if (friends.length === 0) {
@@ -27,7 +28,7 @@ export const FriendsTab = ({ friends, canInvite, onAction, onFind }: FriendsTabP
       {friends.map((friend) => (
         <FriendRow
           key={friend.profile.userId}
-          actions={canInvite ? ['invite', 'remove'] : ['remove']}
+          actions={['remove']}
           isOnline={friend.profile.isOnline}
           profile={friend.profile}
           tableId={friend.tableId}

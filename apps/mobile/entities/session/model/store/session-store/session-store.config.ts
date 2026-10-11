@@ -2,7 +2,7 @@ import type { SessionState } from './session-store.types';
 
 export const INITIAL_STATE: SessionState = {
   status: 'idle',
-  isLobbySubscribed: false,
+  isSigningOut: false,
   joiningTableId: null,
   isJoiningTable: false,
   tables: [],

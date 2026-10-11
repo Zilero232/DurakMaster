@@ -6,7 +6,7 @@ import { Toaster } from 'sonner-native';
 
 import { SessionNotices } from '@/entities/session';
 import { SocialNotices } from '@/entities/social';
-import { useLayout } from '@/shared/model/layout';
+import { InviteNotice } from '@/features/social/answer-invite';
 
 import { useAppBootstrap } from '../model';
 import { AppProviders } from './components';
@@ -14,8 +14,6 @@ import { rootLayoutStyles } from './RootLayout.styles';
 
 export const RootLayout = () => {
   const isReady = useAppBootstrap();
-
-  const { isDesktop } = useLayout();
 
   const insets = useSafeAreaInsets();
 
@@ -39,13 +37,12 @@ export const RootLayout = () => {
 
       <SocialNotices />
 
+      <InviteNotice />
+
       <Toaster
-        style={StyleSheet.flatten([
-          isDesktop ? rootLayoutStyles.toastDesktop : rootLayoutStyles.toast,
-          { marginTop: insets.top }
-        ])}
         duration={3200}
         position='top-center'
+        style={StyleSheet.flatten([rootLayoutStyles.toast, { marginTop: insets.top }])}
         theme='dark'
       />
     </AppProviders>

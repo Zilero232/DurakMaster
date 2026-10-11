@@ -21,6 +21,10 @@ function cardCost(card: Card, trump: Suit): number {
 }
 
 function isWorthDefending(state: DurakState, attack: Card, defense: Card): boolean {
+  if (isJoker(attack)) {
+    return false;
+  }
+
   if (isJoker(defense)) {
     return state.talon.length <= ENDGAME_TALON || attack.suit === state.trump;
   }
@@ -70,7 +74,9 @@ function decideDefense(state: DurakState, hand: Card[]): DurakAction {
 }
 
 function isTrumpWorthThrowingIn(state: DurakState, card: Card): boolean {
-  if (card.suit !== state.trump) {
+  const isPrecious = isJoker(card) || card.suit === state.trump;
+
+  if (!isPrecious) {
     return true;
   }
 

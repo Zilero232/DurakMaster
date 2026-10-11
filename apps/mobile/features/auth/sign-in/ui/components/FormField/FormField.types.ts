@@ -18,6 +18,5 @@ export type FormFieldProps = {
   | 'onSubmitEditing'
   | 'placeholder'
   | 'returnKeyType'
-  | 'testID'
   | 'textContentType'
 >;

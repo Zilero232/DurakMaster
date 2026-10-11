@@ -6,7 +6,6 @@
     "join": "Сесть",
     "full": "Занят",
     "inProgress": "Идёт игра",
-    "playersCount": "{{current}}/{{max}}",
     "privateTable": "Приватный стол",
     "premiumPlayer": "Премиум-игрок",
     "emptySeats": "Стол свободен",
@@ -14,7 +13,6 @@
     "offline": "Нет связи с сервером",
     "offlineHint": "Проверьте подключение — столы появятся, как только связь восстановится",
     "createFirst": "Создать стол",
-    "allGames": "Все игры",
     "onlyJoinable": "Только свободные",
     "tableCount_one": "{{count}} стол",
     "tableCount_few": "{{count}} стола",
@@ -33,8 +31,6 @@
     "title": "Создать игру",
     "yourBet": "Ваша ставка",
     "betLabel": "Размер ставки",
-    "customBet": "Своя ставка",
-    "betRange": "От {{min}} до {{max}}",
     "players": "Игроки",
     "playersFixed_one": "Только {{count}} игрок",
     "playersFixed_few": "Только {{count}} игрока",
@@ -51,10 +47,6 @@
     "passwordRequired": "Введите пароль, иначе к столу никто не сядет"
   },
   "games": {
-    "pick": "Игра",
-    "soon": "скоро",
-    "comingSoon": "{{game}} — скоро",
-    "comingSoonHint": "Эта игра ещё в работе. Пока сыграйте в дурака — остальные столы откроются позже.",
     "durak": {
       "name": "Дурак",
       "tagline": "избавьтесь от карт первым",
@@ -89,80 +81,6 @@
         "lowestTrumpHint": "ходит младший козырь",
         "random": "Случайно"
       }
-    },
-    "burkozel": {
-      "name": "Буркозёл",
-      "tagline": "берите взятки и считайте очки",
-      "penaltyLimit": "Штрафных очков",
-      "shokha": "Шоха",
-      "shokhaHint": "четыре козыря забирают партию",
-      "combinations": "Комбинации",
-      "combinationsHint": "бура, молодка и другие",
-      "teamMode": {
-        "title": "Состав",
-        "solo": "Каждый сам",
-        "pairs": "Парами",
-        "pairsHint": "двое на двое"
-      },
-      "yourPoints": "Ваши очки",
-      "playCards": "Сыграть ({{total}})"
-    },
-    "kozel": {
-      "name": "Козёл",
-      "tagline": "играйте парами до шести козлов",
-      "targetPairs": "Партий до победы",
-      "shamok": "Шамок",
-      "shamokHint": "7♣ — старший козырь",
-      "aceRestriction": "Придержать туза",
-      "aceRestrictionHint": "нельзя сбросить туза несыгранной масти",
-      "firstLead": {
-        "title": "Первый ход",
-        "lowestTrump": "Младший козырь",
-        "lowestTrumpHint": "ходит владелец 8♣",
-        "leftOfDealer": "Слева от сдающего",
-        "dealer": "Сдающий"
-      },
-      "yourTeam": "Ваша пара",
-      "opponents": "Соперники",
-      "chooseLeaderTitle": "Кто заходит?",
-      "chooseLeaderMe": "Я",
-      "chooseLeaderPartner": "Напарник",
-      "chooseLeaderWait": "Соперники выбирают, кто заходит"
-    },
-    "tysyacha": {
-      "name": "Тысяча",
-      "tagline": "торгуйтесь и наберите 1000",
-      "winningScore": "Играем до",
-      "bidStep": "Шаг торговли",
-      "marriageOnFirstTrick": "Марьяж сразу",
-      "marriageOnFirstTrickHint": "объявлять с первой взятки",
-      "dumpTruck": "Самосвал",
-      "dumpTruckHint": "штраф за проваленный контракт вдвое",
-      "discardVisibility": {
-        "title": "Прикуп",
-        "closed": "Закрытый",
-        "closedHint": "прикуп видит только сдающий",
-        "open": "Открытый",
-        "openHint": "прикуп показывают всем"
-      },
-      "skipBonus": {
-        "title": "Бонус пропускающему",
-        "none": "Без бонуса",
-        "aces": "За тузы",
-        "acesHint": "по 40 за туза в прикупе",
-        "fixed30": "Фикс. 30"
-      },
-      "yourScore": "Ваши очки",
-      "bid": "Ставка",
-      "pass": "Пас",
-      "bidding": "Торговля",
-      "noBids": "Ставок пока нет",
-      "currentBid": "Текущая ставка: {{value}}",
-      "raiseTo": "Поднять до {{value}}",
-      "discarding": "Прикуп",
-      "giveCards": "Раздайте по карте соперникам",
-      "waitingDeclarer": "Заказавший разбирает прикуп",
-      "dealOver": "Сдача сыграна"
     }
   }
 }

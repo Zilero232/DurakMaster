@@ -12,14 +12,6 @@ export type GameAction = z.infer<typeof gameActionSchema>;
 
 export type ActionForGame<G extends GameId> = Extract<GameAction, { game: G }>;
 
-export const playerActionSchema = z.object({
-  userId: z.string(),
-  action: gameActionSchema,
-  expectedVersion: z.number().int().nonnegative()
-});
-
-export type PlayerAction = z.infer<typeof playerActionSchema>;
-
 export const gameErrorCodeSchema = z.enum([
   'NOT_YOUR_TURN',
   'NOT_IN_GAME',

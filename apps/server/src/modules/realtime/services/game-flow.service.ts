@@ -34,6 +34,8 @@ export class GameFlowService {
     private readonly broadcast: BroadcastService,
     private readonly profiles: ProfilesService
   ) {
+    this.rooms.onEvent((roomId, event) => this.handleRoomEvent(roomId, event));
+
     this.profiles.onIdentityChanged((userId, identity) => {
       this.refreshSeatedProfile(userId, identity);
     });
@@ -65,7 +67,7 @@ export class GameFlowService {
     }
   }
 
-  handleRoomEvent(roomId: string, event: RoomEvent): void {
+  private async handleRoomEvent(roomId: string, event: RoomEvent): Promise<void> {
     switch (event.type) {
       case 'state-changed':
         this.broadcast.gameState(roomId);
@@ -74,23 +76,19 @@ export class GameFlowService {
         break;
 
       case 'finished':
-        void this.finish(roomId, event).catch((error: unknown) => {
+        await this.finish(roomId, event).catch((error: unknown) => {
           this.logger.error(`Failed to settle game in room ${roomId}`, error);
         });
         break;
 
       case 'stake-released':
-        void this.refundStake(roomId, event.userId).catch((error: unknown) => {
+        await this.profiles.releaseStake(event.userId, event.bet).catch((error: unknown) => {
           this.logger.error(`Failed to release the stake for ${event.userId}`, error);
         });
         break;
 
       case 'idle-removed':
-        void this.releaseIdlePlayers(roomId, event.userIds, event.refundUserIds).catch(
-          (error: unknown) => {
-            this.logger.error(`Failed to release idle players in room ${roomId}`, error);
-          }
-        );
+        this.sendBackToLobby(roomId, event.userIds);
         break;
 
       case 'phrase':
@@ -123,30 +121,9 @@ export class GameFlowService {
     this.broadcast.lobby();
   }
 
-  private async refundStake(roomId: string, userId: string): Promise<void> {
-    const bet = this.rooms.getRoom(roomId)?.settings.bet ?? 0;
-
-    await this.profiles.releaseStake(userId, bet);
-  }
-
-  private async releaseIdlePlayers(
-    roomId: string,
-    userIds: string[],
-    refundUserIds: string[]
-  ): Promise<void> {
-    const bet = this.rooms.getRoom(roomId)?.settings.bet ?? 0;
-    const owed = new Set(refundUserIds);
-
+  private sendBackToLobby(roomId: string, userIds: string[]): void {
     for (const userId of userIds) {
-      if (owed.has(userId)) {
-        await this.profiles.releaseStake(userId, bet);
-      }
-
-      const socket = this.registry.get(userId);
-
-      if (socket) {
-        this.registry.send(socket, { type: 'table:left' });
-      }
+      this.registry.sendTo(userId, { type: 'table:left' });
     }
 
     this.broadcast.table(roomId);
@@ -191,30 +168,35 @@ export class GameFlowService {
 
     const shareOf = new Map(shares.map((share) => [share.userId, share.amount]));
 
-    const played: FinishedPlayer[] = [];
-
-    for (const member of humans) {
+    const results = humans.map((member) => {
       const { userId } = member.profile;
       const isLoser = userId === loserUserId;
       const isWinner = !isLoser && !isDraw;
       const share = shareOf.get(userId) ?? 0;
 
-      const creditsDelta = isDraw ? 0 : isLoser ? -bet : share;
-      const payout = isDraw ? bet : isLoser ? 0 : bet + share;
-
-      const ratingDelta = isWinner ? computeRatingGain(share, member.profile.rating) : 0;
-
-      await this.sessions.applyGameResult({
+      return {
         userId,
-        creditsDelta: payout,
+        seat: member.seat,
+        isLoser,
+        isWinner,
+        creditsDelta: isDraw ? 0 : isLoser ? -bet : share,
+        payout: isDraw ? bet : isLoser ? 0 : bet + share,
+        ratingDelta: isWinner ? computeRatingGain(share, member.profile.rating) : 0
+      };
+    });
+
+    await this.sessions.applyGameResults(
+      results.map(({ userId, payout, ratingDelta, isWinner }) => ({
+        userId,
+        payout,
         ratingDelta,
         isWinner,
         isDraw
-      });
+      }))
+    );
 
-      played.push({ userId, seat: member.seat, creditsDelta, ratingDelta, isLoser });
-
-      await this.notifyPlayer(false, userId, {
+    for (const { userId, isWinner, creditsDelta, ratingDelta } of results) {
+      await this.notifyPlayer(userId, {
         isFlawless: !facts.tookUserIds.includes(userId),
         tableSize: members.length,
         loserUserId,
@@ -224,6 +206,16 @@ export class GameFlowService {
         ratingDelta
       });
     }
+
+    const played: FinishedPlayer[] = results.map(
+      ({ userId, seat, creditsDelta, ratingDelta, isLoser }) => ({
+        userId,
+        seat,
+        creditsDelta,
+        ratingDelta,
+        isLoser
+      })
+    );
 
     void this.history
       .recordFinishedGame({
@@ -238,11 +230,7 @@ export class GameFlowService {
       });
 
     if (removedUserId) {
-      const socket = this.registry.get(removedUserId);
-
-      if (socket) {
-        this.registry.send(socket, { type: 'table:left' });
-      }
+      this.registry.sendTo(removedUserId, { type: 'table:left' });
     }
 
     this.broadcast.gameState(roomId);
@@ -251,7 +239,6 @@ export class GameFlowService {
   }
 
   private async notifyPlayer(
-    isBot: boolean,
     userId: string,
     outcome: {
       isFlawless: boolean;
@@ -265,38 +252,30 @@ export class GameFlowService {
   ): Promise<void> {
     const { loserUserId, isDraw, isWinner, creditsDelta, ratingDelta } = outcome;
 
-    const unlocked = isBot
-      ? []
-      : await this.achievements.recordGame(userId, {
-          isWin: isWinner,
-          isFlawless: outcome.isFlawless,
-          tableSize: outcome.tableSize
-        });
+    const unlocked = await this.achievements.recordGame(userId, {
+      isWin: isWinner,
+      isFlawless: outcome.isFlawless,
+      tableSize: outcome.tableSize
+    });
 
     const socket = this.registry.get(userId);
     const result = { loserUserId, isDraw, creditsDelta, ratingDelta };
 
     if (!socket) {
-      if (!isBot) {
-        if (this.pendingResults.size >= PENDING_RESULTS_LIMIT) {
-          const oldest = this.pendingResults.keys().next().value;
+      if (this.pendingResults.size >= PENDING_RESULTS_LIMIT) {
+        const oldest = this.pendingResults.keys().next().value;
 
-          if (oldest !== undefined) {
-            this.pendingResults.delete(oldest);
-          }
+        if (oldest !== undefined) {
+          this.pendingResults.delete(oldest);
         }
-
-        this.pendingResults.set(userId, result);
       }
+
+      this.pendingResults.set(userId, result);
 
       return;
     }
 
     this.registry.send(socket, { type: 'game:finished', payload: result });
-
-    if (isBot) {
-      return;
-    }
 
     if (unlocked.length > 0) {
       this.registry.send(socket, { type: 'achievements:unlocked', payload: { ids: unlocked } });
@@ -304,7 +283,7 @@ export class GameFlowService {
 
     this.registry.send(socket, {
       type: 'profile:updated',
-      payload: { profile: await this.sessions.reload(userId) }
+      payload: { profile: await this.sessions.load(userId) }
     });
   }
 

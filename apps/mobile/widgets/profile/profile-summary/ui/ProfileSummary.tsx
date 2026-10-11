@@ -3,6 +3,7 @@ import { ChevronRight, Flame, Percent, TrendingUp, Trophy } from 'lucide-react-n
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
+import { getWinRate } from '@/shared/lib/stats';
 import { colors, iconSize, LeagueBadge, Panel } from '@/ui-kit';
 
 import type { ProfileSummaryProps } from './ProfileSummary.types';
@@ -15,8 +16,7 @@ export const ProfileSummary = ({ profile, onOpenStats }: ProfileSummaryProps) =>
 
   const rank = getRankInfo(profile.rating);
 
-  const { gamesPlayed, gamesWon } = profile;
-  const winRate = gamesPlayed > 0 ? Math.round((gamesWon / gamesPlayed) * 100) : 0;
+  const winRate = getWinRate(profile);
 
   return (
     <Panel style={styles.root}>
@@ -54,14 +54,14 @@ export const ProfileSummary = ({ profile, onOpenStats }: ProfileSummaryProps) =>
           icon={Trophy}
           label={t('stats.wins')}
           tint={colors.gold}
-          value={String(gamesWon)}
+          value={String(profile.gamesWon)}
         />
 
         <SummaryTile
           icon={Percent}
           label={t('stats.winRate')}
           tint={colors.success}
-          value={`${winRate}%`}
+          value={`${Math.round(winRate * 100)}%`}
         />
 
         <SummaryTile

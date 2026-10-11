@@ -1,8 +1,8 @@
 import type { PlayerView } from '@durak-master/schemas';
 
 export type SeatCall = {
+  kind: 'pass' | 'take';
   text: string;
-  sentAt: number;
 };
 
 export type SeatCallLabels = {
@@ -24,12 +24,9 @@ export const seatCalls = ({ view, labels }: SeatCallsInput): Record<string, Seat
 
   for (const player of view.players) {
     if (view.isTaking && player.seat === view.defenderSeat) {
-      calls[player.userId] = { text: labels.take, sentAt: view.defenderSeat };
+      calls[player.userId] = { kind: 'take', text: labels.take };
     } else if (view.passedSeats.includes(player.seat)) {
-      calls[player.userId] = {
-        text: labels.pass,
-        sentAt: view.passedSeats.indexOf(player.seat)
-      };
+      calls[player.userId] = { kind: 'pass', text: labels.pass };
     }
   }
 

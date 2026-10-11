@@ -1,4 +1,4 @@
-import type { GameCoreState, TableSettings } from '@durak-master/schemas';
+import type { TableSettings } from '@durak-master/schemas';
 
 import { Injectable, Logger } from '@nestjs/common';
 
@@ -79,22 +79,11 @@ export class GameHistoryService {
     }
   }
 
-  async saveSnapshot(tableId: string, state: GameCoreState): Promise<void> {
-    try {
-      await this.prisma.game.updateMany({
-        where: { tableId, finishedAt: null },
-        data: { snapshot: state as object, version: state.version }
-      });
-    } catch (error) {
-      this.logger.error(`Failed to snapshot table ${tableId}`, error);
-    }
-  }
-
   async closeTable(tableId: string): Promise<void> {
     try {
       await this.prisma.gameTable.updateMany({
         where: { id: tableId },
-        data: { status: 'FINISHED', nodeId: null }
+        data: { status: 'FINISHED' }
       });
     } catch (error) {
       this.logger.error(`Failed to close table ${tableId}`, error);

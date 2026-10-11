@@ -8,11 +8,15 @@ model AchievementProgress {
   userId        String
   achievementId String
 
-  /** Raw counter — games played, wins in a row, and so on. */
+  /**
+   * Raw counter — games played, wins in a row, and so on.
+   */
   progress Int @default(0)
 
   unlockedAt DateTime?
-  /** Set once the coins have been paid out, so a reward cannot be claimed twice. */
+  /**
+   * Set once the coins have been paid out, so a reward cannot be claimed twice.
+   */
   claimedAt  DateTime?
 
   createdAt DateTime @default(now())

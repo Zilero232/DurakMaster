@@ -1,9 +1,8 @@
 import { haptic } from '../haptics';
-import { playSound, unlockSound } from '../sound';
+import { playSound } from '../sound';
 
 export const PRESS_FEEDBACK = {
   onPress: () => {
-    unlockSound();
     playSound('click');
     haptic('tap');
   }

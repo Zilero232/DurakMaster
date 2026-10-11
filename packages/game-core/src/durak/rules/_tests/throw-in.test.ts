@@ -23,14 +23,17 @@ const stateWith = (scope: ThrowInScope, seatCount = 4, outSeats: number[] = []):
 
 describe('allowedThrowInRanks', () => {
   it('opens the rank of an attacking card', () => {
-    expect(allowedThrowInRanks([pair({ rank: 'nine', suit: 'spades' })])).toEqual(
+    expect(allowedThrowInRanks([pair({ kind: 'plain', rank: 'nine', suit: 'spades' })])).toEqual(
       new Set(['nine'])
     );
   });
 
   it('also opens the rank the defender beat with — the rule most often missed', () => {
     const ranks = allowedThrowInRanks([
-      pair({ rank: 'nine', suit: 'spades' }, { rank: 'king', suit: 'spades' })
+      pair(
+        { kind: 'plain', rank: 'nine', suit: 'spades' },
+        { kind: 'plain', rank: 'king', suit: 'spades' }
+      )
     ]);
 
     expect(ranks).toEqual(new Set(['nine', 'king']));
@@ -38,8 +41,11 @@ describe('allowedThrowInRanks', () => {
 
   it('collects ranks across every pair on the table', () => {
     const ranks = allowedThrowInRanks([
-      pair({ rank: 'nine', suit: 'spades' }, { rank: 'king', suit: 'spades' }),
-      pair({ rank: 'six', suit: 'clubs' })
+      pair(
+        { kind: 'plain', rank: 'nine', suit: 'spades' },
+        { kind: 'plain', rank: 'king', suit: 'spades' }
+      ),
+      pair({ kind: 'plain', rank: 'six', suit: 'clubs' })
     ]);
 
     expect(ranks).toEqual(new Set(['nine', 'king', 'six']));
@@ -78,6 +84,13 @@ describe('canThrowIn', () => {
 
     expect(canThrowIn(3, state)).toBe(true);
     expect(canThrowIn(1, state)).toBe(true);
+  });
+
+  it('skips players who are out when finding the defender’s neighbours', () => {
+    const state = stateWith('neighbors', 5, [2]);
+
+    expect(canThrowIn(3, state)).toBe(true);
+    expect(canThrowIn(4, state)).toBe(false);
   });
 
   it('refuses a seat that is not at the table', () => {

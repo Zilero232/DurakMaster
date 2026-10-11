@@ -8,7 +8,6 @@ export const STORAGE_VERSION = 2;
 
 export const INITIAL_STATE: SettingsState = {
   cardTheme: DEFAULT_CARD_THEME,
-  cardScale: 'normal',
   volume: 0.7,
   isHapticsEnabled: true,
   showHints: true,

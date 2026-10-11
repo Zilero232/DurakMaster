@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, radii, shadows, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, opacity, radii, shadows, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
   },
 
   pressed: {
-    opacity: 0.85,
+    opacity: opacity.muted,
     transform: [{ scale: 0.97 }]
   },
 

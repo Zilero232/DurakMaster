@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next';
 
 import { SettingsSection } from '@/ui-kit';
 
-import type { DurakSettingsProps } from './DurakSettings.types';
+import type { DurakModesSectionProps, DurakSettingsProps } from './DurakSettings.types';
 
 import { ModesGrid } from '../ModesGrid';
 import { OptionRow } from '../OptionRow';
-import { DURAK_CHOICE_FIELDS, DURAK_TOGGLE_FIELDS } from './DurakModes.config';
+import { DURAK_CHOICE_FIELDS, durakToggleFields } from './DurakModes.config';
 import { DECK_SIZE_ITEMS } from './DurakSettings.config';
 
 export const DurakDeckSection = ({ control }: DurakSettingsProps) => {
@@ -27,12 +27,16 @@ export const DurakDeckSection = ({ control }: DurakSettingsProps) => {
   );
 };
 
-export const DurakModesSection = ({ control }: DurakSettingsProps) => {
+export const DurakModesSection = ({ control, mode }: DurakModesSectionProps) => {
   const { t } = useTranslation();
 
   return (
     <SettingsSection icon={Settings2} title={t('create.modes')}>
-      <ModesGrid choices={DURAK_CHOICE_FIELDS} control={control} toggles={DURAK_TOGGLE_FIELDS} />
+      <ModesGrid
+        choices={DURAK_CHOICE_FIELDS}
+        control={control}
+        toggles={durakToggleFields(mode)}
+      />
     </SettingsSection>
   );
 };

@@ -1,17 +1,4 @@
-import type { Rank, Suit } from '@durak-master/schemas';
-
-const RED_SUITS = new Set<Suit>(['hearts', 'diamonds']);
-
-export const isRedSuit = (suit: Suit): boolean => RED_SUITS.has(suit);
-
-const SUIT_SYMBOL: Record<Suit, string> = {
-  spades: '♠',
-  hearts: '♥',
-  diamonds: '♦',
-  clubs: '♣'
-};
-
-export const suitSymbol = (suit: Suit): string => SUIT_SYMBOL[suit];
+import type { Rank } from '@durak-master/schemas';
 
 const RANK_LABEL: Record<Rank, string> = {
   two: '2',

@@ -8,6 +8,7 @@ import {
   colors,
   fontFamily,
   fontSize,
+  opacity,
   radii,
   shadows,
   spacing,
@@ -17,6 +18,10 @@ import {
 type StylePair = {
   container: ViewStyle;
   label: TextStyle;
+};
+
+type SizeStyles = StylePair & {
+  iconOnly: ViewStyle;
 };
 
 export const VARIANT_GRADIENT: Record<
@@ -30,6 +35,14 @@ export const VARIANT_GRADIENT: Record<
 };
 
 export const styles = StyleSheet.create({
+  content: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing[2],
+    minWidth: 0
+  },
+
   root: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -66,24 +79,22 @@ export const styles = StyleSheet.create({
   },
 
   pressed: {
-    opacity: 0.85,
+    opacity: opacity.muted,
     transform: [{ scale: 0.97 }]
   },
 
   disabled: {
-    opacity: 0.45,
-    boxShadow: 'none',
-    elevation: 0
+    opacity: opacity.disabled,
+    boxShadow: 'none'
   },
 
   label: {
-    fontWeight: '700',
     fontFamily: fontFamily.sansBold,
     textAlign: 'center'
   }
 });
 
-export const VARIANT_SPINNER_COLOR: Record<ButtonVariant, string> = {
+export const VARIANT_FOREGROUND: Record<ButtonVariant, string> = {
   primary: colors.primaryForeground,
   secondary: colors.foreground,
   ghost: colors.onFelt,
@@ -109,17 +120,20 @@ export const VARIANT_STYLES: Record<ButtonVariant, StylePair> = {
   }
 };
 
-export const SIZE_STYLES: Record<ButtonSize, StylePair> = {
+export const SIZE_STYLES: Record<ButtonSize, SizeStyles> = {
   sm: {
     container: { minHeight: 36, paddingHorizontal: spacing[3] },
+    iconOnly: { width: 36, height: 36, flexGrow: 0, flexShrink: 0 },
     label: { fontSize: fontSize.sm }
   },
   default: {
     container: { minHeight: 48, paddingHorizontal: spacing[4] },
+    iconOnly: { width: 48, height: 48, flexGrow: 0, flexShrink: 0 },
     label: { fontSize: fontSize.md }
   },
   lg: {
     container: { minHeight: 56, paddingHorizontal: spacing[5] },
+    iconOnly: { width: 56, height: 56, flexGrow: 0, flexShrink: 0 },
     label: { fontSize: fontSize.lg }
   }
 };

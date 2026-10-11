@@ -3,12 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { match } from 'ts-pattern';
 
-import { Avatar, colors, LoserHat } from '@/ui-kit';
+import { Avatar, colors } from '@/ui-kit';
 
 import { useSeatContext } from '../../../../../model';
 import { SeatChatter } from '../../../SeatChatter';
 import { SeatTimer } from '../../../SeatTimer';
-import { CHECK_SIZE, EMPTY_ICON_RATIO } from './SeatIdentity.config';
+import {
+  CHECK_SIZE,
+  EMPTY_ICON_RATIO,
+  ROLE_LABEL_RATIO,
+  ROLE_MIN_SCALE
+} from './SeatIdentity.config';
 import { roleRow, styles } from './SeatIdentity.styles';
 
 export const SeatIdentity = () => {
@@ -43,13 +48,6 @@ export const SeatIdentity = () => {
           />
         )}
 
-        {seat.isLoser && (
-          <LoserHat
-            size={seat.metrics.hat}
-            style={[styles.hat, { top: -seat.metrics.hat * 0.68, left: -seat.metrics.hat * 0.22 }]}
-          />
-        )}
-
         {seat.isReady && (
           <View style={styles.ready}>
             <Check color={colors.background} size={CHECK_SIZE} strokeWidth={3.5} />
@@ -62,7 +60,14 @@ export const SeatIdentity = () => {
       </Text>
 
       {role && (
-        <Text style={[styles.role, role.tone, { fontSize: seat.metrics.label }]}>{role.text}</Text>
+        <Text
+          adjustsFontSizeToFit
+          minimumFontScale={ROLE_MIN_SCALE}
+          numberOfLines={1}
+          style={[styles.role, role.tone, { fontSize: seat.metrics.label * ROLE_LABEL_RATIO }]}
+        >
+          {role.text}
+        </Text>
       )}
 
       <SeatChatter

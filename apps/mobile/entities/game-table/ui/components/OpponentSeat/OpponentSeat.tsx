@@ -24,7 +24,6 @@ export const OpponentSeat = ({
   isDefender,
   isActive,
   isStatic = false,
-  isLoser = false,
   onPress
 }: OpponentSeatProps) => {
   const metrics = useSeatSize(seatCount);
@@ -32,7 +31,7 @@ export const OpponentSeat = ({
 
   const fannedBacks = Math.max(0, Math.min(player.handCount, MAX_VISIBLE_BACKS) - 1);
 
-  const roomForCards = metrics.maxWidth - SEAT_PADDING_X * 2 - BACK_STEP_X * fannedBacks;
+  const roomForCards = metrics.width - SEAT_PADDING_X * 2 - BACK_STEP_X * fannedBacks;
 
   const backWidth = Math.max(MIN_BACK_WIDTH, Math.min(metrics.back, roomForCards));
 
@@ -46,7 +45,6 @@ export const OpponentSeat = ({
     isEmpty,
     isActive,
     isReady,
-    isLoser,
     isAttacker,
     isDefender,
     isOut: player.isOut,
@@ -61,7 +59,7 @@ export const OpponentSeat = ({
       <Pressable
         style={({ pressed }) => [
           styles.root,
-          { maxWidth: metrics.maxWidth },
+          { width: metrics.width },
           isEmpty && styles.empty,
           isActive && styles.active,
           player.isOut && styles.out,

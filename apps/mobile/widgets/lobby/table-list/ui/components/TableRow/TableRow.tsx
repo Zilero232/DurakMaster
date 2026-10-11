@@ -1,33 +1,44 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { Pressable } from 'react-native';
+import { ChevronRight, Crown, Lock } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { Pressable, Text, View } from 'react-native';
+import { match } from 'ts-pattern';
 
-import { gradientEnds, surfaceGradient } from '@/ui-kit';
+import { formatCredits } from '@/shared/lib/format';
+import { Avatar, colors, gradientEnds, iconSize, Spinner, surfaceGradient } from '@/ui-kit';
 
 import type { TableRowProps } from './TableRow.types';
 
-import { TableCompact, TableTile } from './components';
+import { TableBadges } from '../TableBadges';
+import { VISIBLE_AVATARS } from './TableRow.config';
 import { styles } from './TableRow.styles';
 
 export const TableRow = ({
   table,
-  isTile = false,
   isPending = false,
+  isDisabled = false,
   myUserId,
   onJoin
 }: TableRowProps) => {
+  const { t } = useTranslation();
+
   const { players, settings, hasPremiumPlayer } = table;
 
   const isPlaying = table.status === 'playing';
   const isBlocked = players.length >= settings.maxPlayers || isPlaying;
-  const isInactive = isBlocked || isPending;
+  const isInactive = isBlocked || isDisabled;
 
-  const View = isTile ? TableTile : TableCompact;
+  const action = match({ isPending, isBlocked })
+    .with({ isPending: true }, () => <Spinner size={iconSize.lg} />)
+    .with({ isBlocked: true }, () => (
+      <Text style={styles.blockedLabel}>{isPlaying ? t('lobby.inProgress') : t('lobby.full')}</Text>
+    ))
+    .otherwise(() => <ChevronRight color={colors.accent} size={iconSize.lg} />);
 
   return (
     <Pressable
       style={({ pressed }) => [
         styles.root,
-        isTile && styles.tile,
         hasPremiumPlayer && styles.premium,
         isInactive && styles.blocked,
         pressed && styles.pressed
@@ -44,12 +55,58 @@ export const TableRow = ({
         style={styles.fill}
       />
 
-      <View
-        isBlocked={isBlocked}
-        isMine={table.ownerId === myUserId}
-        isPlaying={isPlaying}
-        table={table}
-      />
+      <View style={styles.betColumn}>
+        <Text style={styles.bet}>{formatCredits(settings.bet)}</Text>
+
+        {table.ownerId === myUserId && <Text style={styles.ownBadge}>{t('lobby.ownTable')}</Text>}
+
+        <View style={styles.seats}>
+          {Array.from({ length: settings.maxPlayers }, (_, seat) => (
+            <View
+              key={`${table.id}-seat-${seat}`}
+              style={[styles.seat, seat < players.length && styles.seatTaken]}
+            />
+          ))}
+        </View>
+      </View>
+
+      <View style={styles.main}>
+        <View style={styles.players}>
+          {players.slice(0, VISIBLE_AVATARS).map((player) => (
+            <Avatar
+              key={player.userId}
+              name={player.name}
+              size={iconSize.lg}
+              src={player.avatarUrl}
+              style={styles.playerAvatar}
+            />
+          ))}
+
+          <Text numberOfLines={1} style={styles.names}>
+            {players.map((player) => player.name).join(', ') || t('lobby.emptySeats')}
+          </Text>
+
+          {hasPremiumPlayer && (
+            <Crown
+              accessibilityLabel={t('lobby.premiumPlayer')}
+              color={colors.gold}
+              size={iconSize.sm}
+            />
+          )}
+
+          {settings.isPrivate && (
+            <Lock
+              accessibilityLabel={t('lobby.privateTable')}
+              color={colors.subtleForeground}
+              size={iconSize.xs}
+            />
+          )}
+        </View>
+
+        <TableBadges settings={settings} />
+      </View>
+
+      <View style={styles.action}>{action}</View>
     </Pressable>
   );
 };

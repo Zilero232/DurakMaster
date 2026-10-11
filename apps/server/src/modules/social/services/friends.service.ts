@@ -4,10 +4,10 @@ import { MAX_FRIENDS } from '@durak-master/schemas';
 import { Injectable, Logger } from '@nestjs/common';
 import { err, ok, Result } from 'neverthrow';
 
-import type { FriendshipStatus } from '../../../../generated/prisma/enums';
-
 import { PrismaService } from '../../../lib/prisma/prisma.service';
+import { RoomsService } from '../../game';
 import { ProfilesService } from '../../profile';
+import { OnlinePlayersService } from './online-players.service';
 
 export type FriendError =
   | 'ALREADY_FRIENDS'
@@ -25,7 +25,9 @@ export class FriendsService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly profiles: ProfilesService
+    private readonly profiles: ProfilesService,
+    private readonly rooms: RoomsService,
+    private readonly onlinePlayers: OnlinePlayersService
   ) {}
 
   async list(userId: string): Promise<FriendList> {
@@ -55,11 +57,13 @@ export class FriendsService {
         continue;
       }
 
+      const isOnline = this.onlinePlayers.isOnline(otherId);
+
       const friend: Friend = {
-        profile,
+        profile: { ...profile, isOnline },
         status: row.status.toLowerCase() as Friend['status'],
         isOutgoing,
-        tableId: null,
+        tableId: isOnline ? (this.rooms.getRoomOfUser(otherId)?.id ?? null) : null,
         since: row.acceptedAt?.getTime() ?? null
       };
 
@@ -175,6 +179,15 @@ export class FriendsService {
       return err('REQUEST_NOT_FOUND');
     }
 
+    const friendCounts = await Promise.all([
+      this.countFriends(userId),
+      this.countFriends(requesterId)
+    ]);
+
+    if (friendCounts.some((count) => count >= MAX_FRIENDS)) {
+      return err('FRIEND_LIMIT_REACHED');
+    }
+
     await this.prisma.friendship.update({
       where: { id: row.id },
       data: { status: 'ACCEPTED', acceptedAt: new Date() }
@@ -246,5 +259,3 @@ export class FriendsService {
     return new Set(rows.flatMap((row) => [row.requesterId, row.addresseeId]));
   }
 }
-
-export type { FriendshipStatus };

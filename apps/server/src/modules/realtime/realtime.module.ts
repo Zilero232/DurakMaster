@@ -26,6 +26,6 @@ import {
     GameFlowService,
     FriendsPresenceService
   ],
-  exports: [SessionsService]
+  exports: [SocketRegistryService]
 })
 export class RealtimeModule {}

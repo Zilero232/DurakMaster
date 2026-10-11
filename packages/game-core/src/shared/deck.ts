@@ -1,37 +1,43 @@
-import type { Card, DeckSize, Rank } from '@durak-master/schemas';
+import type { Card, DurakDeckSize, Rank } from '@durak-master/schemas';
 
-import { JOKER_COLORS, LOWEST_RANK_BY_DECK_SIZE, RANKS, SUITS } from '@durak-master/schemas';
+import {
+  isJoker,
+  JOKER_COLORS,
+  LOWEST_RANK_BY_DECK_SIZE,
+  RANKS,
+  SUITS
+} from '@durak-master/schemas';
 
-function ranksForDeckSize(deckSize: DeckSize): readonly Rank[] {
+function ranksForDeckSize(deckSize: DurakDeckSize): readonly Rank[] {
   const lowest = LOWEST_RANK_BY_DECK_SIZE[deckSize];
 
   return RANKS.slice(RANKS.indexOf(lowest));
 }
 
-export function buildDeck(deckSize: DeckSize, withJokers = false): Card[] {
+export function buildDeck(deckSize: DurakDeckSize, withJokers = false): Card[] {
   const deck: Card[] = [];
 
   for (const suit of SUITS) {
     for (const rank of ranksForDeckSize(deckSize)) {
-      deck.push({ rank, suit });
+      deck.push({ kind: 'plain', rank, suit });
     }
   }
 
   if (withJokers) {
-    for (const joker of JOKER_COLORS) {
-      deck.push({ rank: 'ace', suit: 'spades', joker });
+    for (const color of JOKER_COLORS) {
+      deck.push({ kind: 'joker', color });
     }
   }
 
   return deck;
 }
 
-export function cardsEqual(a: Card, b: Card): boolean {
-  return a.rank === b.rank && a.suit === b.suit && a.joker === b.joker;
+export function cardKey(card: Card): string {
+  return isJoker(card) ? `joker:${card.color}` : `${card.rank}:${card.suit}`;
 }
 
-export function cardKey(card: Card): string {
-  return card.joker ? `joker:${card.joker}` : `${card.rank}:${card.suit}`;
+export function cardsEqual(a: Card, b: Card): boolean {
+  return cardKey(a) === cardKey(b);
 }
 
 export function shuffle<T>(items: readonly T[], randomInt: (maxExclusive: number) => number): T[] {
@@ -65,20 +71,4 @@ export function removeCard(hand: readonly Card[], card: Card): Card[] | null {
   }
 
   return [...hand.slice(0, index), ...hand.slice(index + 1)];
-}
-
-export function removeCards(hand: readonly Card[], cards: readonly Card[]): Card[] | null {
-  let rest: Card[] = [...hand];
-
-  for (const card of cards) {
-    const next = removeCard(rest, card);
-
-    if (next === null) {
-      return null;
-    }
-
-    rest = next;
-  }
-
-  return rest;
 }

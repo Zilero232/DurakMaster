@@ -2,10 +2,11 @@ import { Inbox } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { FriendRow } from '@/entities/social';
+import { EmptyState } from '@/ui-kit';
+
 import type { RequestsTabProps } from './RequestsTab.types';
 
-import { EmptyState } from '../EmptyState';
-import { FriendRow } from '../FriendRow';
 import { styles } from './RequestsTab.styles';
 
 export const RequestsTab = ({ incoming, outgoing, onAction }: RequestsTabProps) => {

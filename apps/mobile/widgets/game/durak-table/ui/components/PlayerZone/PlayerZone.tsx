@@ -15,7 +15,6 @@ export const PlayerZone = ({ view }: PlayerZoneProps) => {
     <View style={styles.root}>
       <PlayerHand
         cards={view.hand}
-        cardScale={look.cardScale}
         dropZones={drag.dropZones}
         hasHints={look.hasHints}
         isInstant={look.isInstant}

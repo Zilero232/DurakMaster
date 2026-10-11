@@ -161,8 +161,6 @@ def main() -> None:
     # Splash: Expo scales this to imageWidth, so it only needs the mark.
     _mark(1024, with_background=False, scale=0.46).save(ASSETS / "splash-icon.png")
 
-    _mark(48, with_background=True, scale=0.52).convert("RGB").save(ASSETS / "favicon.png")
-
     print("wrote icons to", ASSETS)
 
 

@@ -11,10 +11,12 @@ import type { UseCardDragInput } from './use-card-drag.types';
 import { MIN_ATTACK_TRAVEL } from '../../../config';
 
 export const useCardDrag = ({
-  onDefendWith,
   onAttackWith,
+  onDefendWith,
+  onTransferWith,
   isDefending,
-  beatableWith
+  beatableWith,
+  canTransfer
 }: UseCardDragInput) => {
   const [dropZones, setDropZones] = useState<DropZone[]>([]);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -22,18 +24,23 @@ export const useCardDrag = ({
 
   const hoveredRef = useRef<number | null>(null);
 
-  const hover = useCallback((index: number | null) => {
-    if (hoveredRef.current === index) {
-      return;
-    }
+  const hover = useCallback(
+    (index: number | null) => {
+      const target = isDefending ? index : null;
 
-    if (index !== null) {
-      haptic('tap');
-    }
+      if (hoveredRef.current === target) {
+        return;
+      }
 
-    hoveredRef.current = index;
-    setHoveredIndex(index);
-  }, []);
+      if (target !== null) {
+        haptic('tap');
+      }
+
+      hoveredRef.current = target;
+      setHoveredIndex(target);
+    },
+    [isDefending]
+  );
 
   const start = useCallback((card: Card) => {
     setDraggedCard(card);
@@ -48,17 +55,34 @@ export const useCardDrag = ({
   const dropOn = useCallback(
     (card: Card, pairIndex: number) => {
       end();
-      onDefendWith(pairIndex, card);
+
+      if (!isDefending) {
+        onAttackWith(card);
+
+        return;
+      }
+
+      if (beatableWith(card).has(pairIndex)) {
+        onDefendWith(pairIndex, card);
+
+        return;
+      }
+
+      if (canTransfer(card)) {
+        onTransferWith(card);
+      }
     },
-    [end, onDefendWith]
+    [beatableWith, canTransfer, end, isDefending, onAttackWith, onDefendWith, onTransferWith]
   );
 
   const dropMissed = useCallback(
     (card: Card, travelY: number) => {
       end();
 
+      const isThrownUp = travelY >= MIN_ATTACK_TRAVEL;
+
       if (!isDefending) {
-        if (travelY >= MIN_ATTACK_TRAVEL) {
+        if (isThrownUp) {
           onAttackWith(card);
         }
 
@@ -71,9 +95,15 @@ export const useCardDrag = ({
         const [only] = targets;
 
         onDefendWith(only, card);
+
+        return;
+      }
+
+      if (isThrownUp && canTransfer(card)) {
+        onTransferWith(card);
       }
     },
-    [beatableWith, end, isDefending, onAttackWith, onDefendWith]
+    [beatableWith, canTransfer, end, isDefending, onAttackWith, onDefendWith, onTransferWith]
   );
 
   return {

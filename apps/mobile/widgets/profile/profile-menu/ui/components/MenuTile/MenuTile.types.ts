@@ -9,6 +9,5 @@ export type MenuTileProps = {
   tint: string;
   badgeCount?: number;
   badgeTone?: CountBadgeTone;
-  isLocked?: boolean;
-  onPress?: () => void;
+  onPress: () => void;
 };

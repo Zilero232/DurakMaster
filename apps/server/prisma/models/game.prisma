@@ -1,16 +1,17 @@
-// A finished or running deal and what it paid out. The authoritative live state
-// lives in node memory; `snapshot` is only what is needed to recover it.
+// A finished or running deal and what it paid out. The live state lives only in
+// node memory.
 
 model Game {
   id      String @id @default(cuid())
   tableId String
 
-  /** Which game this was — the registry currently holds durak only. */
+  /**
+   * Which game this was — the registry currently holds durak only.
+   */
   game String
 
   /**
    * The table's rule set as it was when the deal started.
-   *
    * Stored as JSON rather than as columns: every game has its own rules, and a
    * column per option would mean a migration for each new game — see
    * docs/games/architecture.md.
@@ -18,10 +19,6 @@ model Game {
   settings Json
 
   bet BigInt
-
-  // State snapshot at a turn boundary — used to recover after a restart.
-  snapshot Json?
-  version  Int   @default(0)
 
   loserUserId String?
   isDraw      Boolean @default(false)

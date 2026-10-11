@@ -1,28 +1,30 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, Text, View } from 'react-native';
+import { isNonNullish } from 'remeda';
 
 import type { ButtonProps } from './Button.types';
 
 import { gradientEnds, iconSize } from '../../theme';
 import { Spinner } from '../Spinner';
+import { SIZE_HIT_SLOP } from './Button.config';
 import {
   SIZE_STYLES,
   styles,
+  VARIANT_FOREGROUND,
   VARIANT_GRADIENT,
-  VARIANT_SPINNER_COLOR,
   VARIANT_STYLES
 } from './Button.styles';
 import { usePressFeedback } from './feedback-context';
 
 export const Button = ({
   children,
+  icon,
   variant = 'secondary',
   size = 'default',
   isFullWidth = false,
   isDisabled = false,
   isLoading = false,
   accessibilityLabel,
-  testID,
   style,
   onPress
 }: ButtonProps) => {
@@ -34,6 +36,10 @@ export const Button = ({
 
   const isBlocked = isDisabled || isLoading;
 
+  const foreground = VARIANT_FOREGROUND[variant];
+
+  const isIconOnly = isNonNullish(icon) && !children;
+
   const handlePress = () => {
     feedback();
     onPress?.();
@@ -44,7 +50,7 @@ export const Button = ({
       style={({ pressed }) => [
         styles.root,
         variantStyle.container,
-        sizeStyle.container,
+        isIconOnly ? sizeStyle.iconOnly : sizeStyle.container,
         isFullWidth && styles.fullWidth,
         pressed && styles.pressed,
         isBlocked && styles.disabled,
@@ -54,7 +60,7 @@ export const Button = ({
       accessibilityRole='button'
       accessibilityState={{ busy: isLoading, disabled: isBlocked }}
       disabled={isBlocked}
-      testID={testID}
+      hitSlop={SIZE_HIT_SLOP[size]}
       onPress={handlePress}
     >
       {gradient && (
@@ -71,13 +77,19 @@ export const Button = ({
       )}
 
       {isLoading ? (
-        <Spinner color={VARIANT_SPINNER_COLOR[variant]} size={iconSize.md} />
-      ) : typeof children === 'string' ? (
-        <Text numberOfLines={1} style={[styles.label, variantStyle.label, sizeStyle.label]}>
-          {children}
-        </Text>
+        <Spinner color={foreground} size={iconSize.md} />
       ) : (
-        children
+        <View style={styles.content}>
+          {icon?.(foreground)}
+
+          {typeof children === 'string' ? (
+            <Text numberOfLines={1} style={[styles.label, variantStyle.label, sizeStyle.label]}>
+              {children}
+            </Text>
+          ) : (
+            children
+          )}
+        </View>
       )}
     </Pressable>
   );

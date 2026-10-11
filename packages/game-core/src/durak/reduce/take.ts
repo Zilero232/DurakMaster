@@ -18,9 +18,9 @@ export function applyTake(state: DurakState, seat: number): DurakReduceResult {
     return fail('INVALID_ACTION_FOR_PHASE');
   }
 
-  const waiting = nextThrowerSeat(state);
+  const taking: DurakState = { ...state, isTaking: true, passedSeats: [] };
 
-  const taking: DurakState = { ...state, isTaking: true };
+  const waiting = nextThrowerSeat(taking);
 
   if (waiting === undefined) {
     return { ok: true, state: finishBout(taking, { defenderTook: true }) };

@@ -1,22 +1,41 @@
 import { useEffect } from 'react';
 import { Gesture } from 'react-native-gesture-handler';
-import { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming
+} from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
-import type { UseSheetDragInput } from './use-sheet-drag.types';
+import type { UseSheetDragInput, UseSheetDragResult } from './use-sheet-drag.types';
 
-import { CLOSE_DURATION_MS, CLOSE_RATIO, CLOSE_VELOCITY, SPRING } from '../../Sheet.config';
+import {
+  CLOSE_DURATION_MS,
+  CLOSE_RATIO,
+  CLOSE_VELOCITY,
+  OPEN_DURATION_MS,
+  SPRING
+} from '../../Sheet.config';
 
-export const useSheetDrag = ({ isOpen, maxHeight, onClose }: UseSheetDragInput) => {
-  const offset = useSharedValue(0);
+export const useSheetDrag = ({
+  isOpen,
+  maxHeight,
+  onClose
+}: UseSheetDragInput): UseSheetDragResult => {
+  const offset = useSharedValue(maxHeight);
 
   const slide = useAnimatedStyle(() => ({ transform: [{ translateY: offset.value }] }));
 
   useEffect(() => {
-    if (isOpen) {
-      offset.value = 0;
-    }
-  }, [isOpen, offset]);
+    offset.value = isOpen
+      ? withTiming(0, { duration: OPEN_DURATION_MS, easing: Easing.out(Easing.cubic) })
+      : withTiming(maxHeight, {
+          duration: CLOSE_DURATION_MS,
+          easing: Easing.in(Easing.cubic)
+        });
+  }, [isOpen, maxHeight, offset]);
 
   const gesture = Gesture.Pan()
     .onUpdate((event) => {

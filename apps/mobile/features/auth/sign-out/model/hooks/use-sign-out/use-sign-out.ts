@@ -1,20 +1,34 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { useSessionStore } from '@/entities/session';
 import { useSocialStore } from '@/entities/social';
-import { logout } from '@/shared/api';
+import { signOut } from '@/shared/api';
 
 export const useSignOut = () => {
-  const [isConfirming, setIsConfirming] = useState(false);
-
   const disconnect = useSessionStore((store) => store.disconnect);
+  const setSigningOut = useSessionStore((store) => store.setSigningOut);
   const resetSocial = useSocialStore((store) => store.reset);
 
-  const confirm = () => {
+  const queryClient = useQueryClient();
+
+  const [isConfirming, setIsConfirming] = useState(false);
+
+  const confirm = async () => {
     setIsConfirming(false);
+    setSigningOut(true);
+
+    const { error } = await signOut();
+
+    if (error) {
+      setSigningOut(false);
+
+      return;
+    }
+
     disconnect();
     resetSocial();
-    void logout();
+    queryClient.clear();
   };
 
   return {

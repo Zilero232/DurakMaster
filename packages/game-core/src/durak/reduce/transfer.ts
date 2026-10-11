@@ -4,9 +4,8 @@ import { isJoker } from '@durak-master/schemas';
 
 import type { DurakReduceResult } from './shared';
 
-import { handContains, removeCard } from '../../shared';
-import { canTransfer, computeAttackLimit, hasDefendedCards } from '../rules';
-import { nextActiveSeat } from '../setup';
+import { handContains, nextActiveSeat, removeCard } from '../../shared';
+import { computeAttackLimit, findTransferError, hasDefendedCards } from '../rules';
 import { fail, handSizeAtSeat, syncHandCounts } from './shared';
 
 export function applyTransfer(
@@ -23,8 +22,8 @@ export function applyTransfer(
     return fail('NOT_YOUR_TURN');
   }
 
-  if (hasDefendedCards(state.table)) {
-    return fail('TRANSFER_AFTER_DEFENSE');
+  if (state.isTaking) {
+    return fail('INVALID_ACTION_FOR_PHASE');
   }
 
   const hand = state.hands[userId] ?? [];
@@ -36,15 +35,10 @@ export function applyTransfer(
 
   const nextDefenderSeat = nextActiveSeat(state.players, state.defenderSeat);
   const nextDefenderHandSize = handSizeAtSeat(state, nextDefenderSeat);
+  const transferError = findTransferError(card, state.table, nextDefenderHandSize);
 
-  if (!canTransfer(card, state.table, nextDefenderHandSize)) {
-    const tableRank = state.table[0]?.attack.rank;
-
-    if (tableRank !== undefined && card.rank !== tableRank) {
-      return fail('TRANSFER_RANK_MISMATCH');
-    }
-
-    return fail('TRANSFER_TARGET_HAS_TOO_FEW_CARDS');
+  if (transferError) {
+    return fail(transferError);
   }
 
   const table = [
@@ -107,13 +101,11 @@ export function applyTransferByShowing(
     return fail('CARD_NOT_IN_HAND');
   }
 
-  const tableRank = state.table[0]?.attack.rank;
-
-  if (tableRank === undefined) {
+  if (state.table.length === 0) {
     return fail('INVALID_ACTION_FOR_PHASE');
   }
 
-  if (card.rank !== tableRank || !state.table.every((pair) => pair.attack.rank === tableRank)) {
+  if (!state.table.every((pair) => !isJoker(pair.attack) && pair.attack.rank === card.rank)) {
     return fail('TRANSFER_RANK_MISMATCH');
   }
 

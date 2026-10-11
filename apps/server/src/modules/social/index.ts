@@ -1,2 +1,7 @@
-export { AchievementsService, FriendsService, LeaderboardService } from './services';
+export {
+  AchievementsService,
+  FriendsService,
+  OnlinePlayersService,
+  TableInvitesService
+} from './services';
 export { SocialModule } from './social.module';

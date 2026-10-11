@@ -6,6 +6,5 @@ export type SettingsSectionProps = {
   children: ReactNode;
   icon?: LucideIcon;
   hint?: string;
-  isInRow?: boolean;
   isPlain?: boolean;
 };

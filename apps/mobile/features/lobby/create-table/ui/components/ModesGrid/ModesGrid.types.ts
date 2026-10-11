@@ -27,9 +27,7 @@ export type ModeToggleField = {
 };
 
 export type ModesGridProps = {
+  choices: ModeChoiceField[];
+  toggles: ModeToggleField[];
   control: Control<CreateTableFormValues>;
-
-  choices?: ModeChoiceField[];
-
-  toggles?: ModeToggleField[];
 };

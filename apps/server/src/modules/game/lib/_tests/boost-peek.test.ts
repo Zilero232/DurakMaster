@@ -19,9 +19,18 @@ const profile = (userId: string): PublicProfile => ({
   isOnline: true
 });
 
-const settings: TableSettings = { ...DEFAULT_TABLE_SETTINGS.durak, maxPlayers: 2 };
+const cheatersTable: TableSettings = {
+  ...DEFAULT_TABLE_SETTINGS.durak,
+  maxPlayers: 2,
+  rules: { ...DEFAULT_TABLE_SETTINGS.durak.rules, fairness: 'cheaters' }
+};
 
-const dealtRoom = () => {
+const fairTable: TableSettings = {
+  ...cheatersTable,
+  rules: { ...cheatersTable.rules, fairness: 'fair' }
+};
+
+const dealtRoom = (settings = cheatersTable) => {
   const room = new GameRoom(settings, null, () => {});
 
   room.join(profile('a'));
@@ -69,6 +78,16 @@ describe('peek boosts', () => {
     const room = dealtRoom();
 
     expect(room.peekHand('a', 'a')).toBeNull();
+
+    room.clearTimers();
+  });
+
+  it('reveals nothing at a fair table', () => {
+    const room = dealtRoom(fairTable);
+
+    expect(room.allowsPeeking).toBe(false);
+    expect(room.peekTalon()).toBeNull();
+    expect(room.peekHand('a', 'b')).toBeNull();
 
     room.clearTimers();
   });

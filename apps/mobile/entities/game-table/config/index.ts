@@ -1,9 +1,9 @@
 export {
   CHATTER_LIFETIME_MS,
-  COUNT_UP_MS,
   DEAL_MS,
+  DEAL_OFFSET,
   HINT_LIFETIME_MS,
   SETTLE_MS,
   SLIDE_MS,
-  SWEEP_MS
+  SLIDE_OFFSET
 } from './animation';

@@ -6,8 +6,7 @@ export const TABLE_BOTTOM_GAP = spacing[2];
 
 export const styles = StyleSheet.create({
   root: {
-    flex: 1,
-    alignItems: 'center'
+    flex: 1
   },
 
   table: {

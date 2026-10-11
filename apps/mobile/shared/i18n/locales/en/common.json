@@ -1,12 +1,8 @@
 {
   "common": {
-    "appName": "Durak",
-    "appSubtitle": "Master",
     "cancel": "Cancel",
     "close": "Close",
-    "back": "Back",
     "loading": "Loading…",
-    "soon": "soon",
     "save": "Save"
   },
   "nav": {
@@ -16,7 +12,6 @@
   },
   "connection": {
     "connecting": "Connecting…",
-    "offline": "Offline",
-    "reconnecting": "Reconnecting…"
+    "offline": "Offline"
   }
 }

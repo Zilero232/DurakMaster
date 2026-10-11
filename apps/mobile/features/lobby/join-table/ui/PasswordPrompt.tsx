@@ -1,60 +1,39 @@
 import { TABLE_PASSWORD_MAX_LENGTH } from '@durak-master/schemas';
-import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TextInput } from 'react-native';
+import { TextInput } from 'react-native';
 
 import { Button, colors, Sheet } from '@/ui-kit';
 
 import type { PasswordPromptProps } from './PasswordPrompt.types';
 
+import { usePasswordEntry } from '../model/hooks';
 import { styles } from './PasswordPrompt.styles';
 
-export const PasswordPrompt = ({ isOpen, tableLabel, onSubmit, onClose }: PasswordPromptProps) => {
+export const PasswordPrompt = ({ isOpen, onSubmit, onClose }: PasswordPromptProps) => {
   const { t } = useTranslation();
 
-  const [password, setPassword] = useState('');
-
-  const inputRef = useRef<TextInput>(null);
-
-  useEffect(() => {
-    if (isOpen) {
-      inputRef.current?.focus();
-    }
-  }, [isOpen]);
-
-  const handleClose = () => {
-    setPassword('');
-    onClose();
-  };
-
-  const handleSubmit = () => {
-    const trimmed = password.trim();
-
-    if (trimmed) {
-      setPassword('');
-      onSubmit(trimmed);
-    }
-  };
+  const { password, inputRef, canSubmit, isJoining, setPassword, submit, close } = usePasswordEntry(
+    { isOpen, onSubmit, onClose }
+  );
 
   return (
     <Sheet
       footer={
         <Button
           isFullWidth
-          isDisabled={!password.trim()}
+          isDisabled={!canSubmit}
+          isLoading={isJoining}
           size='lg'
           variant='primary'
-          onPress={handleSubmit}
+          onPress={submit}
         >
           {t('lobby.join')}
         </Button>
       }
       isOpen={isOpen}
       title={t('lobby.passwordPrompt')}
-      onClose={handleClose}
+      onClose={close}
     >
-      {tableLabel && <Text style={styles.table}>{tableLabel}</Text>}
-
       <TextInput
         secureTextEntry
         ref={inputRef}
@@ -67,7 +46,7 @@ export const PasswordPrompt = ({ isOpen, tableLabel, onSubmit, onClose }: Passwo
         style={styles.input}
         value={password}
         onChangeText={setPassword}
-        onSubmitEditing={handleSubmit}
+        onSubmitEditing={submit}
       />
     </Sheet>
   );

@@ -11,4 +11,5 @@ export type CreateTableValueInput = {
   settings: TableSettings;
   phrases: Record<string, Chatter>;
   isWaiting: boolean;
+  onInviteFriends: () => void;
 };

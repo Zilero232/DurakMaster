@@ -94,11 +94,11 @@ export class AchievementsService {
     return unlocked;
   }
 
-  async recordFriend(userId: string): Promise<AchievementId[]> {
+  async recordFriendCount(userId: string, friendCount: number): Promise<AchievementId[]> {
     const unlocked: AchievementId[] = [];
 
     for (const id of ['firstFriend', 'fiveFriends'] as const) {
-      if (await this.increment(userId, id, 1)) {
+      if (await this.setProgress(userId, id, friendCount)) {
         unlocked.push(id);
       }
     }

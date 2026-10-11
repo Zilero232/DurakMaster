@@ -12,8 +12,8 @@ typecheck_targets=''
 
 # Корневые конфиги и общие пакеты влияют на все воркспейсы сразу.
 if staged_has '^(package\.json|bun\.lock|tsconfig.*\.json)$' \
-  || staged_has '^packages/(schemas|game-core|platform)/'; then
-  typecheck_targets='./packages/schemas ./packages/game-core ./packages/platform ./apps/server ./apps/mobile'
+  || staged_has '^packages/(schemas|game-core)/'; then
+  typecheck_targets='./packages/schemas ./packages/game-core ./apps/server ./apps/mobile'
 else
   staged_has '^apps/server/' && typecheck_targets="$typecheck_targets ./apps/server"
   staged_has '^apps/mobile/' && typecheck_targets="$typecheck_targets ./apps/mobile"

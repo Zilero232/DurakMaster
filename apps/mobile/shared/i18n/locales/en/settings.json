@@ -4,7 +4,6 @@
     "language": "Language",
     "cardTheme": "Deck",
     "sound": "Sound",
-    "volume": "Volume",
     "hints": "Suggest moves",
     "hintsDescription": "Highlight the cards you can play",
     "haptics": "Vibration",
@@ -33,12 +32,6 @@
       "calm": "Calm",
       "normal": "Normal",
       "instant": "Instant"
-    },
-    "cardScale": "Card size",
-    "scale": {
-      "small": "Smaller",
-      "normal": "Normal",
-      "large": "Larger"
     },
     "effects": "Effects",
     "batterySaver": "Battery saver",

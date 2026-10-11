@@ -4,11 +4,9 @@ import type { SeatContextValue } from './seat-context.types';
 const EMPTY_SEAT_METRICS: SeatMetrics = {
   avatar: 0,
   ring: 0,
-  hat: 0,
   back: 0,
   label: 0,
-  minWidth: 0,
-  maxWidth: 0
+  width: 0
 };
 
 export const EMPTY_SEAT_CONTEXT: SeatContextValue = {
@@ -23,7 +21,6 @@ export const EMPTY_SEAT_CONTEXT: SeatContextValue = {
   isEmpty: true,
   isActive: false,
   isReady: false,
-  isLoser: false,
   isAttacker: false,
   isDefender: false,
   isOut: false,

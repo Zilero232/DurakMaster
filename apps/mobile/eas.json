@@ -8,7 +8,8 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_URL": "http://localhost:4000"
+        "EXPO_PUBLIC_API_URL": "http://localhost:4000",
+        "EXPO_PUBLIC_ADS_ENABLED": "false"
       }
     },
     "preview": {
@@ -18,6 +19,7 @@
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.durakmaster.ru",
+        "EXPO_PUBLIC_ADS_ENABLED": "false",
         "EXPO_PUBLIC_ADMOB_REWARDED_UNIT_ID": ""
       }
     },
@@ -28,6 +30,7 @@
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.durakmaster.ru",
+        "EXPO_PUBLIC_ADS_ENABLED": "false",
         "EXPO_PUBLIC_ADMOB_REWARDED_UNIT_ID": ""
       }
     }

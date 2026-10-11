@@ -11,7 +11,6 @@ export const SettingsSection = ({
   children,
   icon: Icon,
   hint,
-  isInRow,
   isPlain
 }: SettingsSectionProps) => {
   const body = (
@@ -35,8 +34,8 @@ export const SettingsSection = ({
   );
 
   if (isPlain) {
-    return <View style={[styles.root, isInRow && styles.inRow]}>{body}</View>;
+    return <View style={styles.root}>{body}</View>;
   }
 
-  return <Panel style={[styles.root, isInRow && styles.inRow]}>{body}</Panel>;
+  return <Panel style={styles.root}>{body}</Panel>;
 };

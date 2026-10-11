@@ -101,7 +101,7 @@ describe('game room stakes', () => {
     room.clearTimers();
   });
 
-  it('counts as out of the match again once the game is over', () => {
+  it('counts as not playing again once the game is over', () => {
     const { room } = createRoom(2);
 
     room.join(profile('a'));
@@ -109,11 +109,11 @@ describe('game room stakes', () => {
     room.setReady('a', true);
     room.setReady('b', true);
 
-    expect(room.isInMatch).toBe(true);
+    expect(room.isPlaying).toBe(true);
 
     room.leave('a');
 
-    expect(room.isInMatch).toBe(false);
+    expect(room.isPlaying).toBe(false);
 
     room.clearTimers();
   });
@@ -346,24 +346,6 @@ describe('game room reconnect', () => {
     if (finished?.type === 'finished') {
       expect(finished.loserUserId).toBe(onTurn);
     }
-
-    room.clearTimers();
-  });
-
-  it('clears the missed turns a player collected before dropping', () => {
-    const { room } = createRoom(2);
-
-    room.join(profile('a'));
-    room.join(profile('b'));
-    room.setReady('a', true);
-    room.setReady('b', true);
-
-    const onTurn = activeUserId(room);
-
-    room.suspend(onTurn);
-    room.reconnect(onTurn);
-
-    expect(room.getMember(onTurn)?.missedTurns).toBe(0);
 
     room.clearTimers();
   });

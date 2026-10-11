@@ -20,9 +20,6 @@ model User {
   friendshipsSent     Friendship[] @relation("FriendshipRequester")
   friendshipsReceived Friendship[] @relation("FriendshipAddressee")
 
-  invitesSent     TableInvite[] @relation("InviteFrom")
-  invitesReceived TableInvite[] @relation("InviteTo")
-
   achievements AchievementProgress[]
   adViews      AdView[]
 

@@ -28,7 +28,16 @@ export const syncHandCounts = (state: DurakState): DurakState => ({
 export const nextThrowerSeat = (
   state: DurakState,
   passedSeats: readonly number[] = state.passedSeats
-): number | undefined =>
-  state.players.find(
-    (player) => canThrowIn(player.seat, state) && !passedSeats.includes(player.seat)
-  )?.seat;
+): number | undefined => {
+  const count = state.players.length;
+
+  for (let step = 0; step < count; step++) {
+    const seat = (state.attackerSeat + step) % count;
+
+    if (canThrowIn(seat, state) && !passedSeats.includes(seat)) {
+      return seat;
+    }
+  }
+
+  return undefined;
+};

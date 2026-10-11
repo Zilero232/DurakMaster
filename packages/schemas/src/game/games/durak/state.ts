@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { cardSchema, suitSchema } from '../../core/card';
+import { cardSchema, plainCardSchema, suitSchema } from '../../core/card';
 import { gameCoreStateSchema } from '../../core/player';
 import { durakRulesSchema } from './rules';
 
@@ -23,7 +23,7 @@ export const durakStateSchema = gameCoreStateSchema.extend({
   hands: z.record(z.string(), z.array(cardSchema)),
   talon: z.array(cardSchema),
   trump: suitSchema,
-  trumpCard: cardSchema.nullable(),
+  trumpCard: plainCardSchema.nullable(),
 
   table: z.array(tablePairSchema),
   discard: z.array(cardSchema),

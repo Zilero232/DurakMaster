@@ -3,7 +3,6 @@ import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { useLayout } from '@/shared/model/layout';
 import { SettingsSection } from '@/ui-kit';
 
 import type { CommonSettingsProps } from './CommonSettings.types';
@@ -16,8 +15,6 @@ import { styles } from './CommonSettings.styles';
 export const CommonSettings = ({ control, deckSize, game }: CommonSettingsProps) => {
   const { t } = useTranslation();
 
-  const { isWide } = useLayout();
-
   const seatCounts = playerCountItems(game, deckSize);
   const isSeatCountFixed = seatCounts.length === 1;
 
@@ -29,13 +26,12 @@ export const CommonSettings = ({ control, deckSize, game }: CommonSettingsProps)
         render={({ field }) => <BetPicker value={field.value} onChange={field.onChange} />}
       />
 
-      <View style={isWide ? styles.row : styles.stack}>
+      <View style={styles.stack}>
         <SettingsSection
           hint={
             isSeatCountFixed ? t('create.playersFixed', { count: seatCounts[0]?.value }) : undefined
           }
           icon={Users}
-          isInRow={isWide}
           title={t('create.players')}
         >
           {!isSeatCountFixed && (
@@ -49,7 +45,7 @@ export const CommonSettings = ({ control, deckSize, game }: CommonSettingsProps)
           )}
         </SettingsSection>
 
-        <SettingsSection icon={Timer} isInRow={isWide} title={t('create.speed')}>
+        <SettingsSection icon={Timer} title={t('create.speed')}>
           <Controller
             render={({ field }) => (
               <OptionRow

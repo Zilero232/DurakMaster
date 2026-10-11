@@ -1,3 +1,4 @@
+import { isJoker } from '@durak-master/schemas';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
@@ -26,8 +27,8 @@ export const PlayingCard = ({
   const styles = createStyles(width, theme);
 
   const label = card
-    ? card.joker
-      ? t(`card.joker.${card.joker}`)
+    ? isJoker(card)
+      ? t(`card.joker.${card.color}`)
       : t('card.label', { rank: t(`card.rank.${card.rank}`), suit: t(`card.suit.${card.suit}`) })
     : t('card.faceDown');
 

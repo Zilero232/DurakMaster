@@ -1,2 +1,2 @@
 export { SeatChatter } from './SeatChatter';
-export type { Chatter, SeatChatterProps } from './SeatChatter.types';
+export type { SeatChatterProps } from './SeatChatter.types';

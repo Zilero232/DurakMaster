@@ -1,15 +1,15 @@
 export { createIdleView } from './lib';
-export type { CardMetrics, DropZone } from './model';
-export { useCardSize, useReadyPrompt, useTableChatter } from './model';
+export type { Chatter, DropZone } from './model';
+export { useReadyPrompt, useTableChatter } from './model';
 export { BoostBar } from './ui/components/BoostBar';
 
 export type { BoostBarProps } from './ui/components/BoostBar';
 export { DiscardStack } from './ui/components/DiscardStack';
 
 export type { DiscardStackProps } from './ui/components/DiscardStack';
-export { LeaveCorner } from './ui/components/LeaveCorner';
+export { LeaveButton } from './ui/components/LeaveButton';
 
-export type { LeaveCornerProps } from './ui/components/LeaveCorner';
+export type { LeaveButtonProps } from './ui/components/LeaveButton';
 export { OpponentSeat } from './ui/components/OpponentSeat';
 
 export type { OpponentSeatProps } from './ui/components/OpponentSeat';
@@ -18,12 +18,9 @@ export type { PlayerHandProps } from './ui/components/PlayerHand';
 export { RevealedCards } from './ui/components/RevealedCards';
 
 export type { RevealedCardsProps } from './ui/components/RevealedCards';
-export { RewardBurst } from './ui/components/RewardBurst';
-
-export type { RewardBurstProps } from './ui/components/RewardBurst';
 export { SeatChatter } from './ui/components/SeatChatter';
 
-export type { Chatter, SeatChatterProps } from './ui/components/SeatChatter';
+export type { SeatChatterProps } from './ui/components/SeatChatter';
 export { SeatTimer } from './ui/components/SeatTimer';
 
 export type { SeatTimerProps } from './ui/components/SeatTimer';

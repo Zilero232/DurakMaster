@@ -22,10 +22,7 @@ export const createAuth = (prisma: PrismaClient) =>
       updateAge: 60 * 60 * 24
     },
 
-    trustedOrigins: [
-      ...(process.env.CORS_ORIGINS?.split(',').map((origin) => origin.trim()) ?? []),
-      'durakmaster://'
-    ].filter(Boolean),
+    trustedOrigins: ['durakmaster://'],
 
     plugins: [bearer()]
   });

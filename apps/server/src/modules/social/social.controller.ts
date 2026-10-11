@@ -37,9 +37,9 @@ export class SocialController {
   @Get('friends/search')
   async searchFriends(
     @CurrentUserId() userId: string,
-    @Query('query') query = ''
+    @Query('query') query: unknown
   ): Promise<PublicProfile[]> {
-    return this.friends.search(userId, query);
+    return this.friends.search(userId, typeof query === 'string' ? query : '');
   }
 
   @Post('friends/:userId/request')
@@ -48,6 +48,8 @@ export class SocialController {
     @Param('userId') targetId: string
   ): Promise<void> {
     ensureOk(await this.friends.request(userId, targetId));
+
+    await this.recordFriendCounts([userId, targetId]);
   }
 
   @Post('friends/:userId/accept')
@@ -57,10 +59,7 @@ export class SocialController {
   ): Promise<void> {
     ensureOk(await this.friends.accept(userId, requesterId));
 
-    await Promise.all([
-      this.achievements.recordFriend(userId),
-      this.achievements.recordFriend(requesterId)
-    ]);
+    await this.recordFriendCounts([userId, requesterId]);
   }
 
   @Post('friends/:userId/decline')
@@ -103,5 +102,13 @@ export class SocialController {
   @Get('leaderboard')
   async getLeaderboard(@CurrentUserId() userId: string): Promise<Leaderboard> {
     return this.leaderboard.top(userId);
+  }
+
+  private async recordFriendCounts(userIds: string[]): Promise<void> {
+    await Promise.all(
+      userIds.map(async (userId) =>
+        this.achievements.recordFriendCount(userId, await this.friends.countFriends(userId))
+      )
+    );
   }
 }

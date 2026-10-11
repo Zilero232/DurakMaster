@@ -6,9 +6,17 @@ import type { StatusScreenProps } from './StatusScreen.types';
 
 import { gradientEnds, surfaceGradient } from '../../theme';
 import { LobbyBackground } from '../LobbyBackground';
-import { styles } from './StatusScreen.styles';
+import { styles, TONE_STYLES } from './StatusScreen.styles';
 
-export const StatusScreen = ({ icon, title, description, details, actions }: StatusScreenProps) => {
+export const StatusScreen = ({
+  icon,
+  title,
+  description,
+  highlight,
+  highlightTone = 'neutral',
+  details,
+  actions
+}: StatusScreenProps) => {
   const insets = useSafeAreaInsets();
 
   return (
@@ -26,6 +34,10 @@ export const StatusScreen = ({ icon, title, description, details, actions }: Sta
         <Text style={styles.title}>{title}</Text>
 
         {description && <Text style={styles.description}>{description}</Text>}
+
+        {highlight && (
+          <Text style={[styles.highlight, TONE_STYLES[highlightTone]]}>{highlight}</Text>
+        )}
 
         {details && (
           <Text numberOfLines={4} style={styles.details}>

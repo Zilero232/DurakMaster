@@ -1,10 +1,10 @@
-import type { Card, TablePair } from '@durak-master/schemas';
+import type { Card, PlainCard, Rank, Suit, TablePair } from '@durak-master/schemas';
 
 import { describe, expect, it } from 'vitest';
 
 import { isLegalAttackCard } from '../attack';
 
-const card = (rank: Card['rank'], suit: Card['suit'] = 'spades'): Card => ({ rank, suit });
+const card = (rank: Rank, suit: Suit = 'spades'): PlainCard => ({ kind: 'plain', rank, suit });
 
 const pair = (attack: Card, defense: Card | null = null): TablePair =>
   ({ attack, defense }) as TablePair;

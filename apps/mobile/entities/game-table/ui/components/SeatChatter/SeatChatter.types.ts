@@ -1,8 +1,4 @@
-import type { TauntId } from '@durak-master/schemas';
-
-export type Chatter = {
-  sentAt: number;
-} & ({ kind: 'phrase'; text: string } | { kind: 'taunt'; taunt: TauntId });
+import type { Chatter } from '../../../model';
 
 export type SeatChatterProps = {
   chatter?: Chatter;

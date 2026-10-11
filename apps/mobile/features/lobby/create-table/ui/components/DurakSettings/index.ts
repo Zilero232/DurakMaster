@@ -1,3 +1,3 @@
 export { DurakDeckSection, DurakModesSection } from './DurakSettings';
 
-export type { DurakSettingsProps } from './DurakSettings.types';
+export type { DurakModesSectionProps, DurakSettingsProps } from './DurakSettings.types';

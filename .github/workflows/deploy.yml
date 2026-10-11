@@ -1,11 +1,11 @@
 name: deploy
 
-# Builds the two images, pushes them to ghcr, then tells the VPS to pull and
-# restart. The VPS holds no clone of the repository — only docker-compose.yml
-# and a hand-written .env — so the compose file is copied on every deploy.
+# Builds the server image, pushes it to ghcr, then tells the VPS to pull and
+# restart. The VPS holds no clone of the repository — only docker-compose.yml,
+# the Caddyfile and a hand-written .env — so the first two are copied on every
+# deploy.
 #
 # Repository secrets — Settings → Secrets and variables → Actions:
-#   EXPO_PUBLIC_API_URL       baked into the web bundle at build time
 #   DEPLOY_SSH_HOST           the VPS
 #   DEPLOY_SSH_USER
 #   DEPLOY_SSH_PASSWORD       the VPS password
@@ -57,17 +57,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push the web image
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
-        with:
-          context: .
-          file: apps/mobile/Dockerfile
-          push: true
-          tags: ghcr.io/${{ steps.owner.outputs.value }}/durakmaster-web:latest
-          build-args: EXPO_PUBLIC_API_URL=${{ secrets.EXPO_PUBLIC_API_URL }}
-          cache-from: type=gha,scope=web
-          cache-to: type=gha,mode=max,scope=web
-
       - name: Build and push the server image
         uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
         with:
@@ -95,13 +84,13 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Copy docker-compose.yml
+      - name: Copy docker-compose.yml and the Caddyfile
         uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1
         with:
           host: ${{ secrets.DEPLOY_SSH_HOST }}
           username: ${{ secrets.DEPLOY_SSH_USER }}
           password: ${{ secrets.DEPLOY_SSH_PASSWORD }}
-          source: docker-compose.yml
+          source: docker-compose.yml,infra/caddy/Caddyfile
           target: ${{ secrets.DEPLOY_PATH }}
 
       # The path travels as an env var rather than being interpolated into the
@@ -131,8 +120,9 @@ jobs:
             fi
 
             cd "$DEPLOY_PATH"
-            docker compose pull web server
-            docker compose up -d
+            docker compose pull proxy server
+            docker compose up -d --remove-orphans
+            docker compose exec -T proxy caddy reload --config /etc/caddy/Caddyfile
             docker image prune -f
 
             # `up -d` returns as soon as the container starts, not once the app

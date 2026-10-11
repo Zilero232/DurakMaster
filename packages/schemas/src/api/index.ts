@@ -1,2 +1,1 @@
-export { apiErrorCodeSchema, apiErrorSchema } from './errors';
-export type { ApiError, ApiErrorCode } from './errors';
+export type { ApiErrorCode } from './errors';

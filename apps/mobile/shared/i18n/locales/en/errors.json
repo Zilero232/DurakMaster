@@ -1,6 +1,7 @@
 {
   "error": {
     "ALREADY_CLAIMED": "Reward already claimed",
+    "ALREADY_AT_TABLE": "That player is already at your table",
     "ALREADY_FRIENDS": "You are already friends",
     "ATTACK_LIMIT_REACHED": "No more cards can be thrown in",
     "BAD_MESSAGE": "Communication error",
@@ -19,6 +20,7 @@
     "GAME_NOT_ACTIVE": "The game is already over",
     "INTERNAL_ERROR": "Server error, please try again",
     "INVALID_ACTION_FOR_PHASE": "That move is not allowed now",
+    "INVITE_COOLDOWN": "You have just invited this player — give them a moment",
     "MARRIAGE_NOT_HELD": "You do not hold that marriage",
     "MARRIAGE_REQUIRES_LEAD": "A marriage is declared only on your lead",
     "MUST_DISCARD_TWO": "You must discard two cards",
@@ -60,8 +62,6 @@
   "errorPage": {
     "title": "Something went wrong",
     "description": "The game hit an error. Your table is still running — try going back.",
-    "retry": "Try again",
-    "toMenu": "To lobby",
-    "digest": "Error code: {{digest}}"
+    "retry": "Try again"
   }
 }

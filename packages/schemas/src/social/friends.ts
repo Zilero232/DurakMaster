@@ -38,3 +38,5 @@ export type TableInvite = z.infer<typeof tableInviteSchema>;
 export const MAX_FRIENDS = 200;
 
 export const INVITE_TTL_MS = 2 * 60 * 1000;
+
+export const INVITE_RESEND_MS = 30 * 1000;

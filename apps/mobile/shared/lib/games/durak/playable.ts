@@ -4,6 +4,8 @@ import { beats, canThrowIn, isLegalAttackCard } from '@durak-master/game-core';
 
 import { cardKey } from '@/shared/lib/cards';
 
+import { canTransferCard } from './transfer';
+
 export const getPlayableKeys = (
   view: ViewForGame<'durak'> | null,
   isMyTurn: boolean,
@@ -28,7 +30,7 @@ export const getPlayableKeys = (
         (pair) => pair.defense === null && beats(card, pair.attack, view.trump)
       );
 
-      if (canBeatSomething) {
+      if (canBeatSomething || canTransferCard(view, card)) {
         keys.add(cardKey(card));
       }
 

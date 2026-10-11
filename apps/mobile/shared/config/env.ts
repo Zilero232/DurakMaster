@@ -1,5 +1,4 @@
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
 
 export const APP_SCHEME = 'durakmaster';
 
@@ -16,10 +15,6 @@ const resolveApiUrl = (): string => {
 
   if (configured) {
     return configured;
-  }
-
-  if (Platform.OS === 'web') {
-    return `http://localhost:${SERVER_PORT}`;
   }
 
   const host = getDevHost();

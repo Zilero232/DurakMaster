@@ -4,10 +4,10 @@ import { tableSettingsSchema } from '../game';
 
 export const TABLE_PASSWORD_MAX_LENGTH = 32;
 
-export const tableStatusSchema = z.enum(['waiting', 'playing', 'finished']);
+const tableStatusSchema = z.enum(['waiting', 'playing', 'finished']);
 export type TableStatus = z.infer<typeof tableStatusSchema>;
 
-export const tablePlayerSchema = z.object({
+const tablePlayerSchema = z.object({
   userId: z.string(),
   name: z.string(),
   avatarUrl: z.string().nullable(),

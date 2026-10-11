@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const gamePhaseSchema = z.enum(['waiting', 'chooseLeader', 'playing', 'finished']);
+export const gamePhaseSchema = z.enum(['waiting', 'playing', 'finished']);
 
 export type GamePhase = z.infer<typeof gamePhaseSchema>;
 

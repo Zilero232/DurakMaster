@@ -41,9 +41,8 @@ The checklist at the end of [docs/games/durak.md](docs/games/durak.md) lists the
 mistakes that keep recurring — every entry there has a test behind it, and a new
 rule should arrive with one too.
 
-For UI changes, `bun test:e2e:shots` walks every screen at two viewports and
-writes PNGs to `e2e/.shots/`. Look at them; the layouts that break are rarely the
-ones you were editing.
+For UI changes, check every screen you touched on a small phone and a large one.
+The layouts that break are rarely the ones you were editing.
 
 ## Commits
 
@@ -64,6 +63,6 @@ they are there.
 ## Pull requests
 
 - One concern per PR. A rename and a bugfix in the same diff are two PRs.
-- CI must be green: `verify` and `e2e`.
+- CI must be green: `verify`.
 - If you changed the UI, attach a screenshot.
 - If you changed game rules, say which document section you are implementing.

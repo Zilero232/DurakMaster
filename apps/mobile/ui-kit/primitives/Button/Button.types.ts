@@ -5,7 +5,10 @@ export type ButtonVariant = 'danger' | 'ghost' | 'primary' | 'secondary';
 export type ButtonSize = 'default' | 'lg' | 'sm';
 
 export type ButtonProps = {
-  children: ReactNode;
+  children?: ReactNode;
+
+  /** Sits before the label, and stands in for it when there is no label. */
+  icon?: (color: string) => ReactNode;
   variant?: ButtonVariant;
   size?: ButtonSize;
   isFullWidth?: boolean;
@@ -14,8 +17,6 @@ export type ButtonProps = {
   isLoading?: boolean;
   accessibilityLabel?: string;
 
-  /** Stable hook for end-to-end tests; labels move with the locale, this does not. */
-  testID?: string;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
 };

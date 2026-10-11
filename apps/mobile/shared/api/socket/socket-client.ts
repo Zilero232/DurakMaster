@@ -3,60 +3,82 @@ import type { ClientMessage, ServerMessage } from '@durak-master/schemas';
 import { serverMessageSchema } from '@durak-master/schemas';
 import { WebSocket as ReconnectingWebSocket } from 'partysocket';
 
-export type SocketHandler = (message: ServerMessage) => void;
+import { WS_URL } from '@/shared/config';
 
-export type SocketState = 'closed' | 'connecting' | 'open';
+import { getAuthToken } from '../auth/auth-client';
 
-export type SocketStateHandler = (state: SocketState) => void;
+type SocketHandler = (message: ServerMessage) => void;
+
+type SocketState = 'closed' | 'connecting' | 'open';
+
+type SocketStateHandler = (state: SocketState) => void;
+
+let authToken: string | null = null;
+
+const readUrlWithFreshToken = async () => {
+  authToken = await getAuthToken();
+
+  return WS_URL;
+};
+
+type ReactNativeWebSocketConstructor = new (
+  url: string,
+  protocols?: string | string[],
+  options?: { headers: Record<string, string> } | null
+) => WebSocket;
+
+const ReactNativeWebSocket = WebSocket as unknown as ReactNativeWebSocketConstructor;
+
+class AuthorizedWebSocket extends ReactNativeWebSocket {
+  constructor(url: string, protocols?: string | string[]) {
+    super(url, protocols, authToken ? { headers: { Authorization: `Bearer ${authToken}` } } : null);
+  }
+}
 
 export class SocketClient {
   private socket: ReconnectingWebSocket | null = null;
-  private url: string | null = null;
   private readonly handlers = new Set<SocketHandler>();
   private readonly stateHandlers = new Set<SocketStateHandler>();
-  private pending: ClientMessage[] = [];
 
-  connect(url: string): void {
+  connect(): void {
     if (this.socket) {
-      if (this.url === url) {
-        return;
-      }
-
-      this.disconnect();
+      return;
     }
 
-    this.url = url;
-
-    this.socket = new ReconnectingWebSocket(url, [], {
+    const socket = new ReconnectingWebSocket(readUrlWithFreshToken, [], {
+      WebSocket: AuthorizedWebSocket,
       maxReconnectionDelay: 8000,
       minReconnectionDelay: 500,
       reconnectionDelayGrowFactor: 1.6,
       maxRetries: Number.POSITIVE_INFINITY
     });
 
+    this.socket = socket;
     this.notifyState('connecting');
 
-    this.socket.addEventListener('open', () => {
-      const queued = this.pending;
+    socket.addEventListener('open', () => {
+      if (this.socket === socket) {
+        this.notifyState('open');
+      }
+    });
 
-      this.pending = [];
+    socket.addEventListener('close', () => {
+      if (this.socket === socket) {
+        this.notifyState('closed');
+      }
+    });
 
-      for (const message of queued) {
-        this.send(message);
+    socket.addEventListener('error', () => {
+      if (this.socket === socket) {
+        this.notifyState('closed');
+      }
+    });
+
+    socket.addEventListener('message', (event) => {
+      if (this.socket !== socket) {
+        return;
       }
 
-      this.notifyState('open');
-    });
-
-    this.socket.addEventListener('close', () => {
-      this.notifyState('closed');
-    });
-
-    this.socket.addEventListener('error', () => {
-      this.notifyState('closed');
-    });
-
-    this.socket.addEventListener('message', (event) => {
       let parsed: unknown;
 
       try {
@@ -78,21 +100,21 @@ export class SocketClient {
   }
 
   disconnect(): void {
-    this.socket?.close();
+    const socket = this.socket;
+
     this.socket = null;
-    this.url = null;
-    this.pending = [];
+    socket?.close();
     this.notifyState('closed');
   }
 
-  send(message: ClientMessage): void {
+  send(message: ClientMessage): boolean {
     if (!this.socket || this.socket.readyState !== this.socket.OPEN) {
-      this.pending.push(message);
-
-      return;
+      return false;
     }
 
     this.socket.send(JSON.stringify(message));
+
+    return true;
   }
 
   subscribe(handler: SocketHandler): () => void {

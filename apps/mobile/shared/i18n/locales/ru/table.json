@@ -1,36 +1,26 @@
 {
   "table": {
     "waitingTitle": "Ожидание игроков",
-    "waitingCount": "{{current}} из {{max}}",
     "ready": "Готов",
     "notReady": "Не готов",
     "addBot": "Добавить бота",
-    "playerFallback": "Игрок {{seat}}",
-    "readyMark": "готов",
-    "waitingMark": "ждёт",
+    "inviteFriends": "Позвать",
+    "inviteFriendsHint": "Позвать друзей за стол",
     "surrender": "Сдаться",
     "surrenderTitle": "Сдаться?",
     "surrenderHint": "Партия будет засчитана как поражение, ставка не вернётся",
     "leave": "Выйти",
-    "yourTurn": "Ваш ход",
-    "defend": "Отбивайтесь",
-    "chooseTarget": "Выберите карту на столе",
-    "opponentTurn": "Ход соперника",
     "attackerTurn": "Ход за атакующим",
     "take": "Беру",
     "pass": "Бито",
     "calledPass": "Пас",
-    "transfer": "Перевести",
     "role": {
-      "attacks": "атакует",
-      "defends": "отбивается",
+      "attacks": "атака",
+      "defends": "защита",
       "out": "вышел",
       "offline": "отключён"
     },
-    "reaction": "Отправить реакцию {{emoji}}",
-    "seatFree": "Ждём",
-    "joining": "Заходим за стол…",
-    "deckLeft": "В колоде"
+    "seatFree": "Ждём"
   },
   "result": {
     "win": "Победа",
@@ -41,19 +31,7 @@
     "drawHint": "Карты закончились у всех одновременно",
     "credits": "{{value}} кредитов",
     "rating": "+{{value}} рейтинга",
-    "playAgain": "Ещё партию",
-    "toMenu": "В меню",
-    "leaveTable": "Выйти из-за стола",
-    "waitingReady": "Готовы: {{current}} из {{max}}",
-    "waitingOthers": "Ждём остальных…"
-  },
-  "discard": {
-    "title": "Отбой",
-    "empty": "Отбой пока пуст",
-    "count_one": "{{count}} карта вышла из игры",
-    "count_few": "{{count}} карты вышли из игры",
-    "count_many": "{{count}} карт вышло из игры",
-    "open": "Сброс"
+    "toMenu": "В меню"
   },
   "phrases": {
     "title": "Сказать",

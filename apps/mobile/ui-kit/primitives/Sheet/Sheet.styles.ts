@@ -20,8 +20,13 @@ export const styles = StyleSheet.create({
     flex: 1
   },
 
+  keyboardFrame: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    pointerEvents: 'box-none'
+  },
+
   panel: {
-    position: 'absolute',
     backgroundColor: colors.surface1,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.borderStrong,
@@ -39,22 +44,9 @@ export const styles = StyleSheet.create({
   },
 
   sheet: {
-    right: 0,
-    bottom: 0,
-    left: 0,
     paddingTop: spacing[2],
     borderTopLeftRadius: radii.xl,
     borderTopRightRadius: radii.xl
-  },
-
-  dialog: {
-    top: '50%',
-    left: '50%',
-    width: '100%',
-    maxWidth: 620,
-    paddingTop: spacing[3],
-    borderRadius: radii.xl,
-    transform: [{ translateX: '-50%' }, { translateY: '-50%' }]
   },
 
   grabberZone: {

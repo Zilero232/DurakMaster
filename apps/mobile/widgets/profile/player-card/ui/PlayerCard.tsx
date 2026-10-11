@@ -2,6 +2,7 @@ import { getRankInfo } from '@durak-master/schemas';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { getWinRate } from '@/shared/lib/stats';
 import { Avatar, Panel, Sheet, StatRow } from '@/ui-kit';
 
 import type { PlayerCardProps } from './PlayerCard.types';
@@ -16,8 +17,7 @@ export const PlayerCard = ({ profile, isOpen, onClose }: PlayerCardProps) => {
   }
 
   const rank = getRankInfo(profile.rating);
-  const decided = profile.gamesWon + profile.gamesLost;
-  const winRate = decided === 0 ? 0 : profile.gamesWon / decided;
+  const winRate = getWinRate(profile);
 
   return (
     <Sheet isOpen={isOpen} title={t('stats.title')} onClose={onClose}>

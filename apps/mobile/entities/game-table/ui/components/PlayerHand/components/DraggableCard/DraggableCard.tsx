@@ -24,7 +24,6 @@ export const DraggableCard = ({
   onDragEnd
 }: DraggableCardProps) => {
   const { gesture, style: dragStyle } = useCardGesture({
-    card,
     isPlayable,
     dropZones,
     onDropOn,

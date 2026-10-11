@@ -4,13 +4,12 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TextInput, View } from 'react-native';
 
-import { colors, iconSize } from '@/ui-kit';
+import { FriendRow } from '@/entities/social';
+import { colors, EmptyState, iconSize } from '@/ui-kit';
 
 import type { SearchTabProps } from './SearchTab.types';
 
 import { MIN_QUERY } from '../../FriendsPanel.config';
-import { EmptyState } from '../EmptyState';
-import { FriendRow } from '../FriendRow';
 import { DEBOUNCE_MS } from './SearchTab.config';
 import { styles } from './SearchTab.styles';
 

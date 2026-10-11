@@ -1,9 +1,9 @@
 import type { PublicProfile } from '@durak-master/schemas';
 
-import type { FriendRowAction } from '../FriendRow';
+import type { ManageAction } from '../../FriendsPanel.types';
 
 export type SearchTabProps = {
   found: PublicProfile[];
   onSearch: (query: string) => void;
-  onAction: (action: FriendRowAction, userId: string) => void;
+  onAction: (action: ManageAction, userId: string) => void;
 };

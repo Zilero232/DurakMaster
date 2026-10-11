@@ -1,1 +1,1 @@
-export type { CardScale, HandSort } from './table-preferences';
+export type { HandSort } from './table-preferences';

@@ -6,7 +6,8 @@ export const createTableValue = ({
   table,
   settings,
   phrases,
-  isWaiting
+  isWaiting,
+  onInviteFriends
 }: CreateTableValueInput): TableContextValue => {
   const { drag, profile, currentTable } = table;
 
@@ -18,7 +19,6 @@ export const createTableValue = ({
   const look = {
     hasHints: table.showHints,
     sortMode: table.handSort,
-    cardScale: table.cardScale,
     isInstant: table.isInstant
   };
 
@@ -26,7 +26,6 @@ export const createTableValue = ({
     isMyTurn: game.isMyTurn,
     isWaiting,
     isReady,
-    isLoser: game.outcome?.loserUserId === profile?.userId,
     hasFreeSeat: seatCount < settings.maxPlayers,
     canPass: game.canPass,
     canTake: game.canTake,
@@ -52,6 +51,7 @@ export const createTableValue = ({
     onTake: game.take,
     onReady: table.setReady,
     onAddBot: table.addBot,
+    onInviteFriends,
     onSendPhrase: table.sendPhrase,
     onSendEmoji: table.sendEmoji,
     onUseBoost: table.handleBoost

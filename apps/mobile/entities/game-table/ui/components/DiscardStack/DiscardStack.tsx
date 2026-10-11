@@ -2,6 +2,8 @@ import { Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { times } from 'remeda';
 
+import { duration } from '@/ui-kit';
+
 import type { DiscardStackProps } from './DiscardStack.types';
 
 import { useCardSize } from '../../../model';
@@ -31,7 +33,7 @@ export const DiscardStack = ({ count }: DiscardStackProps) => {
               transform: [{ rotate: `${(index - visible / 2) * 3}deg` }]
             }
           ]}
-          entering={FadeIn.duration(160)}
+          entering={FadeIn.duration(duration.fast)}
         />
       ))}
 

@@ -1,23 +1,21 @@
 import { useWindowDimensions } from 'react-native';
 
-import { breakpoint } from '@/shared/model/layout';
+import { CORNER_BUTTON_CLEARANCE, spacing } from '@/ui-kit';
 
 import type { SeatMetrics } from '../../../lib';
 
 import { fitSeatToRow } from '../../../lib';
-import { COMPACT, DESKTOP, LABEL_RANGE, WIDE } from './use-seat-size.config';
+import { LABEL_RANGE, SEAT_BASE } from './use-seat-size.config';
+
+const ROW_INSETS = spacing[2] + CORNER_BUTTON_CLEARANCE;
 
 export const useSeatSize = (seats = 0): SeatMetrics => {
   const { width } = useWindowDimensions();
 
-  if (width >= breakpoint.desktop) {
-    return fitSeatToRow({ base: DESKTOP, label: LABEL_RANGE, width, seats });
-  }
-
   return fitSeatToRow({
-    base: width >= breakpoint.medium ? WIDE : COMPACT,
+    base: SEAT_BASE,
     label: LABEL_RANGE,
-    width,
+    width: width - ROW_INSETS,
     seats
   });
 };

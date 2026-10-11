@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text } from 'react-native';
 
-import { TEST_ID } from '@/shared/config';
 import { AppLogo, Button, Panel } from '@/ui-kit';
 
 import type { AuthCardProps } from './AuthCard.types';
@@ -33,14 +32,7 @@ export const AuthCard = ({
 
       {errors.root && <Text style={styles.error}>{errors.root.message}</Text>}
 
-      <Button
-        isFullWidth
-        isLoading={isSubmitting}
-        size='lg'
-        testID={TEST_ID.auth.submit}
-        variant='primary'
-        onPress={onSubmit}
-      >
+      <Button isFullWidth isLoading={isSubmitting} size='lg' variant='primary' onPress={onSubmit}>
         {t(isSignIn ? 'auth.signIn' : 'auth.signUp')}
       </Button>
 

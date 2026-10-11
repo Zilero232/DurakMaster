@@ -1,8 +1,10 @@
 import type { DurakState } from '@durak-master/schemas';
 
+import { isJoker } from '@durak-master/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { decideBotAction } from '../../bot';
+import { beats } from '../../rules';
 import { createGame } from '../../setup';
 import { reduce } from '../index';
 
@@ -56,10 +58,8 @@ describe('durak pass', () => {
       return;
     }
 
-    const beating = (attacked.state.hands[defender] ?? []).find(
-      (card) =>
-        (card.suit === attackCard.suit && card.rank !== attackCard.rank) ||
-        card.suit === attacked.state.trump
+    const beating = (attacked.state.hands[defender] ?? []).find((card) =>
+      beats(card, attackCard, attacked.state.trump)
     );
 
     expect(beating).toBeDefined();
@@ -220,7 +220,7 @@ describe('durak bout', () => {
     }
 
     const joining = (opened.state.hands[thrower.userId] ?? []).find(
-      (item) => item.rank === opener.rank
+      (item) => !isJoker(item) && !isJoker(opener) && item.rank === opener.rank
     );
 
     if (joining) {

@@ -7,6 +7,7 @@ export type ProfileDraft = {
 };
 
 export type UseProfileDraftInput = {
+  isOpen: boolean;
   profile: MyProfile;
   onSaved: () => void;
 };

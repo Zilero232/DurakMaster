@@ -1,18 +1,19 @@
-import type { RewardedAdResult, RewardedAdsAdapter } from '@durak-master/platform';
-
 import { isEmpty, isNonNullish } from 'remeda';
 
-import { platformInfo } from './platform-info';
-import { AD_SHOW_TIMEOUT_MS, AD_UNIT_ID } from './rewarded-ads.config';
+import type { RewardedAdResult } from './rewarded-ads.types';
+
+import { AD_SHOW_TIMEOUT_MS, AD_UNIT_ID, ARE_ADS_ENABLED } from './rewarded-ads.config';
 
 const isSupported = (unitId?: string): unitId is string =>
-  platformInfo.isNative && isNonNullish(unitId) && !isEmpty(unitId);
+  ARE_ADS_ENABLED && isNonNullish(unitId) && !isEmpty(unitId);
 
-const showRewardedAd = async (unitId: string): Promise<RewardedAdResult> => {
+const showRewardedAd = async (unitId: string, userId: string): Promise<RewardedAdResult> => {
   const { AdEventType, RewardedAd, RewardedAdEventType } =
     await import('react-native-google-mobile-ads');
 
-  const ad = RewardedAd.createForAdRequest(unitId);
+  const ad = RewardedAd.createForAdRequest(unitId, {
+    serverSideVerificationOptions: { userId }
+  });
 
   return new Promise((resolve) => {
     const unsubscribe: (() => void)[] = [];
@@ -63,16 +64,16 @@ const showRewardedAd = async (unitId: string): Promise<RewardedAdResult> => {
   });
 };
 
-export const rewardedAdsAdapter: RewardedAdsAdapter = {
-  isAvailable: () => isSupported(AD_UNIT_ID),
+export const rewardedAdsAdapter = {
+  isAvailable: (): boolean => isSupported(AD_UNIT_ID),
 
-  show: async () => {
+  show: async (userId: string): Promise<RewardedAdResult> => {
     if (!isSupported(AD_UNIT_ID)) {
       return { status: 'unavailable' };
     }
 
     try {
-      return await showRewardedAd(AD_UNIT_ID);
+      return await showRewardedAd(AD_UNIT_ID, userId);
     } catch (error) {
       return {
         status: 'failed',

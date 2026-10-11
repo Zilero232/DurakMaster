@@ -5,8 +5,7 @@ export const styles = StyleSheet.create({
     flex: 1
   },
 
-  vignette: {
-    pointerEvents: 'none',
+  layer: {
     position: 'absolute',
     inset: 0
   }

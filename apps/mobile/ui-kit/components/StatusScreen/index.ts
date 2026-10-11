@@ -1,3 +1,3 @@
 export { StatusScreen } from './StatusScreen';
 
-export type { StatusScreenProps } from './StatusScreen.types';
+export type { StatusScreenProps, StatusScreenTone } from './StatusScreen.types';

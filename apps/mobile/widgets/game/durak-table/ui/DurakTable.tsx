@@ -7,7 +7,12 @@ import { isWaitingForPlayers } from '../lib';
 import { useTableSounds } from '../model';
 import { DurakTable as DurakPlayfield } from './components';
 
-export const DurakTable = ({ settings, onLeave, onSelectPlayer }: DurakTableProps) => {
+export const DurakTable = ({
+  settings,
+  onInviteFriends,
+  onLeave,
+  onSelectPlayer
+}: DurakTableProps) => {
   const currentTable = useSessionStore((store) => store.currentTable);
   const tablePhrases = useSessionStore((store) => store.phrases);
   const tableEmojis = useSessionStore((store) => store.emojis);
@@ -15,9 +20,9 @@ export const DurakTable = ({ settings, onLeave, onSelectPlayer }: DurakTableProp
   const game = useOnlineGame();
   const phrases = useTableChatter({ emojis: tableEmojis, phrases: tablePhrases, view: game.view });
 
-  useTableSounds(game.view, game.isMyTurn);
+  useTableSounds({ view: game.view, isMyTurn: game.isMyTurn });
 
-  if (!currentTable || settings.game !== 'durak') {
+  if (!currentTable) {
     return null;
   }
 
@@ -31,6 +36,7 @@ export const DurakTable = ({ settings, onLeave, onSelectPlayer }: DurakTableProp
       phrases={phrases}
       settings={settings}
       view={view}
+      onInviteFriends={onInviteFriends}
       onLeave={onLeave}
       onSelectPlayer={onSelectPlayer}
     />

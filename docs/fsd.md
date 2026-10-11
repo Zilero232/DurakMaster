@@ -46,7 +46,7 @@ apps/mobile/
 │   └── <domain>/       # game | lobby | profile | rules | social
 │       └── <widget-name>/
 ├── features/           # Features layer
-│   └── <domain>/       # auth | game | lobby | settings
+│   └── <domain>/       # auth | game | lobby | settings | social
 │       └── <feature-name>/
 ├── entities/           # Entities layer
 │   └── <entity-name>/
@@ -56,7 +56,7 @@ apps/mobile/
 │   ├── i18n/           # i18next, locales, key typing
 │   ├── lib/            # format, haptics, sound, time
 │   ├── model/          # layout, preferences, clock
-│   └── platform/       # bridge to @durak-master/platform
+│   └── platform/       # native SDK adapters: rewarded ads
 └── ui-kit/             # Design system (no slices — segments only)
     ├── primitives/     # basic: Button, Avatar, Sheet
     ├── components/     # composite: PlayingCard, StatusScreen
@@ -128,7 +128,7 @@ A slice is a directory inside a layer, named after a **business domain** (not a 
 - `profile/` (widgets only) — wallet, profile menu
 - `settings/` (features only) — settings panel
 - `rules/` (widgets only) — rules panel
-- `social/` (widgets only) — friends, achievements, leaderboard
+- `social/` — friends, achievements, leaderboard as widgets; inviting friends to a table and answering an invite as features (`invite-friends`, `answer-invite`)
 
 A domain folder is an organizational container, **not a public API**. An import always goes down to the slice level: `@/features/lobby/create-table`, not `@/features/lobby`.
 

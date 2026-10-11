@@ -7,6 +7,7 @@ export const MIN_TAP_SIZE = 44;
 export const styles = StyleSheet.create({
   root: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: spacing[1],
     padding: spacing[1],
     borderWidth: StyleSheet.hairlineWidth,
@@ -16,13 +17,21 @@ export const styles = StyleSheet.create({
   },
 
   option: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: MIN_TAP_SIZE - spacing[2],
     paddingHorizontal: spacing[2],
     borderRadius: radii.sm,
     overflow: 'hidden'
+  },
+
+  pair: {
+    flexBasis: '46%'
+  },
+
+  single: {
+    flexBasis: 0
   },
 
   optionActive: {

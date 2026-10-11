@@ -21,18 +21,21 @@ const toDraft = (name: string, avatarUrl: string | null): ProfileDraft => ({
   pickedUri: null
 });
 
-export const useProfileDraft = ({ profile, onSaved }: UseProfileDraftInput) => {
+export const useProfileDraft = ({ isOpen, profile, onSaved }: UseProfileDraftInput) => {
   const { t } = useTranslation();
 
   const { setAvatar, setName, writeProfile } = useMyProfile();
 
   const [draft, setDraft] = useState(() => toDraft(profile.name, profile.avatarUrl));
-  const [source, setSource] = useState(profile);
+  const [wasOpen, setWasOpen] = useState(isOpen);
   const [isSaving, toggleSaving] = useBoolean(false);
 
-  if (source !== profile) {
-    setSource(profile);
-    setDraft(toDraft(profile.name, profile.avatarUrl));
+  if (isOpen !== wasOpen) {
+    setWasOpen(isOpen);
+
+    if (isOpen) {
+      setDraft(toDraft(profile.name, profile.avatarUrl));
+    }
   }
 
   const trimmedName = draft.name.trim();

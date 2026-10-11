@@ -1,3 +1,5 @@
+export { InviteButton } from './InviteButton';
+
 export { MoveButton } from './MoveButton';
 
 export { SeatButton } from './SeatButton';

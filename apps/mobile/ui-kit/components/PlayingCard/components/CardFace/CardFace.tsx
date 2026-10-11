@@ -1,3 +1,4 @@
+import { isJoker } from '@durak-master/schemas';
 import { Text, View } from 'react-native';
 
 import type { CardFaceProps } from './CardFace.types';
@@ -9,8 +10,8 @@ import { createStyles } from './CardFace.styles';
 export const CardFace = ({ card, width, theme }: CardFaceProps) => {
   const styles = createStyles(width);
 
-  if (card.joker) {
-    const jokerColor = suitColor(theme, card.joker === 'red' ? 'hearts' : 'spades');
+  if (isJoker(card)) {
+    const jokerColor = suitColor(theme, card.color === 'red' ? 'hearts' : 'spades');
 
     return (
       <View style={styles.root}>

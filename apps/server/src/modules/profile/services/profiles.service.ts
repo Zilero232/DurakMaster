@@ -1,7 +1,7 @@
 import type { AvatarSeed, MyProfile, PublicProfile } from '@durak-master/schemas';
 
 import { toAvatarUrl } from '@durak-master/schemas';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../lib/prisma/prisma.service';
 import { FREE_CREDITS_AMOUNT, FREE_CREDITS_INTERVAL_MS } from '../config';
@@ -12,10 +12,18 @@ export type ProfileIdentityListener = (
   identity: { name: string; avatarUrl: string | null }
 ) => void;
 
+export type GameResult = {
+  userId: string;
+
+  /** Credits handed back at settlement: the returned stake plus any winnings. */
+  payout: number;
+  ratingDelta: number;
+  isWinner: boolean;
+  isDraw: boolean;
+};
+
 @Injectable()
 export class ProfilesService {
-  private readonly logger = new Logger(ProfilesService.name);
-
   private readonly identityListeners = new Set<ProfileIdentityListener>();
 
   constructor(private readonly prisma: PrismaService) {}
@@ -115,32 +123,24 @@ export class ProfilesService {
     });
   }
 
-  async applyGameResult(input: {
-    userId: string;
-    creditsDelta: number;
-    ratingDelta: number;
-    isWinner: boolean;
-    isDraw: boolean;
-  }): Promise<void> {
-    const { userId, creditsDelta, ratingDelta, isWinner, isDraw } = input;
-
-    try {
-      await this.prisma.profile.update({
-        where: { userId },
-        data: {
-          credits: { increment: BigInt(creditsDelta) },
-          rating: { increment: ratingDelta },
-          gamesPlayed: { increment: 1 },
-          ...(isDraw
-            ? {}
-            : isWinner
-              ? { gamesWon: { increment: 1 } }
-              : { gamesLost: { increment: 1 } })
-        }
-      });
-    } catch (error) {
-      this.logger.error(`Failed to record the game result for ${userId}`, error);
-    }
+  async applyGameResults(results: GameResult[]): Promise<void> {
+    await this.prisma.$transaction(
+      results.map(({ userId, payout, ratingDelta, isWinner, isDraw }) =>
+        this.prisma.profile.update({
+          where: { userId },
+          data: {
+            credits: { increment: BigInt(payout) },
+            rating: { increment: ratingDelta },
+            gamesPlayed: { increment: 1 },
+            ...(isDraw
+              ? {}
+              : isWinner
+                ? { gamesWon: { increment: 1 } }
+                : { gamesLost: { increment: 1 } })
+          }
+        })
+      )
+    );
   }
 
   async reserveStake(userId: string, bet: number): Promise<boolean> {

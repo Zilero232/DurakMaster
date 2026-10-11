@@ -9,6 +9,8 @@ export const colors = {
   feltMid: '#164863',
   feltDeep: '#103850',
   feltEdge: '#0A2438',
+  feltGlow: '#2E7398',
+  feltWeave: '#0B2B41',
 
   foreground: '#F4F1EC',
 
@@ -152,23 +154,28 @@ export const lineHeight = {
   relaxed: (size: number) => Math.round(size * 1.55)
 } as const;
 
-const shadow = (opacity: number, radius: number, offsetY: number, elevation: number) => ({
-  boxShadow: `0px ${offsetY}px ${radius}px rgba(0, 0, 0, ${opacity})`,
-  elevation
+type ShadowInput = {
+  alpha: number;
+  blur: number;
+  offsetY: number;
+};
+
+const shadow = ({ alpha, blur, offsetY }: ShadowInput) => ({
+  boxShadow: `0px ${offsetY}px ${blur}px rgba(0, 0, 0, ${alpha})`
 });
 
 export const shadows = {
-  card: shadow(0.35, 8, 3, 3),
-  cardRaised: shadow(0.45, 18, 8, 8),
-  panel: shadow(0.55, 28, 12, 12),
-  tile: shadow(0.3, 5, 2, 2),
-  button: shadow(0.4, 8, 3, 4)
+  card: shadow({ alpha: 0.35, blur: 8, offsetY: 3 }),
+  cardRaised: shadow({ alpha: 0.45, blur: 18, offsetY: 8 }),
+  panel: shadow({ alpha: 0.55, blur: 28, offsetY: 12 }),
+  tile: shadow({ alpha: 0.3, blur: 5, offsetY: 2 }),
+  button: shadow({ alpha: 0.4, blur: 8, offsetY: 3 })
 } as const;
 
 export const glow = {
-  accent: { boxShadow: `0px 0px 12px ${colors.accentBright}`, elevation: 6 },
-  trump: { boxShadow: `0px 0px 12px ${colors.trump}`, elevation: 6 },
-  success: { boxShadow: `0px 0px 12px ${colors.success}`, elevation: 6 }
+  accent: { boxShadow: `0px 0px 12px ${colors.accentBright}` },
+  trump: { boxShadow: `0px 0px 12px ${colors.trump}` },
+  success: { boxShadow: `0px 0px 12px ${colors.success}` }
 } as const;
 
 export const card = {

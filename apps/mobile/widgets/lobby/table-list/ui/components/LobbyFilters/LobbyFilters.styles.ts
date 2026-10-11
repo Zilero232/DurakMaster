@@ -24,7 +24,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[1],
-    minHeight: 36,
+    minHeight: 44,
     paddingHorizontal: spacing[3],
     borderWidth: borderWidth.hairline,
     borderColor: colors.border,

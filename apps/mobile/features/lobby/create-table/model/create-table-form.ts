@@ -9,6 +9,7 @@ import {
   gameIdSchema,
   maxDurakPlayers,
   PLAYER_RANGE_BY_GAME,
+  TABLE_PASSWORD_MAX_LENGTH,
   TURN_SECONDS_BY_SPEED
 } from '@durak-master/schemas';
 import { clamp } from 'remeda';
@@ -19,7 +20,7 @@ export const createTableFormSchema = commonTableSettingsSchema
     game: gameIdSchema,
 
     durakRules: durakRulesSchema,
-    password: z.string().max(32)
+    password: z.string().max(TABLE_PASSWORD_MAX_LENGTH)
   })
   .refine((values) => !values.isPrivate || values.password.trim().length > 0, {
     path: ['password']

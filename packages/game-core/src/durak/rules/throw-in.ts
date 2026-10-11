@@ -1,9 +1,11 @@
-import type { DurakState, TablePair } from '@durak-master/schemas';
+import type { DurakState, Rank, TablePair } from '@durak-master/schemas';
 
 import { isJoker } from '@durak-master/schemas';
 
-export function allowedThrowInRanks(table: readonly TablePair[]): Set<string> {
-  const ranks = new Set<string>();
+import { nextActiveSeat, previousActiveSeat } from '../../shared';
+
+export function allowedThrowInRanks(table: readonly TablePair[]): Set<Rank> {
+  const ranks = new Set<Rank>();
 
   for (const pair of table) {
     if (!isJoker(pair.attack)) {
@@ -40,9 +42,8 @@ export function canThrowIn(
     return true;
   }
 
-  const count = state.players.length;
-  const leftOfDefender = (state.defenderSeat + count - 1) % count;
-  const rightOfDefender = (state.defenderSeat + 1) % count;
+  const seatBeforeDefender = previousActiveSeat(state.players, state.defenderSeat);
+  const seatAfterDefender = nextActiveSeat(state.players, state.defenderSeat);
 
-  return seat === leftOfDefender || seat === rightOfDefender;
+  return seat === seatBeforeDefender || seat === seatAfterDefender;
 }

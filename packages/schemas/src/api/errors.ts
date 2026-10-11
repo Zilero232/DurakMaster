@@ -12,10 +12,3 @@ export const apiErrorCodeSchema = z.enum([
 ]);
 
 export type ApiErrorCode = z.infer<typeof apiErrorCodeSchema>;
-
-export const apiErrorSchema = z.object({
-  code: apiErrorCodeSchema,
-  error: z.string()
-});
-
-export type ApiError = z.infer<typeof apiErrorSchema>;

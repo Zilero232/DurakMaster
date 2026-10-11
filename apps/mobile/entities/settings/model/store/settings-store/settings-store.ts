@@ -15,7 +15,6 @@ export const useSettingsStore = create<SettingsStore>()(
       ...INITIAL_STATE,
 
       setCardTheme: (cardTheme) => set({ cardTheme }),
-      setCardScale: (cardScale) => set({ cardScale }),
 
       setVolume: (volume) => {
         applyVolume(volume);
@@ -39,7 +38,6 @@ export const useSettingsStore = create<SettingsStore>()(
 
       partialize: ({
         cardTheme,
-        cardScale,
         volume,
         isHapticsEnabled,
         showHints,
@@ -48,7 +46,6 @@ export const useSettingsStore = create<SettingsStore>()(
         isBatterySaver
       }) => ({
         cardTheme,
-        cardScale,
         volume,
         isHapticsEnabled,
         showHints,

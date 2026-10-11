@@ -5,13 +5,11 @@ import { Button, Sheet } from '@/ui-kit';
 
 import type { RulesPanelProps } from './RulesPanel.types';
 
-import { RULE_SECTIONS } from './RulesPanel.config';
+import { DURAK_RULE_SECTIONS } from './RulesPanel.config';
 import { styles } from './RulesPanel.styles';
 
-export const RulesPanel = ({ isOpen, game = 'durak', onClose }: RulesPanelProps) => {
+export const RulesPanel = ({ isOpen, onClose }: RulesPanelProps) => {
   const { t } = useTranslation();
-
-  const sections = RULE_SECTIONS[game] ?? [];
 
   return (
     <Sheet
@@ -25,10 +23,10 @@ export const RulesPanel = ({ isOpen, game = 'durak', onClose }: RulesPanelProps)
       onClose={onClose}
     >
       <View style={styles.sections}>
-        {sections.map((section) => (
+        {DURAK_RULE_SECTIONS.map((section) => (
           <View key={section} style={styles.section}>
-            <Text style={styles.heading}>{t(`rules.${game}.${section}.title`)}</Text>
-            <Text style={styles.text}>{t(`rules.${game}.${section}.text`)}</Text>
+            <Text style={styles.heading}>{t(`rules.durak.${section}.title`)}</Text>
+            <Text style={styles.text}>{t(`rules.durak.${section}.text`)}</Text>
           </View>
         ))}
       </View>

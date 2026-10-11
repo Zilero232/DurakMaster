@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
-import { colors, iconSize } from '@/ui-kit';
+import { colors, duration, iconSize, spacing } from '@/ui-kit';
 
 import type { BoostButtonProps } from './BoostButton.types';
 
@@ -22,8 +22,8 @@ export const BoostButton = ({ boost, price, isDisabled = false, onPress }: Boost
     <View style={styles.root}>
       {isHintVisible && (
         <Animated.View
-          entering={FadeIn.duration(120)}
-          exiting={FadeOut.duration(160)}
+          entering={FadeIn.duration(duration.fast)}
+          exiting={FadeOut.duration(duration.fast)}
           style={styles.hint}
         >
           <Text style={styles.hintTitle}>{t(BOOST_LABELS[boost])}</Text>
@@ -38,6 +38,7 @@ export const BoostButton = ({ boost, price, isDisabled = false, onPress }: Boost
         accessibilityRole='button'
         accessibilityState={{ disabled: isDisabled }}
         disabled={isDisabled}
+        hitSlop={{ left: spacing[1], right: spacing[1] }}
         style={[styles.button, isDisabled && styles.disabled]}
         onLongPress={showHint}
         onPress={() => onPress(boost)}

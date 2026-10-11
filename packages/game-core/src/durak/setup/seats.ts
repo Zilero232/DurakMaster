@@ -38,18 +38,3 @@ export function findFirstAttackerSeat(
 
   return bestTrump === null ? bestAnySeat : bestSeat;
 }
-
-export function nextActiveSeat(players: PlayerState[], fromSeat: number): number {
-  const count = players.length;
-
-  for (let step = 1; step <= count; step++) {
-    const seat = (fromSeat + step) % count;
-    const player = players.find((item) => item.seat === seat);
-
-    if (player && !player.isOut) {
-      return seat;
-    }
-  }
-
-  return fromSeat;
-}

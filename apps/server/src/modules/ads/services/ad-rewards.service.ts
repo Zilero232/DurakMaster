@@ -10,17 +10,22 @@ import { AD_SKIP_COOLDOWN_MS, AD_SKIP_WINDOW_MS, AD_SKIPS_PER_DAY } from '../con
 
 const WRITE_CONFLICT = 'P2034';
 
+const UNIQUE_VIOLATION = 'P2002';
+
 const WRITE_CONFLICT_RETRIES = 1;
 
-const isWriteConflict = (error: unknown): boolean =>
-  error instanceof Prisma.PrismaClientKnownRequestError && error.code === WRITE_CONFLICT;
+const hasPrismaCode = (error: unknown, code: string): boolean =>
+  error instanceof Prisma.PrismaClientKnownRequestError && error.code === code;
 
 export type AdSkipOutcome =
+  | { status: 'duplicate' }
   | { status: 'granted'; profile: MyProfile }
   | { status: 'nothing-to-skip' }
   | { status: 'on-cooldown' }
   | { status: 'over-limit' }
   | { status: 'unknown-player' };
+
+type ClaimStatus = Exclude<AdSkipOutcome['status'], 'nothing-to-skip' | 'unknown-player'>;
 
 @Injectable()
 export class AdRewardsService {
@@ -29,10 +34,16 @@ export class AdRewardsService {
     private readonly profiles: ProfilesService
   ) {}
 
-  private async claim(userId: string): Promise<Exclude<AdSkipOutcome['status'], 'unknown-player'>> {
+  private async claim(userId: string, transactionId: string): Promise<ClaimStatus> {
     return this.prisma.$transaction(
       async (tx) => {
         const now = Date.now();
+
+        const sameView = await tx.adView.findUnique({ where: { transactionId } });
+
+        if (sameView) {
+          return 'duplicate' as const;
+        }
 
         const lastView = await tx.adView.findFirst({
           where: { userId },
@@ -51,7 +62,7 @@ export class AdRewardsService {
           return 'over-limit' as const;
         }
 
-        await tx.adView.create({ data: { userId } });
+        await tx.adView.create({ data: { userId, transactionId } });
 
         await tx.profile.update({
           where: { userId },
@@ -64,16 +75,18 @@ export class AdRewardsService {
     );
   }
 
-  private async claimWithRetry(
-    userId: string
-  ): Promise<Exclude<AdSkipOutcome['status'], 'unknown-player'>> {
+  private async claimWithRetry(userId: string, transactionId: string): Promise<ClaimStatus> {
     let attemptsLeft = WRITE_CONFLICT_RETRIES;
 
     while (true) {
       try {
-        return await this.claim(userId);
+        return await this.claim(userId, transactionId);
       } catch (error) {
-        if (!isWriteConflict(error)) {
+        if (hasPrismaCode(error, UNIQUE_VIOLATION)) {
+          return 'duplicate';
+        }
+
+        if (!hasPrismaCode(error, WRITE_CONFLICT)) {
           throw error;
         }
 
@@ -86,7 +99,7 @@ export class AdRewardsService {
     }
   }
 
-  async skipBonusWait(userId: string): Promise<AdSkipOutcome> {
+  async skipBonusWait(userId: string, transactionId: string): Promise<AdSkipOutcome> {
     const profile = await this.prisma.profile.findUnique({ where: { userId } });
 
     if (!profile) {
@@ -99,7 +112,7 @@ export class AdRewardsService {
       return { status: 'nothing-to-skip' };
     }
 
-    const outcome = await this.claimWithRetry(userId);
+    const outcome = await this.claimWithRetry(userId, transactionId);
 
     if (outcome !== 'granted') {
       return { status: outcome };

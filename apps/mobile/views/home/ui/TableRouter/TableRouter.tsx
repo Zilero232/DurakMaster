@@ -1,33 +1,42 @@
-import { useState } from 'react';
 import { match } from 'ts-pattern';
 
 import { useSessionStore } from '@/entities/session';
-import { DurakTable } from '@/widgets/game/durak-table';
-import { SwipeToLeave, UnsupportedGame, useTableStage } from '@/widgets/game/online-table';
+import { InviteFriendsSheet } from '@/features/social/invite-friends';
+import { DurakTable, isWaitingForPlayers } from '@/widgets/game/durak-table';
+import { SwipeToLeave, useTableStage } from '@/widgets/game/online-table';
 import { PlayerCard } from '@/widgets/profile/player-card';
+
+import { useTableSheets } from '../../model';
 
 export const TableRouter = () => {
   const leaveTable = useSessionStore((store) => store.leaveTable);
-  const tablePlayers = useSessionStore((store) => store.tablePlayers);
+  const currentTable = useSessionStore((store) => store.currentTable);
+  const view = useSessionStore((store) => store.view);
 
   const stage = useTableStage();
 
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const isWaiting = isWaitingForPlayers({ table: currentTable, view });
+
+  const sheets = useTableSheets({ isWaiting });
 
   return match(stage)
     .with({ kind: 'absent' }, () => null)
-    .with({ kind: 'unsupported' }, ({ game }) => (
-      <UnsupportedGame game={game} onLeave={leaveTable} />
-    ))
     .with({ kind: 'game' }, ({ settings }) => (
-      <SwipeToLeave onLeave={leaveTable}>
-        <DurakTable settings={settings} onLeave={leaveTable} onSelectPlayer={setSelectedUserId} />
+      <SwipeToLeave isEnabled={isWaiting} onLeave={leaveTable}>
+        <DurakTable
+          settings={settings}
+          onInviteFriends={sheets.openInvite}
+          onLeave={leaveTable}
+          onSelectPlayer={sheets.selectSeat}
+        />
 
         <PlayerCard
-          isOpen={selectedUserId !== null}
-          profile={tablePlayers.find((player) => player.userId === selectedUserId) ?? null}
-          onClose={() => setSelectedUserId(null)}
+          isOpen={sheets.isPlayerCardOpen}
+          profile={sheets.selectedPlayer}
+          onClose={sheets.closePlayerCard}
         />
+
+        <InviteFriendsSheet isOpen={sheets.isInviteOpen} onClose={sheets.closeInvite} />
       </SwipeToLeave>
     ))
     .exhaustive();

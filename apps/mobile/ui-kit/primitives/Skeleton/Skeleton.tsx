@@ -10,7 +10,7 @@ import Animated, {
 import type { SkeletonProps } from './Skeleton.types';
 
 import { radii } from '../../theme';
-import { PULSE_MS } from './Skeleton.config';
+import { PULSE_FROM_OPACITY, PULSE_MS, PULSE_TO_OPACITY } from './Skeleton.config';
 import { styles } from './Skeleton.styles';
 
 export const Skeleton = ({
@@ -19,11 +19,11 @@ export const Skeleton = ({
   radius = radii.sm,
   style
 }: SkeletonProps) => {
-  const opacity = useSharedValue(0.4);
+  const opacity = useSharedValue(PULSE_FROM_OPACITY);
 
   useEffect(() => {
     opacity.value = withRepeat(
-      withTiming(0.85, { duration: PULSE_MS, easing: Easing.inOut(Easing.quad) }),
+      withTiming(PULSE_TO_OPACITY, { duration: PULSE_MS, easing: Easing.inOut(Easing.quad) }),
       -1,
       true
     );

@@ -5,4 +5,4 @@ export {
   BOT_SILENT_DELAY_MS,
   isVisibleBotAction
 } from './bot.config';
-export { MISSED_TURNS_LIMIT, READY_TIMEOUT_MS, RECONNECT_GRACE_MS } from './reconnect.config';
+export { READY_TIMEOUT_MS, RECONNECT_GRACE_MS } from './reconnect.config';

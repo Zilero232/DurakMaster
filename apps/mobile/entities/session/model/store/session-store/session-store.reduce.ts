@@ -5,6 +5,19 @@ import { PHRASE_HISTORY_LIMIT } from '@durak-master/schemas';
 
 import type { SessionState } from './session-store.types';
 
+export const LEFT_TABLE_STATE: Partial<SessionState> = {
+  isJoiningTable: false,
+  joiningTableId: null,
+  currentTable: null,
+  mySeat: null,
+  view: null,
+  phrases: [],
+  emojis: {},
+  revealed: null,
+  tablePlayers: [],
+  selectedTableCardKey: null
+};
+
 export const reduceServerMessage = (
   state: SessionState,
   message: ServerMessage
@@ -43,18 +56,7 @@ export const reduceServerMessage = (
       };
 
     case 'table:left':
-      return {
-        isJoiningTable: false,
-        joiningTableId: null,
-        currentTable: null,
-        mySeat: null,
-        view: null,
-        phrases: [],
-        emojis: {},
-        revealed: null,
-        tablePlayers: [],
-        selectedTableCardKey: null
-      };
+      return LEFT_TABLE_STATE;
 
     case 'table:boost-used':
       return {

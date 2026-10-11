@@ -1,6 +1,6 @@
 import type { PlayerState } from '@durak-master/schemas';
 
-import type { Chatter } from '../SeatChatter';
+import type { Chatter } from '../../../model';
 
 export type OpponentSeatProps = {
   seatCount: number;
@@ -23,6 +23,5 @@ export type OpponentSeatProps = {
   /** Battery saver stops the active-seat pulse. */
   isStatic?: boolean;
 
-  isLoser?: boolean;
   onPress?: () => void;
 };

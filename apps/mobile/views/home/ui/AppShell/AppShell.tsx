@@ -7,20 +7,16 @@ import { useSettingsStore } from '@/entities/settings';
 import { SignInForm } from '@/features/auth/sign-in';
 import { SignOutConfirm, useSignOut } from '@/features/auth/sign-out';
 import { CreateTable } from '@/features/lobby/create-table';
-import { useLayout } from '@/shared/model/layout';
-import { ContentWidth, DESKTOP_MAX_WIDTH, LobbyBackground } from '@/ui-kit';
+import { LobbyBackground } from '@/ui-kit';
 import { TableList } from '@/widgets/lobby/table-list';
 
 import type { ShellTab } from './AppShell.types';
 
-import { useLobbyConnection, useShellPanels, useTableJoin } from '../../model';
-import { styles } from './AppShell.styles';
+import { useBackHandler, useLobbyConnection, useShellPanels, useTableJoin } from '../../model';
 import { ProfileTab, ShellChrome, ShellLoading, ShellOverlays } from './components';
 
 export const AppShell = () => {
   const insets = useSafeAreaInsets();
-
-  const { isDesktop } = useLayout();
 
   const { isPending, session, status } = useLobbyConnection();
   const { isPasswordPromptOpen, join, confirmPassword, cancelPassword } = useTableJoin();
@@ -34,6 +30,8 @@ export const AppShell = () => {
   const isJoiningTable = useSessionStore((store) => store.isJoiningTable);
 
   const [tab, setTab] = useState<ShellTab>('profile');
+
+  useBackHandler({ isEnabled: tab !== 'profile', onBack: () => setTab('profile') });
 
   if (isPending) {
     return <ShellLoading />;
@@ -50,12 +48,10 @@ export const AppShell = () => {
     .exhaustive();
 
   return (
-    <LobbyBackground isStatic={isBatterySaver} style={[styles.root, { paddingTop: insets.top }]}>
-      <ContentWidth maxWidth={isDesktop ? DESKTOP_MAX_WIDTH : undefined} style={styles.column}>
-        <ShellChrome status={status} tab={tab} onChange={setTab} onSignOut={signOut.request}>
-          {content}
-        </ShellChrome>
-      </ContentWidth>
+    <LobbyBackground isStatic={isBatterySaver} style={{ paddingTop: insets.top }}>
+      <ShellChrome status={status} tab={tab} onChange={setTab} onSignOut={signOut.request}>
+        {content}
+      </ShellChrome>
 
       <ShellOverlays
         isPasswordPromptOpen={isPasswordPromptOpen}

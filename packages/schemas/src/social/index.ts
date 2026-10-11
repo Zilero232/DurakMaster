@@ -8,13 +8,12 @@ export type { Achievement, AchievementId, AchievementState } from './achievement
 
 export {
   friendListSchema,
-  friendSchema,
-  friendshipStatusSchema,
+  INVITE_RESEND_MS,
   INVITE_TTL_MS,
   MAX_FRIENDS,
   tableInviteSchema
 } from './friends';
-export type { Friend, FriendList, FriendshipStatus, TableInvite } from './friends';
+export type { Friend, FriendList, TableInvite } from './friends';
 
-export { LEADERBOARD_SIZE, leaderboardEntrySchema, leaderboardSchema } from './leaderboard';
-export type { Leaderboard, LeaderboardEntry } from './leaderboard';
+export { LEADERBOARD_SIZE, leaderboardSchema } from './leaderboard';
+export type { Leaderboard } from './leaderboard';

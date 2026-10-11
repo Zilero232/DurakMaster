@@ -102,10 +102,44 @@ replaced with the real ones before any release:
    `react-native-google-mobile-ads` plugin block in `apps/mobile/app.json`.
 3. Create a **rewarded** ad unit and put its id (`ca-app-pub-XXXXXXXX/YYYYYYYYYY`, a slash, not a
    tilde) into `EXPO_PUBLIC_ADMOB_REWARDED_UNIT_ID` in the build profile.
-4. Link the AdMob app to the Play listing in the AdMob console once the app is published.
+4. Turn on **server-side verification** for that ad unit — see below. Without it no reward is
+   ever granted.
+5. Link the AdMob app to the Play listing in the AdMob console once the app is published.
 
-In development the unit id is unset, so the rewarded button hides itself rather than serving a
-live ad.
+Ads are off unless `EXPO_PUBLIC_ADS_ENABLED` is `"true"`, which every build profile currently
+sets to `"false"`. While they are off the bonus button only counts down the four-hour wait;
+turning them on lets the player skip it with one rewarded ad. Both the flag and a non-empty unit
+id are needed before a single ad is served.
+
+### Server-side verification
+
+The client never grants the reward. The app passes the player's user id to the ad request, and
+after the video AdMob calls our API directly with a signed request. The server checks the
+signature against Google's published keys, records the `transaction_id` so a retried callback
+is granted once, applies the cooldown and the daily cap, clears the bonus wait, and pushes the
+fresh profile over the socket. The app only waits a few seconds for that profile to arrive.
+
+Set it up per rewarded ad unit:
+
+1. AdMob console → **Apps → DurakMaster (Android) → Ad units →** the rewarded unit →
+   **Server-side verification**.
+2. Callback URL: `https://api.durakmaster.ru/ads/admob-callback`
+3. Press **Verify URL**. AdMob sends a signed test request; the server answers 200. A 400 means
+   the request lost its signature on the way, a 403 means the signature did not match.
+4. Save.
+
+The **iOS** rewarded unit, when it is created, needs exactly the same callback URL — each ad
+unit carries its own setting, and a unit without one never reaches the server.
+
+The callback is a public `GET` from Google's servers, so `api.durakmaster.ru` must be reachable
+from the internet over HTTPS, and nothing in front of the API (Caddy, a firewall, a WAF) may
+block or rewrite the query string — the signature covers it byte for byte. No secret is needed:
+the verifier keys are fetched from `https://www.gstatic.com/admob/reward/verifier-keys.json`
+and cached for a day.
+
+AdMob retries a callback that does not answer 200. The server answers 200 for duplicates, an
+unknown user, a reward over the daily cap and a wait that was already over — those are final
+outcomes, not errors.
 
 **Consent.** AdMob requires a consent flow for users in the EEA and the UK before personalised
 ads. `react-native-google-mobile-ads` ships Google's UMP SDK for this. Until that is wired, keep

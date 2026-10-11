@@ -2,6 +2,7 @@ import { getRankInfo } from '@durak-master/schemas';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { getWinRate } from '@/shared/lib/stats';
 import { LeagueBadge, Panel, Sheet, StatRow } from '@/ui-kit';
 
 import type { PlayerStatsProps } from './PlayerStats.types';
@@ -14,7 +15,7 @@ export const PlayerStats = ({ profile, isOpen, onClose }: PlayerStatsProps) => {
   const rank = getRankInfo(profile.rating);
 
   const { gamesPlayed, gamesWon, gamesLost } = profile;
-  const winRate = gamesPlayed > 0 ? gamesWon / gamesPlayed : 0;
+  const winRate = getWinRate(profile);
 
   return (
     <Sheet isOpen={isOpen} title={t('stats.title')} onClose={onClose}>

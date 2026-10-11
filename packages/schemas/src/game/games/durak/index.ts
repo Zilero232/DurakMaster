@@ -5,23 +5,11 @@ export {
   DEFAULT_DURAK_RULES,
   DURAK_DECK_SIZES,
   DURAK_HAND_SIZE,
-  durakDeckSizeSchema,
-  durakModeSchema,
   durakRulesSchema,
-  fairnessSchema,
-  firstMoveSchema,
-  MAX_ATTACK_CARDS_PER_BOUT,
-  maxDurakPlayers,
-  throwInScopeSchema
+  LOWEST_RANK_BY_DECK_SIZE,
+  maxDurakPlayers
 } from './rules';
-export type {
-  DurakDeckSize,
-  DurakMode,
-  DurakRules,
-  Fairness,
-  FirstMove,
-  ThrowInScope
-} from './rules';
+export type { DurakDeckSize, DurakRules, ThrowInScope } from './rules';
 
-export { durakStateSchema, durakViewSchema, tablePairSchema } from './state';
+export { durakStateSchema, durakViewSchema } from './state';
 export type { DurakState, DurakView, TablePair } from './state';

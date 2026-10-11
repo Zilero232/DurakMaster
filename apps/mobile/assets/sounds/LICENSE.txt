@@ -1,5 +1,10 @@
-Casino Audio, Interface Sounds
+Casino Audio, Interface Sounds, Music Jingles
 by Kenney Vleugels (kenney.nl)
 
 License: Creative Commons Zero (CC0)
 http://creativecommons.org/publicdomain/zero/1.0/
+
+Converted from the original .ogg to .mp3 because iOS has no Ogg Vorbis
+support. The deal-*.mp3 files are trimmed to ~0.29s so a
+six-card deal reads as a series rather than one smear. win.mp3 rises and
+lose.mp3 falls, picked by measuring each jingle rather than by its number.

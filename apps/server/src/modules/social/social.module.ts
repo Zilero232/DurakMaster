@@ -1,13 +1,26 @@
 import { Module } from '@nestjs/common';
 
+import { GameModule } from '../game/game.module';
 import { ProfileModule } from '../profile';
-import { AchievementsService, FriendsService, LeaderboardService } from './services';
+import {
+  AchievementsService,
+  FriendsService,
+  LeaderboardService,
+  OnlinePlayersService,
+  TableInvitesService
+} from './services';
 import { SocialController } from './social.controller';
 
 @Module({
-  imports: [ProfileModule],
+  imports: [GameModule, ProfileModule],
   controllers: [SocialController],
-  providers: [AchievementsService, FriendsService, LeaderboardService],
-  exports: [AchievementsService, FriendsService, LeaderboardService]
+  providers: [
+    AchievementsService,
+    FriendsService,
+    LeaderboardService,
+    OnlinePlayersService,
+    TableInvitesService
+  ],
+  exports: [AchievementsService, FriendsService, OnlinePlayersService, TableInvitesService]
 })
 export class SocialModule {}

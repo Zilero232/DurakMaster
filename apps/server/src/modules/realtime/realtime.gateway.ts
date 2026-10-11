@@ -1,4 +1,10 @@
-import type { ClientMessage, QuickPhraseId, TauntId, UseBoostInput } from '@durak-master/schemas';
+import type {
+  BoostId,
+  ClientMessage,
+  QuickPhraseId,
+  TauntId,
+  UseBoostInput
+} from '@durak-master/schemas';
 import type { OnModuleDestroy } from '@nestjs/common';
 import type { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit } from '@nestjs/websockets';
 
@@ -12,7 +18,12 @@ import type { ConnectionRequest } from './services';
 
 import { RoomsService } from '../game';
 import { ProfilesService } from '../profile';
-import { HEARTBEAT_INTERVAL_MS, RATE_LIMIT } from './realtime.config';
+import {
+  HEARTBEAT_INTERVAL_MS,
+  MAX_MESSAGE_BYTES,
+  PRE_AUTH_MESSAGE_LIMIT,
+  RATE_LIMIT
+} from './realtime.config';
 import {
   BroadcastService,
   ConnectionService,
@@ -22,12 +33,13 @@ import {
   TableFlowService
 } from './services';
 
-@WebSocketGateway({ path: '/ws' })
+const PEEK_BOOSTS = new Set<BoostId>(['peekTalon', 'peekHand']);
+
+@WebSocketGateway({ path: '/ws', maxPayload: MAX_MESSAGE_BYTES })
 export class RealtimeGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, OnModuleDestroy
 {
   private heartbeat: NodeJS.Timeout | null = null;
-  private unsubscribe: (() => void) | null = null;
   private unsubscribeRemovals: (() => void) | null = null;
 
   private readonly logger = new Logger(RealtimeGateway.name);
@@ -46,10 +58,6 @@ export class RealtimeGateway
   ) {}
 
   afterInit(): void {
-    this.unsubscribe = this.rooms.onEvent((roomId, event) =>
-      this.games.handleRoomEvent(roomId, event)
-    );
-
     this.unsubscribeRemovals = this.rooms.onRoomRemoved((roomId) => {
       this.broadcast.tableRemoved(roomId);
       this.broadcast.lobby();
@@ -93,7 +101,9 @@ export class RealtimeGateway
         return;
       }
 
-      buffered.push(raw);
+      if (buffered.length < PRE_AUTH_MESSAGE_LIMIT) {
+        buffered.push(raw);
+      }
     });
 
     socket.on('pong', () => {
@@ -102,11 +112,15 @@ export class RealtimeGateway
 
     const userId = await this.connection.authenticate(socket, request);
 
-    if (!userId) {
+    if (!userId || socket.readyState !== socket.OPEN) {
       return;
     }
 
     await this.connection.welcome(socket, userId);
+
+    if (socket.readyState !== socket.OPEN) {
+      return;
+    }
 
     isReady = true;
 
@@ -126,9 +140,6 @@ export class RealtimeGateway
       clearInterval(this.heartbeat);
       this.heartbeat = null;
     }
-
-    this.unsubscribe?.();
-    this.unsubscribe = null;
 
     this.unsubscribeRemovals?.();
     this.unsubscribeRemovals = null;
@@ -258,12 +269,30 @@ export class RealtimeGateway
       return;
     }
 
+    if (PEEK_BOOSTS.has(input.boost) && !room.allowsPeeking) {
+      this.registry.fail(
+        socket,
+        'Peeking is allowed only at a cheaters table',
+        'INVALID_ACTION_FOR_PHASE'
+      );
+
+      return;
+    }
+
     const price = BOOST_PRICE[input.boost];
 
     const coins = await this.profiles.spendCoins(userId, price);
 
     if (coins === null) {
       this.registry.fail(socket, 'Not enough coins', 'NOT_ENOUGH_COINS');
+
+      return;
+    }
+
+    if (!room.isPlaying || this.rooms.getRoomOfUser(userId) !== room) {
+      await this.profiles.refundCoins(userId, price);
+
+      this.registry.fail(socket, 'No game in progress', 'GAME_NOT_ACTIVE');
 
       return;
     }
@@ -289,12 +318,22 @@ export class RealtimeGateway
       return;
     }
 
+    const talon = input.boost === 'peekTalon' ? room.peekTalon() : null;
+
+    if (input.boost === 'peekTalon' && talon === null) {
+      await this.profiles.refundCoins(userId, price);
+
+      this.registry.fail(socket, 'There is no talon to peek at', 'INVALID_ACTION_FOR_PHASE');
+
+      return;
+    }
+
     this.registry.send(socket, {
       type: 'table:boost-used',
       payload: {
         boost: input.boost,
         coins,
-        ...(input.boost === 'peekTalon' ? { talon: room.peekTalon() ?? [] } : {}),
+        ...(talon ? { talon } : {}),
         ...(hand && input.targetUserId ? { hand, targetUserId: input.targetUserId } : {})
       }
     });

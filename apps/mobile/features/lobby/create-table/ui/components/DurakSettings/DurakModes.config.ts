@@ -1,3 +1,5 @@
+import type { DurakRules } from '@durak-master/schemas';
+
 import {
   ArrowLeftRight,
   ArrowRightToLine,
@@ -28,16 +30,16 @@ export const DURAK_CHOICE_FIELDS: ModeChoiceField[] = [
     titleKey: 'games.durak.throwInScope.title',
     options: [
       {
-        value: 'neighbors',
-        icon: ArrowLeftRight,
-        labelKey: 'games.durak.throwInScope.neighbors',
-        hintKey: 'games.durak.throwInScope.neighborsHint'
-      },
-      {
         value: 'all',
         icon: Users,
         labelKey: 'games.durak.throwInScope.all',
         hintKey: 'games.durak.throwInScope.allHint'
+      },
+      {
+        value: 'neighbors',
+        icon: ArrowLeftRight,
+        labelKey: 'games.durak.throwInScope.neighbors',
+        hintKey: 'games.durak.throwInScope.neighborsHint'
       }
     ]
   },
@@ -69,13 +71,14 @@ export const DURAK_CHOICE_FIELDS: ModeChoiceField[] = [
   }
 ];
 
-export const DURAK_TOGGLE_FIELDS: ModeToggleField[] = [
+const DURAK_TOGGLE_FIELDS: (ModeToggleField & { onlyInMode?: DurakRules['mode'] })[] = [
   { name: 'durakRules.allowDraw', icon: Equal, labelKey: 'games.durak.allowDraw' },
   {
     name: 'durakRules.allowTransferByShowingTrump',
     icon: Eye,
     labelKey: 'games.durak.showTrump',
-    hintKey: 'games.durak.showTrumpHint'
+    hintKey: 'games.durak.showTrumpHint',
+    onlyInMode: 'transfer'
   },
   {
     name: 'durakRules.withJokers',
@@ -84,3 +87,6 @@ export const DURAK_TOGGLE_FIELDS: ModeToggleField[] = [
     hintKey: 'games.durak.withJokersHint'
   }
 ];
+
+export const durakToggleFields = (mode: DurakRules['mode']): ModeToggleField[] =>
+  DURAK_TOGGLE_FIELDS.filter((field) => !field.onlyInMode || field.onlyInMode === mode);

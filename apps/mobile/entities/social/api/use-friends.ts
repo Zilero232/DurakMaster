@@ -39,6 +39,7 @@ export const useFriends = () => {
     friends: list.data ?? EMPTY_FRIENDS,
     found: query.length > 0 ? (found.data ?? []) : [],
     isPending: list.isPending,
+    refresh: () => list.refetch(),
 
     search: setQuery,
     clearSearch: () => setQuery(''),

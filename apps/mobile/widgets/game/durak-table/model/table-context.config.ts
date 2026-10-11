@@ -4,12 +4,11 @@ const noop = () => {};
 
 export const EMPTY_TABLE_CONTEXT: TableContextValue = {
   profile: null,
-  look: { hasHints: false, sortMode: 'trumpFirst', cardScale: 'normal', isInstant: false },
+  look: { hasHints: false, sortMode: 'trumpFirst', isInstant: false },
   turn: {
     isMyTurn: false,
     isWaiting: false,
     isReady: false,
-    isLoser: false,
     hasFreeSeat: false,
     canPass: false,
     canTake: false,
@@ -33,6 +32,7 @@ export const EMPTY_TABLE_CONTEXT: TableContextValue = {
     onTake: noop,
     onReady: noop,
     onAddBot: noop,
+    onInviteFriends: noop,
     onSendPhrase: noop,
     onSendEmoji: noop,
     onUseBoost: noop

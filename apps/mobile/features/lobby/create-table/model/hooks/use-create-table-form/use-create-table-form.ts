@@ -22,6 +22,7 @@ export const useCreateTableForm = ({ onCreate }: UseCreateTableFormInput) => {
   const game = useWatch({ control, name: 'game' });
   const maxPlayers = useWatch({ control, name: 'maxPlayers' });
   const deckSize = useWatch({ control, name: 'durakRules.deckSize' });
+  const durakMode = useWatch({ control, name: 'durakRules.mode' });
   const isPrivate = useWatch({ control, name: 'isPrivate' });
 
   const seats = clampPlayersToGame(game, maxPlayers, deckSize);
@@ -49,6 +50,7 @@ export const useCreateTableForm = ({ onCreate }: UseCreateTableFormInput) => {
     control,
     game,
     deckSize,
+    durakMode,
     isPrivate,
     canSubmit: formState.isValid,
     selectGame,

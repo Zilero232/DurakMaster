@@ -25,12 +25,6 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.glass
   },
 
-  hat: {
-    position: 'absolute',
-    zIndex: 3,
-    transform: [{ rotate: '-16deg' }]
-  },
-
   ready: {
     position: 'absolute',
     right: -2,
@@ -48,7 +42,6 @@ export const styles = StyleSheet.create({
 
   name: {
     maxWidth: '100%',
-    fontWeight: '600',
     fontFamily: fontFamily.sansSemi,
     color: colors.onFelt,
     textAlign: 'center'
@@ -59,14 +52,13 @@ export const styles = StyleSheet.create({
     top: '100%',
     alignSelf: 'center',
     marginTop: seatRowGap,
+    maxWidth: '100%',
     paddingHorizontal: spacing[1],
     color: colors.onFeltMuted,
-    textAlign: 'center',
-    textTransform: 'uppercase'
+    textAlign: 'center'
   },
 
   defender: {
-    fontWeight: '700',
     fontFamily: fontFamily.sansBold,
     color: colors.goldBright
   },

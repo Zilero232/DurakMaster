@@ -8,15 +8,15 @@ import { playSound } from '@/shared/lib/sound';
 import type { SessionStore } from './session-store.types';
 
 import { INITIAL_STATE } from './session-store.config';
-import { createConnection } from './session-store.connection';
+import { listenToSocket } from './session-store.connection';
 import { cacheProfileFrom } from './session-store.profile-cache';
-import { reduceServerMessage } from './session-store.reduce';
+import { LEFT_TABLE_STATE, reduceServerMessage } from './session-store.reduce';
 
 export const useSessionStore = create<SessionStore>((set, get) => {
-  const connection = createConnection({
+  listenToSocket({
     onMessage: (message) => {
       if (message.type === 'table:emoji' || message.type === 'table:phrase') {
-        playSound('click');
+        playSound('chat');
       }
 
       cacheProfileFrom(message);
@@ -28,45 +28,53 @@ export const useSessionStore = create<SessionStore>((set, get) => {
       }
     },
     onStatus: (status) => set({ status }),
-    onDisconnected: () => set({ isJoiningTable: false, joiningTableId: null }),
-    getStatus: () => get().status,
-    isLobbySubscribed: () => get().isLobbySubscribed
+    onDisconnected: () => set({ isJoiningTable: false, joiningTableId: null })
   });
 
   return {
     ...INITIAL_STATE,
 
-    connect: async () => {
-      if (get().status === 'connecting' || get().status === 'connected') {
+    connect: () => {
+      const { status, isSigningOut } = get();
+
+      if (isSigningOut || status === 'connecting' || status === 'connected') {
         return;
       }
 
       set({ status: 'connecting' });
-
-      await connection.open();
+      socketClient.connect();
     },
 
     disconnect: () => {
-      connection.close();
+      socketClient.disconnect();
 
-      set({ ...INITIAL_STATE });
+      set({ ...INITIAL_STATE, isSigningOut: get().isSigningOut });
     },
 
-    subscribeLobby: () => {
-      set({ isLobbySubscribed: true });
-      socketClient.send({ type: 'lobby:subscribe' });
-    },
+    setSigningOut: (isSigningOut) => set({ isSigningOut }),
+
+    subscribeLobby: () => socketClient.send({ type: 'lobby:subscribe' }),
 
     createTable: (settings, password) => {
-      set({ isJoiningTable: socketClient.isConnected, joiningTableId: null });
-      socketClient.send({ type: 'table:create', payload: { settings, password } });
+      const isSent = socketClient.send({ type: 'table:create', payload: { settings, password } });
+
+      set({ isJoiningTable: isSent, joiningTableId: null });
     },
     joinTable: (tableId, password) => {
-      set({ isJoiningTable: socketClient.isConnected, joiningTableId: tableId });
-      socketClient.send({ type: 'table:join', payload: { tableId, password } });
+      const isSent = socketClient.send({ type: 'table:join', payload: { tableId, password } });
+
+      set({ isJoiningTable: isSent, joiningTableId: isSent ? tableId : null });
     },
 
-    leaveTable: () => socketClient.send({ type: 'table:leave' }),
+    leaveTable: () => {
+      socketClient.send({ type: 'table:leave' });
+      set(LEFT_TABLE_STATE);
+    },
+
+    goToMenu: () => {
+      get().leaveTable();
+      set({ outcome: null });
+    },
     setReady: (isReady) => socketClient.send({ type: 'table:ready', payload: { isReady } }),
     addBot: () => socketClient.send({ type: 'table:add-bot' }),
     applyBoost: (boost, targetUserId) =>
@@ -76,7 +84,6 @@ export const useSessionStore = create<SessionStore>((set, get) => {
 
     selectTableCard: (key) => set({ selectedTableCardKey: key }),
 
-    clearOutcome: () => set({ outcome: null }),
     clearRejection: () => set({ rejectedCode: null }),
     clearRevealed: () => set({ revealed: null }),
     clearError: () => set({ lastError: null, lastErrorCode: null })

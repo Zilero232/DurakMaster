@@ -3,14 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { match } from 'ts-pattern';
 
-import { useSessionStore } from '@/entities/session';
-import { useFriends, useSocialStore } from '@/entities/social';
+import { useFriends } from '@/entities/social';
 import { SegmentedControl, Sheet } from '@/ui-kit';
 
-import type { FriendRowAction } from './components';
-import type { FriendsPanelProps, FriendsTab as Tab } from './FriendsPanel.types';
+import type { FriendsPanelProps, ManageAction, FriendsTab as Tab } from './FriendsPanel.types';
 
-import { FriendsTab, RequestsTab, SearchTab } from './components';
+import { FriendsTab, RemoveFriendConfirm, RequestsTab, SearchTab } from './components';
 import { MIN_QUERY } from './FriendsPanel.config';
 import { styles } from './FriendsPanel.styles';
 
@@ -19,11 +17,8 @@ export const FriendsPanel = ({ isOpen, onClose }: FriendsPanelProps) => {
 
   const { friends, found, search, clearSearch, request, accept, decline, remove } = useFriends();
 
-  const inviteFriend = useSocialStore((store) => store.inviteFriend);
-
-  const currentTable = useSessionStore((store) => store.currentTable);
-
   const [tab, setTab] = useState<Tab>('friends');
+  const [removingId, setRemovingId] = useState<string | null>(null);
 
   const handleSearch = (query: string) => {
     if (query.trim().length >= MIN_QUERY) {
@@ -33,14 +28,21 @@ export const FriendsPanel = ({ isOpen, onClose }: FriendsPanelProps) => {
     }
   };
 
-  const handleAction = (action: FriendRowAction, userId: string) => {
+  const handleAction = (action: ManageAction, userId: string) => {
     match(action)
       .with('add', () => request(userId))
       .with('accept', () => accept(userId))
-      .with('invite', () => inviteFriend(userId))
       .with('decline', () => decline(userId))
-      .with('remove', () => remove(userId))
+      .with('remove', () => setRemovingId(userId))
       .exhaustive();
+  };
+
+  const confirmRemove = () => {
+    if (removingId) {
+      remove(removingId);
+    }
+
+    setRemovingId(null);
   };
 
   const pending = friends.incoming.length + friends.outgoing.length;
@@ -62,7 +64,6 @@ export const FriendsPanel = ({ isOpen, onClose }: FriendsPanelProps) => {
         {match(tab)
           .with('friends', () => (
             <FriendsTab
-              canInvite={Boolean(currentTable)}
               friends={friends.friends}
               onAction={handleAction}
               onFind={() => setTab('search')}
@@ -79,6 +80,12 @@ export const FriendsPanel = ({ isOpen, onClose }: FriendsPanelProps) => {
             <SearchTab found={found} onAction={handleAction} onSearch={handleSearch} />
           ))
           .exhaustive()}
+
+        <RemoveFriendConfirm
+          isOpen={removingId !== null}
+          onCancel={() => setRemovingId(null)}
+          onConfirm={confirmRemove}
+        />
       </View>
     </Sheet>
   );

@@ -4,6 +4,4 @@ export type WalletAmountProps = {
   icon: LucideIcon;
   iconColor: string;
   value: number;
-  topUpLabel: string;
-  onTopUp?: () => void;
 };

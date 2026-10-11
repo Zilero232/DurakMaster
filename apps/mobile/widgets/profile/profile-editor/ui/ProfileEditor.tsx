@@ -15,7 +15,7 @@ export const ProfileEditor = ({ isOpen, profile, onClose }: ProfileEditorProps) 
   const { t } = useTranslation();
 
   const { draft, isSaving, isNameValid, hasChanges, changeName, chooseSeed, pickImage, save } =
-    useProfileDraft({ profile, onSaved: onClose });
+    useProfileDraft({ isOpen, profile, onSaved: onClose });
 
   const rank = getRankInfo(profile.rating);
 

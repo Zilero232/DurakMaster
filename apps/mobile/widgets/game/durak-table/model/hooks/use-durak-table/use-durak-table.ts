@@ -18,15 +18,16 @@ export const useDurakTable = ({ game }: UseDurakTableInput) => {
 
   const showHints = useSettingsStore((store) => store.showHints);
   const handSort = useSettingsStore((store) => store.handSort);
-  const cardScale = useSettingsStore((store) => store.cardScale);
 
   const { isInstant } = useAnimationSpeed();
 
   const drag = useCardDrag({
     isDefending: game.isDefending,
     beatableWith: game.beatableWith,
+    canTransfer: game.canTransfer,
     onAttackWith: game.attackWith,
-    onDefendWith: game.defendPairWith
+    onDefendWith: game.defendPairWith,
+    onTransferWith: game.transfer
   });
 
   const handleBoost = (boost: BoostId) => {
@@ -37,7 +38,6 @@ export const useDurakTable = ({ game }: UseDurakTableInput) => {
     drag,
     profile,
     currentTable,
-    cardScale,
     handSort,
     showHints,
     isInstant,

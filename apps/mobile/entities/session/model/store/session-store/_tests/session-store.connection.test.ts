@@ -4,63 +4,62 @@ import { describe, expect, it, vi } from 'vitest';
 
 import type { ConnectionStatus } from '../session-store.types';
 
-const connect = vi.fn();
+type SocketState = 'closed' | 'connecting' | 'open';
 
-const handlers = new Set<(message: ServerMessage) => void>();
+const messageHandlers = new Set<(message: ServerMessage) => void>();
+const stateHandlers = new Set<(state: SocketState) => void>();
 
 vi.mock('@/shared/api', () => ({
-  getAuthToken: () => Promise.resolve('token'),
   socketClient: {
-    connect: (...args: unknown[]) => connect(...args),
-    disconnect: () => {},
     subscribe: (handler: (message: ServerMessage) => void) => {
-      handlers.add(handler);
+      messageHandlers.add(handler);
 
-      return () => handlers.delete(handler);
+      return () => messageHandlers.delete(handler);
     },
-    subscribeState: () => () => {},
-    send: () => {}
+    subscribeState: (handler: (state: SocketState) => void) => {
+      stateHandlers.add(handler);
+
+      return () => stateHandlers.delete(handler);
+    }
   }
 }));
 
-vi.mock('@/shared/config', () => ({ WS_URL: 'ws://test' }));
+const { listenToSocket } = await import('../session-store.connection');
 
-const { createConnection } = await import('../session-store.connection');
+const listen = () => {
+  messageHandlers.clear();
+  stateHandlers.clear();
 
-const build = (status: ConnectionStatus = 'connecting') => {
-  handlers.clear();
+  const statuses: ConnectionStatus[] = [];
+  const onDisconnected = vi.fn();
 
-  const seen: string[] = [];
-
-  const connection = createConnection({
-    onMessage: (message) => seen.push(message.type),
-    onStatus: () => {},
-    onDisconnected: () => {},
-    getStatus: () => status,
-    isLobbySubscribed: () => false
+  listenToSocket({
+    onMessage: () => {},
+    onStatus: (status) => statuses.push(status),
+    onDisconnected
   });
 
-  return { connection, seen };
+  const emit = (state: SocketState) => stateHandlers.forEach((handler) => handler(state));
+
+  return { statuses, onDisconnected, emit };
 };
 
 describe('session connection', () => {
-  it('opens the socket once the token is read', async () => {
-    connect.mockClear();
+  it('maps socket states onto connection statuses', () => {
+    const { statuses, emit } = listen();
 
-    const { connection } = build();
+    emit('connecting');
+    emit('open');
 
-    await connection.open();
-
-    expect(connect).toHaveBeenCalledTimes(1);
+    expect(statuses).toEqual(['connecting', 'connected']);
   });
 
-  it('does not open when the caller has given up', async () => {
-    connect.mockClear();
+  it('reports a closed socket as an error and drops pending joins', () => {
+    const { statuses, onDisconnected, emit } = listen();
 
-    const { connection } = build('idle');
+    emit('closed');
 
-    await connection.open();
-
-    expect(connect).not.toHaveBeenCalled();
+    expect(statuses).toEqual(['error']);
+    expect(onDisconnected).toHaveBeenCalledTimes(1);
   });
 });

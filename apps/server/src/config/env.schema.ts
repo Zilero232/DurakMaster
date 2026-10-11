@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const envSchema = z.object({
+const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().default(4000),
 
@@ -9,8 +9,7 @@ export const envSchema = z.object({
   BETTER_AUTH_SECRET: z.string().min(1),
   BETTER_AUTH_URL: z.url().default('http://localhost:4000'),
 
-  PUBLIC_URL: z.url().optional(),
-  CORS_ORIGINS: z.string().default('http://localhost:8081')
+  PUBLIC_URL: z.url().optional()
 });
 
 export type Env = z.infer<typeof envSchema>;

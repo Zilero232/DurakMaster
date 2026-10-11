@@ -1,4 +1,8 @@
+import type { TextStyle } from 'react-native';
+
 import { Platform, StyleSheet } from 'react-native';
+
+import type { StatusScreenTone } from './StatusScreen.types';
 
 import { colors, fontFamily, fontSize, radii, shadows, spacing } from '../../theme';
 
@@ -40,12 +44,19 @@ export const styles = StyleSheet.create({
     textAlign: 'center'
   },
 
+  highlight: {
+    fontSize: fontSize.xl,
+    fontWeight: '800',
+    fontFamily: fontFamily.displayBold,
+    textAlign: 'center'
+  },
+
   details: {
     alignSelf: 'stretch',
     padding: spacing[3],
     borderRadius: radii.sm,
     fontSize: fontSize.xs,
-    fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }),
+    fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace' }),
     color: colors.subtleForeground,
     backgroundColor: colors.surface2
   },
@@ -56,3 +67,9 @@ export const styles = StyleSheet.create({
     marginTop: spacing[2]
   }
 });
+
+export const TONE_STYLES: Record<StatusScreenTone, TextStyle> = {
+  gain: { color: colors.success },
+  loss: { color: colors.danger },
+  neutral: { color: colors.foreground }
+};

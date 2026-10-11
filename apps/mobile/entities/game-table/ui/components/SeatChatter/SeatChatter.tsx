@@ -1,20 +1,12 @@
-import { useEffect } from 'react';
 import { Text, View } from 'react-native';
-import Animated, {
-  Easing,
-  FadeIn,
-  FadeOut,
-  useAnimatedStyle,
-  useSharedValue,
-  withSequence,
-  withTiming
-} from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
-import { TauntIcon } from '@/ui-kit';
+import { duration, TauntIcon } from '@/ui-kit';
 
 import type { SeatChatterProps } from './SeatChatter.types';
 
-import { FADE_MS, GROW_MS, HOLD_MS, PEAK_RATIO } from './SeatChatter.config';
+import { useChatterPop } from '../../../model';
+import { PEAK_RATIO } from './SeatChatter.config';
 import { BELOW_CLEARANCE, styles } from './SeatChatter.styles';
 
 export const SeatChatter = ({
@@ -24,27 +16,7 @@ export const SeatChatter = ({
   placement = 'above',
   clearance = 0
 }: SeatChatterProps) => {
-  const scale = useSharedValue(0);
-
-  const sentAt = chatter?.sentAt;
-
-  useEffect(() => {
-    if (!sentAt) {
-      return;
-    }
-
-    scale.value = 0;
-    scale.value = withSequence(
-      withTiming(1, { duration: GROW_MS, easing: Easing.out(Easing.back(1.6)) }),
-      withTiming(1, { duration: HOLD_MS }),
-      withTiming(0, { duration: FADE_MS, easing: Easing.in(Easing.quad) })
-    );
-  }, [sentAt, scale]);
-
-  const grow = useAnimatedStyle(() => ({
-    opacity: scale.value,
-    transform: [{ scale: scale.value }]
-  }));
+  const grow = useChatterPop(chatter?.id);
 
   if (!chatter) {
     return null;
@@ -52,7 +24,7 @@ export const SeatChatter = ({
 
   if (chatter.kind === 'taunt') {
     return (
-      <Animated.View key={chatter.sentAt} style={[styles.emoji, grow]}>
+      <Animated.View key={chatter.id} style={[styles.emoji, grow]}>
         <TauntIcon size={size * PEAK_RATIO} taunt={chatter.taunt} />
       </Animated.View>
     );
@@ -62,15 +34,15 @@ export const SeatChatter = ({
 
   return (
     <Animated.View
-      key={chatter.sentAt}
+      key={chatter.id}
       style={[
         styles.bubble,
         isAbove ? styles.above : styles.below,
         !isAbove && { marginTop: clearance + BELOW_CLEARANCE },
         { transform: [{ translateY: arcLift }] }
       ]}
-      entering={FadeIn.duration(160)}
-      exiting={FadeOut.duration(240)}
+      entering={FadeIn.duration(duration.fast)}
+      exiting={FadeOut.duration(duration.card)}
     >
       <Text numberOfLines={1} style={styles.bubbleText}>
         {chatter.text}

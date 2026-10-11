@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import type { Rank } from '../../core/card';
+
 export const durakModeSchema = z.enum(['throwIn', 'transfer']);
 
 export type DurakMode = z.infer<typeof durakModeSchema>;
@@ -21,6 +23,12 @@ export const DURAK_DECK_SIZES = [24, 36, 52] as const;
 export const durakDeckSizeSchema = z.union([z.literal(24), z.literal(36), z.literal(52)]);
 
 export type DurakDeckSize = z.infer<typeof durakDeckSizeSchema>;
+
+export const LOWEST_RANK_BY_DECK_SIZE: Record<DurakDeckSize, Rank> = {
+  24: 'nine',
+  36: 'six',
+  52: 'two'
+};
 
 export const MAX_ATTACK_CARDS_PER_BOUT = 6;
 
@@ -47,7 +55,7 @@ export type DurakRules = z.infer<typeof durakRulesSchema>;
 export const DEFAULT_DURAK_RULES: DurakRules = {
   mode: 'throwIn',
   deckSize: 36,
-  throwInScope: 'neighbors',
+  throwInScope: 'all',
   fairness: 'fair',
   allowDraw: true,
   firstMove: 'lowestTrump',

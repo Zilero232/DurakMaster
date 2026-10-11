@@ -2,8 +2,6 @@ export { CurrentUserId } from './decorators';
 export {
   AppBadRequestException,
   AppForbiddenException,
-  AppNotFoundException,
-  AppPayloadTooLargeException,
   AppUnauthorizedException,
   AppUnsupportedMediaTypeException
 } from './exceptions';

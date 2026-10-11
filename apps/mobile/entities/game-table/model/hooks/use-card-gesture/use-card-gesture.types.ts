@@ -1,10 +1,6 @@
-import type { Card } from '@durak-master/schemas';
-
 import type { DropZone } from '../../drop-zone';
 
 export type UseCardGestureInput = {
-  card: Card;
-
   isPlayable: boolean;
   dropZones: DropZone[];
   onDropOn: (index: number) => void;

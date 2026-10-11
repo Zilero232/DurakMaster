@@ -1,12 +1,11 @@
 import type { BoostId, Card, MyProfile, QuickPhraseId, TauntId } from '@durak-master/schemas';
 
 import type { Chatter, DropZone } from '@/entities/game-table';
-import type { CardScale, HandSort } from '@/entities/settings';
+import type { HandSort } from '@/entities/settings';
 
 export type TableLook = {
   hasHints: boolean;
   sortMode: HandSort;
-  cardScale: CardScale;
   isInstant: boolean;
 };
 
@@ -14,7 +13,6 @@ export type TableTurn = {
   isMyTurn: boolean;
   isWaiting: boolean;
   isReady: boolean;
-  isLoser: boolean;
   hasFreeSeat: boolean;
   canPass: boolean;
   canTake: boolean;
@@ -40,6 +38,7 @@ export type TableMoves = {
   onTake: () => void;
   onReady: (isReady: boolean) => void;
   onAddBot: () => void;
+  onInviteFriends: () => void;
   onSendPhrase: (phraseId: QuickPhraseId) => void;
   onSendEmoji: (emoji: TauntId) => void;
   onUseBoost: (boost: BoostId) => void;

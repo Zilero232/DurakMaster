@@ -1,9 +1,2 @@
-export { reduceServerMessage, sendGameAction, useSessionStore } from './session-store';
-export type {
-  ConnectionStatus,
-  GameOutcome,
-  SessionActions,
-  SessionState,
-  SessionStore,
-  TableEmoji
-} from './session-store';
+export { sendGameAction, useSessionStore } from './session-store';
+export type { ConnectionStatus, GameOutcome } from './session-store';

@@ -1,4 +1,4 @@
-import type { Card, Suit } from '@durak-master/schemas';
+import type { Card, PlainCard, Suit } from '@durak-master/schemas';
 
 import { isJoker, RANKS } from '@durak-master/schemas';
 
@@ -16,23 +16,24 @@ const RANK_ORDER: Record<string, number> = Object.fromEntries(
 );
 
 const jokersLast =
-  (compare: (a: Card, b: Card) => number) =>
+  (compare: (a: PlainCard, b: PlainCard) => number) =>
   (a: Card, b: Card): number => {
-    const aJoker = isJoker(a);
-    const bJoker = isJoker(b);
-
-    if (aJoker !== bJoker) {
-      return aJoker ? 1 : -1;
+    if (isJoker(a) && isJoker(b)) {
+      return 0;
     }
 
-    if (aJoker) {
-      return 0;
+    if (isJoker(a)) {
+      return 1;
+    }
+
+    if (isJoker(b)) {
+      return -1;
     }
 
     return compare(a, b);
   };
 
-const compareRank = (a: Card, b: Card): number =>
+const compareRank = (a: PlainCard, b: PlainCard): number =>
   (RANK_ORDER[a.rank] ?? 0) - (RANK_ORDER[b.rank] ?? 0);
 
 const byRank = jokersLast(compareRank);

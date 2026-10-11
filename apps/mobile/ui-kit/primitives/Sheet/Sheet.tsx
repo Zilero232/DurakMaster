@@ -1,35 +1,42 @@
 import { useTranslation } from 'react-i18next';
-import { Modal, Pressable, useWindowDimensions } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  useWindowDimensions
+} from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import type { SheetProps } from './Sheet.types';
 
 import { SheetSurface } from './components';
-import { DIALOG_FROM_WIDTH, MAX_HEIGHT_RATIO } from './Sheet.config';
+import { useSheetPresence } from './hooks';
+import { CLOSE_DURATION_MS, MAX_HEIGHT_RATIO } from './Sheet.config';
 import { styles } from './Sheet.styles';
 
-export const Sheet = ({ isOpen, title, children, footer, maxWidth, onClose }: SheetProps) => {
+export const Sheet = ({ isOpen, title, children, footer, onClose }: SheetProps) => {
   const { t } = useTranslation();
 
-  const { width, height } = useWindowDimensions();
+  const { height } = useWindowDimensions();
 
-  const isDialog = width >= DIALOG_FROM_WIDTH;
+  const isMounted = useSheetPresence({ isOpen, exitDurationMs: CLOSE_DURATION_MS });
 
-  const maxHeight = height * MAX_HEIGHT_RATIO[isDialog ? 'dialog' : 'sheet'];
+  const maxHeight = height * MAX_HEIGHT_RATIO;
 
   return (
     <Modal
       statusBarTranslucent
       transparent
       animationType='none'
-      visible={isOpen}
+      visible={isMounted}
       onRequestClose={onClose}
     >
       <GestureHandlerRootView style={styles.root}>
         <Animated.View
-          entering={FadeIn.duration(160)}
-          exiting={FadeOut.duration(160)}
+          entering={FadeIn.duration(CLOSE_DURATION_MS)}
+          exiting={FadeOut.duration(CLOSE_DURATION_MS)}
           style={styles.backdrop}
         >
           <Pressable
@@ -39,17 +46,20 @@ export const Sheet = ({ isOpen, title, children, footer, maxWidth, onClose }: Sh
           />
         </Animated.View>
 
-        <SheetSurface
-          footer={footer}
-          isDialog={isDialog}
-          isOpen={isOpen}
-          maxHeight={maxHeight}
-          maxWidth={maxWidth}
-          title={title}
-          onClose={onClose}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.keyboardFrame}
         >
-          {children}
-        </SheetSurface>
+          <SheetSurface
+            footer={footer}
+            isOpen={isOpen}
+            maxHeight={maxHeight}
+            title={title}
+            onClose={onClose}
+          >
+            {children}
+          </SheetSurface>
+        </KeyboardAvoidingView>
       </GestureHandlerRootView>
     </Modal>
   );

@@ -6,7 +6,6 @@ import { getAuthToken } from '../auth/auth-client';
 
 export const httpClient = axios.create({
   baseURL: API_URL,
-  withCredentials: true,
   timeout: 20_000
 });
 

@@ -12,7 +12,7 @@ export default {
     alias: { f: 'docs: fix typos' },
     useEmoji: true,
     emojiAlign: 'left',
-    scopes: ['mobile', 'server', 'schemas', 'game-core', 'platform', 'ci', 'docs', 'deps'],
+    scopes: ['mobile', 'server', 'schemas', 'game-core', 'ci', 'docs', 'deps'],
     allowCustomScopes: false,
     allowEmptyScopes: true,
     upperCaseSubject: false,
@@ -20,10 +20,6 @@ export default {
     skipQuestions: ['footerPrefix', 'footer']
   },
   rules: {
-    'scope-enum': [
-      2,
-      'always',
-      ['mobile', 'server', 'schemas', 'game-core', 'platform', 'ci', 'docs', 'deps']
-    ]
+    'scope-enum': [2, 'always', ['mobile', 'server', 'schemas', 'game-core', 'ci', 'docs', 'deps']]
   }
 };

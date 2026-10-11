@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { TEST_ID } from '@/shared/config';
 import { haptic } from '@/shared/lib/haptics';
 import { playSound } from '@/shared/lib/sound';
 import { colors, iconSize, SuitIcon } from '@/ui-kit';
@@ -28,7 +27,6 @@ export const TabBar = ({ tab, onChange }: TabBarProps) => {
             accessibilityRole='tab'
             accessibilityState={{ selected: isActive }}
             style={styles.item}
-            testID={TEST_ID.nav.tab(id)}
             onPress={() => {
               playSound('click');
               haptic('tap');

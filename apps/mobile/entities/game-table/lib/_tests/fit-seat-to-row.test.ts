@@ -3,8 +3,9 @@ import { describe, expect, it } from 'vitest';
 import type { SeatBase } from '../fit-seat-to-row.types';
 
 import { fitSeatToRow } from '../fit-seat-to-row';
+import { SEAT_GAP } from '../fit-seat-to-row.config';
 
-const BASE: SeatBase = { avatar: 34, ring: 42, hat: 24, label: 11, minWidth: 76, maxWidth: 108 };
+const BASE: SeatBase = { avatar: 34, ring: 42, label: 11, width: 92 };
 
 const LABEL = { min: 11, max: 15 };
 
@@ -24,13 +25,13 @@ describe('fitSeatToRow', () => {
     const crowded = fitSeatToRow({ base: BASE, label: LABEL, width: PHONE_WIDTH, seats: 6 });
 
     expect(crowded.avatar).toBeLessThan(roomy.avatar);
-    expect(crowded.maxWidth).toBeLessThan(roomy.maxWidth);
+    expect(crowded.width).toBeLessThan(roomy.width);
   });
 
   it('keeps a crowded row wide enough to stay tappable', () => {
-    const { maxWidth, avatar } = fitSeatToRow({ base: BASE, label: LABEL, width: 320, seats: 6 });
+    const { width, avatar } = fitSeatToRow({ base: BASE, label: LABEL, width: 320, seats: 6 });
 
-    expect(maxWidth).toBeGreaterThanOrEqual(46);
+    expect(width).toBeGreaterThanOrEqual(46);
     expect(avatar).toBeGreaterThan(0);
   });
 
@@ -44,6 +45,14 @@ describe('fitSeatToRow', () => {
     const empty = fitSeatToRow({ base: BASE, label: LABEL, width: PHONE_WIDTH, seats: 0 });
 
     expect(empty.avatar).toBe(BASE.avatar);
-    expect(empty.maxWidth).toBe(BASE.maxWidth);
+    expect(empty.width).toBe(BASE.width);
+  });
+
+  it('leaves room for the gaps, so a crowded row never overflows', () => {
+    const seats = 5;
+
+    const { width } = fitSeatToRow({ base: BASE, label: LABEL, width: PHONE_WIDTH, seats });
+
+    expect(width * seats + SEAT_GAP * (seats - 1)).toBeLessThanOrEqual(PHONE_WIDTH);
   });
 });

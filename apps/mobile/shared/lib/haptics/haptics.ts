@@ -1,9 +1,6 @@
 import * as Haptics from 'expo-haptics';
-import { Platform } from 'react-native';
 
 export type HapticKind = 'beat' | 'error' | 'lose' | 'play' | 'take' | 'tap' | 'win';
-
-const isSupported = Platform.OS === 'ios' || Platform.OS === 'android';
 
 let isEnabled = true;
 
@@ -12,7 +9,7 @@ export const setHapticsEnabled = (enabled: boolean) => {
 };
 
 const run = (effect: () => Promise<void>) => {
-  if (!isSupported || !isEnabled) {
+  if (!isEnabled) {
     return;
   }
 

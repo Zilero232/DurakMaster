@@ -12,17 +12,7 @@ const AVATAR_SIZE = SEAT_SIZE - (RING_PADDING + borderWidth.regular) * 2;
 export const AVATAR_DIAMETER = AVATAR_SIZE;
 export const RING_DIAMETER = SEAT_SIZE;
 
-export const HAT_SIZE = 30;
-
 export const styles = StyleSheet.create({
-  hat: {
-    position: 'absolute',
-    top: -HAT_SIZE * 0.66,
-    left: -HAT_SIZE * 0.2,
-    zIndex: 3,
-    transform: [{ rotate: '-16deg' }]
-  },
-
   wrap: {
     gap: spacing[2]
   },
@@ -81,6 +71,15 @@ export const styles = StyleSheet.create({
     borderRadius: radii.pill,
     backgroundColor: colors.surface1,
     ...shadows.card
+  },
+
+  inviteSlot: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    flex: 1,
+    flexBasis: 0,
+    minWidth: 0
   },
 
   boosts: {

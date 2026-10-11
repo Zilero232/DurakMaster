@@ -11,6 +11,8 @@ const STEP_LIMIT = 40_000;
 
 const SEEDS = 4;
 
+const MAX_SEATS = 6;
+
 const DECK_SIZES = [24, 36, 52] as const;
 const MODES = ['throwIn', 'transfer'] as const;
 const SCOPES = ['neighbors', 'all'] as const;
@@ -97,19 +99,21 @@ describe('durak rule matrix', () => {
         withJokers
       };
 
-      const seats = Math.min(4, maxDurakPlayers(deckSize));
+      const mostSeats = Math.min(MAX_SEATS, maxDurakPlayers(deckSize));
 
-      for (let seed = 1; seed <= SEEDS; seed += 1) {
-        const finished = playOut(rules, seats, seed);
+      for (let seats = 2; seats <= mostSeats; seats += 1) {
+        for (let seed = 1; seed <= SEEDS; seed += 1) {
+          const finished = playOut(rules, seats, seed);
 
-        expect(
-          finished.phase,
-          `deck ${deckSize} / ${mode} / ${throwInScope} / draw ${allowDraw} stalled on seed ${seed}`
-        ).toBe('finished');
+          expect(
+            finished.phase,
+            `deck ${deckSize} / ${seats} seats / ${mode} / ${throwInScope} / draw ${allowDraw} stalled on seed ${seed}`
+          ).toBe('finished');
 
-        const hasOutcome = finished.isDraw || finished.loserUserId !== null;
+          const hasOutcome = finished.isDraw || finished.loserUserId !== null;
 
-        expect(hasOutcome, 'a finished deal must name a loser or be a draw').toBe(true);
+          expect(hasOutcome, 'a finished deal must name a loser or be a draw').toBe(true);
+        }
       }
     }
   );

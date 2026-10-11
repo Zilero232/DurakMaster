@@ -1,26 +1,26 @@
 # DurakMaster production stack.
 #
-#   web       — the exported Expo bundle behind Caddy (serves the site, proxies
-#               the API subdomain, terminates HTTPS); the only public container
+#   proxy     — Caddy: terminates HTTPS and proxies the API subdomain; the only
+#               public container
 #   server    — NestJS API and the WebSocket gateway, on Bun
 #   postgres  — self-hosted database
 #
-# The web and server images are built by CI and pushed to ghcr.io. The VPS builds
-# nothing — it pulls ready images and must be logged in to ghcr.io once
-# (see docs/deploy.md).
+# The server image is built by CI and pushed to ghcr.io. The VPS builds nothing —
+# it pulls ready images and must be logged in to ghcr.io once (see DEPLOY.md).
 #
-# The VPS does NOT hold a clone of the repository. Two files live side by side:
-#   docker-compose.yml  — copied here by CI on every deploy
-#   .env                — created once by hand with production values
+# The VPS does NOT hold a clone of the repository. These files live side by side:
+#   docker-compose.yml        — copied here by CI on every deploy
+#   infra/caddy/Caddyfile     — copied here by CI on every deploy
+#   .env                      — created once by hand with production values
 #
 # Pull latest & restart: docker compose pull && docker compose up -d
 # Logs:                  docker compose logs -f
 # Stop:                  docker compose down
 
 services:
-  web:
-    image: ghcr.io/zilero232/durakmaster-web:latest
-    container_name: durakmaster-web
+  proxy:
+    image: caddy:2-alpine
+    container_name: durakmaster-proxy
     restart: always
     depends_on:
       - server
@@ -29,6 +29,7 @@ services:
       - '80:80'
       - '443:443'
     volumes:
+      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       # Persists issued TLS certificates across restarts.
       - caddy_data:/data
       - caddy_config:/config

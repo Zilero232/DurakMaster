@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 
 import { ProfileModule } from '../profile';
+import { RealtimeModule } from '../realtime';
 import { AdsController } from './ads.controller';
-import { AdRewardsService } from './services';
+import { AdmobVerifierService, AdRewardsService } from './services';
 
 @Module({
-  imports: [ProfileModule],
+  imports: [ProfileModule, RealtimeModule],
   controllers: [AdsController],
-  providers: [AdRewardsService],
-  exports: [AdRewardsService]
+  providers: [AdRewardsService, AdmobVerifierService]
 })
 export class AdsModule {}

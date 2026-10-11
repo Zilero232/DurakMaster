@@ -4,17 +4,24 @@ import { useSessionStore } from '@/entities/session';
 import { useSession } from '@/shared/api';
 
 export const useLobbyConnection = () => {
-  const { data: session, isPending } = useSession();
-
   const status = useSessionStore((store) => store.status);
   const connect = useSessionStore((store) => store.connect);
+  const setSigningOut = useSessionStore((store) => store.setSigningOut);
   const subscribeLobby = useSessionStore((store) => store.subscribeLobby);
 
+  const { data: session, isPending } = useSession();
+
   useEffect(() => {
-    if (session && (status === 'idle' || status === 'error')) {
-      void connect();
+    if (!session) {
+      setSigningOut(false);
+
+      return;
     }
-  }, [session, status, connect]);
+
+    if (status === 'idle' || status === 'error') {
+      connect();
+    }
+  }, [session, status, connect, setSigningOut]);
 
   useEffect(() => {
     if (status === 'connected') {

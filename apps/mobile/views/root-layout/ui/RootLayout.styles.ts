@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, spacing, TOAST_MAX_WIDTH } from '@/ui-kit';
+import { colors, spacing } from '@/ui-kit';
 
 export const rootLayoutStyles = StyleSheet.create({
   screen: {
@@ -9,13 +9,6 @@ export const rootLayoutStyles = StyleSheet.create({
 
   toast: {
     alignSelf: 'center',
-    marginHorizontal: spacing[4],
-    maxWidth: TOAST_MAX_WIDTH
-  },
-
-  toastDesktop: {
-    alignSelf: 'flex-end',
-    marginHorizontal: spacing[6],
-    maxWidth: TOAST_MAX_WIDTH
+    marginHorizontal: spacing[4]
   }
 });

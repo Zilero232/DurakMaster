@@ -2,6 +2,8 @@ import type { AchievementId } from '@durak-master/schemas';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { PROFILE_QUERY_KEY } from '@/entities/session/@x/social';
+
 import { ACHIEVEMENTS_QUERY_KEY, claimAchievement, fetchAchievements } from './social-api';
 
 export const useAchievements = () => {
@@ -11,7 +13,11 @@ export const useAchievements = () => {
 
   const claim = useMutation({
     mutationFn: claimAchievement,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ACHIEVEMENTS_QUERY_KEY })
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ACHIEVEMENTS_QUERY_KEY }),
+        queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY })
+      ])
   });
 
   return {

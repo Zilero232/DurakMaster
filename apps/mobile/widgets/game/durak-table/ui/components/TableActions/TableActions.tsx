@@ -7,7 +7,7 @@ import { TableEmojis } from '@/features/game/table-emojis';
 import type { TableActionsProps } from './TableActions.types';
 
 import { useTableContext } from '../../../model';
-import { MoveButton, SeatButton } from './components';
+import { InviteButton, MoveButton, SeatButton } from './components';
 import { UNDO_BLOCKED } from './TableActions.config';
 import { styles } from './TableActions.styles';
 
@@ -29,13 +29,14 @@ export const TableActions = ({ turnDeadline }: TableActionsProps) => {
 
         <SeatButton
           chatter={chatter}
-          isLoser={turn.isLoser}
           isMyTurn={turn.isMyTurn}
           profile={profile}
           turnDeadline={turnDeadline}
           turnSeconds={turn.turnSeconds}
           onPress={() => toggleEmojis(true)}
         />
+
+        {turn.isWaiting && turn.hasFreeSeat && <InviteButton />}
 
         {!turn.isWaiting && (
           <View style={styles.boosts}>

@@ -2,20 +2,22 @@ import type { MyProfile, PublicProfile } from '@durak-master/schemas';
 
 import { Injectable } from '@nestjs/common';
 
-import { ProfilesService } from '../../profile';
+import type { GameResult } from '../../profile';
 
-const toPublicProfile = (profile: MyProfile): PublicProfile => ({
-  userId: profile.userId,
-  name: profile.name,
-  avatarUrl: profile.avatarUrl,
-  rating: profile.rating,
-  seasonRating: profile.seasonRating,
-  gamesPlayed: profile.gamesPlayed,
-  gamesWon: profile.gamesWon,
-  gamesLost: profile.gamesLost,
-  isPremium: profile.isPremium,
-  isOnline: true
-});
+import { ProfilesService, toPublicProfile } from '../../profile';
+
+const toSeatedProfile = (profile: MyProfile): PublicProfile =>
+  toPublicProfile(
+    { userId: profile.userId, name: profile.name, image: profile.avatarUrl },
+    {
+      rating: profile.rating,
+      gamesPlayed: profile.gamesPlayed,
+      gamesWon: profile.gamesWon,
+      gamesLost: profile.gamesLost,
+      premiumUntil: profile.premiumUntil === null ? null : new Date(profile.premiumUntil)
+    },
+    true
+  );
 
 @Injectable()
 export class SessionsService {
@@ -26,13 +28,9 @@ export class SessionsService {
   async load(userId: string): Promise<MyProfile> {
     const profile = await this.profilesService.ensureProfile(userId);
 
-    this.profiles.set(userId, toPublicProfile(profile));
+    this.profiles.set(userId, toSeatedProfile(profile));
 
     return profile;
-  }
-
-  async reload(userId: string): Promise<MyProfile> {
-    return this.load(userId);
   }
 
   get(userId: string): PublicProfile | undefined {
@@ -51,30 +49,30 @@ export class SessionsService {
     }
   }
 
-  async applyGameResult(input: {
-    userId: string;
-    creditsDelta: number;
-    ratingDelta: number;
-    isWinner: boolean;
-    isDraw: boolean;
-  }): Promise<void> {
-    await this.profilesService.applyGameResult(input);
+  async applyGameResults(results: GameResult[]): Promise<void> {
+    await this.profilesService.applyGameResults(results);
 
-    const profile = this.profiles.get(input.userId);
+    for (const result of results) {
+      this.applyToSeatedProfile(result);
+    }
+  }
+
+  private applyToSeatedProfile(result: GameResult): void {
+    const profile = this.profiles.get(result.userId);
 
     if (!profile) {
       return;
     }
 
-    profile.rating = Math.max(0, profile.rating + input.ratingDelta);
-    profile.seasonRating = Math.max(0, profile.seasonRating + input.ratingDelta);
+    profile.rating = Math.max(0, profile.rating + result.ratingDelta);
+    profile.seasonRating = Math.max(0, profile.seasonRating + result.ratingDelta);
     profile.gamesPlayed += 1;
 
-    if (input.isDraw) {
+    if (result.isDraw) {
       return;
     }
 
-    if (input.isWinner) {
+    if (result.isWinner) {
       profile.gamesWon += 1;
     } else {
       profile.gamesLost += 1;

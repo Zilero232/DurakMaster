@@ -1,8 +1,9 @@
 import type { DurakState, PlayerState } from '@durak-master/schemas';
 
-import { HAND_SIZE } from '../config';
+import { DURAK_HAND_SIZE } from '@durak-master/schemas';
+
+import { nextActiveSeat } from '../../shared';
 import { collectTableCards, computeAttackLimit } from '../rules';
-import { nextActiveSeat } from '../setup';
 import { playerAtSeat } from './shared';
 
 export type FinishBoutOptions = { defenderTook: boolean };
@@ -24,27 +25,10 @@ export function finishBout(state: DurakState, options: FinishBoutOptions): Durak
     .filter((drawPlayer): drawPlayer is PlayerState => drawPlayer !== undefined);
 
   for (const drawPlayer of drawOrder) {
-    hands[drawPlayer.userId] = [...(hands[drawPlayer.userId] ?? [])];
-  }
+    const hand = hands[drawPlayer.userId] ?? [];
+    const missing = Math.max(0, DURAK_HAND_SIZE - hand.length);
 
-  for (let round = 0; round < HAND_SIZE && talon.length > 0; round++) {
-    for (const drawPlayer of drawOrder) {
-      if (talon.length === 0) {
-        break;
-      }
-
-      const hand = hands[drawPlayer.userId] ?? [];
-
-      if (hand.length >= HAND_SIZE) {
-        continue;
-      }
-
-      const drawn = talon.shift();
-
-      if (drawn) {
-        hand.push(drawn);
-      }
-    }
+    hands[drawPlayer.userId] = [...hand, ...talon.splice(0, missing)];
   }
 
   let nextOutPlace = state.players.filter((item) => item.outPlace !== null).length;
@@ -121,7 +105,7 @@ export function finishBout(state: DurakState, options: FinishBoutOptions): Durak
     activeSeat: nextAttackerSeat,
     attackLimit: computeAttackLimit(
       state.rules.attackLimit,
-      players.find((item) => item.seat === nextDefenderSeat)?.handCount ?? HAND_SIZE
+      players.find((item) => item.seat === nextDefenderSeat)?.handCount ?? DURAK_HAND_SIZE
     ),
     trumpCard: talon.length > 0 ? base.trumpCard : null
   };

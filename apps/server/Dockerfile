@@ -23,7 +23,6 @@ COPY package.json bun.lock ./
 COPY apps/mobile/package.json ./apps/mobile/package.json
 COPY apps/server/package.json ./apps/server/package.json
 COPY packages/game-core/package.json ./packages/game-core/package.json
-COPY packages/platform/package.json ./packages/platform/package.json
 COPY packages/schemas/package.json ./packages/schemas/package.json
 
 # --ignore-scripts: the server's postinstall runs `prisma generate`, which needs

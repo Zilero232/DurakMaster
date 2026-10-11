@@ -12,8 +12,5 @@ export { ShellLoading } from './ShellLoading';
 export { ShellOverlays } from './ShellOverlays';
 export type { ShellOverlaysProps } from './ShellOverlays';
 
-export { SideRail } from './SideRail';
-export type { SideRailProps } from './SideRail';
-
 export { TabBar } from './TabBar';
 export type { TabBarProps } from './TabBar';

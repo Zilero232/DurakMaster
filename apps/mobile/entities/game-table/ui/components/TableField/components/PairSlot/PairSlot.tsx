@@ -1,11 +1,12 @@
 import { View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
-import { duration, PlayingCard } from '@/ui-kit';
+import { duration, PlayingCard, useEnterMotion } from '@/ui-kit';
 
 import type { PairSlotProps } from './PairSlot.types';
 
-import { slideFrom, sweepToDiscard } from '../../../../../lib';
+import { SLIDE_MS } from '../../../../../config';
+import { slideFrom } from '../../../../../lib';
 import { usePairMeasure } from '../../../../../model';
 import { createPairStyles, DEFENSE_ROTATION, styles } from '../../TableField.styles';
 
@@ -21,6 +22,18 @@ export const PairSlot = ({
   onDefend,
   onMeasure
 }: PairSlotProps) => {
+  const attackMotion = useEnterMotion({
+    offsetY: slideFrom(pair.attackSeat === mySeat),
+    durationMs: SLIDE_MS,
+    isInstant
+  });
+
+  const defenseMotion = useEnterMotion({
+    offsetY: slideFrom(pair.defenseSeat === mySeat),
+    durationMs: SLIDE_MS,
+    isInstant
+  });
+
   const pairStyles = createPairStyles(width, height);
 
   const { viewRef, measure } = usePairMeasure({
@@ -36,13 +49,7 @@ export const PairSlot = ({
       layout={isInstant ? undefined : LinearTransition.duration(duration.layout)}
       style={pairStyles.pair}
     >
-      <Animated.View
-        ref={viewRef}
-        entering={isInstant ? undefined : slideFrom(pair.attackSeat === mySeat)}
-        exiting={isInstant ? undefined : sweepToDiscard}
-        style={pairStyles.pair}
-        onLayout={measure}
-      >
+      <Animated.View ref={viewRef} style={[pairStyles.pair, attackMotion]} onLayout={measure}>
         <View style={[styles.attack, canBeat && styles.beatable, isHovered && styles.hovered]}>
           <PlayingCard
             card={pair.attack}
@@ -54,18 +61,15 @@ export const PairSlot = ({
         </View>
 
         {pair.defense && (
-          <Animated.View
-            entering={isInstant ? undefined : slideFrom(pair.defenseSeat === mySeat)}
-            style={pairStyles.defense}
-          >
+          <Animated.View style={[pairStyles.defense, defenseMotion]}>
             <PlayingCard card={pair.defense} rotation={DEFENSE_ROTATION} width={width} />
           </Animated.View>
         )}
 
         {isHovered && !pair.defense && (
           <Animated.View
-            entering={FadeIn.duration(120)}
-            exiting={FadeOut.duration(120)}
+            entering={FadeIn.duration(duration.fast)}
+            exiting={FadeOut.duration(duration.fast)}
             style={pairStyles.dropHint}
           />
         )}

@@ -38,60 +38,6 @@ export const styles = StyleSheet.create({
     left: 0
   },
 
-  tile: {
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    gap: spacing[3],
-    padding: spacing[4]
-  },
-
-  tileHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing[3]
-  },
-
-  tileBet: {
-    fontSize: fontSize.xxl,
-    fontFamily: fontFamily.displayBold,
-    lineHeight: lineHeight.tight(fontSize.xxl),
-    color: colors.gold
-  },
-
-  tileNames: {
-    marginLeft: spacing[3],
-    fontSize: fontSize.sm,
-    fontFamily: fontFamily.sansSemi,
-    color: colors.foreground
-  },
-
-  tileFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing[3]
-  },
-
-  tileJoin: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[1],
-    paddingVertical: spacing[2],
-    paddingHorizontal: spacing[4],
-    borderWidth: borderWidth.hairline,
-    borderColor: colors.borderGold,
-    borderRadius: radii.pill,
-    backgroundColor: colors.primary,
-    ...shadows.tile
-  },
-
-  tileJoinLabel: {
-    fontSize: fontSize.sm,
-    fontFamily: fontFamily.sansBold,
-    color: colors.primaryForeground
-  },
-
   premium: {
     borderColor: colors.borderGold
   },
@@ -164,12 +110,6 @@ export const styles = StyleSheet.create({
   action: {
     alignItems: 'center',
     justifyContent: 'center'
-  },
-
-  tileBetGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[2]
   },
 
   ownBadge: {

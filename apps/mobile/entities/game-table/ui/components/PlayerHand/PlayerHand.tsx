@@ -1,14 +1,13 @@
 import { View } from 'react-native';
-import Animated, { FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import { cardKey } from '@/shared/lib/cards';
-import { card as cardTokens, duration, MAX_FAN_ANGLE } from '@/ui-kit';
+import { card as cardTokens } from '@/ui-kit';
 
 import type { PlayerHandProps } from './PlayerHand.types';
 
-import { dealFromTalon, fanOverlap, sortHand } from '../../../lib';
+import { fanOverlap, sortHand } from '../../../lib';
 import { useCardSize } from '../../../model';
-import { DraggableCard } from './components';
+import { HandCard } from './components';
 import { FAN_DROP_RATIO } from './PlayerHand.config';
 import { EDGE_PADDING, styles } from './PlayerHand.styles';
 
@@ -16,11 +15,9 @@ export const PlayerHand = ({
   cards,
   playableKeys,
   selectedKey = null,
-  selectedKeys,
   trump,
   hasHints = false,
   sortMode,
-  cardScale = 'normal',
   isInstant = false,
   dropZones = [],
   onDropOn,
@@ -30,7 +27,7 @@ export const PlayerHand = ({
   onDragEnd,
   onSelect
 }: PlayerHandProps) => {
-  const { width, height, available } = useCardSize(cardScale, EDGE_PADDING);
+  const { width, height, available } = useCardSize(EDGE_PADDING);
 
   const sorted = sortHand({ cards, trump, mode: sortMode });
   const count = sorted.length;
@@ -46,31 +43,27 @@ export const PlayerHand = ({
         const isLast = index === count - 1;
 
         return (
-          <Animated.View
+          <HandCard
             key={key}
-            entering={isInstant ? undefined : dealFromTalon}
-            exiting={isInstant ? undefined : FadeOut.duration(160)}
-            layout={isInstant ? undefined : LinearTransition.duration(duration.layout)}
-            style={{ zIndex: index, marginRight: isLast ? 0 : overlap }}
-          >
-            <View style={{ transform: [{ translateY: Math.abs(offset) * fanDrop }] }}>
-              <DraggableCard
-                card={card}
-                dropZones={dropZones}
-                hasHint={hasHints && playableKeys.has(key)}
-                isPlayable={playableKeys.has(key)}
-                isSelected={selectedKeys ? selectedKeys.has(key) : selectedKey === key}
-                rotation={offset * MAX_FAN_ANGLE}
-                width={width}
-                onDragEnd={() => onDragEnd?.()}
-                onDragStart={() => onDragStart?.(card)}
-                onDropMiss={(travelY) => onDropMiss?.(card, travelY)}
-                onDropOn={(pairIndex) => onDropOn?.(card, pairIndex)}
-                onHover={(hovered) => onHover?.(hovered)}
-                onPlay={() => onSelect(card)}
-              />
-            </View>
-          </Animated.View>
+            card={card}
+            dropZones={dropZones}
+            fanDrop={fanDrop}
+            hasHint={hasHints && playableKeys.has(key)}
+            index={index}
+            isInstant={isInstant}
+            isLast={isLast}
+            isPlayable={playableKeys.has(key)}
+            isSelected={selectedKey === key}
+            offset={offset}
+            overlap={overlap}
+            width={width}
+            onDragEnd={() => onDragEnd?.()}
+            onDragStart={() => onDragStart?.(card)}
+            onDropMiss={(travelY) => onDropMiss?.(card, travelY)}
+            onDropOn={(pairIndex) => onDropOn?.(card, pairIndex)}
+            onHover={(hovered) => onHover?.(hovered)}
+            onPlay={() => onSelect(card)}
+          />
         );
       })}
     </View>

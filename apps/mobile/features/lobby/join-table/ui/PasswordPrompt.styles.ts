@@ -3,12 +3,6 @@ import { StyleSheet } from 'react-native';
 import { colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
-  table: {
-    fontSize: fontSize.sm,
-    color: colors.mutedForeground,
-    textAlign: 'center'
-  },
-
   input: {
     height: 52,
     paddingHorizontal: spacing[4],

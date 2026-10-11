@@ -1,5 +1,5 @@
 import type { SeatMetrics } from '../../../lib';
-import type { Chatter } from '../../../ui/components/SeatChatter';
+import type { Chatter } from '../../chatter';
 
 export type SeatContextValue = {
   metrics: SeatMetrics;
@@ -13,7 +13,6 @@ export type SeatContextValue = {
   isEmpty: boolean;
   isActive: boolean;
   isReady: boolean;
-  isLoser: boolean;
   isAttacker: boolean;
   isDefender: boolean;
   isOut: boolean;

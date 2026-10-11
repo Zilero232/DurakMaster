@@ -24,7 +24,7 @@ export const useGameSeat = <G extends GameId>(game: G) => {
     storedSeat ??
     0;
 
-  const isMyTurn = Boolean(view) && view?.activeSeat === mySeat && view?.phase !== 'finished';
+  const isMyTurn = view?.activeSeat === mySeat && view.phase !== 'finished';
 
   const seatCount = currentTable?.settings.maxPlayers ?? 0;
 

@@ -5,8 +5,12 @@ import { Button, LoserHat, StatusScreen } from '@/ui-kit';
 
 import type { MatchResultProps } from './MatchResult.types';
 
+import { useResultFanfare } from '../../model/hooks';
+
 export const MatchResult = ({ isLoser, isDraw, creditsDelta, onDismiss }: MatchResultProps) => {
   const { t } = useTranslation();
+
+  useResultFanfare({ isDraw, isLoser });
 
   const outcome = match({ isDraw, isLoser })
     .with({ isDraw: true }, () => ({ title: 'result.draw', hint: 'result.drawHint' }))
@@ -24,7 +28,8 @@ export const MatchResult = ({ isLoser, isDraw, creditsDelta, onDismiss }: MatchR
         </Button>
       }
       description={description}
-      details={creditsDelta === 0 ? undefined : t('result.credits', { value: creditsDelta })}
+      highlight={creditsDelta === 0 ? undefined : t('result.credits', { value: creditsDelta })}
+      highlightTone={creditsDelta > 0 ? 'gain' : 'loss'}
       icon={isLoser && !isDraw ? <LoserHat size={64} /> : undefined}
       title={title}
     />

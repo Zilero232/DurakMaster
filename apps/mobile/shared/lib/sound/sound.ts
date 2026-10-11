@@ -1,16 +1,21 @@
 import type { AudioPlayer } from 'expo-audio';
 
 import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
-import { Platform } from 'react-native';
 import { clamp, sample } from 'remeda';
 
-import type { SoundName } from './sound-assets';
+import type { SoundName, SoundVariant } from './sound-assets';
 
-import { SOUND_SOURCES } from './sound-assets';
+import { SOUND_VARIANTS } from './sound-assets';
+import { DEFAULT_VOLUME, VOICES_PER_SOUND } from './sound.config';
 
-let volume = 0.7;
+type Voices = {
+  players: AudioPlayer[];
+  next: number;
+};
 
-const players = new Map<SoundName, AudioPlayer[]>();
+let volume = DEFAULT_VOLUME;
+
+const voices = new Map<string, Voices>();
 
 let isAudioModeReady = false;
 
@@ -28,64 +33,62 @@ const ensureAudioMode = () => {
   }).catch(() => {});
 };
 
-const getPlayers = (name: SoundName): AudioPlayer[] => {
-  const existing = players.get(name);
+const getVoices = ({ key, source }: SoundVariant): Voices => {
+  const existing = voices.get(key);
 
   if (existing) {
     return existing;
   }
 
-  const created = SOUND_SOURCES[name].map((source) => {
-    const player = createAudioPlayer(source);
+  const created: Voices = {
+    players: Array.from({ length: VOICES_PER_SOUND }, () => {
+      const player = createAudioPlayer(source);
 
-    player.volume = volume;
+      player.volume = volume;
 
-    return player;
-  });
+      return player;
+    }),
+    next: 0
+  };
 
-  players.set(name, created);
+  voices.set(key, created);
 
   return created;
 };
 
-const isWeb = Platform.OS === 'web';
-
-let isUnlocked = !isWeb;
-
-export const unlockSound = () => {
-  isUnlocked = true;
-};
-
 export const playSound = (name: SoundName) => {
-  if (volume === 0 || !isUnlocked) {
+  if (volume === 0) {
     return;
   }
 
   ensureAudioMode();
 
-  const variants = getPlayers(name);
-  const [player] = sample(variants, 1);
+  const [variant] = sample(SOUND_VARIANTS[name], 1);
+
+  if (!variant) {
+    return;
+  }
+
+  const pool = getVoices(variant);
+  const player = pool.players[pool.next];
+
+  pool.next = (pool.next + 1) % pool.players.length;
 
   if (!player) {
     return;
   }
 
   try {
-    void player.seekTo(0);
-
-    const result: unknown = player.play();
-
-    if (result instanceof Promise) {
-      void result.catch(() => {});
-    }
+    player.seekTo(0);
+    player.play();
   } catch {}
 };
 
 export const setVolume = (value: number) => {
   volume = clamp(value, { min: 0, max: 1 });
 
-  for (const variants of players.values()) {
-    for (const player of variants) {
+  for (const pool of voices.values()) {
+    for (const player of pool.players) {
       player.volume = volume;
     }
   }

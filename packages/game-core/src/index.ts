@@ -1,5 +1,5 @@
-export { beats, canThrowIn, isLegalAttackCard } from './durak';
+export { beats, canThrowIn, canTransfer, isLegalAttackCard } from './durak';
 export type { GameModule, ReduceResult } from './module';
 
-export { getGameModule, implementedGames } from './registry';
-export { cardKey, teamOfSeat } from './shared';
+export { getGameModule } from './registry';
+export { cardKey } from './shared';

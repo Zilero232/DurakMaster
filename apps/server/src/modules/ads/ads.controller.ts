@@ -1,24 +1,55 @@
-import type { MyProfile } from '@durak-master/schemas';
+import type { Request } from 'express';
 
-import { Controller, Post, UseGuards } from '@nestjs/common';
-import { match } from 'ts-pattern';
+import { Controller, Get, HttpCode, HttpStatus, Req } from '@nestjs/common';
 
-import { AppBadRequestException, AuthGuard, CurrentUserId } from '../../common';
-import { AdRewardsService } from './services';
+import { AppBadRequestException, AppForbiddenException } from '../../common';
+import { SocketRegistryService } from '../realtime';
+import { AdmobVerifierService, AdRewardsService } from './services';
+
+const queryStringOf = (url: string): string => {
+  const queryStart = url.indexOf('?');
+
+  return queryStart === -1 ? '' : url.slice(queryStart + 1);
+};
 
 @Controller('ads')
-@UseGuards(AuthGuard)
 export class AdsController {
-  constructor(private readonly rewards: AdRewardsService) {}
+  constructor(
+    private readonly verifier: AdmobVerifierService,
+    private readonly rewards: AdRewardsService,
+    private readonly sockets: SocketRegistryService
+  ) {}
 
-  @Post('skip-bonus-wait')
-  async skipBonusWait(@CurrentUserId() userId: string): Promise<MyProfile> {
-    const outcome = await this.rewards.skipBonusWait(userId);
+  @Get('admob-callback')
+  @HttpCode(HttpStatus.OK)
+  async admobCallback(@Req() request: Request): Promise<void> {
+    const query = queryStringOf(request.originalUrl);
 
-    return match(outcome)
-      .with({ status: 'granted' }, ({ profile }) => profile)
-      .otherwise(({ status }) => {
-        throw new AppBadRequestException('BAD_REQUEST', `Ad reward refused: ${status}`);
+    const signatureCheck = await this.verifier.check(query);
+
+    if (signatureCheck === 'malformed') {
+      throw new AppBadRequestException('BAD_REQUEST', 'The callback is not signed');
+    }
+
+    if (signatureCheck === 'forged') {
+      throw new AppForbiddenException('FORBIDDEN', 'The callback signature does not match');
+    }
+
+    const params = new URLSearchParams(query);
+    const userId = params.get('user_id');
+    const transactionId = params.get('transaction_id');
+
+    if (!userId || !transactionId) {
+      return;
+    }
+
+    const outcome = await this.rewards.skipBonusWait(userId, transactionId);
+
+    if (outcome.status === 'granted') {
+      this.sockets.sendTo(userId, {
+        type: 'profile:updated',
+        payload: { profile: outcome.profile }
       });
+    }
   }
 }

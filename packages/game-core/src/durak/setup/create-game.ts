@@ -1,18 +1,24 @@
-import type { Card, DurakState, PlayerState, SettingsForGame } from '@durak-master/schemas';
+import type { Card, DurakState, PlayerState } from '@durak-master/schemas';
 
-import { isJoker } from '@durak-master/schemas';
+import { DURAK_HAND_SIZE, isJoker } from '@durak-master/schemas';
 
-import { buildDeck, shuffle } from '../../shared';
-import { HAND_SIZE } from '../config';
+import type { CreateGameInput } from '../../module';
+
+import { buildDeck, nextActiveSeat, shuffle } from '../../shared';
 import { computeAttackLimit } from '../rules';
-import { findFirstAttackerSeat, nextActiveSeat } from './seats';
+import { findFirstAttackerSeat } from './seats';
 
-export type CreateDurakGameInput = {
-  tableId: string;
-  settings: SettingsForGame<'durak'>;
-  userIds: string[];
-  randomInt: (maxExclusive: number) => number;
-};
+function lastOrdinaryCardIndex(deck: Card[]): number {
+  for (let index = deck.length - 1; index >= 0; index--) {
+    const card = deck[index];
+
+    if (card && !isJoker(card)) {
+      return index;
+    }
+  }
+
+  return -1;
+}
 
 function keepJokerOffTheBottom(deck: Card[]): Card[] {
   const bottom = deck[deck.length - 1];
@@ -21,7 +27,7 @@ function keepJokerOffTheBottom(deck: Card[]): Card[] {
     return deck;
   }
 
-  const swapIndex = deck.findIndex((card) => !isJoker(card));
+  const swapIndex = lastOrdinaryCardIndex(deck);
 
   if (swapIndex === -1) {
     return deck;
@@ -35,7 +41,7 @@ function keepJokerOffTheBottom(deck: Card[]): Card[] {
   return swapped;
 }
 
-export function createGame(input: CreateDurakGameInput): DurakState {
+export function createGame(input: CreateGameInput<'durak'>): DurakState {
   const { tableId, settings, userIds, randomInt } = input;
   const { rules } = settings;
 
@@ -46,7 +52,7 @@ export function createGame(input: CreateDurakGameInput): DurakState {
   const players: PlayerState[] = userIds.map((userId, index) => ({
     userId,
     seat: index,
-    handCount: HAND_SIZE,
+    handCount: DURAK_HAND_SIZE,
     isOut: false,
     outPlace: null,
     isDisconnected: false
@@ -56,12 +62,13 @@ export function createGame(input: CreateDurakGameInput): DurakState {
   let cursor = 0;
 
   for (const player of players) {
-    hands[player.userId] = deck.slice(cursor, cursor + HAND_SIZE);
-    cursor += HAND_SIZE;
+    hands[player.userId] = deck.slice(cursor, cursor + DURAK_HAND_SIZE);
+    cursor += DURAK_HAND_SIZE;
   }
 
   const rest = deck.slice(cursor);
-  const trumpCard = rest[rest.length - 1] ?? null;
+  const bottomCard = rest.at(-1) ?? deck.at(-1);
+  const trumpCard = bottomCard && !isJoker(bottomCard) ? bottomCard : null;
   const trump = trumpCard?.suit ?? 'spades';
 
   const attackerSeat =

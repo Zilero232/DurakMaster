@@ -4,6 +4,7 @@ import type { Response } from 'express';
 
 import { Catch, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { isNonNullish } from 'remeda';
+import { ZodError } from 'zod';
 
 const STATUS_TO_CODE: Record<number, ApiErrorCode> = {
   400: 'BAD_REQUEST',
@@ -32,6 +33,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
       response
         .status(status)
         .json(hasCode ? payload : { code: codeForStatus(status), error: exception.message });
+
+      return;
+    }
+
+    if (exception instanceof ZodError) {
+      response.status(HttpStatus.BAD_REQUEST).json({
+        code: 'BAD_REQUEST',
+        error: exception.issues[0]?.message ?? 'Invalid request'
+      });
 
       return;
     }

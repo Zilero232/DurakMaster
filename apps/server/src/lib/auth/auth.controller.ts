@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 
-import { All, Controller, Get, Req, Res } from '@nestjs/common';
+import { All, Controller, Req, Res } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 
@@ -17,19 +17,6 @@ const readBody = (request: Request): string | undefined => {
 @Controller('api/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  @Get('ws-token')
-  async getWsToken(@Req() request: Request): Promise<{ token: string | null }> {
-    const headers = new Headers();
-
-    for (const [name, value] of Object.entries(request.headers)) {
-      if (typeof value === 'string') {
-        headers.set(name, value);
-      }
-    }
-
-    return { token: await this.authService.resolveSessionToken(headers) };
-  }
 
   @All('*splat')
   async handle(@Req() request: Request, @Res() response: Response): Promise<void> {

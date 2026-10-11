@@ -7,10 +7,23 @@ import type { RoomEvent } from '../lib';
 
 import { RECONNECT_GRACE_MS } from '../config';
 import { GameRoom } from '../lib';
+import { GameHistoryService } from './game-history.service';
 
-export type RoomListener = (roomId: string, event: RoomEvent) => void;
+export type RoomListener = (roomId: string, event: RoomEvent) => Promise<void> | void;
 
 export type RoomRemovedListener = (roomId: string) => void;
+
+const removedUserIdsOf = (event: RoomEvent): string[] => {
+  if (event.type === 'idle-removed') {
+    return event.userIds;
+  }
+
+  if (event.type === 'finished' && event.removedUserId) {
+    return [event.removedUserId];
+  }
+
+  return [];
+};
 
 @Injectable()
 export class RoomsService implements OnModuleDestroy {
@@ -21,19 +34,10 @@ export class RoomsService implements OnModuleDestroy {
   private readonly removalListeners = new Set<RoomRemovedListener>();
   private readonly reconnectTimers = new Map<string, NodeJS.Timeout>();
 
-  onModuleDestroy(): void {
-    for (const timer of this.reconnectTimers.values()) {
-      clearTimeout(timer);
-    }
+  constructor(private readonly history: GameHistoryService) {}
 
-    this.reconnectTimers.clear();
-
-    for (const room of this.rooms.values()) {
-      room.clearTimers();
-    }
-
-    this.rooms.clear();
-    this.userRoom.clear();
+  async onModuleDestroy(): Promise<void> {
+    await Promise.all([...this.rooms.values()].map((room) => this.dropRoom(room)));
   }
 
   onEvent(listener: RoomListener): () => void {
@@ -48,14 +52,28 @@ export class RoomsService implements OnModuleDestroy {
     return () => this.removalListeners.delete(listener);
   }
 
-  private notify(roomId: string, event: RoomEvent): void {
-    for (const listener of this.listeners) {
-      listener(roomId, event);
+  private async notify(roomId: string, event: RoomEvent): Promise<void> {
+    await Promise.all([...this.listeners].map((listener) => listener(roomId, event)));
+  }
+
+  private handleRoomEvent(room: GameRoom, event: RoomEvent): void {
+    void this.notify(room.id, event);
+
+    const removedUserIds = removedUserIdsOf(event);
+
+    if (removedUserIds.length === 0) {
+      return;
     }
+
+    for (const userId of removedUserIds) {
+      this.forgetMember(room, userId);
+    }
+
+    void this.dropRoomIfAbandoned(room);
   }
 
   createRoom(settings: TableSettings, passwordHash: string | null): GameRoom {
-    const room = new GameRoom(settings, passwordHash, (event) => this.notify(room.id, event));
+    const room = new GameRoom(settings, passwordHash, (event) => this.handleRoomEvent(room, event));
 
     this.rooms.set(room.id, room);
     this.logger.log(`Room created: ${room.id}`);
@@ -75,6 +93,7 @@ export class RoomsService implements OnModuleDestroy {
 
   join(room: GameRoom, profile: PublicProfile): boolean {
     if (room.getMember(profile.userId)) {
+      this.clearReconnectTimer(profile.userId);
       room.reconnect(profile.userId);
       this.userRoom.set(profile.userId, room.id);
 
@@ -99,23 +118,41 @@ export class RoomsService implements OnModuleDestroy {
       return;
     }
 
-    this.clearReconnectTimer(userId);
+    this.forgetMember(room, userId);
     room.leave(userId);
 
-    this.userRoom.delete(userId);
+    void this.dropRoomIfAbandoned(room);
+  }
 
-    if (room.isAbandoned) {
-      this.dropRoom(room);
+  private forgetMember(room: GameRoom, userId: string): void {
+    this.clearReconnectTimer(userId);
+
+    if (this.userRoom.get(userId) === room.id) {
+      this.userRoom.delete(userId);
     }
   }
 
-  private dropRoom(room: GameRoom): void {
-    for (const member of room.getMembers()) {
-      this.userRoom.delete(member.profile.userId);
-      this.clearReconnectTimer(member.profile.userId);
+  private async dropRoomIfAbandoned(room: GameRoom): Promise<void> {
+    if (room.isAbandoned) {
+      await this.dropRoom(room);
+    }
+  }
+
+  private async dropRoom(room: GameRoom): Promise<void> {
+    if (this.rooms.get(room.id) !== room) {
+      return;
     }
 
-    room.clearTimers();
+    for (const member of room.getMembers()) {
+      this.forgetMember(room, member.profile.userId);
+    }
+
+    const refunds = room
+      .close()
+      .map((userId) =>
+        this.notify(room.id, { type: 'stake-released', userId, bet: room.settings.bet })
+      );
+
     this.rooms.delete(room.id);
 
     for (const listener of this.removalListeners) {
@@ -123,6 +160,8 @@ export class RoomsService implements OnModuleDestroy {
     }
 
     this.logger.log(`Room removed: ${room.id}`);
+
+    await Promise.all([...refunds, this.history.closeTable(room.id)]);
   }
 
   handleDisconnect(userId: string): void {
@@ -132,17 +171,16 @@ export class RoomsService implements OnModuleDestroy {
       return;
     }
 
-    if (!room.isInMatch) {
+    if (!room.isPlaying) {
       this.leave(userId);
 
       return;
     }
 
     room.suspend(userId);
-    this.notify(room.id, { type: 'state-changed' });
 
     if (room.getMembers().every((member) => member.isBot || !member.isConnected)) {
-      this.dropRoom(room);
+      void this.dropRoom(room);
 
       return;
     }

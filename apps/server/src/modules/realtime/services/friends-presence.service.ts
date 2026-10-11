@@ -1,17 +1,17 @@
-import { INVITE_TTL_MS } from '@durak-master/schemas';
 import { Injectable } from '@nestjs/common';
 
 import type { Socket } from '../realtime.types';
 
 import { RoomsService } from '../../game';
 import { ProfilesService } from '../../profile';
-import { FriendsService } from '../../social';
+import { FriendsService, TableInvitesService } from '../../social';
 import { SocketRegistryService } from './socket-registry.service';
 
 @Injectable()
 export class FriendsPresenceService {
   constructor(
     private readonly friends: FriendsService,
+    private readonly invites: TableInvitesService,
     private readonly rooms: RoomsService,
     private readonly profiles: ProfilesService,
     private readonly registry: SocketRegistryService
@@ -22,6 +22,26 @@ export class FriendsPresenceService {
 
     if (!room) {
       this.registry.failNotInGame(socket);
+
+      return;
+    }
+
+    if (room.isPlaying || room.isFull) {
+      this.registry.fail(socket, 'The table is full', 'TABLE_FULL');
+
+      return;
+    }
+
+    if (room.getMember(targetId)) {
+      this.failWith(socket, 'That player is already at your table', 'ALREADY_AT_TABLE');
+
+      return;
+    }
+
+    const invite = { fromId: userId, toId: targetId, tableId: room.id };
+
+    if (this.invites.isCoolingDown(invite)) {
+      this.failWith(socket, 'You have just invited that player', 'INVITE_COOLDOWN');
 
       return;
     }
@@ -41,14 +61,15 @@ export class FriendsPresenceService {
       return;
     }
 
+    const expiresAt = this.invites.record(invite);
+
     this.registry.send(targetSocket, {
       type: 'friends:invited',
-      payload: {
-        id: `${userId}:${room.id}`,
-        from,
-        tableId: room.id,
-        expiresAt: Date.now() + INVITE_TTL_MS
-      }
+      payload: { id: `${userId}:${room.id}`, from, tableId: room.id, expiresAt }
     });
+  }
+
+  private failWith(socket: Socket, message: string, code: string): void {
+    this.registry.send(socket, { type: 'error', payload: { message, code } });
   }
 }

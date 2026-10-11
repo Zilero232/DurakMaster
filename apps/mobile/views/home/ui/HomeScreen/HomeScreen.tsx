@@ -10,7 +10,7 @@ export const HomeScreen = () => {
   const currentTable = useSessionStore((store) => store.currentTable);
   const { profile } = useMyProfile();
   const outcome = useSessionStore((store) => store.outcome);
-  const clearOutcome = useSessionStore((store) => store.clearOutcome);
+  const goToMenu = useSessionStore((store) => store.goToMenu);
 
   return match({ outcome, currentTable })
     .with({ outcome: P.nonNullable }, ({ outcome: result }) => (
@@ -18,7 +18,7 @@ export const HomeScreen = () => {
         creditsDelta={result.creditsDelta}
         isDraw={result.isDraw}
         isLoser={result.loserUserId === profile?.userId}
-        onDismiss={clearOutcome}
+        onDismiss={goToMenu}
       />
     ))
     .with({ currentTable: P.nonNullable }, () => <TableRouter />)

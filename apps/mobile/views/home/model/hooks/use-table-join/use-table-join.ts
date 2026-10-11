@@ -6,13 +6,13 @@ export const useTableJoin = () => {
   const tables = useSessionStore((store) => store.tables);
   const joinTable = useSessionStore((store) => store.joinTable);
 
-  const [pendingTableId, setPendingTableId] = useState<string | null>(null);
+  const [passwordTableId, setPasswordTableId] = useState<string | null>(null);
 
   const join = (tableId: string) => {
     const table = tables.find((item) => item.id === tableId);
 
     if (table?.settings.isPrivate) {
-      setPendingTableId(tableId);
+      setPasswordTableId(tableId);
 
       return;
     }
@@ -21,18 +21,17 @@ export const useTableJoin = () => {
   };
 
   const confirmPassword = (password: string) => {
-    if (pendingTableId) {
-      joinTable(pendingTableId, password);
-      setPendingTableId(null);
+    if (passwordTableId) {
+      joinTable(passwordTableId, password);
     }
   };
 
   const cancelPassword = () => {
-    setPendingTableId(null);
+    setPasswordTableId(null);
   };
 
   return {
-    isPasswordPromptOpen: pendingTableId !== null,
+    isPasswordPromptOpen: passwordTableId !== null,
     join,
     confirmPassword,
     cancelPassword

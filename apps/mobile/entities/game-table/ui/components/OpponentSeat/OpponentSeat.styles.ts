@@ -8,7 +8,6 @@ export const BACK_STEP_X = 6;
 
 export const SEAT_PADDING_X = spacing[1];
 
-export const EMPTY_SEAT_WIDTH = 64;
 export const BACK_STEP_ANGLE = 3;
 
 export const styles = StyleSheet.create({
@@ -19,8 +18,6 @@ export const styles = StyleSheet.create({
   root: {
     alignItems: 'center',
     gap: 0,
-    flexShrink: 1,
-    minWidth: 0,
     paddingVertical: 2,
     paddingHorizontal: SEAT_PADDING_X,
     borderWidth: 1,
@@ -41,7 +38,6 @@ export const styles = StyleSheet.create({
 
   empty: {
     justifyContent: 'center',
-    minWidth: EMPTY_SEAT_WIDTH,
     paddingVertical: spacing[1],
     borderStyle: 'dashed',
     borderColor: colors.borderStrong

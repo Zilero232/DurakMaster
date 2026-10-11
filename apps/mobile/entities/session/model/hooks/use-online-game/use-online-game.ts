@@ -1,7 +1,7 @@
 import type { Card } from '@durak-master/schemas';
 
 import { cardKey } from '@/shared/lib/cards';
-import { getBeatableIndexes, getPlayableKeys } from '@/shared/lib/games';
+import { canTransferCard, getBeatableIndexes, getPlayableKeys } from '@/shared/lib/games';
 import { haptic } from '@/shared/lib/haptics';
 import { playSound } from '@/shared/lib/sound';
 
@@ -16,42 +16,55 @@ export const useOnlineGame = () => {
   const selectedKey = useSessionStore((store) => store.selectedTableCardKey);
   const setSelectedKey = useSessionStore((store) => store.selectTableCard);
 
-  const seat = mySeat;
-  const isDefending = Boolean(view) && view?.defenderSeat === seat;
+  const isDefending = view?.defenderSeat === mySeat;
+  const isTransferMode = view?.rules.mode === 'transfer';
 
   const selectedCard = view?.hand.find((card) => cardKey(card) === selectedKey) ?? null;
-  const playableKeys = getPlayableKeys(view, isMyTurn, isDefending, seat);
+  const playableKeys = getPlayableKeys(view, isMyTurn, isDefending, mySeat);
   const beatableIndexes =
     isDefending && isMyTurn ? getBeatableIndexes(view, selectedCard) : new Set<number>();
 
   const hasUndefended = view?.table.some((pair) => pair.defense === null) ?? false;
 
-  const isOut = view?.players.find((player) => player.seat === seat)?.isOut ?? false;
+  const isOut = view?.players.find((player) => player.seat === mySeat)?.isOut ?? false;
 
-  const canPass = (current: typeof view, mySeat: number, amDefending: boolean): boolean => {
-    if (!current || amDefending || isOut || current.phase !== 'playing') {
-      return false;
-    }
+  const canPass =
+    view !== null &&
+    view.phase === 'playing' &&
+    !isDefending &&
+    !isOut &&
+    view.table.length > 0 &&
+    !view.passedSeats.includes(mySeat) &&
+    (view.isTaking || !hasUndefended);
 
-    if (current.table.length === 0 || current.passedSeats.includes(mySeat)) {
-      return false;
-    }
+  const beatableWith = (card: Card): Set<number> => getBeatableIndexes(view, card);
 
-    return current.isTaking || !hasUndefended;
+  const canTransfer = (card: Card): boolean =>
+    isDefending && isMyTurn && canTransferCard(view, card);
+
+  const transfer = (card: Card) => {
+    play({ type: 'transfer', card });
+    setSelectedKey(null);
   };
 
   const selectCard = (card: Card) => {
     const key = cardKey(card);
 
-    if (isDefending) {
-      playSound('click');
-      haptic('tap');
-      setSelectedKey(selectedKey === key ? null : key);
+    if (!isDefending) {
+      play({ type: 'attack', card });
 
       return;
     }
 
-    play({ type: 'attack', card });
+    if (canTransfer(card) && beatableWith(card).size === 0) {
+      transfer(card);
+
+      return;
+    }
+
+    playSound('click');
+    haptic('tap');
+    setSelectedKey(selectedKey === key ? null : key);
   };
 
   const defendPair = (pairIndex: number) => {
@@ -73,16 +86,15 @@ export const useOnlineGame = () => {
     setSelectedKey(null);
   };
 
-  const beatableWith = (card: Card): Set<number> => getBeatableIndexes(view, card);
-
   return {
     view,
     profile,
     players,
     readyUserIds,
-    mySeat: seat,
+    mySeat,
     isMyTurn,
     isDefending,
+    isTransferMode,
     selectedCard,
     selectedKey,
     playableKeys,
@@ -98,20 +110,20 @@ export const useOnlineGame = () => {
         return false;
       }
 
-      return last.defense === null ? last.attackSeat === seat : last.defenseSeat === seat;
+      return last.defense === null ? last.attackSeat === mySeat : last.defenseSeat === mySeat;
     })(),
-    canPass: canPass(view, seat, isDefending),
+    canPass,
     selectCard,
     attackWith,
     defendPair,
     defendPairWith,
     beatableWith,
+    canTransfer,
+    transfer,
 
     take: () => play({ type: 'take' }),
 
-    pass: () => play({ type: 'pass' }),
-
-    transfer: (card: Card) => play({ type: 'transfer', card })
+    pass: () => play({ type: 'pass' })
   };
 };
 

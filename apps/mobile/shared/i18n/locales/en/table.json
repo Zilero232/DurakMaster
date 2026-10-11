@@ -1,36 +1,26 @@
 {
   "table": {
     "waitingTitle": "Waiting for players",
-    "waitingCount": "{{current}} of {{max}}",
     "ready": "Ready",
     "notReady": "Not ready",
     "addBot": "Add a bot",
-    "playerFallback": "Player {{seat}}",
-    "readyMark": "ready",
-    "waitingMark": "waiting",
+    "inviteFriends": "Invite",
+    "inviteFriendsHint": "Invite friends to the table",
     "surrender": "Surrender",
     "surrenderTitle": "Surrender?",
     "surrenderHint": "The deal counts as a loss and the bet is not returned",
     "leave": "Leave",
-    "yourTurn": "Your turn",
-    "defend": "Defend",
-    "chooseTarget": "Pick a card on the table",
-    "opponentTurn": "Opponent's turn",
     "attackerTurn": "Attacker's turn",
     "take": "Take",
     "pass": "Done",
     "calledPass": "Pass",
-    "transfer": "Pass on",
     "role": {
-      "attacks": "attacking",
-      "defends": "defending",
+      "attacks": "attack",
+      "defends": "defend",
       "out": "out",
       "offline": "offline"
     },
-    "reaction": "Send reaction {{emoji}}",
-    "seatFree": "Waiting",
-    "joining": "Taking a seat…",
-    "deckLeft": "Deck"
+    "seatFree": "Waiting"
   },
   "result": {
     "win": "Victory",
@@ -41,18 +31,7 @@
     "drawHint": "Everyone ran out at the same time",
     "credits": "{{value}} credits",
     "rating": "+{{value}} rating",
-    "playAgain": "Play again",
-    "toMenu": "To menu",
-    "leaveTable": "Leave table",
-    "waitingReady": "Ready: {{current}} of {{max}}",
-    "waitingOthers": "Waiting for others…"
-  },
-  "discard": {
-    "title": "Discard pile",
-    "empty": "The discard pile is empty",
-    "count_one": "{{count}} card out of play",
-    "count_other": "{{count}} cards out of play",
-    "open": "Discard pile"
+    "toMenu": "To menu"
   },
   "phrases": {
     "title": "Say",

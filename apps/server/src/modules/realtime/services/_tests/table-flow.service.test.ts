@@ -1,11 +1,13 @@
 import type { PublicProfile, TableSettings } from '@durak-master/schemas';
 
 import { DEFAULT_TABLE_SETTINGS } from '@durak-master/schemas';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { Socket } from '../../realtime.types';
 
 import { RoomsService } from '../../../game';
+import { READY_TIMEOUT_MS } from '../../../game/config';
+import { TableInvitesService } from '../../../social';
 import { TableFlowService } from '../table-flow.service';
 
 const BET = 100;
@@ -50,7 +52,8 @@ const createWallet = (startingCredits: number) => {
 };
 
 const createHarness = (startingCredits = 1_000) => {
-  const rooms = new RoomsService();
+  const history = { closeTable: vi.fn(async () => {}) };
+  const rooms = new RoomsService(history as never);
   const wallet = createWallet(startingCredits);
   const errors: string[] = [];
 
@@ -66,9 +69,11 @@ const createHarness = (startingCredits = 1_000) => {
 
   const broadcast = { tableJoined: vi.fn(), table: vi.fn(), lobby: vi.fn() };
 
-  rooms.onEvent((roomId, event) => {
+  const invites = new TableInvitesService();
+
+  rooms.onEvent(async (_roomId, event) => {
     if (event.type === 'stake-released') {
-      void wallet.releaseStake(event.userId, rooms.getRoom(roomId)?.settings.bet ?? 0);
+      await wallet.releaseStake(event.userId, event.bet);
     }
   });
 
@@ -79,10 +84,13 @@ const createHarness = (startingCredits = 1_000) => {
     { ensureTable: vi.fn(async () => {}) } as never,
     registry as never,
     broadcast as never,
-    { isDevelopment: true } as never
+    { isDevelopment: true } as never,
+    invites
   );
 
-  return { flow, rooms, wallet, errors, sent, socket: {} as Socket };
+  const socket = { readyState: 1, OPEN: 1 } as Socket;
+
+  return { flow, rooms, history, wallet, errors, sent, socket, invites };
 };
 
 describe('table flow stakes', () => {
@@ -255,5 +263,234 @@ describe('table flow stakes', () => {
 
     expect(poor.wallet.balanceOf('host')).toBe(50);
     expect(poor.errors).toContain('NOT_ENOUGH_CREDITS');
+  });
+});
+
+const seatHeadsUp = async (harness: ReturnType<typeof createHarness>) => {
+  const { flow, rooms, socket } = harness;
+
+  await flow.create(socket, 'host', { settings: headsUp });
+
+  const room = rooms.getRoomOfUser('host');
+
+  if (!room) {
+    throw new Error('host is not seated');
+  }
+
+  rooms.join(room, profile('guest'));
+
+  return room;
+};
+
+const startHeadsUp = async (harness: ReturnType<typeof createHarness>) => {
+  const room = await seatHeadsUp(harness);
+
+  await harness.flow.setReady(harness.socket, 'host', true);
+  await harness.flow.setReady(harness.socket, 'guest', true);
+
+  return room;
+};
+
+describe('table flow duplicate messages', () => {
+  it('charges once when the same create arrives twice at once', async () => {
+    const { flow, rooms, wallet, socket } = createHarness();
+
+    await Promise.all([
+      flow.create(socket, 'host', { settings }),
+      flow.create(socket, 'host', { settings })
+    ]);
+
+    expect(wallet.balanceOf('host')).toBe(900);
+    expect(rooms.listTables()).toHaveLength(1);
+
+    rooms.getRoomOfUser('host')?.clearTimers();
+  });
+
+  it('charges once when the same join arrives twice at once', async () => {
+    const { flow, rooms, wallet, socket } = createHarness();
+
+    await flow.create(socket, 'host', { settings });
+
+    const tableId = rooms.listTables()[0]?.id ?? '';
+
+    await Promise.all([
+      flow.join(socket, 'guest', { tableId }),
+      flow.join(socket, 'guest', { tableId })
+    ]);
+
+    expect(wallet.balanceOf('guest')).toBe(900);
+
+    rooms.getRoom(tableId)?.clearTimers();
+  });
+
+  it('charges once when a rematch ready arrives twice at once', async () => {
+    const harness = createHarness();
+    const { flow, wallet, socket } = harness;
+    const room = await startHeadsUp(harness);
+
+    room.leave('guest');
+
+    await Promise.all([flow.setReady(socket, 'host', true), flow.setReady(socket, 'host', true)]);
+
+    expect(wallet.balanceOf('host')).toBe(800);
+
+    room.clearTimers();
+  });
+});
+
+describe('table flow joining', () => {
+  it('keeps the player at their table when the one they ask for is full', async () => {
+    const harness = createHarness();
+    const { flow, rooms, wallet, errors, socket } = harness;
+    const fullTable = await seatHeadsUp(harness);
+
+    await flow.create(socket, 'other', { settings });
+
+    const ownTable = rooms.getRoomOfUser('other');
+
+    await flow.join(socket, 'other', { tableId: fullTable.id });
+
+    expect(errors).toContain('TABLE_FULL');
+    expect(rooms.getRoomOfUser('other')).toBe(ownTable);
+    expect(wallet.balanceOf('other')).toBe(900);
+
+    fullTable.clearTimers();
+    ownTable?.clearTimers();
+  });
+
+  it('gives the bet back when the player drops while it is being charged', async () => {
+    const { flow, rooms, wallet, socket } = createHarness();
+
+    await flow.create(socket, 'host', { settings });
+
+    const tableId = rooms.listTables()[0]?.id ?? '';
+    const closedSocket = { readyState: 3, OPEN: 1 } as Socket;
+
+    await flow.join(closedSocket, 'guest', { tableId });
+
+    expect(wallet.balanceOf('guest')).toBe(1_000);
+    expect(rooms.getRoomOfUser('guest')).toBeUndefined();
+
+    rooms.getRoom(tableId)?.clearTimers();
+  });
+});
+
+describe('table flow private tables', () => {
+  const privateSettings: TableSettings = { ...settings, isPrivate: true };
+
+  it('asks a stranger for the password', async () => {
+    const { flow, rooms, errors, socket } = createHarness();
+
+    await flow.create(socket, 'host', { settings: privateSettings, password: 'secret' });
+
+    const tableId = rooms.listTables()[0]?.id ?? '';
+
+    await flow.join(socket, 'guest', { tableId });
+
+    expect(errors).toContain('WRONG_PASSWORD');
+    expect(rooms.getRoomOfUser('guest')).toBeUndefined();
+
+    rooms.getRoom(tableId)?.clearTimers();
+  });
+
+  it('seats an invited friend without the password', async () => {
+    const { flow, rooms, invites, socket } = createHarness();
+
+    await flow.create(socket, 'host', { settings: privateSettings, password: 'secret' });
+
+    const tableId = rooms.listTables()[0]?.id ?? '';
+
+    invites.record({ fromId: 'host', toId: 'guest', tableId });
+
+    await flow.join(socket, 'guest', { tableId });
+
+    expect(rooms.getRoomOfUser('guest')?.id).toBe(tableId);
+
+    rooms.getRoom(tableId)?.clearTimers();
+  });
+});
+
+describe('table flow removals the room makes on its own', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('forgets an idle player and closes the table they leave empty', async () => {
+    const { flow, rooms, history, wallet, socket } = createHarness();
+
+    await flow.create(socket, 'host', { settings });
+
+    const tableId = rooms.listTables()[0]?.id ?? '';
+
+    vi.advanceTimersByTime(READY_TIMEOUT_MS + 100);
+
+    expect(wallet.balanceOf('host')).toBe(1_000);
+    expect(rooms.getRoomOfUser('host')).toBeUndefined();
+    expect(rooms.getRoom(tableId)).toBeUndefined();
+    expect(history.closeTable).toHaveBeenCalledWith(tableId);
+  });
+
+  it('does not charge an idle-kicked player who readies up afterwards', async () => {
+    const { flow, rooms, wallet, errors, socket } = createHarness();
+
+    await flow.create(socket, 'host', { settings });
+
+    vi.advanceTimersByTime(READY_TIMEOUT_MS + 100);
+
+    await flow.setReady(socket, 'host', true);
+
+    expect(errors).toContain('NOT_IN_GAME');
+    expect(wallet.balanceOf('host')).toBe(1_000);
+    expect(rooms.listTables()).toHaveLength(0);
+  });
+
+  it('forgets a player who forfeits on the clock', async () => {
+    const harness = createHarness();
+    const { rooms } = harness;
+    const room = await startHeadsUp(harness);
+
+    const activeSeat = room.getViewFor('host')?.activeSeat;
+    const onTurn = room.getMembers().find((member) => member.seat === activeSeat)?.profile.userId;
+    const waiting = onTurn === 'host' ? 'guest' : 'host';
+
+    vi.advanceTimersByTime(headsUp.turnTimeoutSeconds * 1000 + 100);
+
+    expect(rooms.getRoomOfUser(onTurn ?? '')).toBeUndefined();
+    expect(rooms.getRoomOfUser(waiting)).toBe(room);
+
+    room.clearTimers();
+  });
+});
+
+describe('table flow closing rooms', () => {
+  it('refunds everyone when the last player drops mid-match', async () => {
+    const harness = createHarness();
+    const { rooms, wallet } = harness;
+    const room = await startHeadsUp(harness);
+
+    rooms.handleDisconnect('host');
+    rooms.handleDisconnect('guest');
+
+    expect(rooms.getRoom(room.id)).toBeUndefined();
+    expect(wallet.balanceOf('host')).toBe(1_000);
+    expect(wallet.releaseStake.mock.calls).toEqual([
+      ['host', BET],
+      ['guest', BET]
+    ]);
+  });
+
+  it('refunds every waiting player before the server shuts down', async () => {
+    const { flow, rooms, wallet, socket } = createHarness();
+
+    await flow.create(socket, 'host', { settings });
+
+    await rooms.onModuleDestroy();
+
+    expect(wallet.balanceOf('host')).toBe(1_000);
+    expect(rooms.listTables()).toHaveLength(0);
   });
 });

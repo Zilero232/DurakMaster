@@ -74,10 +74,8 @@ tournaments exist is grounds for removal.
 | App icon | 512×512 PNG | No transparency, no rounded corners of your own |
 | Feature graphic | 1024×500 PNG/JPG | Shown at the top of the listing; no small text |
 | Phone screenshots | 2–8, min 320px, max 3840px | Ratio between 16:9 and 9:16 |
-| Tablet screenshots | Optional | Only if the tablet layout is worth showing |
 
-Take screenshots from a real build, not mockups. `bun run test:e2e:shots` walks every screen and
-writes them to `e2e/.shots/` — a fast way to see what the store would show.
+Take screenshots from a real build on a phone, not mockups.
 
 ## Categorisation
 
