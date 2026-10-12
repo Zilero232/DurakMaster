@@ -92,7 +92,10 @@ export default eslint(
   // литеральным путём — `import` там не работает, обойти правило нечем.
   {
     name: 'durak/assets',
-    files: ['apps/mobile/shared/lib/sound/sound-assets.ts'],
+    files: [
+      'apps/mobile/shared/lib/sound/sound-assets.ts',
+      'apps/mobile/ui-kit/components/FeltBackground/FeltBackground.config.ts'
+    ],
     rules: {
       'ts/no-require-imports': 'off'
     }

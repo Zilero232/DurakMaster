@@ -1,33 +1,47 @@
 import { useEffect, useRef } from 'react';
 
+import { DEAL_STAGGER_MS } from '@/entities/game-table';
+import { useAnimationSpeed } from '@/entities/settings';
 import { haptic } from '@/shared/lib/haptics';
 import { playSound } from '@/shared/lib/sound';
 
 import type { TableSnapshot } from '../../../lib';
 import type { UseTableSoundsInput } from './use-table-sounds.types';
 
-import { DEAL_STEP_MS } from '../../../config';
 import { pickTableSound } from '../../../lib';
-import { BEFORE_DEAL, SOUND_HAPTIC } from './use-table-sounds.config';
+import {
+  BEFORE_DEAL,
+  CARD_LANDING_MS,
+  LANDING_SOUNDS,
+  SOUND_HAPTIC
+} from './use-table-sounds.config';
 
 type Timers = ReturnType<typeof setTimeout>[];
 
-const playDealSeries = (timers: Timers, count: number) => {
+const clearTimers = (timers: Timers) => {
   timers.forEach(clearTimeout);
   timers.length = 0;
+};
 
-  for (let step = 1; step <= count; step++) {
-    timers.push(setTimeout(playSound, step * DEAL_STEP_MS, 'deal'));
+const playDealSeries = (timers: Timers, count: number) => {
+  clearTimers(timers);
+
+  for (let step = 0; step < count; step++) {
+    timers.push(setTimeout(playSound, step * DEAL_STAGGER_MS, 'deal'));
   }
 };
 
 export const useTableSounds = ({ view, isMyTurn }: UseTableSoundsInput) => {
+  const { isInstant } = useAnimationSpeed();
+
   const previousRef = useRef<TableSnapshot | null>(null);
   const wasMyTurnRef = useRef(false);
 
-  const dealTimers = useRef<Timers>([]).current;
+  const timers = useRef<Timers>([]).current;
 
-  useEffect(() => () => dealTimers.forEach(clearTimeout), [dealTimers]);
+  const landingDelay = isInstant ? 0 : CARD_LANDING_MS;
+
+  useEffect(() => () => timers.forEach(clearTimeout), [timers]);
 
   useEffect(() => {
     if (!view) {
@@ -56,16 +70,27 @@ export const useTableSounds = ({ view, isMyTurn }: UseTableSoundsInput) => {
       return;
     }
 
-    haptic(SOUND_HAPTIC[cue.sound]);
-
     if (cue.sound === 'deal') {
-      playDealSeries(dealTimers, cue.repeat);
+      haptic(SOUND_HAPTIC.deal);
+      playDealSeries(timers, cue.repeat);
 
       return;
     }
 
+    if (LANDING_SOUNDS.has(cue.sound)) {
+      const { sound } = cue;
+
+      const landing = setTimeout(() => {
+        haptic(SOUND_HAPTIC[sound]);
+        playSound(sound);
+      }, landingDelay);
+
+      return () => clearTimeout(landing);
+    }
+
+    haptic(SOUND_HAPTIC[cue.sound]);
     playSound(cue.sound);
-  }, [view, dealTimers]);
+  }, [view, timers, landingDelay]);
 
   useEffect(() => {
     if (isMyTurn && !wasMyTurnRef.current) {

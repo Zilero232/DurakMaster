@@ -88,3 +88,16 @@ Where another page argues the case in full, the entry links to it. Part of the
 - **Android switches looked broken.** _Cause:_ React Native's `Switch` draws the platform widget,
   small and off-palette, and only the thumb took taps. _Fix:_ the `ui-kit` `Toggle` is drawn by us,
   and every setting row is the pressable with `accessibilityRole='switch'`.
+- **Card sounds came late and out of step.** _Cause:_ the mp3s opened with 100–200 ms of
+  silence, every player was created on first play (a network fetch from Metro in a debug build),
+  and the deal series ran at its own pace. _Fix:_ the leading silence is trimmed from the files,
+  `preloadSounds()` builds every player at startup, the deal ticks at `DEAL_STAGGER_MS` and the
+  play / beat sounds wait for the card to land.
+- **Sounds looped forever.** _Cause:_ rewinding an `expo-audio` player that has just finished
+  starts it again on Android — it stays in the playing state after the end. _Fix:_ pause, then
+  seek to 0, on `didJustFinish`.
+- **Cards on the table showed over the result overlay.** _Cause:_ on Android a view with a shadow
+  draws above siblings whatever their `zIndex`. _Fix:_ the end-of-game banner is a transparent
+  `Modal`. Reanimated `entering` animations do not run inside a `Modal` on Android, so its parts
+  animate through shared values (`PopIn`).
+

@@ -7,6 +7,7 @@ import { pickPrimaryAction } from '../pick-primary-action';
 const IDLE: PickPrimaryActionInput = {
   isWaiting: false,
   isReady: false,
+  canAffordBet: true,
   canTake: false,
   canPass: false,
   isTaking: false,
@@ -20,6 +21,10 @@ describe('pickPrimaryAction', () => {
 
   it('lets a ready player take it back while the table waits', () => {
     expect(pickPrimaryAction({ ...IDLE, isWaiting: true, isReady: true })).toBe('notReady');
+  });
+
+  it('offers to leave when the balance no longer covers the bet', () => {
+    expect(pickPrimaryAction({ ...IDLE, isWaiting: true, canAffordBet: false })).toBe('leave');
   });
 
   it('offers to take when the defender can', () => {

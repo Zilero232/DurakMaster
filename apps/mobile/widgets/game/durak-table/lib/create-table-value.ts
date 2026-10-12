@@ -12,7 +12,8 @@ export const createTableValue = ({
   table,
   settings,
   phrases,
-  isWaiting
+  isWaiting,
+  onLeave
 }: CreateTableValueInput): TableContextValue => {
   const { drag, profile, currentTable } = table;
 
@@ -30,6 +31,7 @@ export const createTableValue = ({
   const primaryAction = pickPrimaryAction({
     isWaiting,
     isReady,
+    canAffordBet: (profile?.credits ?? 0) >= settings.bet,
     canTake: game.canTake,
     canPass: game.canPass,
     isTaking: game.view?.isTaking ?? false,
@@ -40,6 +42,7 @@ export const createTableValue = ({
     match(primaryAction)
       .with('ready', () => table.setReady(true))
       .with('notReady', () => table.setReady(false))
+      .with('leave', onLeave)
       .with('take', () => game.take())
       .with(P.union('done', 'pass'), () => game.pass())
       .with(null, () => {})

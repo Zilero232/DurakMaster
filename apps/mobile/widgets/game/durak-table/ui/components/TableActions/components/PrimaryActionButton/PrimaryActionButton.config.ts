@@ -1,7 +1,7 @@
 import type { ParseKeys } from 'i18next';
 import type { LucideIcon } from 'lucide-react-native';
 
-import { Check, Hand, ShieldCheck, X } from 'lucide-react-native';
+import { Check, Hand, LogOut, ShieldCheck, X } from 'lucide-react-native';
 
 import type { ButtonVariant } from '@/ui-kit';
 
@@ -16,6 +16,7 @@ type PrimaryActionLook = {
 export const PRIMARY_ACTIONS: Record<PrimaryAction, PrimaryActionLook> = {
   ready: { icon: Check, label: 'table.ready', variant: 'primary' },
   notReady: { icon: X, label: 'table.notReady', variant: 'ghost' },
+  leave: { icon: LogOut, label: 'table.leaveNoCredits', variant: 'secondary' },
   take: { icon: Hand, label: 'table.take', variant: 'secondary' },
   done: { icon: ShieldCheck, label: 'table.done', variant: 'primary' },
   pass: { icon: ShieldCheck, label: 'table.pass', variant: 'primary' }

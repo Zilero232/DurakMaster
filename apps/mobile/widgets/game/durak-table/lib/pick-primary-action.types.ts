@@ -1,8 +1,11 @@
-export type PrimaryAction = 'done' | 'notReady' | 'pass' | 'ready' | 'take';
+export type PrimaryAction = 'done' | 'leave' | 'notReady' | 'pass' | 'ready' | 'take';
 
 export type PickPrimaryActionInput = {
   isWaiting: boolean;
   isReady: boolean;
+
+  /** The balance covers the table's bet, so pressing ready can reserve it. */
+  canAffordBet: boolean;
   canTake: boolean;
   canPass: boolean;
 

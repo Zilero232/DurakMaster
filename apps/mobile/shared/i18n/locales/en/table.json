@@ -32,7 +32,8 @@
       "mine": "Your move",
       "defends": "{{name}} is defending",
       "moves": "{{name}}'s move"
-    }
+    },
+    "leaveNoCredits": "Not enough credits — leave"
   },
   "result": {
     "win": "Victory",

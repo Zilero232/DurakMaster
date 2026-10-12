@@ -61,6 +61,7 @@ export const colors = {
   glassHighlight: 'rgba(244, 241, 236, 0.24)',
 
   scrim: 'rgba(6, 20, 32, 0.76)',
+  scrimStrong: 'rgba(6, 20, 32, 0.92)',
 
   transparent: 'transparent'
 } as const;

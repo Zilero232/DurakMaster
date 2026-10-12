@@ -6,7 +6,7 @@ import { clamp, sample } from 'remeda';
 import type { SoundName, SoundVariant } from './sound-assets';
 
 import { SOUND_VARIANTS } from './sound-assets';
-import { DEFAULT_VOLUME, VOICES_PER_SOUND } from './sound.config';
+import { DEFAULT_VOLUME, OVERLAP_VOICES, OVERLAPPING_SOUNDS } from './sound.config';
 
 type Voices = {
   players: AudioPlayer[];
@@ -17,43 +17,56 @@ let volume = DEFAULT_VOLUME;
 
 const voices = new Map<string, Voices>();
 
-let isAudioModeReady = false;
+const createVoice = (source: number): AudioPlayer => {
+  const player = createAudioPlayer(source);
 
-const ensureAudioMode = () => {
-  if (isAudioModeReady) {
+  player.volume = volume;
+
+  player.addListener('playbackStatusUpdate', (status) => {
+    if (status.didJustFinish) {
+      player.pause();
+      void player.seekTo(0).catch(() => {});
+    }
+  });
+
+  return player;
+};
+
+const loadVariant = (name: SoundName, { key, source }: SoundVariant) => {
+  if (voices.has(key)) {
     return;
   }
 
-  isAudioModeReady = true;
+  const count = OVERLAPPING_SOUNDS.has(name) ? OVERLAP_VOICES : 1;
 
+  voices.set(key, { players: Array.from({ length: count }, () => createVoice(source)), next: 0 });
+};
+
+export const preloadSounds = () => {
   void setAudioModeAsync({
     playsInSilentMode: true,
     interruptionMode: 'mixWithOthers',
     shouldPlayInBackground: false
   }).catch(() => {});
+
+  for (const [name, variants] of Object.entries(SOUND_VARIANTS)) {
+    for (const variant of variants) {
+      loadVariant(name as SoundName, variant);
+    }
+  }
 };
 
-const getVoices = ({ key, source }: SoundVariant): Voices => {
-  const existing = voices.get(key);
+const restart = (player: AudioPlayer) => {
+  if (!player.playing) {
+    player.play();
 
-  if (existing) {
-    return existing;
+    return;
   }
 
-  const created: Voices = {
-    players: Array.from({ length: VOICES_PER_SOUND }, () => {
-      const player = createAudioPlayer(source);
-
-      player.volume = volume;
-
-      return player;
-    }),
-    next: 0
-  };
-
-  voices.set(key, created);
-
-  return created;
+  void player
+    .seekTo(0)
+    .then(() => player.play())
+    .catch(() => {});
 };
 
 export const playSound = (name: SoundName) => {
@@ -61,26 +74,25 @@ export const playSound = (name: SoundName) => {
     return;
   }
 
-  ensureAudioMode();
-
   const [variant] = sample(SOUND_VARIANTS[name], 1);
 
   if (!variant) {
     return;
   }
 
-  const pool = getVoices(variant);
-  const player = pool.players[pool.next];
+  loadVariant(name, variant);
 
-  pool.next = (pool.next + 1) % pool.players.length;
+  const pool = voices.get(variant.key);
+  const player = pool?.players[pool.next];
 
-  if (!player) {
+  if (!pool || !player) {
     return;
   }
 
+  pool.next = (pool.next + 1) % pool.players.length;
+
   try {
-    player.seekTo(0);
-    player.play();
+    restart(player);
   } catch {}
 };
 

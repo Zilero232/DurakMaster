@@ -3,13 +3,18 @@ import type { PickPrimaryActionInput, PrimaryAction } from './pick-primary-actio
 export const pickPrimaryAction = ({
   isWaiting,
   isReady,
+  canAffordBet,
   canTake,
   canPass,
   isTaking,
   isMainAttacker
 }: PickPrimaryActionInput): PrimaryAction | null => {
   if (isWaiting) {
-    return isReady ? 'notReady' : 'ready';
+    if (isReady) {
+      return 'notReady';
+    }
+
+    return canAffordBet ? 'ready' : 'leave';
   }
 
   if (canTake) {

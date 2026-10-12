@@ -2,16 +2,14 @@ import { TrendingUp, Wallet } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { match } from 'ts-pattern';
 
 import { Button, LobbyBackground, LoserHat, RESULT_ART_SIZE } from '@/ui-kit';
 
 import type { MatchResultProps } from './MatchResult.types';
 
-import { signed } from '../../lib';
+import { pickOutcome, signed } from '../../lib';
 import { useDismissOnBack, useResultFanfare } from '../../model/hooks';
-import { ResultDelta } from './components';
-import { OUTCOMES } from './MatchResult.config';
+import { ResultDelta } from '../components';
 import { SCREEN_GAP, styles } from './MatchResult.styles';
 
 export const MatchResult = ({
@@ -20,8 +18,6 @@ export const MatchResult = ({
   isDraw,
   creditsDelta,
   ratingDelta,
-  canRematch,
-  onRematch,
   onToMenu
 }: MatchResultProps) => {
   const { t } = useTranslation();
@@ -30,12 +26,7 @@ export const MatchResult = ({
   useResultFanfare({ isDraw, isLoser });
   useDismissOnBack(onToMenu);
 
-  const outcome = match({ isDraw, isLoser, reason })
-    .with({ isDraw: true }, () => OUTCOMES.draw)
-    .with({ isLoser: true, reason: 'timeout' }, () => OUTCOMES.loseByTimeout)
-    .with({ isLoser: true, reason: 'left' }, () => OUTCOMES.loseByLeaving)
-    .with({ isLoser: true }, () => OUTCOMES.lose)
-    .otherwise(() => OUTCOMES.win);
+  const outcome = pickOutcome({ isDraw, isLoser, reason });
 
   return (
     <LobbyBackground
@@ -71,18 +62,7 @@ export const MatchResult = ({
       </View>
 
       <View style={styles.actions}>
-        {canRematch && (
-          <Button isFullWidth size='lg' variant='primary' onPress={onRematch}>
-            {t('result.rematch')}
-          </Button>
-        )}
-
-        <Button
-          isFullWidth
-          size='lg'
-          variant={canRematch ? 'secondary' : 'primary'}
-          onPress={onToMenu}
-        >
+        <Button isFullWidth size='lg' variant='primary' onPress={onToMenu}>
           {t('result.toMenu')}
         </Button>
       </View>

@@ -14,13 +14,17 @@ const buildStyles = (width: number, theme: CardTheme) =>
     root: {
       width,
       height: width / cardTokens.ratio,
-      overflow: 'hidden',
-
-      borderWidth: borderWidth.hairline,
-      borderColor: theme.edge,
       borderRadius: cardTokens.radius,
       backgroundColor: theme.face,
       ...shadows.card
+    },
+
+    face: {
+      flex: 1,
+      overflow: 'hidden',
+      borderWidth: borderWidth.hairline,
+      borderColor: theme.edge,
+      borderRadius: cardTokens.radius
     },
 
     selected: {

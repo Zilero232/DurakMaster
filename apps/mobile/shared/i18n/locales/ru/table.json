@@ -32,7 +32,8 @@
       "mine": "Ваш ход",
       "defends": "{{name}} отбивается",
       "moves": "Ходит {{name}}"
-    }
+    },
+    "leaveNoCredits": "Мало кредитов — выйти"
   },
   "result": {
     "win": "Победа",

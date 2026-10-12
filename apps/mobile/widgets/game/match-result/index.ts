@@ -1,2 +1,2 @@
-export { MatchResult } from './ui';
-export type { MatchResultProps } from './ui';
+export { MatchBanner, MatchResult } from './ui';
+export type { MatchBannerProps, MatchResultProps } from './ui';

@@ -35,7 +35,7 @@ export const DurakTable = ({
   const table = useDurakTable({ game });
   const menu = useTableMenu({ isPlaying: !isWaiting, onLeave });
 
-  const value = createTableValue({ game, table, settings, phrases, isWaiting });
+  const value = createTableValue({ game, table, settings, phrases, isWaiting, onLeave });
   const rules = describeTableRules({ settings, t });
 
   return (

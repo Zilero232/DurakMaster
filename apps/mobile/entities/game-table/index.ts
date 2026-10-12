@@ -1,4 +1,5 @@
 export { BOOST_HINTS, BOOST_ICONS, BOOST_LABELS } from './config';
+export { DEAL_STAGGER_MS, SLIDE_MS } from './config';
 export { RULE_ICONS } from './config/rule-icons';
 export type { TableRuleIcon } from './config/rule-icons.types';
 export { createIdleView } from './lib';

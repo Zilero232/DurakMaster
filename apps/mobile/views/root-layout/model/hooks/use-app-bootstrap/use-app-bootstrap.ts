@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { useSettingsStore } from '@/entities/settings';
 import { restoreLocale } from '@/shared/i18n';
+import { preloadSounds } from '@/shared/lib/sound';
 
 import { APP_FONTS } from '../../../config';
 
@@ -17,6 +18,8 @@ export const useAppBootstrap = (): boolean => {
   const [areFontsReady] = useFonts(APP_FONTS);
 
   useEffect(() => {
+    preloadSounds();
+
     void restoreLocale().finally(() => {
       setIsLocaleReady(true);
     });

@@ -34,7 +34,6 @@ export const PlayingCard = ({
 
   const rootStyle = [
     styles.root,
-    isSelected && styles.selected,
     {
       transform: [
         { rotate: `${rotation}deg` },
@@ -45,7 +44,7 @@ export const PlayingCard = ({
   ];
 
   const content = (
-    <>
+    <View style={[styles.face, isSelected && styles.selected]}>
       {card ? (
         <CardFace card={card} theme={theme} width={width} />
       ) : (
@@ -53,7 +52,7 @@ export const PlayingCard = ({
       )}
 
       {hasHint && <View style={styles.playableRing} />}
-    </>
+    </View>
   );
 
   if (!onPress) {
