@@ -19,7 +19,7 @@ WORKDIR /app
 # listed there needs its manifest present, even the ones this image never runs.
 FROM base AS deps
 
-COPY package.json bun.lock ./
+COPY package.json bun.lock bunfig.toml ./
 COPY apps/mobile/package.json ./apps/mobile/package.json
 COPY apps/server/package.json ./apps/server/package.json
 COPY packages/game-core/package.json ./packages/game-core/package.json

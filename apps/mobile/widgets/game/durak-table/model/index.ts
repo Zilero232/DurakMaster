@@ -1,7 +1,14 @@
-export { useCardDrag, useDurakTable, useLeaveTable } from './hooks';
-export type { UseDurakTableInput } from './hooks';
+export {
+  useBoostConfirm,
+  useCardDrag,
+  useDurakTable,
+  useFeedbackToggles,
+  useRowWidth,
+  useTableMenu,
+  useTableSounds
+} from './hooks';
+export type { TableMenuState, UseDurakTableInput } from './hooks';
 
-export { useTableSounds } from './hooks';
 export { TableProvider, useTableContext } from './table-context';
 export type {
   TableContextValue,

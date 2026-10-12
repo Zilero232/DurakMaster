@@ -11,14 +11,18 @@ export const HomeScreen = () => {
   const { profile } = useMyProfile();
   const outcome = useSessionStore((store) => store.outcome);
   const goToMenu = useSessionStore((store) => store.goToMenu);
+  const dismissOutcome = useSessionStore((store) => store.dismissOutcome);
 
   return match({ outcome, currentTable })
     .with({ outcome: P.nonNullable }, ({ outcome: result }) => (
       <MatchResult
+        canRematch={currentTable !== null}
         creditsDelta={result.creditsDelta}
         isDraw={result.isDraw}
         isLoser={result.loserUserId === profile?.userId}
-        onDismiss={goToMenu}
+        ratingDelta={result.ratingDelta}
+        onRematch={dismissOutcome}
+        onToMenu={goToMenu}
       />
     ))
     .with({ currentTable: P.nonNullable }, () => <TableRouter />)

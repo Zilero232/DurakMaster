@@ -22,11 +22,11 @@
     "dev": "bun --filter @durak-master/server --filter @durak-master/mobile --parallel dev",
     "dev:infra": "docker compose -f docker-compose.dev.yml up -d",
     "dev:server": "bun --filter @durak-master/server dev",
-    "dev:mobile": "bun --filter @durak-master/mobile dev",
-    "android": "bun --filter @durak-master/mobile android",
-    "ios": "bun --filter @durak-master/mobile ios",
+    "dev:mobile": "bun run --cwd apps/mobile dev",
+    "android": "bun run --cwd apps/mobile android",
+    "ios": "bun run --cwd apps/mobile ios",
     "build": "bun --filter @durak-master/server build",
-    "prebuild": "bun --filter @durak-master/mobile prebuild",
+    "prebuild": "bun run --cwd apps/mobile prebuild",
     "verify": "bun run typecheck && bun run test && bun run lint && bun run lint:fsd && bun run format:check",
     "fix": "bun run lint:fix && bun run format",
     "typecheck": "bun --filter @durak-master/schemas typecheck && bun --filter @durak-master/game-core typecheck && bun --filter @durak-master/server typecheck && bun --filter @durak-master/mobile typecheck",
@@ -54,26 +54,26 @@
     "*.{json,md,yml,yaml}": "prettier --write"
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.2.2",
-    "@commitlint/config-conventional": "^21.2.2",
-    "@feature-sliced/steiger-plugin": "^0.7.0",
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
+    "@feature-sliced/steiger-plugin": "^0.8.0",
     "@siberiacancode/eslint": "^2.18.1",
     "@siberiacancode/prettier": "^1.9.0",
     "@siberiacancode/tsconfig": "^1.2.0",
-    "@vitest/coverage-v8": "^5.0.0",
+    "@vitest/coverage-v8": "^5.0.3",
     "commitizen": "^4.3.2",
     "cz-git": "^1.14.0",
-    "eslint": "^10.10.0",
+    "eslint": "^10.12.0",
     "fkill-cli": "^9.0.0",
     "husky": "^9.1.7",
-    "lint-staged": "^17.5.1",
-    "prettier": "^3.9.6",
-    "steiger": "^0.6.0",
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.10",
+    "steiger": "^0.7.0",
     "typescript": "6.0.3",
-    "vitest": "^5.0.0"
+    "vitest": "^5.0.3"
   },
   "license": "UNLICENSED",
   "dependencies": {
-    "zod": "4.6.4"
+    "zod": "4.6.6"
   }
 }

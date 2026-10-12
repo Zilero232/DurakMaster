@@ -4,6 +4,12 @@ import { bearer } from 'better-auth/plugins';
 
 import type { PrismaClient } from '../../../generated/prisma/client';
 
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+
+const APP_ORIGIN = 'durakmaster://';
+
+const EXPO_DEV_ORIGINS = 'exp://**';
+
 export const createAuth = (prisma: PrismaClient) =>
   betterAuth({
     database: prismaAdapter(prisma, { provider: 'postgresql' }),
@@ -22,7 +28,7 @@ export const createAuth = (prisma: PrismaClient) =>
       updateAge: 60 * 60 * 24
     },
 
-    trustedOrigins: ['durakmaster://'],
+    trustedOrigins: IS_PRODUCTION ? [APP_ORIGIN] : [APP_ORIGIN, EXPO_DEV_ORIGINS],
 
     plugins: [bearer()]
   });

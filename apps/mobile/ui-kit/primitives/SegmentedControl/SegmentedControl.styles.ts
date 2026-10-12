@@ -1,8 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, radii, shadows, spacing } from '../../theme';
-
-export const MIN_TAP_SIZE = 44;
+import { colors, fontFamily, fontSize, radii, shadows, spacing, TAP_TARGET } from '../../theme';
 
 export const styles = StyleSheet.create({
   root: {
@@ -20,7 +18,7 @@ export const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: MIN_TAP_SIZE - spacing[2],
+    minHeight: TAP_TARGET - spacing[2],
     paddingHorizontal: spacing[2],
     borderRadius: radii.sm,
     overflow: 'hidden'

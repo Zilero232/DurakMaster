@@ -6,6 +6,9 @@ export type { EmptyStateProps } from './EmptyState';
 
 export { FeltBackground } from './FeltBackground';
 export type { FeltBackgroundProps } from './FeltBackground';
+export { InlineConfirm } from './InlineConfirm';
+export type { InlineConfirmProps } from './InlineConfirm';
+
 export { LobbyBackground } from './LobbyBackground';
 export type { LobbyBackgroundProps } from './LobbyBackground';
 

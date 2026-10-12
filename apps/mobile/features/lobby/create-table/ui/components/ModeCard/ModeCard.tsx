@@ -20,6 +20,6 @@ export const ModeCard = ({ icon: Icon, label, hint, isActive, onPress }: ModeCar
     />
 
     <Text style={[styles.label, isActive && styles.labelActive]}>{label}</Text>
-    {hint && <Text style={styles.hint}>{hint}</Text>}
+    {hint !== undefined && <Text style={styles.hint}>{hint}</Text>}
   </Pressable>
 );

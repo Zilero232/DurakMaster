@@ -1,6 +1,15 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, radii, shadows, spacing } from '../../theme';
+import {
+  colors,
+  fontFamily,
+  fontSize,
+  iconSize,
+  radii,
+  shadows,
+  spacing,
+  TAP_TARGET
+} from '../../theme';
 
 export const styles = StyleSheet.create({
   root: {
@@ -82,8 +91,16 @@ export const styles = StyleSheet.create({
   close: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 32,
-    height: 32,
+    width: TAP_TARGET,
+    height: TAP_TARGET,
+    marginRight: -spacing[2]
+  },
+
+  closeFrame: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: iconSize.xl,
+    height: iconSize.xl,
     borderRadius: radii.pill,
     backgroundColor: colors.surface2
   },

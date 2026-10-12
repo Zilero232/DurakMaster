@@ -29,7 +29,7 @@ export const InviteNotice = () => {
       title={t('friends.inviteReceivedTitle')}
       onClose={decline}
     >
-      {invite && (
+      {invite !== null && (
         <View style={styles.root}>
           <Avatar name={invite.from.name} size={AVATAR_SIZE} src={invite.from.avatarUrl} />
 

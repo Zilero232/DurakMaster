@@ -1,9 +1,13 @@
 import { useState } from 'react';
 
-import type { ShellPanel } from './use-shell-panels.types';
+import type { ShellPanel, UseShellPanelsInput } from './use-shell-panels.types';
 
-export const useShellPanels = () => {
+export const useShellPanels = ({ isSignedIn }: UseShellPanelsInput) => {
   const [panel, setPanel] = useState<ShellPanel | null>(null);
+
+  if (!isSignedIn && panel !== null) {
+    setPanel(null);
+  }
 
   return {
     panel,

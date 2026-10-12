@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, radii, spacing, TAP_TARGET } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -14,6 +14,7 @@ export const styles = StyleSheet.create({
   field: {
     flexShrink: 1,
     minWidth: 104,
+    minHeight: TAP_TARGET,
     paddingVertical: spacing[1],
     paddingHorizontal: spacing[3],
     borderWidth: StyleSheet.hairlineWidth,

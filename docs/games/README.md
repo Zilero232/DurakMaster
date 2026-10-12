@@ -7,10 +7,9 @@ disagree, that is stated explicitly along with the chosen variant.
 **Read before any edit to the rules.** Bugs in game logic are the most expensive
 ones in the project: players notice them, not tests.
 
-| Game | Document | Rules | Table screen |
-|---|---|---|---|
-| Durak | [durak.md](./durak.md) | implemented | implemented |
-
+| Game  | Document               | Rules       | Table screen |
+| ----- | ---------------------- | ----------- | ------------ |
+| Durak | [durak.md](./durak.md) | implemented | implemented  |
 
 How the multi-game setup works — [architecture.md](./architecture.md): how several
 games live in one app without turning `game-core` into a dump of conditionals.
@@ -34,7 +33,7 @@ What differs is the rules of the turn, tricks and scoring. What is shared goes i
 2. Describe the table settings: which modes the player picks in the lobby.
 3. Implement `game-core/<game>` — the rules as pure functions, plus a
    `<game>Module` registered in `registry.ts`.
-4. Cover the document's bug checklist with tests (`bun test`). The checklist at
+4. Cover the document's bug checklist with tests (`bun run test`). The checklist at
    the end of each rules document is written to be turned into test names.
 5. Add the game's rules to the lobby form: a `<Game>Settings` component and an
    arm in the `GameSettings` dispatcher.

@@ -17,7 +17,7 @@ export default defineConfig([
     rules: {
       // Shared holds segments rather than slices here, and segments are imported
       // by path on purpose: `@/shared/lib/cards`, not one barrel over everything.
-      // See docs/fsd.md §1.
+      // See docs/architecture/fsd.md §1.
       'fsd/no-public-api-sidestep': 'off',
       // A slice used by a single consumer is still the right home for it: the
       // rule optimises for reuse, the layer boundary is what we want to keep.

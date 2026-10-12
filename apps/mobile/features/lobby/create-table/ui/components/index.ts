@@ -18,6 +18,9 @@ export type {
   ModeToggleField
 } from './ModesGrid';
 
+export { MoreRules } from './MoreRules';
+export type { MoreRulesProps } from './MoreRules';
+
 export { OptionRow } from './OptionRow';
 export type { OptionItem, OptionRowProps } from './OptionRow';
 

@@ -19,58 +19,58 @@ export const ProfileSummary = ({ profile, onOpenStats }: ProfileSummaryProps) =>
   const winRate = getWinRate(profile);
 
   return (
-    <Panel style={styles.root}>
-      <View style={styles.header}>
-        <LeagueBadge league={rank.league.id} level={rank.level} size={48} />
+    <Pressable
+      accessibilityHint={t('stats.openHint')}
+      accessibilityLabel={t('stats.title')}
+      accessibilityRole='button'
+      style={({ pressed }) => pressed && styles.pressed}
+      onPress={onOpenStats}
+    >
+      <Panel style={styles.root}>
+        <View style={styles.header}>
+          <LeagueBadge league={rank.league.id} level={rank.level} size={48} />
 
-        <View style={styles.league}>
-          <Text style={[styles.leagueName, { color: rank.league.color }]}>
-            {t(`profile.leagues.${rank.league.id}`)}
-          </Text>
+          <View style={styles.league}>
+            <Text style={[styles.leagueName, { color: rank.league.color }]}>
+              {t(`profile.leagues.${rank.league.id}`)}
+            </Text>
 
-          <Text style={styles.leagueLevel}>{t('stats.level', { level: rank.level })}</Text>
+            <Text style={styles.leagueLevel}>{t('stats.level', { level: rank.level })}</Text>
+          </View>
+
+          <ChevronRight color={colors.onFeltMuted} size={iconSize.lg} />
         </View>
 
-        <Pressable
-          accessibilityRole='button'
-          style={({ pressed }) => [styles.more, pressed && styles.morePressed]}
-          onPress={onOpenStats}
-        >
-          <Text style={styles.moreLabel}>{t('stats.title')}</Text>
+        <View style={styles.tiles}>
+          <SummaryTile
+            icon={TrendingUp}
+            label={t('stats.rating')}
+            tint={colors.info}
+            value={String(profile.rating)}
+          />
 
-          <ChevronRight color={colors.onFeltMuted} size={iconSize.sm} />
-        </Pressable>
-      </View>
+          <SummaryTile
+            icon={Trophy}
+            label={t('stats.wins')}
+            tint={colors.gold}
+            value={String(profile.gamesWon)}
+          />
 
-      <View style={styles.tiles}>
-        <SummaryTile
-          icon={TrendingUp}
-          label={t('stats.rating')}
-          tint={colors.info}
-          value={String(profile.rating)}
-        />
+          <SummaryTile
+            icon={Percent}
+            label={t('stats.winRate')}
+            tint={colors.success}
+            value={`${Math.round(winRate * 100)}%`}
+          />
 
-        <SummaryTile
-          icon={Trophy}
-          label={t('stats.wins')}
-          tint={colors.gold}
-          value={String(profile.gamesWon)}
-        />
-
-        <SummaryTile
-          icon={Percent}
-          label={t('stats.winRate')}
-          tint={colors.success}
-          value={`${Math.round(winRate * 100)}%`}
-        />
-
-        <SummaryTile
-          icon={Flame}
-          label={t('stats.loginStreak')}
-          tint={colors.accent}
-          value={String(profile.loginStreak)}
-        />
-      </View>
-    </Panel>
+          <SummaryTile
+            icon={Flame}
+            label={t('stats.loginStreak')}
+            tint={colors.accent}
+            value={String(profile.loginStreak)}
+          />
+        </View>
+      </Panel>
+    </Pressable>
   );
 };

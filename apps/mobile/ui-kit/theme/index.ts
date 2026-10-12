@@ -2,12 +2,14 @@ export { CARD_THEMES, DEFAULT_CARD_THEME, getCardTheme, suitColor } from './card
 export type { CardTheme, CardThemeId, SuitPalette } from './card-themes';
 
 export {
-  CORNER_BUTTON_CLEARANCE,
-  CORNER_BUTTON_SIZE,
+  BET_COLUMN_MIN_WIDTH,
+  DOT_SIZE,
   getCardSize,
-  HINT_MAX_WIDTH,
-  ICON_BUTTON_SIZE,
-  MAX_FAN_ANGLE
+  ICON_TILE_SIZE,
+  MAX_FAN_ANGLE,
+  PRIMARY_ACTION_HEIGHT,
+  RESULT_ART_SIZE,
+  TAP_TARGET
 } from './layout';
 
 export { rankLabel } from './suits';

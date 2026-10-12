@@ -1,1 +1,1 @@
-export const VISIBLE_AVATARS = 4;
+export const VISIBLE_AVATARS = 3;

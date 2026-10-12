@@ -11,6 +11,7 @@ export type SeatContextValue = {
   backWidth: number;
 
   isEmpty: boolean;
+  isInvitable: boolean;
   isActive: boolean;
   isReady: boolean;
   isAttacker: boolean;

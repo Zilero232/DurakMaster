@@ -33,7 +33,7 @@ export const TalonStack = ({ count, trump, trumpCard }: TalonStackProps) => {
   return (
     <View style={styles.root}>
       <View style={layout.stack}>
-        {trumpCard && (
+        {trumpCard !== null && (
           <View style={[styles.trumpCard, layout.trumpCard]}>
             <PlayingCard card={trumpCard} rotation={TRUMP_ROTATION} width={layout.card} />
           </View>

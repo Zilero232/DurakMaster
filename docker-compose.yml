@@ -6,7 +6,7 @@
 #   postgres  — self-hosted database
 #
 # The server image is built by CI and pushed to ghcr.io. The VPS builds nothing —
-# it pulls ready images and must be logged in to ghcr.io once (see DEPLOY.md).
+# it pulls ready images and must be logged in to ghcr.io once (see docs/ops/deploy.md).
 #
 # The VPS does NOT hold a clone of the repository. These files live side by side:
 #   docker-compose.yml        — copied here by CI on every deploy

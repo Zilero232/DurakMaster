@@ -3,7 +3,7 @@ import { match } from 'ts-pattern';
 import { useSessionStore } from '@/entities/session';
 import { InviteFriendsSheet } from '@/features/social/invite-friends';
 import { DurakTable, isWaitingForPlayers } from '@/widgets/game/durak-table';
-import { SwipeToLeave, useTableStage } from '@/widgets/game/online-table';
+import { useTableStage } from '@/widgets/game/online-table';
 import { PlayerCard } from '@/widgets/profile/player-card';
 
 import { useTableSheets } from '../../model';
@@ -22,7 +22,7 @@ export const TableRouter = () => {
   return match(stage)
     .with({ kind: 'absent' }, () => null)
     .with({ kind: 'game' }, ({ settings }) => (
-      <SwipeToLeave isEnabled={isWaiting} onLeave={leaveTable}>
+      <>
         <DurakTable
           settings={settings}
           onInviteFriends={sheets.openInvite}
@@ -37,7 +37,7 @@ export const TableRouter = () => {
         />
 
         <InviteFriendsSheet isOpen={sheets.isInviteOpen} onClose={sheets.closeInvite} />
-      </SwipeToLeave>
+      </>
     ))
     .exhaustive();
 };

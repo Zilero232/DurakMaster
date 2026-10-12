@@ -6,6 +6,7 @@ import { useSocialStore } from '@/entities/social';
 import { signOut } from '@/shared/api';
 
 export const useSignOut = () => {
+  const isSigningOut = useSessionStore((store) => store.isSigningOut);
   const disconnect = useSessionStore((store) => store.disconnect);
   const setSigningOut = useSessionStore((store) => store.setSigningOut);
   const resetSocial = useSocialStore((store) => store.reset);
@@ -33,6 +34,7 @@ export const useSignOut = () => {
 
   return {
     isConfirming,
+    isSigningOut,
     request: () => setIsConfirming(true),
     cancel: () => setIsConfirming(false),
     confirm

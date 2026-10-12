@@ -1,58 +1,36 @@
 import { Coins } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
-import { colors, duration, iconSize, spacing } from '@/ui-kit';
+import { colors, iconSize } from '@/ui-kit';
 
 import type { BoostButtonProps } from './BoostButton.types';
 
-import { useBoostHint } from '../../../model';
-import { BOOST_HINTS, BOOST_ICONS, BOOST_LABELS } from './BoostButton.config';
+import { BOOST_HINTS, BOOST_ICONS, BOOST_LABELS } from '../../../config';
 import { styles } from './BoostButton.styles';
 
-export const BoostButton = ({ boost, price, isDisabled = false, onPress }: BoostButtonProps) => {
+export const BoostButton = ({ boost, price, isDimmed = false, onPress }: BoostButtonProps) => {
   const { t } = useTranslation();
-
-  const { isHintVisible, showHint } = useBoostHint();
 
   const Icon = BOOST_ICONS[boost];
 
   return (
-    <View style={styles.root}>
-      {isHintVisible && (
-        <Animated.View
-          entering={FadeIn.duration(duration.fast)}
-          exiting={FadeOut.duration(duration.fast)}
-          style={styles.hint}
-        >
-          <Text style={styles.hintTitle}>{t(BOOST_LABELS[boost])}</Text>
+    <Pressable
+      accessibilityHint={t(BOOST_HINTS[boost])}
+      accessibilityLabel={t(BOOST_LABELS[boost])}
+      accessibilityRole='button'
+      style={({ pressed }) => [styles.root, isDimmed && styles.dimmed, pressed && styles.pressed]}
+      onPress={() => onPress(boost)}
+    >
+      <View style={styles.icon}>
+        <Icon color={colors.onFelt} size={iconSize.md} />
+      </View>
 
-          <Text style={styles.hintText}>{t(BOOST_HINTS[boost])}</Text>
-        </Animated.View>
-      )}
+      <View style={styles.price}>
+        <Coins color={colors.gold} size={iconSize.xs} />
 
-      <Pressable
-        accessibilityHint={t(BOOST_HINTS[boost])}
-        accessibilityLabel={t(BOOST_LABELS[boost])}
-        accessibilityRole='button'
-        accessibilityState={{ disabled: isDisabled }}
-        disabled={isDisabled}
-        hitSlop={{ left: spacing[1], right: spacing[1] }}
-        style={[styles.button, isDisabled && styles.disabled]}
-        onLongPress={showHint}
-        onPress={() => onPress(boost)}
-      >
-        <View style={styles.icon}>
-          <Icon color={colors.onFelt} size={iconSize.sm} />
-        </View>
-
-        <View style={styles.price}>
-          <Coins color={colors.gold} size={10} />
-
-          <Text style={styles.priceValue}>{price}</Text>
-        </View>
-      </Pressable>
-    </View>
+        <Text style={styles.priceValue}>{price}</Text>
+      </View>
+    </Pressable>
   );
 };

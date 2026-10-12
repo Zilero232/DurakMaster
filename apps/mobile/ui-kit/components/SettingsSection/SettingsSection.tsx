@@ -16,7 +16,7 @@ export const SettingsSection = ({
   const body = (
     <>
       <View style={styles.header}>
-        {Icon && (
+        {Icon !== undefined && (
           <View style={styles.badge}>
             <Icon color={colors.accent} size={iconSize.sm} />
           </View>
@@ -25,7 +25,7 @@ export const SettingsSection = ({
         <View style={styles.heading}>
           <Text style={styles.title}>{title}</Text>
 
-          {hint && <Text style={styles.hint}>{hint}</Text>}
+          {hint !== undefined && <Text style={styles.hint}>{hint}</Text>}
         </View>
       </View>
 

@@ -6,6 +6,8 @@ import {
   TURN_SECONDS_BY_SPEED
 } from '@durak-master/schemas';
 
+import { spacing } from '@/ui-kit';
+
 import type { OptionItem } from './components/OptionRow';
 
 export const playerCountItems = (game: GameId, deckSize?: DurakDeckSize): OptionItem<number>[] => {
@@ -28,3 +30,5 @@ export const SPEED_ITEMS: {
   { value: 'normal', labelKey: 'create.speedNormal', seconds: TURN_SECONDS_BY_SPEED.normal },
   { value: 'fast', labelKey: 'create.speedFast', seconds: TURN_SECONDS_BY_SPEED.fast }
 ];
+
+export const KEYBOARD_BOTTOM_OFFSET = spacing[6];

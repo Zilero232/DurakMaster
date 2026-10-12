@@ -63,7 +63,7 @@ export const Button = ({
       hitSlop={SIZE_HIT_SLOP[size]}
       onPress={handlePress}
     >
-      {gradient && (
+      {gradient !== null && (
         <>
           <LinearGradient
             colors={gradient}

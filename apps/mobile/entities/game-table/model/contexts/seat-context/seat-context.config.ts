@@ -19,6 +19,7 @@ export const EMPTY_SEAT_CONTEXT: SeatContextValue = {
   backWidth: 0,
 
   isEmpty: true,
+  isInvitable: false,
   isActive: false,
   isReady: false,
   isAttacker: false,

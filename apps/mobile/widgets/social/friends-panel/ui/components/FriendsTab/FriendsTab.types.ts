@@ -1,6 +1,6 @@
 import type { Friend } from '@durak-master/schemas';
 
-import type { ManageAction } from '../../FriendsPanel.types';
+import type { ManageAction } from '../../../model';
 
 export type FriendsTabProps = {
   friends: Friend[];

@@ -9,7 +9,7 @@ import { colors, EmptyState, iconSize } from '@/ui-kit';
 
 import type { SearchTabProps } from './SearchTab.types';
 
-import { MIN_QUERY } from '../../FriendsPanel.config';
+import { MIN_QUERY } from '../../../config';
 import { DEBOUNCE_MS } from './SearchTab.config';
 import { styles } from './SearchTab.styles';
 

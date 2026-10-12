@@ -2,17 +2,17 @@
 
 Everything needed to publish DurakMaster on Google Play, in the order it is needed.
 
-| Document | What it holds |
-|---|---|
-| [google-play.md](./google-play.md) | App signing, the service account, tracks, AdMob |
-| [listing.md](./listing.md) | Store listing copy, screenshots, graphic assets |
-| [privacy.md](./privacy.md) | What the app collects |
-| [privacy-policy.md](./privacy-policy.md) | The policy text to publish at a public URL |
-| [data-safety.md](./data-safety.md) | The Data safety form, content rating, ads, audience |
-| [release-checklist.md](./release-checklist.md) | The pass to run before every submission |
+| Document                                       | What it holds                                       |
+| ---------------------------------------------- | --------------------------------------------------- |
+| [google-play.md](./google-play.md)             | App signing, the service account, tracks, AdMob     |
+| [listing.md](./listing.md)                     | Store listing copy, screenshots, graphic assets     |
+| [privacy.md](./privacy.md)                     | What the app collects                               |
+| [privacy-policy.md](./privacy-policy.md)       | The policy text to publish at a public URL          |
+| [data-safety.md](./data-safety.md)             | The Data safety form, content rating, ads, audience |
+| [release-checklist.md](./release-checklist.md) | The pass to run before every submission             |
 
 The signing keys, API credentials and the CI step live in
-[DEPLOY.md](../../DEPLOY.md#releasing-to-google-play).
+[docs/ops/deploy.md](../ops/deploy.md#releasing-to-google-play).
 
 ---
 

@@ -13,8 +13,9 @@ Then, depending on what you are touching:
 | Area                 | Read first                                                                               |
 | -------------------- | ---------------------------------------------------------------------------------------- |
 | `packages/game-core` | [docs/games/durak.md](docs/games/durak.md) — the rules, including where sources disagree |
-| Client structure     | [docs/fsd.md](docs/fsd.md) — layers, slices, import direction                            |
-| Anything             | [docs/style.md](docs/style.md) — naming, imports, component size                         |
+| Client structure     | [docs/architecture/fsd.md](docs/architecture/fsd.md) — layers, slices, import direction  |
+| Stakes, balances     | [docs/architecture/stakes.md](docs/architecture/stakes.md) — held once, refunded once    |
+| Anything             | [docs/guides/](docs/guides/README.md) — naming, imports, component size                  |
 
 ## The loop
 
@@ -24,6 +25,9 @@ bun dev:infra                 # Postgres
 bun dev:server                # one terminal
 bun dev:mobile                # another
 ```
+
+The first-time setup, the development build for a phone and the Expo CLI tips are in
+[docs/ops/local-dev.md](docs/ops/local-dev.md).
 
 Before you call anything done:
 
@@ -46,7 +50,8 @@ The layouts that break are rarely the ones you were editing.
 
 ## Commits
 
-Conventional Commits — `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
+Conventional Commits — `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`, with an optional scope
+from the fixed list ([commits](docs/guides/shared/commits.md)).
 
 The subject says what changed. The body says why, when the why is not obvious
 from the diff. Skip the body when it would only restate the subject.

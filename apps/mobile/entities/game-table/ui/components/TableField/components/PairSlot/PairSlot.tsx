@@ -60,7 +60,7 @@ export const PairSlot = ({
           />
         </View>
 
-        {pair.defense && (
+        {pair.defense !== null && (
           <Animated.View style={[pairStyles.defense, defenseMotion]}>
             <PlayingCard card={pair.defense} rotation={DEFENSE_ROTATION} width={width} />
           </Animated.View>

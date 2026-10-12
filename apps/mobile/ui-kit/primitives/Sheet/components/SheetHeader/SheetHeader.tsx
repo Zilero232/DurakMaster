@@ -19,11 +19,12 @@ export const SheetHeader = ({ title, onClose }: SheetHeaderProps) => {
       <Pressable
         accessibilityLabel={t('common.close')}
         accessibilityRole='button'
-        hitSlop={12}
         style={styles.close}
         onPress={onClose}
       >
-        <X color={colors.mutedForeground} size={iconSize.md} />
+        <View style={styles.closeFrame}>
+          <X color={colors.mutedForeground} size={iconSize.md} />
+        </View>
       </Pressable>
     </View>
   );

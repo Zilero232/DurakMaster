@@ -19,7 +19,7 @@ export const FilterChip = ({
     style={[styles.chip, isActive && styles.chipActive]}
     onPress={onPress}
   >
-    {Icon && (
+    {Icon !== undefined && (
       <Icon
         color={isActive ? colors.primaryForeground : colors.mutedForeground}
         size={iconSize.xs}

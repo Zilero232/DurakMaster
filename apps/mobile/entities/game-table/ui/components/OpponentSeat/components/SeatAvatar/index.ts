@@ -1,0 +1,1 @@
+export { SeatAvatar } from './SeatAvatar';

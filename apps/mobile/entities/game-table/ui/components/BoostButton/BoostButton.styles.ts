@@ -5,29 +5,33 @@ import {
   colors,
   fontFamily,
   fontSize,
-  HINT_MAX_WIDTH,
+  opacity,
   radii,
+  seatRowGap,
   shadows,
-  spacing
+  TAP_TARGET
 } from '@/ui-kit';
-
-const SIZE = 36;
 
 export const styles = StyleSheet.create({
   root: {
-    alignItems: 'center'
+    alignItems: 'center',
+    gap: seatRowGap
   },
 
-  button: {
-    alignItems: 'center',
-    gap: 2
+  pressed: {
+    opacity: opacity.muted,
+    transform: [{ scale: 0.95 }]
+  },
+
+  dimmed: {
+    opacity: opacity.disabled
   },
 
   icon: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: SIZE,
-    height: SIZE,
+    width: TAP_TARGET,
+    height: TAP_TARGET,
     borderWidth: borderWidth.hairline,
     borderColor: colors.glassBorder,
     borderRadius: radii.md,
@@ -35,47 +39,15 @@ export const styles = StyleSheet.create({
     ...shadows.tile
   },
 
-  disabled: {
-    opacity: 0.4
-  },
-
   price: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 2
+    gap: seatRowGap
   },
 
   priceValue: {
     fontSize: fontSize.xs,
     fontFamily: fontFamily.sansBold,
     color: colors.gold
-  },
-
-  hint: {
-    position: 'absolute',
-    right: 0,
-    bottom: SIZE + spacing[5],
-    zIndex: 20,
-    gap: 2,
-    width: HINT_MAX_WIDTH,
-    padding: spacing[3],
-    borderWidth: borderWidth.hairline,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    backgroundColor: colors.surfaceOverlay,
-    ...shadows.panel
-  },
-
-  hintTitle: {
-    fontSize: fontSize.sm,
-    fontFamily: fontFamily.sansBold,
-    color: colors.foreground
-  },
-
-  hintText: {
-    fontSize: fontSize.xs,
-    fontFamily: fontFamily.sans,
-    lineHeight: 16,
-    color: colors.mutedForeground
   }
 });

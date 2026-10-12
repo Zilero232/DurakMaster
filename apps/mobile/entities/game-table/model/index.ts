@@ -8,7 +8,6 @@ export type { UseCountdownRingInput } from './hooks';
 export type { UseDropZonesInput, UseDropZonesResult } from './hooks';
 
 export {
-  useBoostHint,
   useCardGesture,
   useCardSize,
   usePairMeasure,

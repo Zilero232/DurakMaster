@@ -7,15 +7,17 @@ export const styles = StyleSheet.create({
     flex: 1
   },
 
-  corner: {
-    position: 'absolute',
-    right: spacing[5],
-    zIndex: 1
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingTop: spacing[2],
+    paddingHorizontal: spacing[4]
   },
 
   scroll: {
     flexGrow: 1,
     justifyContent: 'center',
+    paddingTop: spacing[4],
     paddingHorizontal: spacing[5]
   }
 });

@@ -1,3 +1,4 @@
+export { AccountSection } from './AccountSection';
 export { GameSettingsTab } from './GameSettingsTab';
 export { LookSettingsTab } from './LookSettingsTab';
 export { SettingsToggle } from './SettingsToggle';

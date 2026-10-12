@@ -1,0 +1,4 @@
+[install]
+# React Native needs one copy of each native module; the isolated linker splits
+# one version into several peer variants, which expo-doctor flags and EAS can trip on.
+linker = "hoisted"

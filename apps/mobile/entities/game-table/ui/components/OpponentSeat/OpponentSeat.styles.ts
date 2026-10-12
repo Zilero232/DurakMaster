@@ -41,5 +41,9 @@ export const styles = StyleSheet.create({
     paddingVertical: spacing[1],
     borderStyle: 'dashed',
     borderColor: colors.borderStrong
+  },
+
+  invitable: {
+    borderColor: colors.borderAccent
   }
 });

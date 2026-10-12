@@ -5,6 +5,7 @@ export {
   CardThemeProvider,
   EmptyState,
   FeltBackground,
+  InlineConfirm,
   LobbyBackground,
   PlayingCard,
   SettingsSection,
@@ -17,6 +18,7 @@ export {
 export type {
   EmptyStateProps,
   FeltBackgroundProps,
+  InlineConfirmProps,
   LobbyBackgroundProps,
   PlayingCardProps,
   SettingsSectionProps,
@@ -71,29 +73,31 @@ export { CARD_THEMES, DEFAULT_CARD_THEME, getCardTheme, rankLabel, suitColor } f
 export type { CardTheme, CardThemeId, SuitPalette } from './theme';
 
 export {
+  BET_COLUMN_MIN_WIDTH,
   borderWidth,
   bubbleTailSize,
   card,
   colors,
-  CORNER_BUTTON_CLEARANCE,
-  CORNER_BUTTON_SIZE,
+  DOT_SIZE,
   duration,
   fontFamily,
   fontSize,
   getCardSize,
   glow,
   gradientEnds,
-  HINT_MAX_WIDTH,
-  ICON_BUTTON_SIZE,
+  ICON_TILE_SIZE,
   iconSize,
   lineHeight,
   MAX_FAN_ANGLE,
   opacity,
+  PRIMARY_ACTION_HEIGHT,
   radii,
+  RESULT_ART_SIZE,
   screenGradient,
   seatRowGap,
   shadows,
   spacing,
-  surfaceGradient
+  surfaceGradient,
+  TAP_TARGET
 } from './theme';
 export type { Colors } from './theme';

@@ -66,6 +66,7 @@ export type SessionActions = {
   joinTable: (tableId: string, password?: string) => void;
   leaveTable: () => void;
   goToMenu: () => void;
+  dismissOutcome: () => void;
   setReady: (isReady: boolean) => void;
   addBot: () => void;
   applyBoost: (boost: BoostId, targetUserId?: string) => void;

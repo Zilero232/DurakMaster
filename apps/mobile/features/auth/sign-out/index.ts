@@ -1,3 +1,1 @@
-export { useSignOut } from './model';
-export { SignOutConfirm } from './ui';
-export type { SignOutConfirmProps } from './ui';
+export { SignOutButton } from './ui';

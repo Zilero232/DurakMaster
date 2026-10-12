@@ -11,5 +11,8 @@ export type OpponentsRowProps = {
 
   turnSeconds: number;
 
+  /** While the table waits, an empty seat invites a friend when tapped. */
+  isWaiting: boolean;
+
   onSelectPlayer: (userId: string) => void;
 };

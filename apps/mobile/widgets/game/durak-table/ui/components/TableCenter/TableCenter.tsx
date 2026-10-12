@@ -12,8 +12,10 @@ export const TableCenter = ({
   beatableIndexes,
   mySeat,
   isInstant,
+  canTransfer,
   hoveredIndex,
-  onDefend
+  onDefend,
+  onTransfer
 }: TableCenterProps) => {
   const { drag } = useTableContext();
 
@@ -23,12 +25,14 @@ export const TableCenter = ({
 
       <TableField
         beatableIndexes={beatableIndexes}
+        canTransfer={canTransfer}
         hoveredIndex={hoveredIndex}
         isInstant={isInstant}
         isWaiting={view.phase !== 'playing'}
         mySeat={mySeat}
         pairs={view.table}
         onDefend={onDefend}
+        onTransfer={onTransfer}
         onZonesChange={drag.onZonesChange}
       />
 

@@ -1,9 +1,9 @@
+import type { MyProfile } from '@durak-master/schemas';
+
 import type { ConnectionStatus } from '@/entities/session';
 
-import type { ShellTab } from '../../AppShell.types';
-
 export type AppHeaderProps = {
-  tab: ShellTab;
+  profile: MyProfile | null;
   status: ConnectionStatus;
-  onSignOut: () => void;
+  onOpenProfile: () => void;
 };

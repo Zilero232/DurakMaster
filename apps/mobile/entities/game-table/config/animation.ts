@@ -8,6 +8,4 @@ export const SETTLE_MS = 400;
 
 export const DEAL_MS = 300;
 
-export const HINT_LIFETIME_MS = 2600;
-
 export const CHATTER_LIFETIME_MS = 3400;

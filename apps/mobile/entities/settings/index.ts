@@ -1,4 +1,4 @@
-export { useAnimationSpeed, useSettingsStore } from './model';
+export { DEFAULT_VOLUME, useAnimationSpeed, useSettingsStore } from './model';
 
 export type { AnimationSpeed } from './model';
 

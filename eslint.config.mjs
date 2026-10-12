@@ -41,7 +41,7 @@ export default eslint(
     name: 'durak/typescript',
     files: ['**/*.?([cm])[jt]s?(x)'],
     rules: {
-      // `type` везде, никогда `interface` — см. docs/style.md.
+      // `type` везде, никогда `interface` — см. docs/guides/shared/types.md.
       'ts/consistent-type-definitions': ['error', 'type'],
       // В пресете обе выключены. `any` сносит проверку типов там, где она
       // нужнее всего, а `!` глушит единственное предупреждение о null.

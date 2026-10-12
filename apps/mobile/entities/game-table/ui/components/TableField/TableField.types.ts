@@ -9,9 +9,13 @@ export type TableFieldProps = {
   mySeat: number;
 
   isWaiting?: boolean;
+
+  /** Shows a drop slot after the pairs that takes a card to transfer the attack. */
+  canTransfer?: boolean;
   hoveredIndex?: number | null;
   isInstant?: boolean;
   onDefend: (pairIndex: number) => void;
+  onTransfer?: () => void;
 
   onZonesChange?: (zones: DropZone[]) => void;
 };

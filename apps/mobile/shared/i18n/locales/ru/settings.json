@@ -2,6 +2,7 @@
   "settings": {
     "title": "Настройки",
     "language": "Язык",
+    "account": "Аккаунт",
     "cardTheme": "Колода",
     "sound": "Звук",
     "hints": "Подсказывать ходы",

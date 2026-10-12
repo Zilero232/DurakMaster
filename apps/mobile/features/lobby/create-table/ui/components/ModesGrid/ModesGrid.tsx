@@ -59,7 +59,9 @@ export const ModesGrid = ({ choices, toggles, control }: ModesGridProps) => {
                 <View style={styles.toggleText}>
                   <Text style={styles.toggleLabel}>{t(field.labelKey)}</Text>
 
-                  {field.hintKey && <Text style={styles.toggleHint}>{t(field.hintKey)}</Text>}
+                  {field.hintKey !== undefined && (
+                    <Text style={styles.toggleHint}>{t(field.hintKey)}</Text>
+                  )}
                 </View>
 
                 <Switch

@@ -1,18 +1,6 @@
 import type { DurakRules } from '@durak-master/schemas';
 
-import {
-  ArrowLeftRight,
-  ArrowRightToLine,
-  Crown,
-  Equal,
-  Eye,
-  Handshake,
-  RefreshCw,
-  Shuffle,
-  Sparkles,
-  Users,
-  VenetianMask
-} from 'lucide-react-native';
+import { RULE_ICONS } from '@/entities/game-table';
 
 import type { ModeChoiceField, ModeToggleField } from '../ModesGrid';
 
@@ -21,8 +9,8 @@ export const DURAK_CHOICE_FIELDS: ModeChoiceField[] = [
     name: 'durakRules.mode',
     titleKey: 'games.durak.mode.title',
     options: [
-      { value: 'throwIn', icon: ArrowRightToLine, labelKey: 'games.durak.mode.throwIn' },
-      { value: 'transfer', icon: RefreshCw, labelKey: 'games.durak.mode.transfer' }
+      { value: 'throwIn', icon: RULE_ICONS.throwIn, labelKey: 'games.durak.mode.throwIn' },
+      { value: 'transfer', icon: RULE_ICONS.transfer, labelKey: 'games.durak.mode.transfer' }
     ]
   },
   {
@@ -31,13 +19,13 @@ export const DURAK_CHOICE_FIELDS: ModeChoiceField[] = [
     options: [
       {
         value: 'all',
-        icon: Users,
+        icon: RULE_ICONS.allScope,
         labelKey: 'games.durak.throwInScope.all',
         hintKey: 'games.durak.throwInScope.allHint'
       },
       {
         value: 'neighbors',
-        icon: ArrowLeftRight,
+        icon: RULE_ICONS.neighborsScope,
         labelKey: 'games.durak.throwInScope.neighbors',
         hintKey: 'games.durak.throwInScope.neighborsHint'
       }
@@ -47,10 +35,10 @@ export const DURAK_CHOICE_FIELDS: ModeChoiceField[] = [
     name: 'durakRules.fairness',
     titleKey: 'games.durak.fairness.title',
     options: [
-      { value: 'fair', icon: Handshake, labelKey: 'games.durak.fairness.fair' },
+      { value: 'fair', icon: RULE_ICONS.fair, labelKey: 'games.durak.fairness.fair' },
       {
         value: 'cheaters',
-        icon: VenetianMask,
+        icon: RULE_ICONS.cheaters,
         labelKey: 'games.durak.fairness.cheaters',
         hintKey: 'games.durak.fairness.cheatersHint'
       }
@@ -62,27 +50,27 @@ export const DURAK_CHOICE_FIELDS: ModeChoiceField[] = [
     options: [
       {
         value: 'lowestTrump',
-        icon: Crown,
+        icon: RULE_ICONS.lowestTrump,
         labelKey: 'games.durak.firstMove.lowestTrump',
         hintKey: 'games.durak.firstMove.lowestTrumpHint'
       },
-      { value: 'random', icon: Shuffle, labelKey: 'games.durak.firstMove.random' }
+      { value: 'random', icon: RULE_ICONS.random, labelKey: 'games.durak.firstMove.random' }
     ]
   }
 ];
 
 const DURAK_TOGGLE_FIELDS: (ModeToggleField & { onlyInMode?: DurakRules['mode'] })[] = [
-  { name: 'durakRules.allowDraw', icon: Equal, labelKey: 'games.durak.allowDraw' },
+  { name: 'durakRules.allowDraw', icon: RULE_ICONS.draw, labelKey: 'games.durak.allowDraw' },
   {
     name: 'durakRules.allowTransferByShowingTrump',
-    icon: Eye,
+    icon: RULE_ICONS.showTrump,
     labelKey: 'games.durak.showTrump',
     hintKey: 'games.durak.showTrumpHint',
     onlyInMode: 'transfer'
   },
   {
     name: 'durakRules.withJokers',
-    icon: Sparkles,
+    icon: RULE_ICONS.jokers,
     labelKey: 'games.durak.withJokers',
     hintKey: 'games.durak.withJokersHint'
   }

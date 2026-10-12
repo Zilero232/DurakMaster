@@ -6,6 +6,7 @@
     "credits": "{{value}} credits",
     "coins": "{{value}} coins",
     "premium": "Premium",
+    "player": "Player",
     "claimBonus": "Claim bonus",
     "bonusHint": "Free credits are waiting",
     "bonusIn": "Bonus in {{time}}",
@@ -33,9 +34,7 @@
     "adUnconfirmed": "No bonus yet — the daily ad limit may be reached"
   },
   "menu": {
-    "news": "News",
     "friends": "Friends",
-    "items": "Items",
     "leaderboard": "Leaderboard",
     "achievements": "Achievements",
     "share": "Share",
@@ -45,6 +44,7 @@
   },
   "stats": {
     "title": "Stats",
+    "openHint": "Open detailed stats",
     "level": "Level {{level}}",
     "nextLevel": "To the next level",
     "rating": "Rating",

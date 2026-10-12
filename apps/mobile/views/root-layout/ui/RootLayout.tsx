@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Toaster } from 'sonner-native';
 
-import { SessionNotices } from '@/entities/session';
+import { SessionNotices, useSessionStore } from '@/entities/session';
 import { SocialNotices } from '@/entities/social';
 import { InviteNotice } from '@/features/social/answer-invite';
 
@@ -16,6 +16,13 @@ export const RootLayout = () => {
   const isReady = useAppBootstrap();
 
   const insets = useSafeAreaInsets();
+
+  const isAtTable = useSessionStore((store) => store.currentTable !== null);
+
+  const toastStyle = StyleSheet.flatten([
+    rootLayoutStyles.toast,
+    { marginTop: isAtTable ? 0 : insets.top }
+  ]);
 
   if (!isReady) {
     return null;
@@ -41,8 +48,8 @@ export const RootLayout = () => {
 
       <Toaster
         duration={3200}
-        position='top-center'
-        style={StyleSheet.flatten([rootLayoutStyles.toast, { marginTop: insets.top }])}
+        position={isAtTable ? 'center' : 'top-center'}
+        style={toastStyle}
         theme='dark'
       />
     </AppProviders>

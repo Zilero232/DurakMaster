@@ -19,7 +19,7 @@ export const useTableChatter = ({
 
   const latest: Record<string, Chatter> = {};
 
-  const calls = seatCalls({ view, labels: { take: t('table.take'), pass: t('table.calledPass') } });
+  const calls = seatCalls({ view, labels: { take: t('table.take'), pass: t('table.pass') } });
 
   for (const [userId, call] of Object.entries(calls)) {
     latest[userId] = { id: `call:${call.kind}`, kind: 'phrase', text: call.text };

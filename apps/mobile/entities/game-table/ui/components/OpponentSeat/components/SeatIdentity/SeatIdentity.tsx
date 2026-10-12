@@ -1,19 +1,11 @@
-import { Check, Hourglass } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { match } from 'ts-pattern';
 
-import { Avatar, colors } from '@/ui-kit';
-
 import { useSeatContext } from '../../../../../model';
 import { SeatChatter } from '../../../SeatChatter';
-import { SeatTimer } from '../../../SeatTimer';
-import {
-  CHECK_SIZE,
-  EMPTY_ICON_RATIO,
-  ROLE_LABEL_RATIO,
-  ROLE_MIN_SCALE
-} from './SeatIdentity.config';
+import { SeatAvatar } from '../SeatAvatar';
+import { ROLE_LABEL_RATIO, ROLE_MIN_SCALE } from './SeatIdentity.config';
 import { roleRow, styles } from './SeatIdentity.styles';
 
 export const SeatIdentity = () => {
@@ -22,44 +14,24 @@ export const SeatIdentity = () => {
   const seat = useSeatContext();
 
   const role = match(seat)
+    .with({ isDisconnected: true }, () => ({ text: t('table.role.offline'), tone: styles.offline }))
     .with({ isDefender: true }, () => ({ text: t('table.role.defends'), tone: styles.defender }))
     .with({ isAttacker: true }, () => ({ text: t('table.role.attacks'), tone: null }))
-    .with({ isDisconnected: true }, () => ({ text: t('table.role.offline'), tone: styles.offline }))
     .with({ isOut: true }, () => ({ text: t('table.role.out'), tone: null }))
     .otherwise(() => null);
 
   return (
     <View style={styles.identity}>
-      <View style={[styles.avatarRing, seat.isEmpty && styles.emptyRing]}>
-        {seat.isEmpty ? (
-          <Hourglass
-            color={colors.subtleForeground}
-            size={seat.metrics.avatar * EMPTY_ICON_RATIO}
-          />
-        ) : (
-          <Avatar name={seat.name} size={seat.metrics.avatar} src={seat.avatarUrl} />
-        )}
+      <SeatAvatar />
 
-        {seat.isActive && seat.turnSeconds > 0 && (
-          <SeatTimer
-            deadline={seat.turnDeadline}
-            size={seat.metrics.ring}
-            totalSeconds={seat.turnSeconds}
-          />
-        )}
-
-        {seat.isReady && (
-          <View style={styles.ready}>
-            <Check color={colors.background} size={CHECK_SIZE} strokeWidth={3.5} />
-          </View>
-        )}
-      </View>
-
-      <Text numberOfLines={1} style={[styles.name, { fontSize: seat.metrics.label }]}>
+      <Text
+        numberOfLines={1}
+        style={[styles.name, seat.isInvitable && styles.invite, { fontSize: seat.metrics.label }]}
+      >
         {seat.name}
       </Text>
 
-      {role && (
+      {role !== null && (
         <Text
           adjustsFontSizeToFit
           minimumFontScale={ROLE_MIN_SCALE}

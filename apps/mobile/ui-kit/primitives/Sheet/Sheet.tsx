@@ -1,12 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import {
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  useWindowDimensions
-} from 'react-native';
+import { Modal, Pressable, useWindowDimensions } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import type { SheetProps } from './Sheet.types';
@@ -46,10 +41,7 @@ export const Sheet = ({ isOpen, title, children, footer, onClose }: SheetProps) 
           />
         </Animated.View>
 
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={styles.keyboardFrame}
-        >
+        <KeyboardAvoidingView behavior='padding' style={styles.keyboardFrame}>
           <SheetSurface
             footer={footer}
             isOpen={isOpen}

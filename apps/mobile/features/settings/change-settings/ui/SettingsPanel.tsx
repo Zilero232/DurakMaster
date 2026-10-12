@@ -8,11 +8,11 @@ import { SegmentedControl, Sheet } from '@/ui-kit';
 import type { SettingsTab } from './SettingsPanel.config';
 import type { SettingsPanelProps } from './SettingsPanel.types';
 
-import { GameSettingsTab, LookSettingsTab, SoundSettingsTab } from './components';
+import { AccountSection, GameSettingsTab, LookSettingsTab, SoundSettingsTab } from './components';
 import { SETTINGS_TABS } from './SettingsPanel.config';
 import { styles } from './SettingsPanel.styles';
 
-export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
+export const SettingsPanel = ({ isOpen, signOutButton, onClose }: SettingsPanelProps) => {
   const { t } = useTranslation();
 
   const [tab, setTab] = useState<SettingsTab>('play');
@@ -32,6 +32,8 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
           .with('look', () => <LookSettingsTab />)
           .with('sound', () => <SoundSettingsTab />)
           .exhaustive()}
+
+        <AccountSection signOutButton={signOutButton} />
       </View>
     </Sheet>
   );

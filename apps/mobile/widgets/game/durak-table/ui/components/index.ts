@@ -12,3 +12,9 @@ export type { TableActionsProps } from './TableActions';
 
 export { TableCenter } from './TableCenter';
 export type { TableCenterProps } from './TableCenter';
+
+export { TableMenu } from './TableMenu';
+export type { TableMenuProps } from './TableMenu';
+
+export { TableTopBar } from './TableTopBar';
+export type { TableTopBarProps } from './TableTopBar';

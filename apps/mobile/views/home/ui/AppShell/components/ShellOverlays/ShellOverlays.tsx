@@ -1,3 +1,4 @@
+import { SignOutButton } from '@/features/auth/sign-out';
 import { PasswordPrompt } from '@/features/lobby/join-table';
 import { SettingsPanel } from '@/features/settings/change-settings';
 import { PlayerStats } from '@/widgets/profile/player-stats';
@@ -18,11 +19,15 @@ export const ShellOverlays = ({
   onSubmitPassword
 }: ShellOverlaysProps) => (
   <>
-    <SettingsPanel isOpen={openPanel === 'settings'} onClose={onClosePanel} />
+    <SettingsPanel
+      isOpen={openPanel === 'settings'}
+      signOutButton={<SignOutButton />}
+      onClose={onClosePanel}
+    />
 
     <RulesPanel isOpen={openPanel === 'rules'} onClose={onClosePanel} />
 
-    {profile && (
+    {profile !== null && (
       <>
         <PlayerStats isOpen={openPanel === 'stats'} profile={profile} onClose={onClosePanel} />
 

@@ -33,7 +33,7 @@ export const OptionRow = <T extends number | string>({
             {item.label}
           </Text>
 
-          {item.hint && (
+          {item.hint !== undefined && (
             <Text numberOfLines={1} style={styles.hint}>
               {item.hint}
             </Text>

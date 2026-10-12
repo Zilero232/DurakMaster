@@ -36,6 +36,7 @@ export const WalletBar = ({ profile, onEdit, onClaimBonus }: WalletBarProps) => 
 
         <View style={styles.wallets}>
           <WalletAmount icon={Coins} iconColor={colors.gold} value={coins} />
+
           <WalletAmount icon={Wallet} iconColor={colors.success} value={credits} />
         </View>
       </View>

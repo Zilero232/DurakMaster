@@ -33,6 +33,7 @@ export const AchievementRow = ({ achievement, onClaim }: AchievementRowProps) =>
         ) : (
           <View style={styles.reward}>
             <Coins color={colors.gold} size={iconSize.xs} />
+
             <Text style={styles.rewardValue}>{reward}</Text>
           </View>
         )}

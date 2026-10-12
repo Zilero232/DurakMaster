@@ -1,5 +1,6 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useSettingsStore } from '@/entities/settings';
@@ -16,13 +17,15 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
 
   return (
     <GestureHandlerRootView style={styles.root}>
-      <SafeAreaProvider>
-        <QueryClientProvider client={queryClient}>
-          <FeedbackProvider initialValue={PRESS_FEEDBACK}>
-            <CardThemeProvider initialValue={cardTheme}>{children}</CardThemeProvider>
-          </FeedbackProvider>
-        </QueryClientProvider>
-      </SafeAreaProvider>
+      <KeyboardProvider>
+        <SafeAreaProvider>
+          <QueryClientProvider client={queryClient}>
+            <FeedbackProvider initialValue={PRESS_FEEDBACK}>
+              <CardThemeProvider initialValue={cardTheme}>{children}</CardThemeProvider>
+            </FeedbackProvider>
+          </QueryClientProvider>
+        </SafeAreaProvider>
+      </KeyboardProvider>
     </GestureHandlerRootView>
   );
 };

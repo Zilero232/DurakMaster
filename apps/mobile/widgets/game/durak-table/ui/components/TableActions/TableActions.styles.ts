@@ -2,93 +2,27 @@ import { StyleSheet } from 'react-native';
 
 import { borderWidth, colors, radii, shadows, spacing } from '@/ui-kit';
 
-const SEAT_SIZE = 60;
-const RING_PADDING = 2;
-
-const ACTION_MAX_WIDTH = 180;
-
-const AVATAR_SIZE = SEAT_SIZE - (RING_PADDING + borderWidth.regular) * 2;
-
-export const AVATAR_DIAMETER = AVATAR_SIZE;
-export const RING_DIAMETER = SEAT_SIZE;
-
 export const styles = StyleSheet.create({
-  wrap: {
+  root: {
     gap: spacing[2]
   },
 
-  walletRow: {
-    zIndex: 2,
-    alignItems: 'center'
-  },
-
-  root: {
+  extras: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
+    gap: spacing[2]
+  },
+
+  bar: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing[2],
-    paddingVertical: spacing[2],
-    paddingHorizontal: spacing[3],
+    padding: spacing[2],
     borderWidth: borderWidth.hairline,
     borderColor: colors.glassBorder,
     borderRadius: radii.lg,
     backgroundColor: colors.glass,
     ...shadows.card
-  },
-
-  seat: {
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: SEAT_SIZE
-  },
-
-  actionSlot: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    gap: spacing[2],
-    flex: 1,
-    flexBasis: 0,
-    minWidth: 0
-  },
-
-  action: {
-    flexShrink: 1,
-    maxWidth: ACTION_MAX_WIDTH,
-    minWidth: 0
-  },
-
-  identity: {
-    zIndex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-
-  avatarRing: {
-    padding: RING_PADDING,
-    borderWidth: borderWidth.regular,
-    borderColor: colors.glassBorder,
-    borderRadius: radii.pill,
-    backgroundColor: colors.surface1,
-    ...shadows.card
-  },
-
-  inviteSlot: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    flex: 1,
-    flexBasis: 0,
-    minWidth: 0
-  },
-
-  boosts: {
-    flex: 1,
-    flexBasis: 0,
-    minWidth: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    gap: spacing[2]
   }
 });

@@ -1,6 +1,6 @@
 {
   "lobby": {
-    "title": "Rooms",
+    "quickPlay": "Quick play",
     "empty": "No open tables",
     "emptyHint": "Create one — other players will join",
     "join": "Join",
@@ -27,7 +27,6 @@
     "ownTable": "Your table"
   },
   "create": {
-    "title": "New game",
     "yourBet": "Your bet",
     "betLabel": "Bet size",
     "players": "Players",
@@ -42,12 +41,18 @@
     "submit": "Create",
     "password": "Table password",
     "passwordPlaceholder": "Choose a password",
-    "passwordRequired": "Enter a password, or nobody can join the table"
+    "passwordRequired": "Enter a password, or nobody can join the table",
+    "moreRules": "More rules",
+    "summary": {
+      "deck_one": "{{count}} card",
+      "deck_other": "{{count}} cards",
+      "neighbors": "Neighbours throw in",
+      "randomFirstMove": "Random first move",
+      "noDraw": "No draws"
+    }
   },
   "games": {
     "durak": {
-      "name": "Durak",
-      "tagline": "be the first to run out of cards",
       "deck": "Deck",
       "deckHint": "A smaller deck makes for a shorter game",
       "allowDraw": "Draw",

@@ -1,5 +1,5 @@
-export { AuthCard } from './AuthCard';
-export type { AuthCardProps } from './AuthCard';
+export { AuthForm } from './AuthForm';
+export type { AuthFormProps } from './AuthForm';
 
 export { CredentialsFields } from './CredentialsFields';
 export type { CredentialsFieldsProps } from './CredentialsFields';

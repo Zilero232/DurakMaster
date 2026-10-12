@@ -4,6 +4,7 @@ export type BoostButtonProps = {
   boost: BoostId;
   price: number;
 
-  isDisabled?: boolean;
+  /** Still opens its confirm, which explains why it cannot be used right now. */
+  isDimmed?: boolean;
   onPress: (boost: BoostId) => void;
 };

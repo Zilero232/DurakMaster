@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { Button, StatusScreen, SuitIcon } from '@/ui-kit';
+import { Button, iconSize, StatusScreen, SuitIcon } from '@/ui-kit';
 
 export const NotFoundScreen = () => {
   const { t } = useTranslation();
@@ -22,7 +22,7 @@ export const NotFoundScreen = () => {
         </Button>
       }
       description={t('notFound.description')}
-      icon={<SuitIcon size={64} suit='spades' />}
+      icon={<SuitIcon size={iconSize.hero} suit='spades' />}
       title={t('notFound.title')}
     />
   );

@@ -1,49 +1,29 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { match } from 'ts-pattern';
 
-import { useFriends } from '@/entities/social';
-import { SegmentedControl, Sheet } from '@/ui-kit';
+import { InlineConfirm, SegmentedControl, Sheet } from '@/ui-kit';
 
-import type { FriendsPanelProps, ManageAction, FriendsTab as Tab } from './FriendsPanel.types';
+import type { FriendsPanelProps } from './FriendsPanel.types';
 
-import { FriendsTab, RemoveFriendConfirm, RequestsTab, SearchTab } from './components';
-import { MIN_QUERY } from './FriendsPanel.config';
+import { useFriendsPanel } from '../model';
+import { FriendsTab, RequestsTab, SearchTab } from './components';
 import { styles } from './FriendsPanel.styles';
 
 export const FriendsPanel = ({ isOpen, onClose }: FriendsPanelProps) => {
   const { t } = useTranslation();
 
-  const { friends, found, search, clearSearch, request, accept, decline, remove } = useFriends();
-
-  const [tab, setTab] = useState<Tab>('friends');
-  const [removingId, setRemovingId] = useState<string | null>(null);
-
-  const handleSearch = (query: string) => {
-    if (query.trim().length >= MIN_QUERY) {
-      search(query);
-    } else {
-      clearSearch();
-    }
-  };
-
-  const handleAction = (action: ManageAction, userId: string) => {
-    match(action)
-      .with('add', () => request(userId))
-      .with('accept', () => accept(userId))
-      .with('decline', () => decline(userId))
-      .with('remove', () => setRemovingId(userId))
-      .exhaustive();
-  };
-
-  const confirmRemove = () => {
-    if (removingId) {
-      remove(removingId);
-    }
-
-    setRemovingId(null);
-  };
+  const {
+    friends,
+    found,
+    tab,
+    isRemoving,
+    setTab,
+    searchFriends,
+    manage,
+    confirmRemove,
+    cancelRemove
+  } = useFriendsPanel();
 
   const pending = friends.incoming.length + friends.outgoing.length;
 
@@ -56,37 +36,46 @@ export const FriendsPanel = ({ isOpen, onClose }: FriendsPanelProps) => {
     { value: 'search' as const, label: t('friends.tabs.search') }
   ];
 
+  const close = () => {
+    cancelRemove();
+    onClose();
+  };
+
   return (
-    <Sheet isOpen={isOpen} title={t('friends.title')} onClose={onClose}>
-      <View style={styles.root}>
-        <SegmentedControl options={tabs} value={tab} onChange={setTab} />
-
-        {match(tab)
-          .with('friends', () => (
-            <FriendsTab
-              friends={friends.friends}
-              onAction={handleAction}
-              onFind={() => setTab('search')}
-            />
-          ))
-          .with('requests', () => (
-            <RequestsTab
-              incoming={friends.incoming}
-              outgoing={friends.outgoing}
-              onAction={handleAction}
-            />
-          ))
-          .with('search', () => (
-            <SearchTab found={found} onAction={handleAction} onSearch={handleSearch} />
-          ))
-          .exhaustive()}
-
-        <RemoveFriendConfirm
-          isOpen={removingId !== null}
-          onCancel={() => setRemovingId(null)}
+    <Sheet isOpen={isOpen} title={t('friends.title')} onClose={close}>
+      {isRemoving ? (
+        <InlineConfirm
+          confirmLabel={t('friends.action.remove')}
+          message={t('friends.removeConfirm')}
+          title={t('friends.removeTitle')}
+          onCancel={cancelRemove}
           onConfirm={confirmRemove}
         />
-      </View>
+      ) : (
+        <View style={styles.root}>
+          <SegmentedControl options={tabs} value={tab} onChange={setTab} />
+
+          {match(tab)
+            .with('friends', () => (
+              <FriendsTab
+                friends={friends.friends}
+                onAction={manage}
+                onFind={() => setTab('search')}
+              />
+            ))
+            .with('requests', () => (
+              <RequestsTab
+                incoming={friends.incoming}
+                outgoing={friends.outgoing}
+                onAction={manage}
+              />
+            ))
+            .with('search', () => (
+              <SearchTab found={found} onAction={manage} onSearch={searchFriends} />
+            ))
+            .exhaustive()}
+        </View>
+      )}
     </Sheet>
   );
 };

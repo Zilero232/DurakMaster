@@ -1,17 +1,20 @@
+import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { LeaveButton, RevealedCards } from '@/entities/game-table';
+import { RevealedCards } from '@/entities/game-table';
 import { useSessionStore } from '@/entities/session';
 import { FeltBackground } from '@/ui-kit';
 
 import type { DurakTableProps } from './DurakTable.types';
 
-import { createTableValue } from '../../../lib';
-import { TableProvider, useDurakTable, useLeaveTable } from '../../../model';
+import { createTableValue, describeTableRules } from '../../../lib';
+import { TableProvider, useDurakTable, useTableMenu } from '../../../model';
 import { OpponentsRow } from '../OpponentsRow';
 import { PlayerZone } from '../PlayerZone';
 import { TableCenter } from '../TableCenter';
+import { TableMenu } from '../TableMenu';
+import { TableTopBar } from '../TableTopBar';
 import { styles, TABLE_BOTTOM_GAP } from './DurakTable.styles';
 
 export const DurakTable = ({
@@ -24,22 +27,17 @@ export const DurakTable = ({
   onLeave,
   onSelectPlayer
 }: DurakTableProps) => {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   const revealed = useSessionStore((store) => store.revealed);
   const clearRevealed = useSessionStore((store) => store.clearRevealed);
 
   const table = useDurakTable({ game });
-  const leave = useLeaveTable({ isPlaying: !isWaiting, onLeave });
+  const menu = useTableMenu({ isPlaying: !isWaiting, onLeave });
 
-  const value = createTableValue({
-    game,
-    table,
-    settings,
-    phrases,
-    isWaiting,
-    onInviteFriends
-  });
+  const value = createTableValue({ game, table, settings, phrases, isWaiting, onInviteFriends });
+  const rules = describeTableRules({ settings, t });
 
   return (
     <TableProvider value={value}>
@@ -50,15 +48,10 @@ export const DurakTable = ({
             { paddingTop: insets.top, paddingBottom: insets.bottom + TABLE_BOTTOM_GAP }
           ]}
         >
-          <LeaveButton
-            isConfirming={leave.isConfirming}
-            isPlaying={!isWaiting}
-            onCancel={leave.cancelLeave}
-            onConfirm={leave.confirmLeave}
-            onPress={leave.requestLeave}
-          />
+          <TableTopBar rules={rules} onOpenMenu={menu.open} />
 
           <OpponentsRow
+            isWaiting={isWaiting}
             mySeat={game.mySeat}
             phrases={phrases}
             players={game.players}
@@ -70,11 +63,13 @@ export const DurakTable = ({
 
           <TableCenter
             beatableIndexes={table.drag.targets ?? game.beatableIndexes}
+            canTransfer={table.canTransferNow}
             hoveredIndex={table.drag.hoveredIndex}
             isInstant={table.isInstant}
             mySeat={game.mySeat}
             view={view}
             onDefend={game.defendPair}
+            onTransfer={table.transferToSlot}
           />
 
           <PlayerZone view={view} />
@@ -84,6 +79,8 @@ export const DurakTable = ({
             cards={revealed?.cards ?? []}
             onClose={clearRevealed}
           />
+
+          <TableMenu bet={settings.bet} isPlaying={!isWaiting} menu={menu} rules={rules} />
         </View>
       </FeltBackground>
     </TableProvider>

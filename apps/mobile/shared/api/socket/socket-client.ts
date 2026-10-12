@@ -1,25 +1,19 @@
 import type { ClientMessage, ServerMessage } from '@durak-master/schemas';
+import type { NativeEventSubscription } from 'react-native';
 
 import { serverMessageSchema } from '@durak-master/schemas';
-import { WebSocket as ReconnectingWebSocket } from 'partysocket';
+import { AppState } from 'react-native';
 
 import { WS_URL } from '@/shared/config';
 
 import { getAuthToken } from '../auth/auth-client';
+import { RECONNECT_DELAY } from './socket-client.config';
 
 type SocketHandler = (message: ServerMessage) => void;
 
 type SocketState = 'closed' | 'connecting' | 'open';
 
 type SocketStateHandler = (state: SocketState) => void;
-
-let authToken: string | null = null;
-
-const readUrlWithFreshToken = async () => {
-  authToken = await getAuthToken();
-
-  return WS_URL;
-};
 
 type ReactNativeWebSocketConstructor = new (
   url: string,
@@ -29,77 +23,52 @@ type ReactNativeWebSocketConstructor = new (
 
 const ReactNativeWebSocket = WebSocket as unknown as ReactNativeWebSocketConstructor;
 
-class AuthorizedWebSocket extends ReactNativeWebSocket {
-  constructor(url: string, protocols?: string | string[]) {
-    super(url, protocols, authToken ? { headers: { Authorization: `Bearer ${authToken}` } } : null);
+const reconnectDelay = (attempt: number) =>
+  Math.min(RECONNECT_DELAY.min * RECONNECT_DELAY.growth ** attempt, RECONNECT_DELAY.max);
+
+const parseServerMessage = (data: unknown): ServerMessage | null => {
+  try {
+    const result = serverMessageSchema.safeParse(JSON.parse(String(data)));
+
+    return result.success ? result.data : null;
+  } catch {
+    return null;
   }
-}
+};
 
 export class SocketClient {
-  private socket: ReconnectingWebSocket | null = null;
+  private socket: WebSocket | null = null;
+  private isActive = false;
+  private attempt = 0;
+  private generation = 0;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private appStateSubscription: NativeEventSubscription | null = null;
   private readonly handlers = new Set<SocketHandler>();
   private readonly stateHandlers = new Set<SocketStateHandler>();
 
   connect(): void {
-    if (this.socket) {
+    if (this.isActive) {
       return;
     }
 
-    const socket = new ReconnectingWebSocket(readUrlWithFreshToken, [], {
-      WebSocket: AuthorizedWebSocket,
-      maxReconnectionDelay: 8000,
-      minReconnectionDelay: 500,
-      reconnectionDelayGrowFactor: 1.6,
-      maxRetries: Number.POSITIVE_INFINITY
-    });
-
-    this.socket = socket;
-    this.notifyState('connecting');
-
-    socket.addEventListener('open', () => {
-      if (this.socket === socket) {
-        this.notifyState('open');
+    this.isActive = true;
+    this.generation += 1;
+    this.attempt = 0;
+    this.appStateSubscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        this.reconnectNow();
       }
     });
-
-    socket.addEventListener('close', () => {
-      if (this.socket === socket) {
-        this.notifyState('closed');
-      }
-    });
-
-    socket.addEventListener('error', () => {
-      if (this.socket === socket) {
-        this.notifyState('closed');
-      }
-    });
-
-    socket.addEventListener('message', (event) => {
-      if (this.socket !== socket) {
-        return;
-      }
-
-      let parsed: unknown;
-
-      try {
-        parsed = JSON.parse(String(event.data));
-      } catch {
-        return;
-      }
-
-      const result = serverMessageSchema.safeParse(parsed);
-
-      if (!result.success) {
-        return;
-      }
-
-      for (const handler of this.handlers) {
-        handler(result.data);
-      }
-    });
+    void this.open();
   }
 
   disconnect(): void {
+    this.isActive = false;
+    this.generation += 1;
+    this.clearReconnectTimer();
+    this.appStateSubscription?.remove();
+    this.appStateSubscription = null;
+
     const socket = this.socket;
 
     this.socket = null;
@@ -108,7 +77,7 @@ export class SocketClient {
   }
 
   send(message: ClientMessage): boolean {
-    if (!this.socket || this.socket.readyState !== this.socket.OPEN) {
+    if (!this.isConnected || !this.socket) {
       return false;
     }
 
@@ -126,21 +95,95 @@ export class SocketClient {
   subscribeState(handler: SocketStateHandler): () => void {
     this.stateHandlers.add(handler);
 
-    if (this.socket) {
-      handler(this.socket.readyState === this.socket.OPEN ? 'open' : 'connecting');
+    if (this.isActive) {
+      handler(this.isConnected ? 'open' : 'connecting');
     }
 
     return () => this.stateHandlers.delete(handler);
   }
 
-  private notifyState(state: SocketState): void {
-    for (const handler of this.stateHandlers) {
-      handler(state);
+  get isConnected(): boolean {
+    return this.socket !== null && this.socket.readyState === WebSocket.OPEN;
+  }
+
+  private async open(): Promise<void> {
+    const generation = this.generation;
+
+    this.notifyState('connecting');
+
+    const token = await getAuthToken();
+
+    if (generation !== this.generation) {
+      return;
+    }
+
+    const socket = new ReactNativeWebSocket(
+      WS_URL,
+      undefined,
+      token ? { headers: { Authorization: `Bearer ${token}` } } : null
+    );
+
+    this.socket = socket;
+
+    socket.onopen = () => {
+      if (this.socket === socket) {
+        this.attempt = 0;
+        this.notifyState('open');
+      }
+    };
+
+    socket.onmessage = (event) => {
+      if (this.socket !== socket) {
+        return;
+      }
+
+      const message = parseServerMessage(event.data);
+
+      if (message) {
+        this.handlers.forEach((handler) => handler(message));
+      }
+    };
+
+    socket.onclose = () => {
+      if (this.socket === socket) {
+        this.socket = null;
+        this.notifyState('closed');
+        this.scheduleReconnect();
+      }
+    };
+  }
+
+  private reconnectNow(): void {
+    if (!this.reconnectTimer) {
+      return;
+    }
+
+    this.clearReconnectTimer();
+    this.attempt = 0;
+    void this.open();
+  }
+
+  private scheduleReconnect(): void {
+    if (!this.isActive || this.reconnectTimer) {
+      return;
+    }
+
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
+      this.attempt += 1;
+      void this.open();
+    }, reconnectDelay(this.attempt));
+  }
+
+  private clearReconnectTimer(): void {
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
     }
   }
 
-  get isConnected(): boolean {
-    return this.socket !== null && this.socket.readyState === this.socket.OPEN;
+  private notifyState(state: SocketState): void {
+    this.stateHandlers.forEach((handler) => handler(state));
   }
 }
 

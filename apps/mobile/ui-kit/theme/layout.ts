@@ -1,7 +1,7 @@
 import { PixelRatio } from 'react-native';
 import { clamp } from 'remeda';
 
-import { card, spacing } from './tokens';
+import { card } from './tokens';
 
 const MIN_CARD_WIDTH = 56;
 const MAX_CARD_WIDTH = 124;
@@ -21,10 +21,14 @@ export const getCardSize = (screenWidth: number) => {
 
 export const MAX_FAN_ANGLE = 18;
 
-export const ICON_BUTTON_SIZE = 36;
+export const TAP_TARGET = 44;
 
-export const CORNER_BUTTON_SIZE = 40;
+export const PRIMARY_ACTION_HEIGHT = 56;
 
-export const CORNER_BUTTON_CLEARANCE = CORNER_BUTTON_SIZE + spacing[3] * 2;
+export const DOT_SIZE = 8;
 
-export const HINT_MAX_WIDTH = 190;
+export const ICON_TILE_SIZE = 64;
+
+export const RESULT_ART_SIZE = 72;
+
+export const BET_COLUMN_MIN_WIDTH = 76;

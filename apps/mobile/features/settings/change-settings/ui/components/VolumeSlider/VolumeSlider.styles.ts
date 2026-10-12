@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontSize, spacing } from '@/ui-kit';
+import { colors, fontSize, spacing, TAP_TARGET } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -15,7 +15,8 @@ export const styles = StyleSheet.create({
   },
 
   slider: {
-    flex: 1
+    flex: 1,
+    height: TAP_TARGET
   },
 
   value: {

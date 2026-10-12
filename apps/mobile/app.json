@@ -5,11 +5,11 @@
     "owner": "zilero228",
     "version": "1.0.0",
     "scheme": "durakmaster",
+    "platforms": ["android", "ios"],
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#191526",
     "icon": "./assets/icon.png",
-    "newArchEnabled": true,
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
@@ -31,14 +31,22 @@
       "blockedPermissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
-        "android.permission.WRITE_EXTERNAL_STORAGE"
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_EXTERNAL_STORAGE"
       ]
     },
     "plugins": [
       "expo-router",
       "expo-localization",
       "expo-secure-store",
-      "expo-audio",
+      [
+        "expo-audio",
+        {
+          "enableBackgroundPlayback": false,
+          "recordAudioAndroid": false,
+          "microphonePermission": false
+        }
+      ],
       [
         "expo-image-picker",
         {
@@ -75,7 +83,9 @@
             "deploymentTarget": "16.4"
           }
         }
-      ]
+      ],
+      "expo-image",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,

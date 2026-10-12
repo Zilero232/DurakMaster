@@ -1,7 +1,7 @@
 import { AlertTriangle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Button, colors, StatusScreen } from '@/ui-kit';
+import { Button, colors, iconSize, StatusScreen } from '@/ui-kit';
 
 import type { ErrorScreenProps } from './ErrorScreen.types';
 
@@ -19,7 +19,7 @@ export const ErrorScreen = ({ error, onRetry }: ErrorScreenProps) => {
       }
       description={t('errorPage.description')}
       details={__DEV__ ? error?.message : undefined}
-      icon={<AlertTriangle color={colors.danger} size={56} />}
+      icon={<AlertTriangle color={colors.danger} size={iconSize.hero} />}
       title={t('errorPage.title')}
     />
   );

@@ -7,6 +7,7 @@ import { useSettingsStore } from '@/entities/settings';
 import type { OpponentsRowProps } from './OpponentsRow.types';
 
 import { arcLift } from '../../../lib';
+import { useRowWidth } from '../../../model';
 import { styles } from './OpponentsRow.styles';
 
 export const OpponentsRow = ({
@@ -16,43 +17,51 @@ export const OpponentsRow = ({
   mySeat,
   phrases,
   turnSeconds,
+  isWaiting,
   onSelectPlayer
 }: OpponentsRowProps) => {
   const { t } = useTranslation();
 
   const isBatterySaver = useSettingsStore((store) => store.isBatterySaver);
 
+  const row = useRowWidth();
+
   const opponents = view.players.filter((player) => player.seat !== mySeat);
 
   const isDealt = view.phase === 'playing';
+  const emptySeatName = t(isWaiting ? 'table.inviteFriends' : 'table.seatFree');
 
   return (
     <View style={styles.root}>
-      {opponents.map((player, index) => {
-        const meta = players.find((item) => item.userId === player.userId);
-        const isEmpty = !meta;
+      <View style={styles.seats} onLayout={row.measure}>
+        {opponents.map((player, index) => {
+          const meta = players.find((item) => item.userId === player.userId);
+          const isEmpty = !meta;
+          const isTappable = !isEmpty || isWaiting;
 
-        return (
-          <OpponentSeat
-            key={player.userId}
-            arcLift={arcLift({ index, total: opponents.length })}
-            avatarUrl={meta?.avatarUrl ?? null}
-            isActive={player.seat === view.activeSeat}
-            isAttacker={isDealt && player.seat === view.attackerSeat}
-            isDefender={isDealt && player.seat === view.defenderSeat}
-            isEmpty={isEmpty}
-            isReady={readyUserIds.has(player.userId)}
-            isStatic={isBatterySaver}
-            name={meta?.name ?? t('table.seatFree')}
-            phrase={phrases[player.userId]}
-            player={player}
-            seatCount={opponents.length}
-            turnDeadline={view.turnDeadline}
-            turnSeconds={turnSeconds}
-            onPress={() => onSelectPlayer(player.userId)}
-          />
-        );
-      })}
+          return (
+            <OpponentSeat
+              key={player.userId}
+              arcLift={arcLift({ index, total: opponents.length })}
+              avatarUrl={meta?.avatarUrl ?? null}
+              isActive={player.seat === view.activeSeat}
+              isAttacker={isDealt && player.seat === view.attackerSeat}
+              isDefender={isDealt && player.seat === view.defenderSeat}
+              isEmpty={isEmpty}
+              isReady={readyUserIds.has(player.userId)}
+              isStatic={isBatterySaver}
+              name={meta?.name ?? emptySeatName}
+              phrase={phrases[player.userId]}
+              player={player}
+              rowWidth={row.width}
+              seatCount={opponents.length}
+              turnDeadline={view.turnDeadline}
+              turnSeconds={turnSeconds}
+              onPress={isTappable ? () => onSelectPlayer(player.userId) : undefined}
+            />
+          );
+        })}
+      </View>
     </View>
   );
 };

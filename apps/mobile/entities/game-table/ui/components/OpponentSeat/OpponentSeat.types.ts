@@ -4,6 +4,7 @@ import type { Chatter } from '../../../model';
 
 export type OpponentSeatProps = {
   seatCount: number;
+  rowWidth?: number;
   arcLift?: number;
 
   isEmpty?: boolean;
@@ -23,5 +24,6 @@ export type OpponentSeatProps = {
   /** Battery saver stops the active-seat pulse. */
   isStatic?: boolean;
 
+  /** Without it the seat is not tappable; an empty seat with it invites a friend. */
   onPress?: () => void;
 };

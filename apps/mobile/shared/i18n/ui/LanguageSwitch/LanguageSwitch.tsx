@@ -1,5 +1,8 @@
+import { Globe } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text } from 'react-native';
+
+import { colors, iconSize } from '@/ui-kit';
 
 import { LOCALE_LABELS, LOCALES } from '../../config';
 import { useLocale } from '../../model';
@@ -17,10 +20,11 @@ export const LanguageSwitch = () => {
       accessibilityLabel={t('settings.language')}
       accessibilityRole='button'
       accessibilityValue={{ text: LOCALE_LABELS[locale] }}
-      hitSlop={8}
-      style={styles.root}
+      style={({ pressed }) => [styles.root, pressed && styles.pressed]}
       onPress={() => setLocale(nextLocale)}
     >
+      <Globe color={colors.onFeltMuted} size={iconSize.sm} />
+
       <Text style={styles.code}>{locale.toUpperCase()}</Text>
     </Pressable>
   );

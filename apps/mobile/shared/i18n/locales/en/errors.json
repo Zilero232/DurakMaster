@@ -55,8 +55,8 @@
     "WRONG_PASSWORD": "Wrong table password"
   },
   "notFound": {
-    "title": "No such page",
-    "description": "The link is outdated or the address has a typo. The tables are waiting — head back to the lobby.",
+    "title": "Screen not found",
+    "description": "This link leads somewhere the game doesn't have. Head back to the lobby — the tables are waiting.",
     "toMenu": "To lobby"
   },
   "errorPage": {

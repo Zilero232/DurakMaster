@@ -1,4 +1,4 @@
-export { useSettingsStore } from './settings-store';
+export { DEFAULT_VOLUME, useSettingsStore } from './settings-store';
 export type {
   AnimationSpeed,
   SettingsActions,

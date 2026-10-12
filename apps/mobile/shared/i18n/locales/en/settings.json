@@ -2,6 +2,7 @@
   "settings": {
     "title": "Settings",
     "language": "Language",
+    "account": "Account",
     "cardTheme": "Deck",
     "sound": "Sound",
     "hints": "Suggest moves",

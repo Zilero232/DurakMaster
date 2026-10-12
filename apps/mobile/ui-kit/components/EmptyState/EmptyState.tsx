@@ -14,9 +14,9 @@ export const EmptyState = ({ icon: Icon, title, hint, action }: EmptyStateProps)
 
     <Text style={styles.title}>{title}</Text>
 
-    {hint && <Text style={styles.hint}>{hint}</Text>}
+    {hint !== undefined && <Text style={styles.hint}>{hint}</Text>}
 
-    {action && (
+    {action !== undefined && (
       <Button size='lg' variant='primary' onPress={action.onPress}>
         {action.label}
       </Button>

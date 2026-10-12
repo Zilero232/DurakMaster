@@ -1,13 +1,19 @@
 import { useBoolean } from '@siberiacancode/reactuse';
 import { View } from 'react-native';
 
-import { BoostBar, WalletChip } from '@/entities/game-table';
+import { BoostBar } from '@/entities/game-table';
 import { TableEmojis } from '@/features/game/table-emojis';
 
 import type { TableActionsProps } from './TableActions.types';
 
-import { useTableContext } from '../../../model';
-import { InviteButton, MoveButton, SeatButton } from './components';
+import { useBoostConfirm, useTableContext } from '../../../model';
+import {
+  BoostConfirm,
+  EmojiButton,
+  MySeat,
+  PrimaryActionButton,
+  WaitingActions
+} from './components';
 import { UNDO_BLOCKED } from './TableActions.config';
 import { styles } from './TableActions.styles';
 
@@ -16,45 +22,55 @@ export const TableActions = ({ turnDeadline }: TableActionsProps) => {
 
   const [isEmojisOpen, toggleEmojis] = useBoolean(false);
 
+  const coins = profile?.coins ?? 0;
+
+  const boost = useBoostConfirm({ coins, canUndo: turn.canUndo, onUseBoost: moves.onUseBoost });
+
   return (
-    <View style={styles.wrap}>
-      {profile && (
-        <View style={styles.walletRow}>
-          <WalletChip coins={profile.coins} credits={profile.credits} />
-        </View>
-      )}
+    <View style={styles.root}>
+      <View style={styles.extras}>
+        {turn.isWaiting ? (
+          <WaitingActions />
+        ) : (
+          <BoostBar
+            coins={coins}
+            unavailable={turn.canUndo ? undefined : UNDO_BLOCKED}
+            onSelectBoost={boost.select}
+          />
+        )}
+      </View>
 
-      <View style={styles.root}>
-        <MoveButton />
-
-        <SeatButton
+      <View style={styles.bar}>
+        <MySeat
           chatter={chatter}
           isMyTurn={turn.isMyTurn}
           profile={profile}
           turnDeadline={turnDeadline}
           turnSeconds={turn.turnSeconds}
-          onPress={() => toggleEmojis(true)}
         />
 
-        {turn.isWaiting && turn.hasFreeSeat && <InviteButton />}
+        <EmojiButton onPress={() => toggleEmojis(true)} />
 
-        {!turn.isWaiting && (
-          <View style={styles.boosts}>
-            <BoostBar
-              coins={profile?.coins ?? 0}
-              unavailable={turn.canUndo ? undefined : UNDO_BLOCKED}
-              onUseBoost={moves.onUseBoost}
-            />
-          </View>
-        )}
-
-        <TableEmojis
-          isOpen={isEmojisOpen}
-          onClose={() => toggleEmojis(false)}
-          onSendEmoji={moves.onSendEmoji}
-          onSendPhrase={moves.onSendPhrase}
-        />
+        <PrimaryActionButton />
       </View>
+
+      <TableEmojis
+        isOpen={isEmojisOpen}
+        onClose={() => toggleEmojis(false)}
+        onSendEmoji={moves.onSendEmoji}
+        onSendPhrase={moves.onSendPhrase}
+      />
+
+      {boost.boost !== null && (
+        <BoostConfirm
+          blocker={boost.blocker}
+          boost={boost.boost}
+          coins={coins}
+          isOpen={boost.isOpen}
+          onCancel={boost.cancel}
+          onConfirm={boost.confirm}
+        />
+      )}
     </View>
   );
 };

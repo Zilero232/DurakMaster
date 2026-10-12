@@ -3,6 +3,8 @@ import type { BoostId, Card, MyProfile, QuickPhraseId, TauntId } from '@durak-ma
 import type { Chatter, DropZone } from '@/entities/game-table';
 import type { HandSort } from '@/entities/settings';
 
+import type { PrimaryAction } from '../lib/pick-primary-action.types';
+
 export type TableLook = {
   hasHints: boolean;
   sortMode: HandSort;
@@ -14,8 +16,7 @@ export type TableTurn = {
   isWaiting: boolean;
   isReady: boolean;
   hasFreeSeat: boolean;
-  canPass: boolean;
-  canTake: boolean;
+  primaryAction: PrimaryAction | null;
   canUndo: boolean;
   turnSeconds: number;
   playableKeys: Set<string>;
@@ -34,9 +35,7 @@ export type TableDrag = {
 
 export type TableMoves = {
   onSelectCard: (card: Card) => void;
-  onPass: () => void;
-  onTake: () => void;
-  onReady: (isReady: boolean) => void;
+  onPrimaryAction: () => void;
   onAddBot: () => void;
   onInviteFriends: () => void;
   onSendPhrase: (phraseId: QuickPhraseId) => void;

@@ -6,7 +6,9 @@ export type TableCenterProps = {
 
   mySeat: number;
   isInstant: boolean;
+  canTransfer: boolean;
 
   hoveredIndex: number | null;
   onDefend: (pairIndex: number) => void;
+  onTransfer: () => void;
 };

@@ -1,4 +1,3 @@
-export type TableListProps = {
-  onJoin: (tableId: string) => void;
-  onCreate: () => void;
-};
+import type { UseQuickPlayInput } from '../model';
+
+export type TableListProps = UseQuickPlayInput;

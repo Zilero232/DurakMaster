@@ -5,7 +5,6 @@ import { match } from 'ts-pattern';
 import { useMyProfile, useSessionStore } from '@/entities/session';
 import { useSettingsStore } from '@/entities/settings';
 import { SignInForm } from '@/features/auth/sign-in';
-import { SignOutConfirm, useSignOut } from '@/features/auth/sign-out';
 import { CreateTable } from '@/features/lobby/create-table';
 import { LobbyBackground } from '@/ui-kit';
 import { TableList } from '@/widgets/lobby/table-list';
@@ -20,14 +19,13 @@ export const AppShell = () => {
 
   const { isPending, session, status } = useLobbyConnection();
   const { isPasswordPromptOpen, join, confirmPassword, cancelPassword } = useTableJoin();
-  const panels = useShellPanels();
-  const signOut = useSignOut();
+  const panels = useShellPanels({ isSignedIn: Boolean(session) });
 
   const isBatterySaver = useSettingsStore((store) => store.isBatterySaver);
-
-  const { profile } = useMyProfile();
   const createTable = useSessionStore((store) => store.createTable);
   const isJoiningTable = useSessionStore((store) => store.isJoiningTable);
+
+  const { profile } = useMyProfile();
 
   const [tab, setTab] = useState<ShellTab>('profile');
 
@@ -49,7 +47,7 @@ export const AppShell = () => {
 
   return (
     <LobbyBackground isStatic={isBatterySaver} style={{ paddingTop: insets.top }}>
-      <ShellChrome status={status} tab={tab} onChange={setTab} onSignOut={signOut.request}>
+      <ShellChrome profile={profile} status={status} tab={tab} onChange={setTab}>
         {content}
       </ShellChrome>
 
@@ -60,12 +58,6 @@ export const AppShell = () => {
         onClosePanel={panels.close}
         onClosePasswordPrompt={cancelPassword}
         onSubmitPassword={confirmPassword}
-      />
-
-      <SignOutConfirm
-        isOpen={signOut.isConfirming}
-        onCancel={signOut.cancel}
-        onConfirm={signOut.confirm}
       />
     </LobbyBackground>
   );

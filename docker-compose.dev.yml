@@ -1,7 +1,7 @@
-# Инфраструктура для ЛОКАЛЬНОЙ разработки: Postgres и Valkey.
+# Инфраструктура для ЛОКАЛЬНОЙ разработки: Postgres.
 #
 # Сами клиент и сервер запускаются на хосте через `bun dev` — так работает
-# горячая перезагрузка. Этот файл поднимает только то, что удобнее в контейнерах.
+# горячая перезагрузка. Этот файл поднимает только базу.
 #
 # Запуск:    docker compose -f docker-compose.dev.yml up -d
 # Остановка: docker compose -f docker-compose.dev.yml down
@@ -30,25 +30,5 @@ services:
       retries: 5
       start_period: 30s
 
-  valkey:
-    # Директория столов (roomId → нода), pub/sub между нодами и Streams-лог
-    # для догона сообщений при реконнекте.
-    #
-    # Valkey, а не Redis: лицензия BSD-3-Clause против трёх вариантов у Redis 8
-    # (RSALv2 / SSPLv1 / AGPLv3). Протокол совместим, клиент ioredis тот же.
-    image: valkey/valkey:9-alpine
-    container_name: durakmaster-valkey-dev
-    command: valkey-server --save 60 1 --loglevel warning
-    ports:
-      - '6379:6379'
-    volumes:
-      - valkeydata_dev:/data
-    healthcheck:
-      test: [CMD, valkey-cli, ping]
-      interval: 30s
-      timeout: 3s
-      retries: 5
-
 volumes:
   pgdata_dev:
-  valkeydata_dev:

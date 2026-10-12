@@ -6,7 +6,7 @@ import { cardKey } from '@/shared/lib/cards';
 import type { TableFieldProps } from './TableField.types';
 
 import { useCardSize, useDropZones } from '../../../model';
-import { PairSlot } from './components';
+import { PairSlot, TransferSlot } from './components';
 import { styles } from './TableField.styles';
 
 export const TableField = ({
@@ -14,16 +14,23 @@ export const TableField = ({
   beatableIndexes,
   mySeat,
   isWaiting = false,
+  canTransfer = false,
   hoveredIndex = null,
   isInstant = false,
   onDefend,
+  onTransfer,
   onZonesChange
 }: TableFieldProps) => {
   const { t } = useTranslation();
 
   const { width, height } = useCardSize();
 
-  const { onMeasure } = useDropZones({ slotCount: pairs.length, onChange: onZonesChange });
+  const transferIndex = pairs.length;
+
+  const { onMeasure } = useDropZones({
+    slotCount: canTransfer ? transferIndex + 1 : transferIndex,
+    onChange: onZonesChange
+  });
 
   if (pairs.length === 0) {
     return (
@@ -52,6 +59,17 @@ export const TableField = ({
           onMeasure={onMeasure}
         />
       ))}
+
+      {canTransfer && onTransfer && (
+        <TransferSlot
+          height={height}
+          index={transferIndex}
+          isHovered={hoveredIndex === transferIndex}
+          width={width}
+          onMeasure={onMeasure}
+          onPress={onTransfer}
+        />
+      )}
     </View>
   );
 };

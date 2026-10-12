@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, opacity, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -32,26 +32,9 @@ export const styles = StyleSheet.create({
     color: colors.onFeltMuted
   },
 
-  more: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[1],
-    paddingVertical: spacing[2],
-    paddingHorizontal: spacing[3],
-    borderRadius: radii.pill,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.borderStrong
-  },
-
-  morePressed: {
-    backgroundColor: colors.glass
-  },
-
-  moreLabel: {
-    fontSize: fontSize.sm,
-    fontWeight: '700',
-    fontFamily: fontFamily.sansBold,
-    color: colors.onFelt
+  pressed: {
+    opacity: opacity.muted,
+    transform: [{ scale: 0.99 }]
   },
 
   tiles: {

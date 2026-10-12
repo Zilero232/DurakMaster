@@ -56,7 +56,7 @@ export const SheetSurface = ({
         {children}
       </ScrollView>
 
-      {footer && <View style={styles.footer}>{footer}</View>}
+      {footer !== undefined && <View style={styles.footer}>{footer}</View>}
     </Animated.View>
   );
 };

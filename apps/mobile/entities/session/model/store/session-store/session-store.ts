@@ -75,6 +75,8 @@ export const useSessionStore = create<SessionStore>((set, get) => {
       get().leaveTable();
       set({ outcome: null });
     },
+
+    dismissOutcome: () => set({ outcome: null }),
     setReady: (isReady) => socketClient.send({ type: 'table:ready', payload: { isReady } }),
     addBot: () => socketClient.send({ type: 'table:add-bot' }),
     applyBoost: (boost, targetUserId) =>

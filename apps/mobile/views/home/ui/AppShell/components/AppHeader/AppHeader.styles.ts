@@ -1,58 +1,46 @@
 import { StyleSheet } from 'react-native';
 
-import {
-  borderWidth,
-  colors,
-  fontFamily,
-  fontSize,
-  ICON_BUTTON_SIZE,
-  radii,
-  spacing
-} from '@/ui-kit';
+import { borderWidth, colors, radii, spacing, TAP_TARGET } from '@/ui-kit';
+
+export const AVATAR_SIZE = TAP_TARGET - spacing[2];
 
 export const styles = StyleSheet.create({
   root: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing[3],
-    paddingVertical: spacing[3],
-    paddingHorizontal: spacing[4]
+    gap: spacing[2],
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[3]
   },
 
-  title: {
-    fontSize: fontSize.xxl,
-    fontWeight: '800',
-    fontFamily: fontFamily.displayBold,
-    color: colors.onFelt,
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 'auto'
+  avatarButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: TAP_TARGET,
+    height: TAP_TARGET,
+    borderRadius: radii.pill
   },
 
-  actions: {
+  avatarPressed: {
+    backgroundColor: colors.glass
+  },
+
+  avatarRing: {
+    borderWidth: borderWidth.regular,
+    borderColor: colors.borderGold,
+    borderRadius: radii.pill
+  },
+
+  middle: {
+    flex: 1,
+    minWidth: 0,
+    alignItems: 'center'
+  },
+
+  balances: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[2],
     flexShrink: 0
-  },
-
-  status: {
-    fontSize: fontSize.xs,
-    fontWeight: '600',
-    fontFamily: fontFamily.sansSemi,
-    color: colors.onFeltMuted,
-    flexShrink: 1
-  },
-
-  iconButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: ICON_BUTTON_SIZE,
-    height: ICON_BUTTON_SIZE,
-    borderWidth: borderWidth.hairline,
-    borderColor: colors.glassBorder,
-    borderRadius: radii.pill,
-    backgroundColor: colors.glassStrong
   }
 });

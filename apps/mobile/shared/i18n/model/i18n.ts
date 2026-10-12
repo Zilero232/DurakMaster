@@ -18,7 +18,8 @@ void i18next.use(initReactI18next).init({
   lng: DEFAULT_LOCALE,
   fallbackLng: DEFAULT_LOCALE,
   interpolation: { escapeValue: false },
-  returnEmptyString: false
+  returnEmptyString: false,
+  initAsync: false
 });
 
 export const restoreLocale = async (): Promise<Locale> => {

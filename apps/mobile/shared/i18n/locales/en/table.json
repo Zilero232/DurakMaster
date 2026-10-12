@@ -8,19 +8,28 @@
     "inviteFriendsHint": "Invite friends to the table",
     "surrender": "Surrender",
     "surrenderTitle": "Surrender?",
-    "surrenderHint": "The deal counts as a loss and the bet is not returned",
+    "surrenderHint": "The deal counts as a loss and your bet of {{bet}} is lost",
     "leave": "Leave",
     "attackerTurn": "Attacker's turn",
     "take": "Take",
-    "pass": "Done",
-    "calledPass": "Pass",
+    "done": "Done",
+    "pass": "Pass",
     "role": {
       "attacks": "attack",
       "defends": "defend",
       "out": "out",
       "offline": "offline"
     },
-    "seatFree": "Waiting"
+    "seatFree": "Waiting",
+    "menu": "Table menu",
+    "menuRules": "Table rules",
+    "transfer": "Transfer",
+    "transferPick": "Pick a card to transfer",
+    "rules": {
+      "bet": "Bet",
+      "yes": "Yes",
+      "no": "No"
+    }
   },
   "result": {
     "win": "Victory",
@@ -30,7 +39,8 @@
     "loseHint": "Opponents ran out before you",
     "drawHint": "Everyone ran out at the same time",
     "credits": "{{value}} credits",
-    "rating": "+{{value}} rating",
+    "rating": "{{value}} rating",
+    "rematch": "Play again",
     "toMenu": "To menu"
   },
   "phrases": {
@@ -89,8 +99,11 @@
     "peekHand": "Peek at a hand",
     "peekTalonHint": "Look at the top three cards of the deck",
     "peekHandHint": "Peek at one opponent's hand",
-    "holdForHint": "Hold to learn more",
     "undoMove": "Take it back",
-    "undoMoveHint": "pull the card back before anyone answers"
+    "undoMoveHint": "pull the card back before anyone answers",
+    "use": "Use for {{price}}",
+    "balance": "Your coins: {{coins}}",
+    "notEnoughCoins": "Not enough coins",
+    "nothingToUndo": "Nothing to take back right now"
   }
 }

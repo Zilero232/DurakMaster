@@ -32,7 +32,7 @@
 | ----------- | ----------------------------------------------------------------------------- |
 | Client      | Expo SDK 57, React Native 0.86, Expo Router, TanStack Query, Zustand, i18next |
 | Table       | Native views + Reanimated — no canvas                                         |
-| Realtime    | `partysocket` ↔ `ws` + `@nestjs/platform-ws`                                  |
+| Realtime    | React Native `WebSocket` ↔ `ws` + `@nestjs/platform-ws`                       |
 | API         | NestJS 12 on Bun, Prisma 7, PostgreSQL, better-auth                           |
 | Game rules  | `packages/game-core` — pure functions, no transport, no database              |
 | Table state | In server memory; results and balances go to Postgres                         |
@@ -74,8 +74,9 @@ bun dev:mobile                                # Expo — another, the QR code li
 Press `a` for the Android emulator, or scan the QR code with a dev build on your phone.
 
 > [!TIP]
-> Run the two dev servers in separate terminals: `bun --filter --parallel` prefixes every line with
-> the package name and mangles the QR code Expo draws.
+> Run the two dev servers in separate terminals: `bun dev` runs them through `bun --filter`, which
+> hands Expo no terminal, so there is no QR code. The app does not run in Expo Go — install a dev
+> build on the phone once (`bun android` with the phone plugged in), then scan the QR code.
 
 In a debug build the API address is derived from the host serving the bundle. To pin it, set
 `EXPO_PUBLIC_API_URL`.
@@ -86,7 +87,7 @@ In a debug build the API address is derived from the host serving the bundle. To
 | -------------- | -------------------------------------------------- |
 | `bun verify`   | Typecheck, tests, ESLint, Steiger, Prettier — CI   |
 | `bun fix`      | ESLint `--fix` and Prettier `--write`              |
-| `bun test`     | Unit and rule tests                                |
+| `bun run test` | Unit and rule tests (Vitest — not bare `bun test`) |
 | `bun android`  | Build and run on an emulator or a connected device |
 | `bun ios`      | Build and run on the iOS simulator                 |
 | `bun prebuild` | Generate the native `android/` and `ios/` projects |
@@ -102,10 +103,11 @@ packages/
 └── game-core/   Durak rules — pure, testable without a network
 infra/           Caddy config for the VPS, icon generator
 docs/
-├── games/       game rules — the source of truth for game-core
-├── store/       Google Play release: listing, privacy, checklist
-├── fsd.md       client architecture
-└── style.md     code style
+├── architecture/  design decisions: FSD, realtime, stakes, auth, ads, pitfalls
+├── games/         game rules — the source of truth for game-core
+├── guides/        code style, split into client/, server/, shared/
+├── ops/           local development, deploy
+└── store/         Google Play release: listing, privacy, checklist
 ```
 
 ## Testing
@@ -121,17 +123,19 @@ touching `game-core`. Its checklist of typical mistakes is what the rule tests a
 
 ## Shipping
 
-| Target  | How                                                                       |
-| ------- | ------------------------------------------------------------------------- |
-| API     | [DEPLOY.md](DEPLOY.md) — image to ghcr, a VPS behind Caddy, manual deploy |
-| Android | [docs/store/](docs/store/README.md) — EAS build, Google Play              |
-| iOS     | Planned — EAS already builds it, the App Store profile comes later        |
+| Target  | How                                                                                         |
+| ------- | ------------------------------------------------------------------------------------------- |
+| API     | [docs/ops/deploy.md](docs/ops/deploy.md) — image to ghcr, a VPS behind Caddy, manual deploy |
+| Android | [docs/store/](docs/store/README.md) — EAS build, Google Play                                |
+| iOS     | Planned — EAS already builds it, the App Store profile comes later                          |
 
 ## Documentation
 
-- [Game rules](docs/games/) — read before editing `game-core`
-- [FSD](docs/fsd.md) — client architecture
-- [Code style](docs/style.md)
+- [Documentation index](docs/README.md) — everything under `docs/`, grouped by concern
+- [Game rules](docs/games/README.md) — read before editing `game-core`
+- [Architecture](docs/architecture/fsd.md) — FSD, [realtime](docs/architecture/realtime.md), [stakes](docs/architecture/stakes.md), [pitfalls](docs/architecture/pitfalls.md)
+- [Code style](docs/guides/README.md)
+- [Local development](docs/ops/local-dev.md)
 - [CLAUDE.md](CLAUDE.md) — project invariants
 - [CONTRIBUTING.md](CONTRIBUTING.md) — how to work in this repository
 - [SECURITY.md](SECURITY.md) — reporting a vulnerability

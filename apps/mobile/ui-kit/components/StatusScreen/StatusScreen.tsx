@@ -29,23 +29,23 @@ export const StatusScreen = ({
         start={gradientEnds.vertical.start}
         style={styles.panel}
       >
-        {icon && <View style={styles.icon}>{icon}</View>}
+        {icon !== undefined && <View style={styles.icon}>{icon}</View>}
 
         <Text style={styles.title}>{title}</Text>
 
-        {description && <Text style={styles.description}>{description}</Text>}
+        {description !== undefined && <Text style={styles.description}>{description}</Text>}
 
-        {highlight && (
+        {highlight !== undefined && (
           <Text style={[styles.highlight, TONE_STYLES[highlightTone]]}>{highlight}</Text>
         )}
 
-        {details && (
+        {details !== undefined && (
           <Text numberOfLines={4} style={styles.details}>
             {details}
           </Text>
         )}
 
-        {actions && <View style={styles.actions}>{actions}</View>}
+        {actions !== undefined && <View style={styles.actions}>{actions}</View>}
       </LinearGradient>
     </LobbyBackground>
   );

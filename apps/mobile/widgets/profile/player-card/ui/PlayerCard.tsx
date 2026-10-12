@@ -20,7 +20,7 @@ export const PlayerCard = ({ profile, isOpen, onClose }: PlayerCardProps) => {
   const winRate = getWinRate(profile);
 
   return (
-    <Sheet isOpen={isOpen} title={t('stats.title')} onClose={onClose}>
+    <Sheet isOpen={isOpen} title={t('profile.player')} onClose={onClose}>
       <View style={styles.root}>
         <View style={styles.header}>
           <View style={[styles.ring, { borderColor: rank.league.color }]}>
