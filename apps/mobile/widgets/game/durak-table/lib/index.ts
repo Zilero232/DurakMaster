@@ -1,5 +1,3 @@
-export { arcLift } from './arc-lift';
-export type { ArcLiftInput } from './arc-lift';
 export { createTableValue } from './create-table-value';
 export type { CreateTableValueInput } from './create-table-value.types';
 export { describeTableRules } from './describe-table-rules';
@@ -12,3 +10,6 @@ export { pickPrimaryAction } from './pick-primary-action';
 export type { PickPrimaryActionInput, PrimaryAction } from './pick-primary-action.types';
 export { pickTableSound } from './pick-table-sound';
 export type { PickTableSoundInput, TableSnapshot, TableSoundCue } from './pick-table-sound.types';
+
+export { pickTurnStatus } from './pick-turn-status';
+export type { PickTurnStatusInput, TurnStatus } from './pick-turn-status.types';

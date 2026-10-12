@@ -3,7 +3,6 @@ import type { Chatter } from '../../../model';
 export type SeatChatterProps = {
   chatter?: Chatter;
   size: number;
-  arcLift?: number;
 
   /** Opponent seats sit above the felt, so their bubble hangs below to clear the cards. */
   placement?: 'above' | 'below';

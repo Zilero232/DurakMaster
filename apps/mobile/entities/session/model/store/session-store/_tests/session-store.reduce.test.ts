@@ -9,7 +9,8 @@ const OUTCOME: GameOutcome = {
   loserUserId: 'a',
   isDraw: false,
   creditsDelta: -100,
-  ratingDelta: 0
+  ratingDelta: 0,
+  reason: 'played'
 };
 
 describe('session store reducer', () => {

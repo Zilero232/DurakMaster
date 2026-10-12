@@ -11,6 +11,9 @@ export type * from './use-countdown-ring';
 export { useDropZones } from './use-drop-zones';
 export type * from './use-drop-zones';
 
+export { useFieldCard } from './use-field-card';
+export type * from './use-field-card';
+
 export { usePairMeasure } from './use-pair-measure';
 export type { UsePairMeasureInput } from './use-pair-measure';
 export { useReadyPrompt } from './use-ready-prompt';

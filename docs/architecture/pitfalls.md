@@ -51,3 +51,32 @@ Where another page argues the case in full, the entry links to it. Part of the
   already emits `stake-released` — once for leaving after a match, once in the ready-timeout
   eviction. _Fix:_ refunds go only through `stake-released`; `hasStakeHeld` is the authority
   ([stakes](stakes.md#refunds-have-one-path)).
+- **Gradle asked for JDK 17.** _Symptom:_ `bun android` failed with "Cannot find a Java installation
+  matching languageVersion=17"; Android Studio ships JDK 21. _Fix:_ `mise.toml` installs Temurin 17
+  and points `JAVA_HOME` at it ([local dev](../ops/local-dev.md)).
+- **`googleMobileAdsJson` crashed the Android build.** _Cause:_ `react-native-google-mobile-ads`
+  v17 defaults to its new SDK wiring, which expects config our plugin setup does not write. _Fix:_
+  `"androidSdk": "classic"` in the plugin's options in `app.json` ([ads](ads.md)).
+- **"Error during concurrent rendering" on every launch.** _Cause:_ `@better-auth/expo` imports
+  `expo-network` lazily and it was not installed; the red box hid the real `Cannot find module`.
+  _Fix:_ `expo-network` is a dependency (it also feeds TanStack Query's `onlineManager`); restart
+  Metro with `--clear` after adding it.
+- **The socket reconnected every second with `4409`.** _Cause:_ two `SocketClient`s for one user —
+  after a hot reload, or on two phones — each reconnect replaced the other. _Fix:_ no automatic
+  reconnect after `4409`; the client comes back on the next foreground
+  ([realtime](realtime.md#the-client-socket)).
+- **A waiting player was stuck at a dead table.** _Symptom:_ after a short network drop in the
+  waiting room the table showed but nothing worked. _Cause:_ a disconnect before the game started
+  dropped the room at once; on reconnect the client still showed it. _Fix:_ every seat gets the
+  reconnect grace, and `restoreTable` sends `table:left` when the room is gone
+  ([realtime](realtime.md#disconnects-and-the-reconnect-grace)).
+- **The hand vanished when the player became the defender.** _Cause:_ a hand-rolled `withDelay`
+  entrance in `useEnterMotion` re-ran on a re-render and left the cards at opacity 0. _Fix:_ the
+  hand's deal is Reanimated's own `entering={FadeInUp.delay(...)}`; `useEnterMotion` stays for
+  cards that slide onto the field.
+- **Field cards spilled over the opponents.** _Cause:_ every card took one size from the screen
+  width, and six pairs do not fit the middle column at that size. _Fix:_ `fitFieldCard` picks the
+  largest card for which all pairs fit the measured field, never larger than the regular size.
+- **An error toast showed an icon and no text.** _Cause:_ `alignSelf: 'center'` on the sonner
+  toast shrink-wrapped it and the text collapsed to zero width. _Fix:_ the toast keeps its full
+  width with side margins only.

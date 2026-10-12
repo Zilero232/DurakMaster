@@ -1,3 +1,4 @@
+import { SOCKET_CLOSE_CODE } from '@durak-master/schemas';
 import { Injectable, Logger } from '@nestjs/common';
 
 import type { Socket } from '../realtime.types';
@@ -13,10 +14,6 @@ import { SocketRegistryService } from './socket-registry.service';
 export type ConnectionRequest = {
   headers: Record<string, string | string[] | undefined>;
 };
-
-const REPLACED_BY_NEW_CONNECTION = 4409;
-
-const UNAUTHORIZED = 4401;
 
 @Injectable()
 export class ConnectionService {
@@ -56,7 +53,7 @@ export class ConnectionService {
         payload: { message: 'Sign in required', code: 'UNAUTHORIZED' }
       });
 
-      socket.close(UNAUTHORIZED, 'Unauthorized');
+      socket.close(SOCKET_CLOSE_CODE.unauthorized, 'Unauthorized');
 
       return null;
     }
@@ -74,7 +71,7 @@ export class ConnectionService {
     const previous = this.registry.add(profile.userId, socket);
 
     if (previous && previous !== socket) {
-      previous.close(REPLACED_BY_NEW_CONNECTION, 'Replaced by a new connection');
+      previous.close(SOCKET_CLOSE_CODE.replaced, 'Replaced by a new connection');
     }
 
     socket.userId = profile.userId;
@@ -91,6 +88,8 @@ export class ConnectionService {
     const room = this.rooms.getRoomOfUser(userId);
 
     if (!room) {
+      this.registry.sendTo(userId, { type: 'table:left' });
+
       return;
     }
 

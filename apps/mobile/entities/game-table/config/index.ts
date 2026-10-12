@@ -1,10 +1,14 @@
 export {
   CHATTER_LIFETIME_MS,
+  CLEAR_MS,
   DEAL_MS,
-  DEAL_OFFSET,
+  DEAL_STAGGER_MS,
+  MAX_DEAL_STAGGER_STEPS,
   SETTLE_MS,
   SLIDE_MS,
   SLIDE_OFFSET
 } from './animation';
 
 export { BOOST_HINTS, BOOST_ICONS, BOOST_LABELS } from './boosts';
+
+export { DEFENSE_OFFSET_RATIO, DEFENSE_ROTATION } from './field';

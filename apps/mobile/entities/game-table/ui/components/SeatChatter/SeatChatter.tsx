@@ -12,7 +12,6 @@ import { BELOW_CLEARANCE, styles } from './SeatChatter.styles';
 export const SeatChatter = ({
   chatter,
   size,
-  arcLift = 0,
   placement = 'above',
   clearance = 0
 }: SeatChatterProps) => {
@@ -38,8 +37,7 @@ export const SeatChatter = ({
       style={[
         styles.bubble,
         isAbove ? styles.above : styles.below,
-        !isAbove && { marginTop: clearance + BELOW_CLEARANCE },
-        { transform: [{ translateY: arcLift }] }
+        !isAbove && { marginTop: clearance + BELOW_CLEARANCE }
       ]}
       entering={FadeIn.duration(duration.fast)}
       exiting={FadeOut.duration(duration.card)}

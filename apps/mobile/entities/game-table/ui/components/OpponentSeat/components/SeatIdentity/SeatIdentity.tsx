@@ -43,7 +43,6 @@ export const SeatIdentity = () => {
       )}
 
       <SeatChatter
-        arcLift={seat.arcLift}
         chatter={seat.phrase}
         clearance={role ? roleRow(seat.metrics.label) : 0}
         placement='below'

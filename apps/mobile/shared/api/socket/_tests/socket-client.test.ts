@@ -1,3 +1,4 @@
+import { SOCKET_CLOSE_CODE } from '@durak-master/schemas';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 class FakeSocket {
@@ -8,7 +9,7 @@ class FakeSocket {
   readonly sent: string[] = [];
 
   onopen: (() => void) | null = null;
-  onclose: (() => void) | null = null;
+  onclose: ((event: { code: number }) => void) | null = null;
   onmessage: ((event: { data: unknown }) => void) | null = null;
 
   constructor(
@@ -24,9 +25,9 @@ class FakeSocket {
     this.onopen?.();
   }
 
-  drop() {
+  drop(code = 1006) {
     this.readyState = 3;
-    this.onclose?.();
+    this.onclose?.({ code });
   }
 
   close() {
@@ -161,6 +162,25 @@ describe('socket client', () => {
     first.drop();
     setAppState('active');
 
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(FakeSocket.instances).toHaveLength(2);
+  });
+
+  it('waits for the foreground after another device took the session over', async () => {
+    vi.useFakeTimers();
+
+    const client = new SocketClient();
+    const first = await connected(client);
+
+    first.open();
+    first.drop(SOCKET_CLOSE_CODE.replaced);
+
+    await vi.advanceTimersByTimeAsync(10_000);
+
+    expect(FakeSocket.instances).toHaveLength(1);
+
+    setAppState('active');
     await vi.advanceTimersByTimeAsync(0);
 
     expect(FakeSocket.instances).toHaveLength(2);

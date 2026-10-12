@@ -1,7 +1,7 @@
 import type { ClientMessage, ServerMessage } from '@durak-master/schemas';
 import type { NativeEventSubscription } from 'react-native';
 
-import { serverMessageSchema } from '@durak-master/schemas';
+import { serverMessageSchema, SOCKET_CLOSE_CODE } from '@durak-master/schemas';
 import { AppState } from 'react-native';
 
 import { WS_URL } from '@/shared/config';
@@ -144,22 +144,28 @@ export class SocketClient {
       }
     };
 
-    socket.onclose = () => {
-      if (this.socket === socket) {
-        this.socket = null;
-        this.notifyState('closed');
+    socket.onclose = (event) => {
+      if (this.socket !== socket) {
+        return;
+      }
+
+      this.socket = null;
+      this.notifyState('closed');
+
+      if (event.code !== SOCKET_CLOSE_CODE.replaced) {
         this.scheduleReconnect();
       }
     };
   }
 
   private reconnectNow(): void {
-    if (!this.reconnectTimer) {
+    if (!this.isActive || this.socket) {
       return;
     }
 
     this.clearReconnectTimer();
     this.attempt = 0;
+    this.generation += 1;
     void this.open();
   }
 

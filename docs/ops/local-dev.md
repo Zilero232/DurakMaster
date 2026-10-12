@@ -44,6 +44,11 @@ bun android        # expo run:android — needs a phone with USB debugging, or a
 bun ios            # expo run:ios — macOS only
 ```
 
+It needs JDK 17 — React Native 0.86 asks Gradle for a JDK 17 toolchain and rejects Android
+Studio's bundled 21. `mise install` puts Temurin 17 in place and sets `JAVA_HOME` (see
+`mise.toml`). Gradle also needs the SDK: set `ANDROID_HOME` to it (on Windows usually
+`%LOCALAPPDATA%\Android\Sdk`).
+
 That compiles the native project, installs a debug build and points it at Metro. The build
 includes `expo-dev-client`, so after that first install the phone needs no cable: open the app,
 scan the QR code from `bun dev:mobile` (same Wi-Fi as the computer), and it loads the bundle from

@@ -1,14 +1,14 @@
 import { View } from 'react-native';
-import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, FadeOutRight, LinearTransition } from 'react-native-reanimated';
 
 import { duration, PlayingCard, useEnterMotion } from '@/ui-kit';
 
 import type { PairSlotProps } from './PairSlot.types';
 
-import { SLIDE_MS } from '../../../../../config';
+import { CLEAR_MS, DEFENSE_ROTATION, SLIDE_MS } from '../../../../../config';
 import { slideFrom } from '../../../../../lib';
 import { usePairMeasure } from '../../../../../model';
-import { createPairStyles, DEFENSE_ROTATION, styles } from '../../TableField.styles';
+import { createPairStyles, styles } from '../../TableField.styles';
 
 export const PairSlot = ({
   pair,
@@ -46,6 +46,7 @@ export const PairSlot = ({
 
   return (
     <Animated.View
+      exiting={isInstant ? undefined : FadeOutRight.duration(CLEAR_MS)}
       layout={isInstant ? undefined : LinearTransition.duration(duration.layout)}
       style={pairStyles.pair}
     >

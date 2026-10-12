@@ -3,7 +3,6 @@ import type { Chatter } from '../../chatter';
 
 export type SeatContextValue = {
   metrics: SeatMetrics;
-  arcLift: number;
 
   name: string;
   avatarUrl: string | null;

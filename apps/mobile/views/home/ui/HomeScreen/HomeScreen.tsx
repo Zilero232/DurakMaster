@@ -21,6 +21,7 @@ export const HomeScreen = () => {
         isDraw={result.isDraw}
         isLoser={result.loserUserId === profile?.userId}
         ratingDelta={result.ratingDelta}
+        reason={result.reason}
         onRematch={dismissOutcome}
         onToMenu={goToMenu}
       />

@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Socket } from '../../realtime.types';
 
 import { RoomsService } from '../../../game';
-import { READY_TIMEOUT_MS } from '../../../game/config';
+import { READY_TIMEOUT_MS, RECONNECT_GRACE_MS } from '../../../game/config';
 import { TableInvitesService } from '../../../social';
 import { TableFlowService } from '../table-flow.service';
 
@@ -217,7 +217,21 @@ describe('table flow stakes', () => {
     room.clearTimers();
   });
 
-  it('gives the bet back when a waiting player drops the connection', async () => {
+  it('keeps a waiting player seated through a short drop', async () => {
+    const { flow, rooms, wallet, socket } = harness;
+
+    await flow.create(socket, 'host', { settings });
+
+    rooms.handleDisconnect('host');
+    rooms.handleReconnect('host');
+
+    expect(rooms.getRoomOfUser('host')).toBeDefined();
+    expect(wallet.balanceOf('host')).toBe(900);
+  });
+
+  it('gives the bet back when a waiting player does not come back', async () => {
+    vi.useFakeTimers();
+
     const { flow, rooms, wallet, socket } = harness;
 
     await flow.create(socket, 'host', { settings });
@@ -225,8 +239,11 @@ describe('table flow stakes', () => {
     expect(wallet.balanceOf('host')).toBe(900);
 
     rooms.handleDisconnect('host');
+    await vi.advanceTimersByTimeAsync(RECONNECT_GRACE_MS);
 
     expect(wallet.balanceOf('host')).toBe(1_000);
+
+    vi.useRealTimers();
   });
 
   it('keeps the bet of a player who drops mid-match', async () => {
@@ -472,8 +489,13 @@ describe('table flow closing rooms', () => {
     const { rooms, wallet } = harness;
     const room = await startHeadsUp(harness);
 
+    vi.useFakeTimers();
+
     rooms.handleDisconnect('host');
     rooms.handleDisconnect('guest');
+    await vi.advanceTimersByTimeAsync(RECONNECT_GRACE_MS);
+
+    vi.useRealTimers();
 
     expect(rooms.getRoom(room.id)).toBeUndefined();
     expect(wallet.balanceOf('host')).toBe(1_000);

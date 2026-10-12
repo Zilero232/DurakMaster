@@ -5,7 +5,6 @@
     "notReady": "Not ready",
     "addBot": "Add a bot",
     "inviteFriends": "Invite",
-    "inviteFriendsHint": "Invite friends to the table",
     "surrender": "Surrender",
     "surrenderTitle": "Surrender?",
     "surrenderHint": "The deal counts as a loss and your bet of {{bet}} is lost",
@@ -29,6 +28,11 @@
       "bet": "Bet",
       "yes": "Yes",
       "no": "No"
+    },
+    "status": {
+      "mine": "Your move",
+      "defends": "{{name}} is defending",
+      "moves": "{{name}}'s move"
     }
   },
   "result": {
@@ -41,7 +45,9 @@
     "credits": "{{value}} credits",
     "rating": "{{value}} rating",
     "rematch": "Play again",
-    "toMenu": "To menu"
+    "toMenu": "To menu",
+    "timeoutHint": "Your turn timed out, so the deal counts as a loss",
+    "leftHint": "You left mid-deal, so it counts as a loss"
   },
   "phrases": {
     "title": "Say",

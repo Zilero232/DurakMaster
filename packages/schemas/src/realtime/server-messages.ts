@@ -9,6 +9,10 @@ import { leaderboardSchema } from '../social/leaderboard';
 import { tablePhraseSchema } from './table-phrase';
 import { tauntIdSchema } from './taunts';
 
+export const finishReasonSchema = z.enum(['played', 'left', 'timeout']);
+
+export type FinishReason = z.infer<typeof finishReasonSchema>;
+
 export const serverMessageSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('connected'),
@@ -71,7 +75,8 @@ export const serverMessageSchema = z.discriminatedUnion('type', [
       loserUserId: z.string().nullable(),
       isDraw: z.boolean(),
       creditsDelta: z.number().int(),
-      ratingDelta: z.number().int()
+      ratingDelta: z.number().int(),
+      reason: finishReasonSchema
     })
   }),
 

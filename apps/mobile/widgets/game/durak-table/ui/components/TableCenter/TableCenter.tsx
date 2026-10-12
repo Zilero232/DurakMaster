@@ -21,20 +21,26 @@ export const TableCenter = ({
 
   return (
     <View style={styles.root}>
-      <TalonStack count={view.talonCount} trump={view.trump} trumpCard={view.trumpCard} />
+      <View style={styles.talon}>
+        {view.phase === 'playing' && (
+          <TalonStack count={view.talonCount} trump={view.trump} trumpCard={view.trumpCard} />
+        )}
+      </View>
 
-      <TableField
-        beatableIndexes={beatableIndexes}
-        canTransfer={canTransfer}
-        hoveredIndex={hoveredIndex}
-        isInstant={isInstant}
-        isWaiting={view.phase !== 'playing'}
-        mySeat={mySeat}
-        pairs={view.table}
-        onDefend={onDefend}
-        onTransfer={onTransfer}
-        onZonesChange={drag.onZonesChange}
-      />
+      <View style={styles.field}>
+        <TableField
+          beatableIndexes={beatableIndexes}
+          canTransfer={canTransfer}
+          hoveredIndex={hoveredIndex}
+          isInstant={isInstant}
+          isWaiting={view.phase !== 'playing'}
+          mySeat={mySeat}
+          pairs={view.table}
+          onDefend={onDefend}
+          onTransfer={onTransfer}
+          onZonesChange={drag.onZonesChange}
+        />
+      </View>
 
       <View style={styles.discard}>
         <DiscardStack count={view.discardCount} />

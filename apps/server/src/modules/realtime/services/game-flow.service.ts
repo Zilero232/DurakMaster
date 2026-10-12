@@ -1,4 +1,4 @@
-import type { GameAction, GameErrorCode } from '@durak-master/schemas';
+import type { FinishReason, GameAction, GameErrorCode } from '@durak-master/schemas';
 
 import { computeRatingGain } from '@durak-master/schemas';
 import { Injectable, Logger } from '@nestjs/common';
@@ -22,7 +22,13 @@ export class GameFlowService {
 
   private readonly pendingResults = new Map<
     string,
-    { loserUserId: string | null; isDraw: boolean; creditsDelta: number; ratingDelta: number }
+    {
+      loserUserId: string | null;
+      isDraw: boolean;
+      creditsDelta: number;
+      ratingDelta: number;
+      reason: FinishReason;
+    }
   >();
 
   constructor(
@@ -138,6 +144,7 @@ export class GameFlowService {
       members: RoomMember[];
       outPlaces: Record<string, number>;
       facts: FinishFacts;
+      reason: FinishReason;
       removedUserId?: string;
     }
   ): Promise<void> {
@@ -147,7 +154,7 @@ export class GameFlowService {
       return;
     }
 
-    const { loserUserId, isDraw, members, outPlaces, facts, removedUserId } = event;
+    const { loserUserId, isDraw, members, outPlaces, facts, reason, removedUserId } = event;
     const { bet } = room.settings;
 
     const winners = members.filter(
@@ -203,7 +210,8 @@ export class GameFlowService {
         isDraw,
         isWinner,
         creditsDelta,
-        ratingDelta
+        ratingDelta,
+        reason
       });
     }
 
@@ -248,9 +256,10 @@ export class GameFlowService {
       isWinner: boolean;
       creditsDelta: number;
       ratingDelta: number;
+      reason: FinishReason;
     }
   ): Promise<void> {
-    const { loserUserId, isDraw, isWinner, creditsDelta, ratingDelta } = outcome;
+    const { loserUserId, isDraw, isWinner, creditsDelta, ratingDelta, reason } = outcome;
 
     const unlocked = await this.achievements.recordGame(userId, {
       isWin: isWinner,
@@ -259,7 +268,7 @@ export class GameFlowService {
     });
 
     const socket = this.registry.get(userId);
-    const result = { loserUserId, isDraw, creditsDelta, ratingDelta };
+    const result = { loserUserId, isDraw, creditsDelta, ratingDelta, reason };
 
     if (!socket) {
       if (this.pendingResults.size >= PENDING_RESULTS_LIMIT) {

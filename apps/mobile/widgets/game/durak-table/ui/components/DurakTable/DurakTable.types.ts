@@ -9,7 +9,6 @@ export type DurakTableProps = {
   view: ViewForGame<'durak'>;
   phrases: Record<string, Chatter>;
   isWaiting: boolean;
-  onInviteFriends: () => void;
   onLeave: () => void;
   onSelectPlayer: (userId: string) => void;
 };

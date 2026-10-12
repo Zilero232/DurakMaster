@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
+import { match } from 'ts-pattern';
 
 import { useReadyPrompt } from '@/entities/game-table';
 import { Button, iconSize } from '@/ui-kit';
@@ -20,7 +21,20 @@ export const PrimaryActionButton = () => {
   });
 
   if (!turn.primaryAction) {
-    return <View style={styles.root} />;
+    const status = match(turn.status)
+      .with(null, () => '')
+      .with({ kind: 'mine' }, () => t('table.status.mine'))
+      .with({ kind: 'defends' }, ({ name }) => t('table.status.defends', { name }))
+      .with({ kind: 'moves' }, ({ name }) => t('table.status.moves', { name }))
+      .exhaustive();
+
+    return (
+      <View style={[styles.root, styles.status]}>
+        <Text numberOfLines={1} style={styles.statusText}>
+          {status}
+        </Text>
+      </View>
+    );
   }
 
   const { icon: Icon, label, variant } = PRIMARY_ACTIONS[turn.primaryAction];

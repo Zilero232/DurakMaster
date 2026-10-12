@@ -4,6 +4,7 @@ import type { Chatter, DropZone } from '@/entities/game-table';
 import type { HandSort } from '@/entities/settings';
 
 import type { PrimaryAction } from '../lib/pick-primary-action.types';
+import type { TurnStatus } from '../lib/pick-turn-status.types';
 
 export type TableLook = {
   hasHints: boolean;
@@ -17,6 +18,7 @@ export type TableTurn = {
   isReady: boolean;
   hasFreeSeat: boolean;
   primaryAction: PrimaryAction | null;
+  status: TurnStatus | null;
   canUndo: boolean;
   turnSeconds: number;
   playableKeys: Set<string>;
@@ -37,7 +39,6 @@ export type TableMoves = {
   onSelectCard: (card: Card) => void;
   onPrimaryAction: () => void;
   onAddBot: () => void;
-  onInviteFriends: () => void;
   onSendPhrase: (phraseId: QuickPhraseId) => void;
   onSendEmoji: (emoji: TauntId) => void;
   onUseBoost: (boost: BoostId) => void;

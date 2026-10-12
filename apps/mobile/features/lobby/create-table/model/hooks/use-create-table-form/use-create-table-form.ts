@@ -2,9 +2,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
+import { useMyProfile } from '@/entities/session';
+
 import type { CreateTableFormValues } from '../../create-table-form';
 import type { UseCreateTableFormInput } from './use-create-table-form.types';
 
+import { pickDefaultBet } from '../../../lib';
 import {
   clampPlayersToGame,
   CREATE_TABLE_DEFAULTS,
@@ -13,9 +16,13 @@ import {
 } from '../../create-table-form';
 
 export const useCreateTableForm = ({ onCreate }: UseCreateTableFormInput) => {
+  const { profile } = useMyProfile();
+
+  const credits = profile?.credits ?? 0;
+
   const { control, handleSubmit, setValue, formState } = useForm<CreateTableFormValues>({
     resolver: zodResolver(createTableFormSchema),
-    defaultValues: CREATE_TABLE_DEFAULTS,
+    defaultValues: { ...CREATE_TABLE_DEFAULTS, bet: pickDefaultBet(credits) },
     mode: 'onChange'
   });
 
@@ -23,6 +30,7 @@ export const useCreateTableForm = ({ onCreate }: UseCreateTableFormInput) => {
   const maxPlayers = useWatch({ control, name: 'maxPlayers' });
   const durakRules = useWatch({ control, name: 'durakRules' });
   const isPrivate = useWatch({ control, name: 'isPrivate' });
+  const bet = useWatch({ control, name: 'bet' });
 
   const { deckSize } = durakRules;
 
@@ -52,7 +60,7 @@ export const useCreateTableForm = ({ onCreate }: UseCreateTableFormInput) => {
     game,
     durakRules,
     isPrivate,
-    canSubmit: formState.isValid,
+    canSubmit: formState.isValid && bet <= credits,
     selectGame,
     submit
   };

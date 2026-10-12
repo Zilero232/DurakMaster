@@ -16,6 +16,7 @@ import { SCREEN_GAP, styles } from './MatchResult.styles';
 
 export const MatchResult = ({
   isLoser,
+  reason,
   isDraw,
   creditsDelta,
   ratingDelta,
@@ -29,8 +30,10 @@ export const MatchResult = ({
   useResultFanfare({ isDraw, isLoser });
   useDismissOnBack(canRematch ? onRematch : onToMenu);
 
-  const outcome = match({ isDraw, isLoser })
+  const outcome = match({ isDraw, isLoser, reason })
     .with({ isDraw: true }, () => OUTCOMES.draw)
+    .with({ isLoser: true, reason: 'timeout' }, () => OUTCOMES.loseByTimeout)
+    .with({ isLoser: true, reason: 'left' }, () => OUTCOMES.loseByLeaving)
     .with({ isLoser: true }, () => OUTCOMES.lose)
     .otherwise(() => OUTCOMES.win);
 

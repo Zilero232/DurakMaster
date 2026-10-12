@@ -37,7 +37,6 @@ export const useTableSheets = ({ isWaiting }: UseTableSheetsInput) => {
     isInviteOpen,
     selectSeat,
     closePlayerCard: () => setSelectedUserId(null),
-    openInvite: () => setIsInviteOpen(true),
     closeInvite: () => setIsInviteOpen(false)
   };
 };

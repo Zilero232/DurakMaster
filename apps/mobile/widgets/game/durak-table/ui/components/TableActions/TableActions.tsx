@@ -7,13 +7,7 @@ import { TableEmojis } from '@/features/game/table-emojis';
 import type { TableActionsProps } from './TableActions.types';
 
 import { useBoostConfirm, useTableContext } from '../../../model';
-import {
-  BoostConfirm,
-  EmojiButton,
-  MySeat,
-  PrimaryActionButton,
-  WaitingActions
-} from './components';
+import { BoostConfirm, MySeat, PrimaryActionButton, WaitingActions } from './components';
 import { UNDO_BLOCKED } from './TableActions.config';
 import { styles } from './TableActions.styles';
 
@@ -47,9 +41,8 @@ export const TableActions = ({ turnDeadline }: TableActionsProps) => {
           profile={profile}
           turnDeadline={turnDeadline}
           turnSeconds={turn.turnSeconds}
+          onOpenEmojis={() => toggleEmojis(true)}
         />
-
-        <EmojiButton onPress={() => toggleEmojis(true)} />
 
         <PrimaryActionButton />
       </View>

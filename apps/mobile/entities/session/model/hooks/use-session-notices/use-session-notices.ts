@@ -26,7 +26,7 @@ export const useSessionNotices = () => {
 
     playSound('error');
     haptic('error');
-    toast.error(translated ?? '');
+    toast.error(translated || t('error.UNKNOWN'));
     clearError();
   }, [lastError, lastErrorCode, t, clearError]);
 

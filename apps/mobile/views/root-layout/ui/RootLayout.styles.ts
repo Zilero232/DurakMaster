@@ -8,7 +8,6 @@ export const rootLayoutStyles = StyleSheet.create({
   },
 
   toast: {
-    alignSelf: 'center',
     marginHorizontal: spacing[4]
   }
 });

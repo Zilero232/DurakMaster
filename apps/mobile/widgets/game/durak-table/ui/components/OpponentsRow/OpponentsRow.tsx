@@ -6,7 +6,6 @@ import { useSettingsStore } from '@/entities/settings';
 
 import type { OpponentsRowProps } from './OpponentsRow.types';
 
-import { arcLift } from '../../../lib';
 import { useRowWidth } from '../../../model';
 import { styles } from './OpponentsRow.styles';
 
@@ -34,7 +33,7 @@ export const OpponentsRow = ({
   return (
     <View style={styles.root}>
       <View style={styles.seats} onLayout={row.measure}>
-        {opponents.map((player, index) => {
+        {opponents.map((player) => {
           const meta = players.find((item) => item.userId === player.userId);
           const isEmpty = !meta;
           const isTappable = !isEmpty || isWaiting;
@@ -42,7 +41,6 @@ export const OpponentsRow = ({
           return (
             <OpponentSeat
               key={player.userId}
-              arcLift={arcLift({ index, total: opponents.length })}
               avatarUrl={meta?.avatarUrl ?? null}
               isActive={player.seat === view.activeSeat}
               isAttacker={isDealt && player.seat === view.attackerSeat}

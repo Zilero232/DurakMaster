@@ -15,6 +15,8 @@ import {
 import { clamp } from 'remeda';
 import { z } from 'zod';
 
+import { PREFERRED_BET } from '../config';
+
 export const createTableFormSchema = commonTableSettingsSchema
   .extend({
     game: gameIdSchema,
@@ -31,7 +33,7 @@ export type CreateTableFormValues = z.infer<typeof createTableFormSchema>;
 export const CREATE_TABLE_DEFAULTS: CreateTableFormValues = {
   ...DEFAULT_COMMON_SETTINGS,
   game: DEFAULT_GAME,
-  bet: 1_000,
+  bet: PREFERRED_BET,
   durakRules: DEFAULT_DURAK_RULES,
   password: ''
 };

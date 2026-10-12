@@ -23,7 +23,6 @@ export const DurakTable = ({
   view,
   phrases,
   isWaiting,
-  onInviteFriends,
   onLeave,
   onSelectPlayer
 }: DurakTableProps) => {
@@ -36,7 +35,7 @@ export const DurakTable = ({
   const table = useDurakTable({ game });
   const menu = useTableMenu({ isPlaying: !isWaiting, onLeave });
 
-  const value = createTableValue({ game, table, settings, phrases, isWaiting, onInviteFriends });
+  const value = createTableValue({ game, table, settings, phrases, isWaiting });
   const rules = describeTableRules({ settings, t });
 
   return (

@@ -11,7 +11,6 @@ const EMPTY_SEAT_METRICS: SeatMetrics = {
 
 export const EMPTY_SEAT_CONTEXT: SeatContextValue = {
   metrics: EMPTY_SEAT_METRICS,
-  arcLift: 0,
 
   name: '',
   avatarUrl: null,

@@ -4,14 +4,14 @@ import type { TableContextValue } from '../model/table-context.types';
 import type { CreateTableValueInput } from './create-table-value.types';
 
 import { pickPrimaryAction } from './pick-primary-action';
+import { pickTurnStatus } from './pick-turn-status';
 
 export const createTableValue = ({
   game,
   table,
   settings,
   phrases,
-  isWaiting,
-  onInviteFriends
+  isWaiting
 }: CreateTableValueInput): TableContextValue => {
   const { drag, profile, currentTable } = table;
 
@@ -44,12 +44,24 @@ export const createTableValue = ({
       .with(null, () => {})
       .exhaustive();
 
+  const seatNames = (game.view?.players ?? []).map((player) => ({
+    seat: player.seat,
+    name: game.players.find((member) => member.userId === player.userId)?.name ?? ''
+  }));
+
   const turn = {
     isMyTurn: game.isMyTurn,
     isWaiting,
     isReady,
     hasFreeSeat: seatCount < settings.maxPlayers,
     primaryAction,
+    status: pickTurnStatus({
+      activeSeat: game.view?.activeSeat ?? null,
+      defenderSeat: game.view?.defenderSeat ?? null,
+      mySeat: game.mySeat,
+      players: seatNames,
+      isWaiting
+    }),
     canUndo: game.canUndo,
     turnSeconds: settings.turnTimeoutSeconds,
     playableKeys: game.playableKeys,
@@ -70,7 +82,6 @@ export const createTableValue = ({
     onSelectCard: game.selectCard,
     onPrimaryAction: runPrimaryAction,
     onAddBot: table.addBot,
-    onInviteFriends,
     onSendPhrase: table.sendPhrase,
     onSendEmoji: table.sendEmoji,
     onUseBoost: table.applyBoost

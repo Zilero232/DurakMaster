@@ -5,9 +5,9 @@ import { cardKey } from '@/shared/lib/cards';
 
 import type { TableFieldProps } from './TableField.types';
 
-import { useCardSize, useDropZones } from '../../../model';
+import { useDropZones, useFieldCard } from '../../../model';
 import { PairSlot, TransferSlot } from './components';
-import { styles } from './TableField.styles';
+import { FIELD_GAP, styles } from './TableField.styles';
 
 export const TableField = ({
   pairs,
@@ -23,18 +23,16 @@ export const TableField = ({
 }: TableFieldProps) => {
   const { t } = useTranslation();
 
-  const { width, height } = useCardSize();
-
   const transferIndex = pairs.length;
+  const slotCount = canTransfer ? transferIndex + 1 : transferIndex;
 
-  const { onMeasure } = useDropZones({
-    slotCount: canTransfer ? transferIndex + 1 : transferIndex,
-    onChange: onZonesChange
-  });
+  const { width, height, onLayout } = useFieldCard({ slots: slotCount, gap: FIELD_GAP });
+
+  const { onMeasure } = useDropZones({ slotCount, onChange: onZonesChange });
 
   if (pairs.length === 0) {
     return (
-      <View style={styles.root}>
+      <View style={styles.root} onLayout={onLayout}>
         <Text style={styles.empty}>
           {t(isWaiting ? 'table.waitingTitle' : 'table.attackerTurn')}
         </Text>
@@ -43,7 +41,7 @@ export const TableField = ({
   }
 
   return (
-    <View style={styles.root}>
+    <View style={styles.root} onLayout={onLayout}>
       {pairs.map((pair, index) => (
         <PairSlot
           key={cardKey(pair.attack)}

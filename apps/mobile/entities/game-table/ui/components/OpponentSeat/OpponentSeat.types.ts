@@ -5,7 +5,6 @@ import type { Chatter } from '../../../model';
 export type OpponentSeatProps = {
   seatCount: number;
   rowWidth?: number;
-  arcLift?: number;
 
   isEmpty?: boolean;
   isReady?: boolean;

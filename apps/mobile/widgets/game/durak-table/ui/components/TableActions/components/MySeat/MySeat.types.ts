@@ -9,4 +9,5 @@ export type MySeatProps = {
   isMyTurn: boolean;
   turnDeadline: number | null;
   turnSeconds: number;
+  onOpenEmojis: () => void;
 };

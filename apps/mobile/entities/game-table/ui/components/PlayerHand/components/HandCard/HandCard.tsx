@@ -1,11 +1,11 @@
 import { View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { Easing, FadeInUp } from 'react-native-reanimated';
 
-import { MAX_FAN_ANGLE, useEnterMotion } from '@/ui-kit';
+import { MAX_FAN_ANGLE } from '@/ui-kit';
 
 import type { HandCardProps } from './HandCard.types';
 
-import { DEAL_MS, DEAL_OFFSET } from '../../../../../config';
+import { DEAL_MS, DEAL_STAGGER_MS, MAX_DEAL_STAGGER_STEPS } from '../../../../../config';
 import { DraggableCard } from '../DraggableCard';
 
 export const HandCard = ({
@@ -28,10 +28,14 @@ export const HandCard = ({
   onDragEnd,
   onPlay
 }: HandCardProps) => {
-  const motion = useEnterMotion({ offsetY: -DEAL_OFFSET, durationMs: DEAL_MS, isInstant });
+  const entering = isInstant
+    ? undefined
+    : FadeInUp.delay(Math.min(index, MAX_DEAL_STAGGER_STEPS) * DEAL_STAGGER_MS)
+        .duration(DEAL_MS)
+        .easing(Easing.out(Easing.cubic));
 
   return (
-    <Animated.View style={[{ zIndex: index, marginRight: isLast ? 0 : overlap }, motion]}>
+    <Animated.View entering={entering} style={{ zIndex: index, marginRight: isLast ? 0 : overlap }}>
       <View style={{ transform: [{ translateY: Math.abs(offset) * fanDrop }] }}>
         <DraggableCard
           card={card}

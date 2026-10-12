@@ -23,12 +23,7 @@ export const TableRouter = () => {
     .with({ kind: 'absent' }, () => null)
     .with({ kind: 'game' }, ({ settings }) => (
       <>
-        <DurakTable
-          settings={settings}
-          onInviteFriends={sheets.openInvite}
-          onLeave={leaveTable}
-          onSelectPlayer={sheets.selectSeat}
-        />
+        <DurakTable settings={settings} onLeave={leaveTable} onSelectPlayer={sheets.selectSeat} />
 
         <PlayerCard
           isOpen={sheets.isPlayerCardOpen}

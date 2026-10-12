@@ -12,7 +12,6 @@ import { BACK_STEP_X, SEAT_PADDING_X, styles } from './OpponentSeat.styles';
 export const OpponentSeat = ({
   seatCount,
   rowWidth,
-  arcLift = 0,
   isEmpty = false,
   isReady = false,
   player,
@@ -40,7 +39,6 @@ export const OpponentSeat = ({
 
   const seat: SeatContextValue = {
     metrics,
-    arcLift,
     name,
     avatarUrl,
     handCount: player.handCount,
@@ -59,14 +57,11 @@ export const OpponentSeat = ({
   };
 
   return (
-    <Animated.View style={[pulse, { marginTop: -arcLift }]}>
+    <Animated.View style={pulse}>
       <Pressable
         style={({ pressed }) => [
           styles.root,
           { width: metrics.width },
-          isEmpty && styles.empty,
-          isInvitable && styles.invitable,
-          isActive && styles.active,
           player.isOut && styles.out,
           pressed && styles.pressed
         ]}

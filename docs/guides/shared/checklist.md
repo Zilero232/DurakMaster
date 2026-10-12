@@ -36,5 +36,5 @@ Neither `bun verify` nor the tests catch:
 ## The toolchain
 
 `mise.toml` pins bun and node (22, for the Expo and EAS CLIs). CI installs the same versions
-through `jdx/mise-action` in `.github/actions/setup`. mise does not read `packageManager` in
-`package.json` or the `oven/bun` tag in `apps/server/Dockerfile`, so bumping bun means all three.
+through `jdx/mise-action` in `.github/actions/setup`. The only other bun pin is the `oven/bun` tag
+in `apps/server/Dockerfile`, so bumping bun means both.

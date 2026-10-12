@@ -6,6 +6,7 @@ import type {
   PlayerView,
   PublicProfile,
   QuickPhraseId,
+  ServerMessage,
   TablePhrase,
   TableSettings,
   TauntId
@@ -13,12 +14,7 @@ import type {
 
 export type ConnectionStatus = 'connected' | 'connecting' | 'error' | 'idle';
 
-export type GameOutcome = {
-  loserUserId: string | null;
-  isDraw: boolean;
-  creditsDelta: number;
-  ratingDelta: number;
-};
+export type GameOutcome = Extract<ServerMessage, { type: 'game:finished' }>['payload'];
 
 export type TableEmoji = { emoji: TauntId; at: number };
 

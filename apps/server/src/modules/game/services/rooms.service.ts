@@ -171,19 +171,7 @@ export class RoomsService implements OnModuleDestroy {
       return;
     }
 
-    if (!room.isPlaying) {
-      this.leave(userId);
-
-      return;
-    }
-
     room.suspend(userId);
-
-    if (room.getMembers().every((member) => member.isBot || !member.isConnected)) {
-      void this.dropRoom(room);
-
-      return;
-    }
 
     this.clearReconnectTimer(userId);
     this.reconnectTimers.set(
@@ -191,9 +179,17 @@ export class RoomsService implements OnModuleDestroy {
       setTimeout(() => {
         this.reconnectTimers.delete(userId);
 
-        if (this.getRoomOfUser(userId) === room) {
-          this.leave(userId);
+        if (this.getRoomOfUser(userId) !== room) {
+          return;
         }
+
+        if (room.getMembers().every((member) => member.isBot || !member.isConnected)) {
+          void this.dropRoom(room);
+
+          return;
+        }
+
+        this.leave(userId);
       }, RECONNECT_GRACE_MS)
     );
   }

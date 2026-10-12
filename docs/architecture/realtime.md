@@ -28,7 +28,8 @@ limits live in `realtime.config.ts`:
   `Authorization: Bearer <session token>` and the `bearer()` plugin resolves it
   ([auth](auth.md)). No session → an `UNAUTHORIZED` error and close code `4401`.
 - **One socket per user.** A new connection replaces the old one, which is closed with `4409`
-  — the old socket's disconnect is ignored, so it does not forfeit the player's game.
+  — the old socket's disconnect is ignored, so it does not forfeit the player's game. Both codes
+  live in `SOCKET_CLOSE_CODE` (`@durak-master/schemas`).
 - **Messages before auth are buffered**, up to 16, and replayed once the user is known.
 - **Limits.** 16 KB per message (`maxPayload`), 25 messages per 5 s per user
   (`RateLimiterMemory`), a ping every 30 s that terminates a socket which missed the last pong.
@@ -76,12 +77,17 @@ table's rules allow it (`room.allowsPeeking`).
 
 ## Disconnects and the reconnect grace
 
-- **Not playing** — a disconnect is a leave: the seat is freed and the stake refunded.
-- **Playing** — the member is suspended (`isConnected: false`, the game marks them disconnected)
-  and gets `RECONNECT_GRACE_MS` (45 s, `game/config/reconnect.config.ts`). Coming back inside it
-  cancels the timer and `ConnectionService.restoreTable` re-sends `table:joined` and the current
-  `game:state`. Missing it is a leave, which mid-game is a forfeit.
-- **Everyone human gone** — the room is dropped at once.
+- **Any seat, waiting or playing** — the member is suspended (`isConnected: false`, the game marks
+  them disconnected) and gets `RECONNECT_GRACE_MS` (45 s, `game/config/reconnect.config.ts`). A
+  phone that locks its screen or switches networks for a few seconds keeps its seat. Coming back
+  inside it cancels the timer and `ConnectionService.restoreTable` re-sends `table:joined` and the
+  current `game:state`; a user whose room is gone gets `table:left` instead, so the client never
+  sits at a dead table.
+- **The grace runs out** — a leave: the seat is freed and the stake refunded, and mid-game it is a
+  forfeit (`game:finished` with `reason: 'left'`). If by then nobody human is connected, the whole
+  room is dropped and every held stake refunded.
+- **A missed turn** — the turn timer forfeits the game (`reason: 'timeout'`); the result screen
+  says which of the two happened.
 - **Unready seats** — `READY_TIMEOUT_MS` (90 s) after the last join, humans who never pressed ready
   are unseated (`idle-removed`) and sent back to the lobby.
 - **A result while offline** — `GameFlowService` keeps the `game:finished` payload (up to 500
@@ -96,6 +102,10 @@ read fresh from better-auth's secure store (`getAuthToken`) before every attempt
 
 - **Its own reconnect**: exponential back-off from 500 ms, ×1.6, capped at 8 s
   (`socket-client.config.ts`), reset on a successful open, stopped by `disconnect()` on sign-out.
+- **No reconnect after `4409`.** Another connection took the session over — a second device, or a
+  second client after a hot reload. Reconnecting would replace it in turn, and the two would evict
+  each other forever. The client waits for the app to come to the foreground (`AppState` `active`),
+  which also reconnects at once after any drop instead of waiting out the back-off.
 - **No outgoing queue.** `send` returns `false` while the socket is not open; the UI shows the
   connection state instead of replaying stale intents after a reconnect.
 - Every incoming frame is parsed with `serverMessageSchema`; anything that does not match is

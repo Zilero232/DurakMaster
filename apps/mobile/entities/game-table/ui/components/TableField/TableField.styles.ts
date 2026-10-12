@@ -2,9 +2,9 @@ import { StyleSheet } from 'react-native';
 
 import { borderWidth, card, colors, fontSize, glow, spacing } from '@/ui-kit';
 
-export const DEFENSE_OFFSET_RATIO = { x: 0.2, y: 0.18 } as const;
+import { DEFENSE_OFFSET_RATIO } from '../../../config';
 
-export const DEFENSE_ROTATION = 8;
+export const FIELD_GAP = spacing[3];
 
 export const styles = StyleSheet.create({
   root: {
@@ -13,8 +13,7 @@ export const styles = StyleSheet.create({
     flexWrap: 'wrap',
     alignContent: 'center',
     justifyContent: 'center',
-    gap: spacing[3],
-    padding: spacing[2]
+    gap: FIELD_GAP
   },
 
   empty: {

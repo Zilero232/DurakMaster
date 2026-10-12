@@ -29,9 +29,7 @@ export const styles = StyleSheet.create({
   },
 
   connection: {
-    position: 'absolute',
-    top: '100%',
-    alignSelf: 'center',
-    marginTop: spacing[1]
+    flexShrink: 1,
+    marginLeft: 'auto'
   }
 });

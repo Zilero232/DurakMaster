@@ -10,6 +10,7 @@ export type { UseDropZonesInput, UseDropZonesResult } from './hooks';
 export {
   useCardGesture,
   useCardSize,
+  useFieldCard,
   usePairMeasure,
   useReadyPrompt,
   useSeatSize,

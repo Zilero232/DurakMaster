@@ -11,6 +11,7 @@ export const EMPTY_TABLE_CONTEXT: TableContextValue = {
     isReady: false,
     hasFreeSeat: false,
     primaryAction: null,
+    status: null,
     canUndo: false,
     turnSeconds: 0,
     playableKeys: new Set(),
@@ -29,7 +30,6 @@ export const EMPTY_TABLE_CONTEXT: TableContextValue = {
     onSelectCard: noop,
     onPrimaryAction: noop,
     onAddBot: noop,
-    onInviteFriends: noop,
     onSendPhrase: noop,
     onSendEmoji: noop,
     onUseBoost: noop

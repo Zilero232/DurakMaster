@@ -7,12 +7,7 @@ import { isWaitingForPlayers } from '../lib';
 import { useTableSounds } from '../model';
 import { DurakTable as DurakPlayfield } from './components';
 
-export const DurakTable = ({
-  settings,
-  onInviteFriends,
-  onLeave,
-  onSelectPlayer
-}: DurakTableProps) => {
+export const DurakTable = ({ settings, onLeave, onSelectPlayer }: DurakTableProps) => {
   const currentTable = useSessionStore((store) => store.currentTable);
   const tablePhrases = useSessionStore((store) => store.phrases);
   const tableEmojis = useSessionStore((store) => store.emojis);
@@ -36,7 +31,6 @@ export const DurakTable = ({
       phrases={phrases}
       settings={settings}
       view={view}
-      onInviteFriends={onInviteFriends}
       onLeave={onLeave}
       onSelectPlayer={onSelectPlayer}
     />

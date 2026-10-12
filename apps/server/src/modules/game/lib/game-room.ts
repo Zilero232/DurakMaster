@@ -1,5 +1,6 @@
 import type {
   Card,
+  FinishReason,
   GameAction,
   GameCoreState,
   GameErrorCode,
@@ -60,6 +61,7 @@ export type RoomEvent =
       members: RoomMember[];
       outPlaces: Record<string, number>;
       facts: FinishFacts;
+      reason: FinishReason;
       removedUserId?: string;
     }
   | { type: 'idle-removed'; userIds: string[] }
@@ -152,7 +154,7 @@ export class GameRoom {
     }
 
     if (this.status === 'playing') {
-      this.forfeit(userId);
+      this.forfeit(userId, 'left');
 
       return;
     }
@@ -239,7 +241,7 @@ export class GameRoom {
     this.emit({ type: 'state-changed' });
   }
 
-  private forfeit(userId: string): void {
+  private forfeit(userId: string, reason: FinishReason): void {
     const played = this.getMembers();
     const facts: FinishFacts = { tookUserIds: [...this.tookUserIds] };
 
@@ -254,6 +256,7 @@ export class GameRoom {
       members: played,
       outPlaces: {},
       facts,
+      reason,
       removedUserId: userId
     });
   }
@@ -403,7 +406,8 @@ export class GameRoom {
         isDraw: outcome.isDraw,
         members: played,
         outPlaces,
-        facts
+        facts,
+        reason: 'played'
       });
 
       return;
@@ -445,7 +449,7 @@ export class GameRoom {
     }
 
     if (!activeMember.isBot) {
-      this.forfeit(activeMember.profile.userId);
+      this.forfeit(activeMember.profile.userId, 'timeout');
 
       return;
     }
