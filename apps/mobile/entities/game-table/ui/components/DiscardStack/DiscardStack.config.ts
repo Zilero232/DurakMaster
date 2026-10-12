@@ -1,8 +1,10 @@
-const DISCARD_SCALE = 0.62;
+import { DISCARD_SCALE } from '../../../config/table-center';
 
 export const CARD_OFFSET = 3;
 
 export const VISIBLE_CARDS = 4;
+
+export const DISCARD_TILT = 7;
 
 export type DiscardLayout = {
   card: { width: number; height: number };

@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { borderWidth, colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, radii, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -11,10 +11,7 @@ export const styles = StyleSheet.create({
 
   card: {
     position: 'absolute',
-    borderWidth: borderWidth.hairline,
-    borderColor: colors.glassBorder,
-    borderRadius: radii.card,
-    backgroundColor: colors.feltEdge
+    top: 0
   },
 
   count: {

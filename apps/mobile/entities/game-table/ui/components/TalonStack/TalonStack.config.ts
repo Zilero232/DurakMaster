@@ -1,6 +1,4 @@
-const TALON_SCALE = 0.85;
-
-const TRUMP_REVEAL_RATIO = 0.6;
+import { TRUMP_REVEAL } from '../../../config/table-center';
 
 export const SUIT_BADGE_SIZE = 16;
 
@@ -20,14 +18,14 @@ export type TalonLayoutInput = {
 };
 
 export const talonLayout = ({ cardWidth, cardHeight }: TalonLayoutInput): TalonLayout => {
-  const width = cardWidth * TALON_SCALE;
-  const height = cardHeight * TALON_SCALE;
+  const width = cardWidth;
+  const height = cardHeight;
 
-  const reveal = width * TRUMP_REVEAL_RATIO;
+  const reveal = width * TRUMP_REVEAL;
 
   return {
     card: width,
     stack: { width: width + reveal, height },
-    trumpCard: { top: (height - width) / 2, left: width - (height - reveal) }
+    trumpCard: { top: (height - width) / 2, left: width + reveal - (width + height) / 2 }
   };
 };

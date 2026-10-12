@@ -2,14 +2,17 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { cardKey } from '@/shared/lib/cards';
+import { card } from '@/ui-kit';
 
 import type { TableFieldProps } from './TableField.types';
 
-import { useDropZones, useFieldCard } from '../../../model';
+import { CENTER_GAP, useDropZones } from '../../../model';
 import { PairSlot, TransferSlot } from './components';
-import { FIELD_GAP, styles } from './TableField.styles';
+import { styles } from './TableField.styles';
 
 export const TableField = ({
+  cardWidth,
+  fieldWidth,
   pairs,
   beatableIndexes,
   mySeat,
@@ -26,20 +29,22 @@ export const TableField = ({
   const transferIndex = pairs.length;
   const slotCount = canTransfer ? transferIndex + 1 : transferIndex;
 
-  const { width, height, onLayout } = useFieldCard({ slots: slotCount, gap: FIELD_GAP });
+  const width = cardWidth;
+  const height = cardWidth / card.ratio;
+  const rootStyle = [styles.root, { width: fieldWidth, gap: CENTER_GAP }];
 
   const { onMeasure } = useDropZones({ slotCount, onChange: onZonesChange });
 
   if (pairs.length === 0) {
     return (
-      <View style={styles.root} onLayout={onLayout}>
+      <View style={rootStyle}>
         {isWaiting && <Text style={styles.empty}>{t('table.waitingTitle')}</Text>}
       </View>
     );
   }
 
   return (
-    <View style={styles.root} onLayout={onLayout}>
+    <View style={rootStyle}>
       {pairs.map((pair, index) => (
         <PairSlot
           key={cardKey(pair.attack)}

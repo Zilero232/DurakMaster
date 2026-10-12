@@ -1,10 +1,9 @@
 import { Text, View } from 'react-native';
 
-import { PlayingCard, SuitIcon } from '@/ui-kit';
+import { card, PlayingCard, SuitIcon } from '@/ui-kit';
 
 import type { TalonStackProps } from './TalonStack.types';
 
-import { useCardSize } from '../../../model';
 import {
   EMPTY_BADGE_SIZE,
   SUIT_BADGE_SIZE,
@@ -13,9 +12,7 @@ import {
 } from './TalonStack.config';
 import { styles } from './TalonStack.styles';
 
-export const TalonStack = ({ count, trump, trumpCard }: TalonStackProps) => {
-  const card = useCardSize();
-
+export const TalonStack = ({ cardWidth, count, trump, trumpCard }: TalonStackProps) => {
   const isEmpty = count === 0 && !trumpCard;
 
   if (isEmpty) {
@@ -28,7 +25,7 @@ export const TalonStack = ({ count, trump, trumpCard }: TalonStackProps) => {
     );
   }
 
-  const layout = talonLayout({ cardWidth: card.width, cardHeight: card.height });
+  const layout = talonLayout({ cardWidth, cardHeight: cardWidth / card.ratio });
 
   return (
     <View style={styles.root}>

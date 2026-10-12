@@ -3,7 +3,7 @@ export { RULE_ICONS } from './config/rule-icons';
 export type { TableRuleIcon } from './config/rule-icons.types';
 export { createIdleView } from './lib';
 export type { Chatter, DropZone } from './model';
-export { useReadyPrompt, useTableChatter } from './model';
+export { useReadyPrompt, useTableCenter, useTableChatter } from './model';
 
 export { BoostBar } from './ui/components/BoostBar';
 export type { BoostBarProps } from './ui/components/BoostBar';

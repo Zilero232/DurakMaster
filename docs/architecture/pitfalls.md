@@ -74,9 +74,10 @@ Where another page argues the case in full, the entry links to it. Part of the
   entrance in `useEnterMotion` re-ran on a re-render and left the cards at opacity 0. _Fix:_ the
   hand's deal is Reanimated's own `entering={FadeInUp.delay(...)}`; `useEnterMotion` stays for
   cards that slide onto the field.
-- **Field cards spilled over the opponents.** _Cause:_ every card took one size from the screen
-  width, and six pairs do not fit the middle column at that size. _Fix:_ `fitFieldCard` picks the
-  largest card for which all pairs fit the measured field, never larger than the regular size.
+- **Field cards spilled over the opponents, then only two pairs fit a row.** _Cause:_ the talon,
+  the field and the discard each took their size on their own. _Fix:_ `fitTableCenter` derives one
+  card width from the measured centre so the talon, three pairs and the discard always share a
+  row; the field is exactly three pairs wide, so the fourth pair wraps.
 - **An error toast showed an icon and no text.** _Cause:_ `alignSelf: 'center'` on the sonner
   toast shrink-wrapped it and the text collapsed to zero width. _Fix:_ the toast keeps its full
   width with side margins only.

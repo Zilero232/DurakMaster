@@ -3,6 +3,10 @@ import type { TablePair } from '@durak-master/schemas';
 import type { DropZone } from '../../../model';
 
 export type TableFieldProps = {
+  cardWidth: number;
+
+  /** Exactly three pairs and their gaps, so the fourth pair wraps. */
+  fieldWidth: number;
   pairs: TablePair[];
   beatableIndexes: Set<number>;
 

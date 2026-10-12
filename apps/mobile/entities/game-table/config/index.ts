@@ -12,3 +12,11 @@ export {
 export { BOOST_HINTS, BOOST_ICONS, BOOST_LABELS } from './boosts';
 
 export { DEFENSE_OFFSET_RATIO, DEFENSE_ROTATION } from './field';
+
+export {
+  DISCARD_SCALE,
+  DISCARD_SPAN,
+  FIELD_COLUMNS,
+  TALON_SPAN,
+  TRUMP_REVEAL
+} from './table-center';

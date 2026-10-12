@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 
 import type { CardTheme } from '../../theme';
 
-import { borderWidth, card as cardTokens } from '../../theme';
+import { borderWidth, card as cardTokens, shadows } from '../../theme';
 
 const SELECTED_LIFT_RATIO = 0.09;
 
@@ -19,7 +19,8 @@ const buildStyles = (width: number, theme: CardTheme) =>
       borderWidth: borderWidth.hairline,
       borderColor: theme.edge,
       borderRadius: cardTokens.radius,
-      backgroundColor: theme.face
+      backgroundColor: theme.face,
+      ...shadows.card
     },
 
     selected: {

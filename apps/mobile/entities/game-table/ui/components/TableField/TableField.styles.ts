@@ -4,16 +4,13 @@ import { borderWidth, card, colors, fontSize, glow, spacing } from '@/ui-kit';
 
 import { DEFENSE_OFFSET_RATIO } from '../../../config';
 
-export const FIELD_GAP = spacing[3];
-
 export const styles = StyleSheet.create({
   root: {
-    flex: 1,
+    alignSelf: 'stretch',
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignContent: 'center',
-    justifyContent: 'center',
-    gap: FIELD_GAP
+    justifyContent: 'center'
   },
 
   empty: {
