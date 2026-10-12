@@ -10,6 +10,7 @@ export const ICONS: Record<FriendRowAction, LucideIcon> = {
   invite: Send,
   invited: CheckCheck,
 
+  cancel: X,
   decline: X,
   remove: X
 };

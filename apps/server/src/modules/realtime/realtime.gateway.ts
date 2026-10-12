@@ -1,14 +1,8 @@
-import type {
-  BoostId,
-  ClientMessage,
-  QuickPhraseId,
-  TauntId,
-  UseBoostInput
-} from '@durak-master/schemas';
+import type { ClientMessage, QuickPhraseId, TauntId, UseBoostInput } from '@durak-master/schemas';
 import type { OnModuleDestroy } from '@nestjs/common';
 import type { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit } from '@nestjs/websockets';
 
-import { BOOST_PRICE, clientMessageSchema } from '@durak-master/schemas';
+import { BOOST_PRICE, clientMessageSchema, PEEK_BOOSTS } from '@durak-master/schemas';
 import { Logger } from '@nestjs/common';
 import { WebSocketGateway } from '@nestjs/websockets';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
@@ -32,8 +26,6 @@ import {
   SocketRegistryService,
   TableFlowService
 } from './services';
-
-const PEEK_BOOSTS = new Set<BoostId>(['peekTalon', 'peekHand']);
 
 @WebSocketGateway({ path: '/ws', maxPayload: MAX_MESSAGE_BYTES })
 export class RealtimeGateway

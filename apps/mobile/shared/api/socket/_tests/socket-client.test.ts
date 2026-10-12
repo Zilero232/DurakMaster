@@ -186,6 +186,20 @@ describe('socket client', () => {
     expect(FakeSocket.instances).toHaveLength(2);
   });
 
+  it('does not retry a rejected session on its own', async () => {
+    vi.useFakeTimers();
+
+    const client = new SocketClient();
+    const first = await connected(client);
+
+    first.open();
+    first.drop(SOCKET_CLOSE_CODE.unauthorized);
+
+    await vi.advanceTimersByTimeAsync(10_000);
+
+    expect(FakeSocket.instances).toHaveLength(1);
+  });
+
   it('stops listening to the app state after a disconnect', async () => {
     const client = new SocketClient();
     const listenersBefore = appStateListeners.size;

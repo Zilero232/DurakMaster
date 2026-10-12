@@ -1,4 +1,5 @@
-import type { TextInputProps } from 'react-native';
+import type { Ref } from 'react';
+import type { TextInput, TextInputProps } from 'react-native';
 
 export type FormFieldProps = {
   label: string;
@@ -7,6 +8,7 @@ export type FormFieldProps = {
   error?: string;
 
   isSecret?: boolean;
+  ref?: Ref<TextInput>;
   onChangeText: (value: string) => void;
   onBlur: () => void;
 } & Pick<
@@ -18,5 +20,6 @@ export type FormFieldProps = {
   | 'onSubmitEditing'
   | 'placeholder'
   | 'returnKeyType'
+  | 'submitBehavior'
   | 'textContentType'
 >;

@@ -80,3 +80,10 @@ Where another page argues the case in full, the entry links to it. Part of the
 - **An error toast showed an icon and no text.** _Cause:_ `alignSelf: 'center'` on the sonner
   toast shrink-wrapped it and the text collapsed to zero width. _Fix:_ the toast keeps its full
   width with side margins only.
+- **Plural strings showed their raw key.** _Symptom:_ "create.summary.deck" instead of "36 карт".
+  _Cause:_ Hermes on Android has no `Intl.PluralRules`, so i18next could not pick `_one` / `_few` /
+  `_many`. _Fix:_ `shared/i18n/model/i18n.ts` imports the `intl-pluralrules` polyfill before
+  `init`.
+- **Android switches looked broken.** _Cause:_ React Native's `Switch` draws the platform widget,
+  small and off-palette, and only the thumb took taps. _Fix:_ the `ui-kit` `Toggle` is drawn by us,
+  and every setting row is the pressable with `accessibilityRole='switch'`.

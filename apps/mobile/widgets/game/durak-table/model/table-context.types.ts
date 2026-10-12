@@ -20,6 +20,7 @@ export type TableTurn = {
   primaryAction: PrimaryAction | null;
   status: TurnStatus | null;
   canUndo: boolean;
+  boosts: BoostId[];
   turnSeconds: number;
   playableKeys: Set<string>;
   selectedKey: string | null;

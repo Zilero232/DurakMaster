@@ -8,6 +8,8 @@ import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY } from '../config';
 import { detectLocale, resolveLocale } from '../lib';
 import { en, ru } from '../locales';
 
+import 'intl-pluralrules';
+
 export const resources = {
   ru: { translation: ru },
   en: { translation: en }

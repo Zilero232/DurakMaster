@@ -8,7 +8,13 @@ import type { CredentialsFieldsProps } from './CredentialsFields.types';
 
 import { FormField } from '../FormField';
 
-export const CredentialsFields = ({ control, errors, mode, onSubmit }: CredentialsFieldsProps) => {
+export const CredentialsFields = ({
+  control,
+  errors,
+  mode,
+  setFocus,
+  onSubmit
+}: CredentialsFieldsProps) => {
   const { t } = useTranslation();
 
   const errorText = (message?: string): string | undefined =>
@@ -22,15 +28,19 @@ export const CredentialsFields = ({ control, errors, mode, onSubmit }: Credentia
         <Controller
           render={({ field }) => (
             <FormField
+              ref={field.ref}
               autoComplete='nickname'
               error={errorText(errors.name?.message)}
               label={t('auth.name')}
               maxLength={MAX_NAME_LENGTH}
               placeholder={t('auth.namePlaceholder')}
+              returnKeyType='next'
+              submitBehavior='submit'
               textContentType='nickname'
               value={field.value ?? ''}
               onBlur={field.onBlur}
               onChangeText={field.onChange}
+              onSubmitEditing={() => setFocus('email')}
             />
           )}
           control={control}
@@ -41,15 +51,19 @@ export const CredentialsFields = ({ control, errors, mode, onSubmit }: Credentia
       <Controller
         render={({ field }) => (
           <FormField
+            ref={field.ref}
             autoCapitalize='none'
             autoComplete='email'
             error={errorText(errors.email?.message)}
             keyboardType='email-address'
             label={t('auth.email')}
+            returnKeyType='next'
+            submitBehavior='submit'
             textContentType='emailAddress'
             value={field.value}
             onBlur={field.onBlur}
             onChangeText={field.onChange}
+            onSubmitEditing={() => setFocus('password')}
           />
         )}
         control={control}
@@ -60,6 +74,7 @@ export const CredentialsFields = ({ control, errors, mode, onSubmit }: Credentia
         render={({ field }) => (
           <FormField
             isSecret
+            ref={field.ref}
             autoCapitalize='none'
             autoComplete={isSignIn ? 'current-password' : 'new-password'}
             error={errorText(errors.password?.message)}

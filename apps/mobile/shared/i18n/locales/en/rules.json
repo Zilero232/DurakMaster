@@ -30,6 +30,50 @@
         "title": "End of the game",
         "text": "A player left with no cards while the deck is empty is out and safe. The fool is the last one holding cards. If everyone runs out at once and draws are enabled, the game is a draw."
       }
+    },
+    "tabs": {
+      "basics": "How to play",
+      "modes": "Modes"
+    },
+    "facts": {
+      "deckValue": "36",
+      "deck": "cards in the deck",
+      "handValue": "6",
+      "hand": "cards in hand",
+      "trumpValue": "Trump",
+      "trump": "beats any suit"
+    },
+    "examples": {
+      "higher": "A higher card of the same suit",
+      "trump": "Any trump — spades are trumps here",
+      "sameRank": "Throw in a card of the same rank"
+    },
+    "modesIntro": "The table creator picks the mode and the rules. You can see them in the strip at the top of the table.",
+    "modes": {
+      "throwIn": {
+        "title": "Throw-in",
+        "text": "The classic: the attacker and the neighbours throw in cards of the same rank; the defender beats them or takes."
+      },
+      "transfer": {
+        "title": "Transfer",
+        "text": "Until a card has been beaten, the defender may add a card of the same rank instead — the attack moves on to the next player."
+      },
+      "showTrump": {
+        "title": "Transfer with a trump",
+        "text": "You may transfer just by showing a trump of that rank — the card stays in your hand."
+      },
+      "jokers": {
+        "title": "Jokers",
+        "text": "Two jokers join the deck. A joker beats any card and nothing beats a joker. Jokers cannot be thrown in or transferred."
+      },
+      "cheaters": {
+        "title": "With cheats",
+        "text": "Spend coins to peek at the deck or at an opponent’s hand. Taking back a move works at any table."
+      },
+      "draw": {
+        "title": "Draw",
+        "text": "If everyone runs out of cards at once, the deal is a draw and the bets go back."
+      }
     }
   }
 }

@@ -9,7 +9,6 @@
     "surrenderTitle": "Surrender?",
     "surrenderHint": "The deal counts as a loss and your bet of {{bet}} is lost",
     "leave": "Leave",
-    "attackerTurn": "Attacker's turn",
     "take": "Take",
     "done": "Done",
     "pass": "Pass",
@@ -98,6 +97,24 @@
     "tabs": {
       "emoji": "Emoji",
       "phrase": "Phrases"
+    },
+    "taunts": {
+      "laugh": "Laugh",
+      "cry": "Tears",
+      "smug": "Smirk",
+      "bored": "Bored",
+      "shades": "Cool",
+      "wink": "Wink",
+      "angry": "Angry",
+      "shock": "Shock",
+      "sleep": "Sleepy",
+      "think": "Thinking",
+      "kiss": "Kiss",
+      "tongue": "Tongue",
+      "money": "Money",
+      "devil": "Devil",
+      "popcorn": "Popcorn",
+      "clown": "Clown"
     }
   },
   "boosts": {

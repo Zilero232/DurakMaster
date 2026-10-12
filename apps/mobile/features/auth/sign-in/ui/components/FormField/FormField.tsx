@@ -14,6 +14,7 @@ export const FormField = ({
   value,
   error,
   isSecret = false,
+  ref,
   onChangeText,
   onBlur,
   ...inputProps
@@ -32,6 +33,7 @@ export const FormField = ({
 
       <View style={[styles.field, Boolean(error) && styles.fieldInvalid]}>
         <TextInput
+          ref={ref}
           placeholderTextColor={colors.subtleForeground}
           secureTextEntry={isSecret && !isRevealed}
           style={styles.input}

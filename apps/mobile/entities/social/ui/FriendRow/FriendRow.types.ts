@@ -1,6 +1,7 @@
 import type { PublicProfile } from '@durak-master/schemas';
 
-export type FriendRowAction = 'accept' | 'add' | 'decline' | 'invite' | 'invited' | 'remove';
+export type FriendRowAction =
+  'accept' | 'add' | 'cancel' | 'decline' | 'invite' | 'invited' | 'remove';
 
 export type FriendRowProps<Action extends FriendRowAction> = {
   profile: PublicProfile;

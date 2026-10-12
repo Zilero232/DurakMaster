@@ -23,7 +23,7 @@ export const colors = {
   onFeltMuted: '#A9C4D8',
 
   mutedForeground: '#A9C4D8',
-  subtleForeground: '#7B9DB6',
+  subtleForeground: '#93B4CB',
 
   accent: '#E8B44A',
   accentBright: '#FFCE76',
@@ -140,7 +140,7 @@ export const fontFamily = {
 } as const;
 
 export const fontSize = {
-  xs: 11,
+  xs: 12,
   sm: 13,
   md: 15,
   lg: 18,

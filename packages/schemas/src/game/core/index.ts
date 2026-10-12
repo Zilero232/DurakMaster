@@ -1,7 +1,7 @@
 export { gameActionSchema, gameErrorCodeSchema } from './action';
 export type { ActionForGame, GameAction, GameErrorCode } from './action';
 
-export { BOOST_PRICE, boostIdSchema, BOOSTS, useBoostInputSchema } from './boosts';
+export { BOOST_PRICE, boostIdSchema, BOOSTS, PEEK_BOOSTS, useBoostInputSchema } from './boosts';
 export type { BoostId, UseBoostInput } from './boosts';
 
 export { cardSchema, isJoker, JOKER_COLORS, RANKS, SUITS, suitSchema } from './card';

@@ -27,6 +27,7 @@ export const TableActions = ({ turnDeadline }: TableActionsProps) => {
           <WaitingActions />
         ) : (
           <BoostBar
+            boosts={turn.boosts}
             coins={coins}
             unavailable={turn.canUndo ? undefined : UNDO_BLOCKED}
             onSelectBoost={boost.select}

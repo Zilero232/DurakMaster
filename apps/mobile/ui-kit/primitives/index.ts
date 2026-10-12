@@ -21,3 +21,6 @@ export type { SkeletonProps } from './Skeleton';
 
 export { Spinner } from './Spinner';
 export type { SpinnerProps } from './Spinner';
+
+export { Toggle } from './Toggle';
+export type { ToggleProps } from './Toggle';

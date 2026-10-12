@@ -40,7 +40,7 @@ export const BonusButton = ({ isReady, countdown, onClaim }: BonusButtonProps) =
     >
       {isReady && (
         <LinearGradient
-          colors={surfaceGradient.success}
+          colors={surfaceGradient.accent}
           end={gradientEnds.vertical.end}
           start={gradientEnds.vertical.start}
           style={styles.fill}

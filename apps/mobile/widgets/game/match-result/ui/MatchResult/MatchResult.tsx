@@ -28,7 +28,7 @@ export const MatchResult = ({
   const insets = useSafeAreaInsets();
 
   useResultFanfare({ isDraw, isLoser });
-  useDismissOnBack(canRematch ? onRematch : onToMenu);
+  useDismissOnBack(onToMenu);
 
   const outcome = match({ isDraw, isLoser, reason })
     .with({ isDraw: true }, () => OUTCOMES.draw)

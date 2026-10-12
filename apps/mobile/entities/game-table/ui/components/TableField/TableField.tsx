@@ -33,9 +33,7 @@ export const TableField = ({
   if (pairs.length === 0) {
     return (
       <View style={styles.root} onLayout={onLayout}>
-        <Text style={styles.empty}>
-          {t(isWaiting ? 'table.waitingTitle' : 'table.attackerTurn')}
-        </Text>
+        {isWaiting && <Text style={styles.empty}>{t('table.waitingTitle')}</Text>}
       </View>
     );
   }

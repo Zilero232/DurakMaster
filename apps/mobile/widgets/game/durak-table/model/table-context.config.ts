@@ -13,6 +13,7 @@ export const EMPTY_TABLE_CONTEXT: TableContextValue = {
     primaryAction: null,
     status: null,
     canUndo: false,
+    boosts: [],
     turnSeconds: 0,
     playableKeys: new Set(),
     selectedKey: null

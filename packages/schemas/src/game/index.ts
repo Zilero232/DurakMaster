@@ -18,6 +18,7 @@ export {
   JOKER_COLORS,
   MAX_BET,
   MIN_BET,
+  PEEK_BOOSTS,
   PLAYER_RANGE_BY_GAME,
   playerViewSchema,
   RANKS,

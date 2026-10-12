@@ -1,12 +1,16 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, spacing } from '@/ui-kit';
+import { colors, fontFamily, fontSize, opacity, spacing } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[3]
+  },
+
+  pressed: {
+    opacity: opacity.muted
   },
 
   text: {
@@ -22,7 +26,7 @@ export const styles = StyleSheet.create({
 
   description: {
     fontSize: fontSize.xs,
-    lineHeight: fontSize.xs * 1.4,
+    lineHeight: fontSize.xs * 1.45,
     fontFamily: fontFamily.sans,
     color: colors.mutedForeground
   }

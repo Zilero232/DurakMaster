@@ -16,7 +16,7 @@ type PrimaryActionLook = {
 export const PRIMARY_ACTIONS: Record<PrimaryAction, PrimaryActionLook> = {
   ready: { icon: Check, label: 'table.ready', variant: 'primary' },
   notReady: { icon: X, label: 'table.notReady', variant: 'ghost' },
-  take: { icon: Hand, label: 'table.take', variant: 'danger' },
+  take: { icon: Hand, label: 'table.take', variant: 'secondary' },
   done: { icon: ShieldCheck, label: 'table.done', variant: 'primary' },
   pass: { icon: ShieldCheck, label: 'table.pass', variant: 'primary' }
 };

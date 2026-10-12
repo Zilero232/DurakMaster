@@ -1,8 +1,8 @@
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Switch, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
-import { colors } from '@/ui-kit';
+import { colors, Toggle } from '@/ui-kit';
 
 import type { ModesGridProps } from './ModesGrid.types';
 
@@ -64,12 +64,7 @@ export const ModesGrid = ({ choices, toggles, control }: ModesGridProps) => {
                   )}
                 </View>
 
-                <Switch
-                  thumbColor={colors.surface1}
-                  trackColor={{ false: colors.borderStrong, true: colors.accent }}
-                  value={Boolean(value)}
-                  onValueChange={onChange}
-                />
+                <Toggle isOn={Boolean(value)} />
               </Pressable>
             )}
             control={control}

@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
   },
 
   pair: {
-    flexBasis: '46%'
+    flexBasis: '48%'
   },
 
   single: {

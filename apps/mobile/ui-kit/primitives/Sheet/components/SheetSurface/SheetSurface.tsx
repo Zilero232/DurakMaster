@@ -41,12 +41,14 @@ export const SheetSurface = ({
       />
 
       <GestureDetector gesture={gesture}>
-        <View style={styles.grabberZone}>
-          <View style={styles.grabber} />
+        <View>
+          <View style={styles.grabberZone}>
+            <View style={styles.grabber} />
+          </View>
+
+          <SheetHeader title={title} />
         </View>
       </GestureDetector>
-
-      <SheetHeader title={title} onClose={onClose} />
 
       <ScrollView
         contentContainerStyle={styles.content}

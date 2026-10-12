@@ -1,31 +1,13 @@
-import { X } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import type { SheetHeaderProps } from './SheetHeader.types';
 
-import { colors, iconSize } from '../../../../theme';
 import { styles } from '../../Sheet.styles';
 
-export const SheetHeader = ({ title, onClose }: SheetHeaderProps) => {
-  const { t } = useTranslation();
-
-  return (
-    <View style={styles.header}>
-      <Text numberOfLines={1} style={styles.title}>
-        {title}
-      </Text>
-
-      <Pressable
-        accessibilityLabel={t('common.close')}
-        accessibilityRole='button'
-        style={styles.close}
-        onPress={onClose}
-      >
-        <View style={styles.closeFrame}>
-          <X color={colors.mutedForeground} size={iconSize.md} />
-        </View>
-      </Pressable>
-    </View>
-  );
-};
+export const SheetHeader = ({ title }: SheetHeaderProps) => (
+  <View style={styles.header}>
+    <Text numberOfLines={1} style={styles.title}>
+      {title}
+    </Text>
+  </View>
+);

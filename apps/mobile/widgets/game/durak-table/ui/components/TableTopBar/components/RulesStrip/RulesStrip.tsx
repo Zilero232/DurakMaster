@@ -27,7 +27,7 @@ export const RulesStrip = ({ rules, onPress }: RulesStripProps) => {
         return (
           <View key={rule.icon} style={styles.item}>
             <Icon
-              color={rule.icon === 'bet' ? colors.gold : colors.onFeltMuted}
+              color={rule.icon === 'bet' ? colors.success : colors.onFeltMuted}
               size={iconSize.sm}
             />
 

@@ -2,9 +2,9 @@ import { TABLE_PASSWORD_MAX_LENGTH } from '@durak-master/schemas';
 import { Lock, LockOpen } from 'lucide-react-native';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Switch, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, TextInput } from 'react-native';
 
-import { colors, iconSize, Panel } from '@/ui-kit';
+import { colors, iconSize, Panel, Toggle } from '@/ui-kit';
 
 import type { PrivacySectionProps } from './PrivacySection.types';
 
@@ -15,29 +15,29 @@ export const PrivacySection = ({ control, isPrivate }: PrivacySectionProps) => {
 
   return (
     <Panel style={styles.root}>
-      <View style={styles.row}>
-        {isPrivate ? (
-          <Lock color={colors.accent} size={iconSize.md} />
-        ) : (
-          <LockOpen color={colors.subtleForeground} size={iconSize.md} />
+      <Controller
+        render={({ field }) => (
+          <Pressable
+            accessibilityLabel={t('create.private')}
+            accessibilityRole='switch'
+            accessibilityState={{ checked: field.value }}
+            style={styles.row}
+            onPress={() => field.onChange(!field.value)}
+          >
+            {isPrivate ? (
+              <Lock color={colors.accent} size={iconSize.md} />
+            ) : (
+              <LockOpen color={colors.subtleForeground} size={iconSize.md} />
+            )}
+
+            <Text style={styles.label}>{t('create.private')}</Text>
+
+            <Toggle isOn={field.value} />
+          </Pressable>
         )}
-
-        <Text style={styles.label}>{t('create.private')}</Text>
-
-        <Controller
-          render={({ field }) => (
-            <Switch
-              accessibilityLabel={t('create.private')}
-              thumbColor={colors.surface1}
-              trackColor={{ false: colors.borderStrong, true: colors.accent }}
-              value={field.value}
-              onValueChange={field.onChange}
-            />
-          )}
-          control={control}
-          name='isPrivate'
-        />
-      </View>
+        control={control}
+        name='isPrivate'
+      />
 
       {isPrivate && (
         <Controller

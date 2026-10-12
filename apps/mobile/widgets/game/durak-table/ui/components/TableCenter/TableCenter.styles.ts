@@ -2,9 +2,11 @@ import { StyleSheet } from 'react-native';
 
 import { opacity, spacing } from '@/ui-kit';
 
-const SIDE_SHARE = '22%';
+const TALON_SHARE = '30%';
 
-const FIELD_SHARE = '56%';
+const FIELD_SHARE = '52%';
+
+const DISCARD_SHARE = '18%';
 
 export const styles = StyleSheet.create({
   root: {
@@ -16,7 +18,7 @@ export const styles = StyleSheet.create({
 
   talon: {
     alignItems: 'flex-start',
-    width: SIDE_SHARE
+    width: TALON_SHARE
   },
 
   field: {
@@ -26,7 +28,7 @@ export const styles = StyleSheet.create({
 
   discard: {
     alignItems: 'flex-end',
-    width: SIDE_SHARE,
+    width: DISCARD_SHARE,
     opacity: opacity.muted
   }
 });

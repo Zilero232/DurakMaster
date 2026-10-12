@@ -49,6 +49,7 @@ export {
   Sheet,
   Skeleton,
   Spinner,
+  Toggle,
   usePressFeedback
 } from './primitives';
 export type {
@@ -66,7 +67,8 @@ export type {
   SegmentedOption,
   SheetProps,
   SkeletonProps,
-  SpinnerProps
+  SpinnerProps,
+  ToggleProps
 } from './primitives';
 
 export { CARD_THEMES, DEFAULT_CARD_THEME, getCardTheme, rankLabel, suitColor } from './theme';

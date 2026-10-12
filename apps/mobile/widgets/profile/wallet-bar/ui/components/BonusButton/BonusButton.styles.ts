@@ -10,7 +10,9 @@ export const styles = StyleSheet.create({
     gap: spacing[2],
     padding: spacing[3],
     borderRadius: radii.md,
-    backgroundColor: colors.success,
+    borderWidth: StyleSheet.hairlineWidth * 2,
+    borderColor: colors.borderGold,
+    backgroundColor: colors.primary,
     overflow: 'hidden',
     ...shadows.button
   },
@@ -25,7 +27,6 @@ export const styles = StyleSheet.create({
   },
 
   waiting: {
-    borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,
     backgroundColor: colors.backgroundBottom,
     boxShadow: 'none'

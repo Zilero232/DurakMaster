@@ -1,4 +1,4 @@
-import { BOOST_PRICE, BOOSTS } from '@durak-master/schemas';
+import { BOOST_PRICE } from '@durak-master/schemas';
 import { View } from 'react-native';
 
 import type { BoostBarProps } from './BoostBar.types';
@@ -6,9 +6,9 @@ import type { BoostBarProps } from './BoostBar.types';
 import { BoostButton } from '../BoostButton';
 import { styles } from './BoostBar.styles';
 
-export const BoostBar = ({ coins, unavailable, onSelectBoost }: BoostBarProps) => (
+export const BoostBar = ({ boosts, coins, unavailable, onSelectBoost }: BoostBarProps) => (
   <View style={styles.root}>
-    {BOOSTS.map((boost) => (
+    {boosts.map((boost) => (
       <BoostButton
         key={boost}
         boost={boost}

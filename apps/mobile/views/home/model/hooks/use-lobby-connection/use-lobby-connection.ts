@@ -6,6 +6,7 @@ import { useSession } from '@/shared/api';
 export const useLobbyConnection = () => {
   const status = useSessionStore((store) => store.status);
   const connect = useSessionStore((store) => store.connect);
+  const disconnect = useSessionStore((store) => store.disconnect);
   const setSigningOut = useSessionStore((store) => store.setSigningOut);
   const subscribeLobby = useSessionStore((store) => store.subscribeLobby);
 
@@ -15,13 +16,17 @@ export const useLobbyConnection = () => {
     if (!session) {
       setSigningOut(false);
 
+      if (status !== 'idle') {
+        disconnect();
+      }
+
       return;
     }
 
     if (status === 'idle' || status === 'error') {
       connect();
     }
-  }, [session, status, connect, setSigningOut]);
+  }, [session, status, connect, disconnect, setSigningOut]);
 
   useEffect(() => {
     if (status === 'connected') {

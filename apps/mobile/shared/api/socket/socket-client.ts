@@ -15,6 +15,11 @@ type SocketState = 'closed' | 'connecting' | 'open';
 
 type SocketStateHandler = (state: SocketState) => void;
 
+const CODES_WITHOUT_RECONNECT: ReadonlySet<number> = new Set([
+  SOCKET_CLOSE_CODE.replaced,
+  SOCKET_CLOSE_CODE.unauthorized
+]);
+
 type ReactNativeWebSocketConstructor = new (
   url: string,
   protocols?: string | string[],
@@ -152,7 +157,7 @@ export class SocketClient {
       this.socket = null;
       this.notifyState('closed');
 
-      if (event.code !== SOCKET_CLOSE_CODE.replaced) {
+      if (!CODES_WITHOUT_RECONNECT.has(event.code)) {
         this.scheduleReconnect();
       }
     };

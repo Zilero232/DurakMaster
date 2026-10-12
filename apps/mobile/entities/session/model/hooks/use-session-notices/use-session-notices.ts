@@ -7,6 +7,10 @@ import { playSound } from '@/shared/lib/sound';
 
 import { useSessionStore } from '../../store';
 
+const SIGNED_OUT_CODE = 'UNAUTHORIZED';
+
+const STALE_MOVE_CODE = 'VERSION_MISMATCH';
+
 export const useSessionNotices = () => {
   const { t } = useTranslation();
 
@@ -21,6 +25,12 @@ export const useSessionNotices = () => {
       return;
     }
 
+    if (lastErrorCode === SIGNED_OUT_CODE) {
+      clearError();
+
+      return;
+    }
+
     const key = `error.${lastErrorCode}`;
     const translated = lastErrorCode && t(key) !== key ? t(key) : lastError;
 
@@ -32,6 +42,12 @@ export const useSessionNotices = () => {
 
   useEffect(() => {
     if (!rejectedCode) {
+      return;
+    }
+
+    if (rejectedCode === STALE_MOVE_CODE) {
+      clearRejection();
+
       return;
     }
 

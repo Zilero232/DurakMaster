@@ -22,7 +22,8 @@
       "invite": "Invite to the table",
       "invited": "Invitation sent",
       "remove": "Remove",
-      "decline": "Decline"
+      "decline": "Decline",
+      "cancel": "Cancel request"
     },
     "invited": "{{name}} invites you to a table",
     "invitedWhilePlaying": "{{name}} invites you to a table — finish this game first",

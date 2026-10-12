@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors, fontFamily, fontSize, spacing, TAP_TARGET } from '@/ui-kit';
+import { colors, fontFamily, fontSize, opacity, spacing, TAP_TARGET } from '@/ui-kit';
 
 export const styles = StyleSheet.create({
   root: {
@@ -8,6 +8,10 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing[3],
     minHeight: TAP_TARGET
+  },
+
+  pressed: {
+    opacity: opacity.muted
   },
 
   label: {

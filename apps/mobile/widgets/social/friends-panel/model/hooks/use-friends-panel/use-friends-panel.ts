@@ -25,7 +25,7 @@ export const useFriendsPanel = () => {
     match(action)
       .with('add', () => request(userId))
       .with('accept', () => accept(userId))
-      .with('decline', () => decline(userId))
+      .with('cancel', 'decline', () => decline(userId))
       .with('remove', () => setRemovingId(userId))
       .exhaustive();
   };

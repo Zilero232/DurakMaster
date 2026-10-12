@@ -98,7 +98,7 @@ export const VARIANT_FOREGROUND: Record<ButtonVariant, string> = {
   primary: colors.primaryForeground,
   secondary: colors.foreground,
   ghost: colors.onFelt,
-  danger: colors.primaryForeground
+  danger: colors.foreground
 };
 
 export const VARIANT_STYLES: Record<ButtonVariant, StylePair> = {
@@ -116,7 +116,7 @@ export const VARIANT_STYLES: Record<ButtonVariant, StylePair> = {
   },
   danger: {
     container: { backgroundColor: colors.danger },
-    label: { color: colors.primaryForeground }
+    label: { color: colors.foreground }
   }
 };
 

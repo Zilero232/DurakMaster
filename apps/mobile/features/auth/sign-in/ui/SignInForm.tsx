@@ -34,7 +34,8 @@ export const SignInForm = () => {
     formState: { errors, isSubmitting },
     handleSubmit,
     clearErrors,
-    setError
+    setError,
+    setFocus
   } = useForm<CredentialsInput>({
     resolver: zodResolver(credentialsSchema),
     defaultValues: DEFAULT_VALUES
@@ -45,7 +46,11 @@ export const SignInForm = () => {
   const submit = handleSubmit(async ({ email, password, name }) => {
     const result = isSignIn
       ? await authClient.signIn.email({ email, password })
-      : await authClient.signUp.email({ email, password, name: name?.trim() || email });
+      : await authClient.signUp.email({
+          email,
+          password,
+          name: name?.trim() || email.split('@')[0]
+        });
 
     if (result.error) {
       setError('root', { message: t(isSignIn ? 'auth.errorSignIn' : 'auth.errorSignUp') });
@@ -78,6 +83,7 @@ export const SignInForm = () => {
           errors={errors}
           isSubmitting={isSubmitting}
           mode={mode}
+          setFocus={setFocus}
           onChangeMode={changeMode}
           onSubmit={submit}
         />

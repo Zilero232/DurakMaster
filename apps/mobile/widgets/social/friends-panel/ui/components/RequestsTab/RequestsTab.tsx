@@ -40,7 +40,7 @@ export const RequestsTab = ({ incoming, outgoing, onAction }: RequestsTabProps) 
       {outgoing.map((friend) => (
         <FriendRow
           key={friend.profile.userId}
-          actions={['decline']}
+          actions={['cancel']}
           profile={friend.profile}
           onAction={onAction}
         />

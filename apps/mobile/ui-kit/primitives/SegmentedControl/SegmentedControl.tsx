@@ -1,11 +1,10 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import type { SegmentedControlProps } from './SegmentedControl.types';
 
 import { gradientEnds, surfaceGradient } from '../../theme';
-import { PAIR_FROM_OPTIONS, ROW_MIN_OPTION_WIDTH } from './SegmentedControl.config';
+import { PAIR_FROM_OPTIONS } from './SegmentedControl.config';
 import { styles } from './SegmentedControl.styles';
 
 export const SegmentedControl = <T extends number | string>({
@@ -15,18 +14,13 @@ export const SegmentedControl = <T extends number | string>({
   style,
   onChange
 }: SegmentedControlProps<T>) => {
-  const [width, setWidth] = useState(0);
-
-  const isCrowded = width > 0 && width < options.length * ROW_MIN_OPTION_WIDTH;
-
-  const isPaired = isCrowded && options.length >= PAIR_FROM_OPTIONS;
+  const isPaired = options.length >= PAIR_FROM_OPTIONS;
 
   return (
     <View
       accessibilityLabel={accessibilityLabel}
       accessibilityRole='radiogroup'
       style={[styles.root, style]}
-      onLayout={(event) => setWidth(event.nativeEvent.layout.width)}
     >
       {options.map((option) => {
         const isActive = option.value === value;

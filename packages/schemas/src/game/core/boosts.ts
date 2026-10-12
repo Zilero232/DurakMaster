@@ -6,6 +6,8 @@ export const boostIdSchema = z.enum(BOOSTS);
 
 export type BoostId = z.infer<typeof boostIdSchema>;
 
+export const PEEK_BOOSTS: ReadonlySet<BoostId> = new Set(['peekTalon', 'peekHand']);
+
 export const BOOST_PRICE: Record<BoostId, number> = {
   undoMove: 1,
   peekTalon: 3,

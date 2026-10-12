@@ -1,3 +1,4 @@
+import { BOOSTS, PEEK_BOOSTS } from '@durak-master/schemas';
 import { match, P } from 'ts-pattern';
 
 import type { TableContextValue } from '../model/table-context.types';
@@ -63,6 +64,9 @@ export const createTableValue = ({
       isWaiting
     }),
     canUndo: game.canUndo,
+    boosts: BOOSTS.filter(
+      (boost) => settings.rules.fairness === 'cheaters' || !PEEK_BOOSTS.has(boost)
+    ),
     turnSeconds: settings.turnTimeoutSeconds,
     playableKeys: game.playableKeys,
     selectedKey: game.selectedKey

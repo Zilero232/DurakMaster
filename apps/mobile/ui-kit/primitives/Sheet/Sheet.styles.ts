@@ -1,15 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import {
-  colors,
-  fontFamily,
-  fontSize,
-  iconSize,
-  radii,
-  shadows,
-  spacing,
-  TAP_TARGET
-} from '../../theme';
+import { colors, fontFamily, fontSize, radii, shadows, spacing } from '../../theme';
 
 export const styles = StyleSheet.create({
   root: {
@@ -74,8 +65,6 @@ export const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing[3],
     paddingHorizontal: spacing[5],
     paddingBottom: spacing[3]
   },
@@ -86,23 +75,6 @@ export const styles = StyleSheet.create({
     fontWeight: '800',
     fontFamily: fontFamily.displayBold,
     color: colors.foreground
-  },
-
-  close: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: TAP_TARGET,
-    height: TAP_TARGET,
-    marginRight: -spacing[2]
-  },
-
-  closeFrame: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: iconSize.xl,
-    height: iconSize.xl,
-    borderRadius: radii.pill,
-    backgroundColor: colors.surface2
   },
 
   scroll: {

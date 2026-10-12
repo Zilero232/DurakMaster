@@ -13,6 +13,7 @@ export const AuthForm = ({
   control,
   errors,
   isSubmitting,
+  setFocus,
   onChangeMode,
   onSubmit
 }: AuthFormProps) => {
@@ -39,7 +40,13 @@ export const AuthForm = ({
 
       <SegmentedControl options={modeOptions} value={mode} onChange={onChangeMode} />
 
-      <CredentialsFields control={control} errors={errors} mode={mode} onSubmit={onSubmit} />
+      <CredentialsFields
+        control={control}
+        errors={errors}
+        mode={mode}
+        setFocus={setFocus}
+        onSubmit={onSubmit}
+      />
 
       {errors.root !== undefined && <Text style={styles.error}>{errors.root.message}</Text>}
 

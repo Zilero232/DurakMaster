@@ -1,5 +1,5 @@
 import { MAX_BET, MIN_BET } from '@durak-master/schemas';
-import { Coins } from 'lucide-react-native';
+import { Wallet } from 'lucide-react-native';
 import { useState } from 'react';
 import { TextInput, View } from 'react-native';
 import { clamp } from 'remeda';
@@ -28,7 +28,7 @@ export const BetInput = ({ value, label, onChange }: BetInputProps) => {
 
   return (
     <View style={styles.root}>
-      <Coins color={colors.gold} size={iconSize.md} />
+      <Wallet color={colors.success} size={iconSize.md} />
 
       <TextInput
         selectTextOnFocus

@@ -1,6 +1,6 @@
-const TALON_SCALE = 0.6;
+const TALON_SCALE = 0.85;
 
-const TRUMP_REVEAL_RATIO = 0.92;
+const TRUMP_REVEAL_RATIO = 0.6;
 
 export const SUIT_BADGE_SIZE = 16;
 
